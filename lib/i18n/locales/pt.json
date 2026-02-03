@@ -1,0 +1,99 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "back": "Voltar",
+    "done": "Concluído",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "tabs": {
+    "home": "Hoje",
+    "history": "Histórico",
+    "settings": "Configurações"
+  },
+  "home": {
+    "title": "Hoje",
+    "noEntries": "Sem registros hoje",
+    "addFirst": "Toque em + para adicionar seu primeiro registro",
+    "summary": {
+      "voids": "Micções",
+      "fluids": "Líquidos",
+      "leaks": "Perdas"
+    }
+  },
+  "entry": {
+    "urination": "Micção",
+    "fluid": "Ingestão de líquidos",
+    "leak": "Perda/Acidente",
+    "addUrination": "Registrar micção",
+    "addFluid": "Registrar líquido",
+    "addLeak": "Registrar perda"
+  },
+  "urination": {
+    "title": "Registrar Micção",
+    "volume": "Volume",
+    "volumeSmall": "Pequeno",
+    "volumeMedium": "Médio",
+    "volumeLarge": "Grande",
+    "urgency": "Nível de urgência",
+    "hadLeak": "Houve alguma perda?",
+    "hadPain": "Sentiu dor ou desconforto?",
+    "notes": "Notas (opcional)"
+  },
+  "fluid": {
+    "title": "Registrar Ingestão de Líquidos",
+    "drinkType": "Tipo de bebida",
+    "water": "Água",
+    "coffee": "Café",
+    "tea": "Chá",
+    "juice": "Suco",
+    "alcohol": "Álcool",
+    "other": "Outro",
+    "amount": "Quantidade (ml)",
+    "notes": "Notas (opcional)"
+  },
+  "leak": {
+    "title": "Registrar Perda/Acidente",
+    "severity": "Severidade",
+    "drops": "Gotas",
+    "moderate": "Moderado",
+    "full": "Completo",
+    "urgency": "Nível de urgência",
+    "notes": "Notas (opcional)"
+  },
+  "history": {
+    "title": "Histórico",
+    "noEntries": "Sem registros para este dia",
+    "weekly": "Semanal",
+    "monthly": "Mensal"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "english": "Inglês",
+    "spanish": "Espanhol",
+    "portuguese": "Português",
+    "export": "Exportar dados",
+    "exportDescription": "Exportar seu diário como CSV",
+    "clearData": "Limpar todos os dados",
+    "clearDataDescription": "Esta ação não pode ser desfeita",
+    "clearDataConfirm": "Tem certeza de que deseja excluir todos os seus registros?",
+    "about": "Sobre",
+    "version": "Versão",
+    "privacy": "Política de privacidade"
+  },
+  "urgency": {
+    "1": "Nenhuma",
+    "2": "Leve",
+    "3": "Moderada",
+    "4": "Forte",
+    "5": "Urgente"
+  }
+}

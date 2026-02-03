@@ -1,0 +1,99 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "done": "Done",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "tabs": {
+    "home": "Today",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "home": {
+    "title": "Today",
+    "noEntries": "No entries yet today",
+    "addFirst": "Tap + to add your first entry",
+    "summary": {
+      "voids": "Voids",
+      "fluids": "Fluids",
+      "leaks": "Leaks"
+    }
+  },
+  "entry": {
+    "urination": "Urination",
+    "fluid": "Fluid Intake",
+    "leak": "Leak/Accident",
+    "addUrination": "Log Urination",
+    "addFluid": "Log Fluid",
+    "addLeak": "Log Leak"
+  },
+  "urination": {
+    "title": "Log Urination",
+    "volume": "Volume",
+    "volumeSmall": "Small",
+    "volumeMedium": "Medium",
+    "volumeLarge": "Large",
+    "urgency": "Urgency Level",
+    "hadLeak": "Had any leakage?",
+    "hadPain": "Experienced pain or discomfort?",
+    "notes": "Notes (optional)"
+  },
+  "fluid": {
+    "title": "Log Fluid Intake",
+    "drinkType": "Drink Type",
+    "water": "Water",
+    "coffee": "Coffee",
+    "tea": "Tea",
+    "juice": "Juice",
+    "alcohol": "Alcohol",
+    "other": "Other",
+    "amount": "Amount (ml)",
+    "notes": "Notes (optional)"
+  },
+  "leak": {
+    "title": "Log Leak/Accident",
+    "severity": "Severity",
+    "drops": "Drops",
+    "moderate": "Moderate",
+    "full": "Full",
+    "urgency": "Urgency Level",
+    "notes": "Notes (optional)"
+  },
+  "history": {
+    "title": "History",
+    "noEntries": "No entries for this day",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "portuguese": "Portuguese",
+    "export": "Export Data",
+    "exportDescription": "Export your diary as CSV",
+    "clearData": "Clear All Data",
+    "clearDataDescription": "This action cannot be undone",
+    "clearDataConfirm": "Are you sure you want to delete all your diary entries?",
+    "about": "About",
+    "version": "Version",
+    "privacy": "Privacy Policy"
+  },
+  "urgency": {
+    "1": "None",
+    "2": "Mild",
+    "3": "Moderate",
+    "4": "Strong",
+    "5": "Urgent"
+  }
+}

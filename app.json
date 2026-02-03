@@ -45,11 +45,20 @@
         "expo-localization",
         {
           "supportedLocales": {
-            "ios": ["en", "es", "pt"],
-            "android": ["en", "es", "pt"]
+            "ios": [
+              "en",
+              "es",
+              "pt"
+            ],
+            "android": [
+              "en",
+              "es",
+              "pt"
+            ]
           }
         }
-      ]
+      ],
+      "react-native-bottom-tabs"
     ],
     "experiments": {
       "typedRoutes": true,

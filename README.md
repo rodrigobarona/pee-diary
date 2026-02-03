@@ -1,50 +1,114 @@
-# Welcome to your Expo app 👋
+# Pee Diary
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A premium, modern mobile app for tracking urination, fluid intake, and leakage events. Built with Expo and React Native, following best practices for performance and user experience.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Quick Logging**: Track urination, fluid intake, and leaks in under 10 seconds
+- **Multi-language Support**: English, Spanish, and Portuguese
+- **Offline-First**: All data stored locally on device
+- **Beautiful UI**: Premium design with smooth animations and haptic feedback
+- **Export Data**: Export your diary as CSV for sharing with healthcare providers
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+- **Framework**: Expo SDK 54 with React Native 0.81
+- **Styling**: NativeWind v4 (TailwindCSS for React Native)
+- **UI Components**: react-native-reusables (shadcn/ui equivalent)
+- **State Management**: Zustand with AsyncStorage persistence
+- **Navigation**: Expo Router with native tabs
+- **Animations**: React Native Reanimated with GestureHandler
+- **Lists**: LegendList for high-performance virtualized lists
+- **Menus**: Zeego for native dropdown menus
+- **Forms**: React Hook Form with Zod validation
+- **i18n**: expo-localization + i18n-js
 
-   ```bash
-   npx expo start
-   ```
+## Getting Started
 
-In the output, you'll find options to open the app in a
+### Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Node.js 18+
+- Expo CLI
+- iOS Simulator (for Mac) or Android Emulator
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Installation
 
 ```bash
-npm run reset-project
+# Clone the repository
+git clone https://github.com/your-org/pee-diary.git
+cd pee-diary
+
+# Install dependencies
+npm install
+
+# Start the development server
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Running on Device
 
-## Learn more
+- **iOS Simulator**: Press `i` in the terminal
+- **Android Emulator**: Press `a` in the terminal
+- **Physical Device**: Scan QR code with Expo Go app
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+app/                    # Expo Router pages
+  (tabs)/              # Bottom tab navigation
+    index.tsx          # Home - Today's timeline
+    history.tsx        # History - Calendar view
+    settings.tsx       # Settings - Language, export, clear data
+  add/                 # Entry form modals
+    urination.tsx
+    fluid.tsx
+    leak.tsx
 
-## Join the community
+components/
+  ui/                  # Design system (react-native-reusables style)
+  diary/               # App-specific components
 
-Join our community of developers creating universal apps.
+lib/
+  i18n/                # Internationalization
+  store/               # Zustand state management
+  theme/               # Color tokens and utilities
+  utils/               # Helper functions
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Design System
+
+Based on the Eleva Care brand colors:
+
+- **Primary**: Deep Teal (#006D77) - Calming, medical, trustworthy
+- **Secondary**: Soft Coral (#E29578) - Warm, approachable
+- **Accent**: Pale Lavender (#E0FBFC) - Fresh, clean
+
+## Performance Optimizations
+
+Following React Native best practices:
+
+- LegendList with `getItemType` for heterogeneous lists
+- Zustand selectors for granular state subscriptions
+- GestureDetector for animated press states
+- Hoisted Intl formatters for date/number formatting
+- Memoized list items
+- Native navigation and modals
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+Private - Eleva Care
+
+## Acknowledgments
+
+- [Expo](https://expo.dev)
+- [NativeWind](https://nativewind.dev)
+- [react-native-reusables](https://rnr-docs.vercel.app)
+- [Zustand](https://zustand-demo.pmnd.rs)
