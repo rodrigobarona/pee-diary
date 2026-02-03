@@ -11,7 +11,8 @@
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "notesPlaceholder": "Add any additional notes..."
   },
   "tabs": {
     "home": "Today",
@@ -20,6 +21,7 @@
   },
   "home": {
     "title": "Today",
+    "timeline": "Timeline",
     "noEntries": "No entries yet today",
     "addFirst": "Tap + to add your first entry",
     "summary": {
@@ -71,6 +73,15 @@
   "history": {
     "title": "History",
     "noEntries": "No entries for this day",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "list": "List",
+    "calendar": "Calendar",
+    "voids": "voids",
+    "leaks": "leaks",
+    "avgUrgency": "avg urgency",
+    "noEntriesYet": "No entries yet",
+    "startTracking": "Start tracking to see your history",
     "weekly": "Weekly",
     "monthly": "Monthly"
   },

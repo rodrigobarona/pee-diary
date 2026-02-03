@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay, isWithinInterval, parseISO } from 'date-fns';
+import { useShallow } from 'zustand/shallow';
 
 import { Text } from '@/components/ui/text';
 import { EntryCard, SummaryCard, FABMenu } from '@/components/diary';
-import { useDiaryStore, selectTodayEntries, selectTodaySummary } from '@/lib/store';
-import { i18n } from '@/lib/i18n';
+import { useDiaryStore } from '@/lib/store';
+import { useI18n } from '@/lib/i18n/context';
 import type { DiaryEntry } from '@/lib/store/types';
 
 // Hoisted renderItem function - per list-performance-callbacks rule
@@ -38,35 +39,56 @@ const getEstimatedItemSize = (
   }
 };
 
-// Empty state component
-function EmptyState() {
+// Empty state component - receives t function as prop
+function EmptyState({ t }: { t: (key: string) => string }) {
   return (
     <View className="flex-1 items-center justify-center py-20 gap-4">
       <Text className="text-6xl">📝</Text>
       <Text className="text-lg font-semibold text-foreground">
-        {i18n.t('home.noEntries')}
+        {t('home.noEntries')}
       </Text>
       <Text className="text-sm text-muted-foreground text-center px-8">
-        {i18n.t('home.addFirst')}
+        {t('home.addFirst')}
       </Text>
     </View>
   );
 }
 
-export default function HomeScreen() {
-  // Zustand selectors - granular subscriptions
-  const entries = useDiaryStore(selectTodayEntries);
-  const summary = useDiaryStore(selectTodaySummary);
+// Helper to check if entry is from today
+const isEntryFromToday = (entry: DiaryEntry) => {
+  const today = new Date();
+  return isWithinInterval(parseISO(entry.timestamp), {
+    start: startOfDay(today),
+    end: endOfDay(today),
+  });
+};
 
-  // Sort entries by timestamp descending (most recent first)
-  const sortedEntries = React.useMemo(
-    () =>
-      [...entries].sort(
+export default function HomeScreen() {
+  const { t } = useI18n();
+  
+  // Get all entries and compute today's entries in useMemo
+  const allEntries = useDiaryStore(useShallow((state) => state.entries));
+
+  // Filter and sort entries for today
+  const sortedEntries = React.useMemo(() => {
+    return allEntries
+      .filter(isEntryFromToday)
+      .sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      ),
-    [entries]
-  );
+      );
+  }, [allEntries]);
+
+  // Compute summary from filtered entries
+  const summary = React.useMemo(() => {
+    const todayEntries = allEntries.filter(isEntryFromToday);
+    const voids = todayEntries.filter((e) => e.type === 'urination').length;
+    const fluids = todayEntries
+      .filter((e) => e.type === 'fluid')
+      .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
+    const leaks = todayEntries.filter((e) => e.type === 'leak').length;
+    return { voids, fluids, leaks };
+  }, [allEntries]);
 
   const today = new Date();
   const dateLabel = format(today, 'EEEE, MMMM d');
@@ -79,20 +101,20 @@ export default function HomeScreen() {
         <View className="flex-row gap-3">
           <SummaryCard
             icon="toilet"
-            label={i18n.t('home.summary.voids')}
+            label={t('home.summary.voids')}
             value={summary.voids}
             color="primary"
           />
           <SummaryCard
             icon="cup-water"
-            label={i18n.t('home.summary.fluids')}
+            label={t('home.summary.fluids')}
             value={summary.fluids}
             unit="ml"
             color="secondary"
           />
           <SummaryCard
             icon="water-alert"
-            label={i18n.t('home.summary.leaks')}
+            label={t('home.summary.leaks')}
             value={summary.leaks}
             color="accent"
           />
@@ -102,10 +124,10 @@ export default function HomeScreen() {
       {/* Timeline */}
       <View className="flex-1 px-4">
         <Text className="text-lg font-semibold text-foreground py-3">
-          Timeline
+          {t('home.timeline')}
         </Text>
         {sortedEntries.length === 0 ? (
-          <EmptyState />
+          <EmptyState t={t} />
         ) : (
           <LegendList
             data={sortedEntries}

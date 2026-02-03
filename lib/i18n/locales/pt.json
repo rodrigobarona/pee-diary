@@ -11,7 +11,8 @@
     "success": "Sucesso",
     "confirm": "Confirmar",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "notesPlaceholder": "Adicione notas adicionais..."
   },
   "tabs": {
     "home": "Hoje",
@@ -20,6 +21,7 @@
   },
   "home": {
     "title": "Hoje",
+    "timeline": "Linha do tempo",
     "noEntries": "Sem registros hoje",
     "addFirst": "Toque em + para adicionar seu primeiro registro",
     "summary": {
@@ -70,7 +72,16 @@
   },
   "history": {
     "title": "Histórico",
+    "today": "Hoje",
+    "yesterday": "Ontem",
     "noEntries": "Sem registros para este dia",
+    "list": "Lista",
+    "calendar": "Calendário",
+    "voids": "micções",
+    "leaks": "perdas",
+    "avgUrgency": "urgência média",
+    "noEntriesYet": "Sem registros ainda",
+    "startTracking": "Comece a registrar para ver seu histórico",
     "weekly": "Semanal",
     "monthly": "Mensal"
   },

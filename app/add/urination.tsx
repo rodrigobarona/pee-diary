@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, ScrollView, Switch } from 'react-native';
+import { View, ScrollView, Switch, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
@@ -9,10 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { UrgencyScale, VolumePicker } from '@/components/diary';
 import { useDiaryStore } from '@/lib/store';
-import { i18n } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n/context';
 import type { UrgencyLevel, VolumeSize } from '@/lib/store/types';
 
 export default function UrinationScreen() {
+  const { t } = useI18n();
   const router = useRouter();
   const addUrinationEntry = useDiaryStore((state) => state.addUrinationEntry);
 
@@ -31,36 +32,41 @@ export default function UrinationScreen() {
       hadPain,
       notes: notes.trim() || undefined,
     });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     router.back();
   }, [addUrinationEntry, volume, urgency, hadLeak, hadPain, notes, router]);
 
   return (
     <ScrollView
       className="flex-1 bg-background"
+      style={{ flex: 1, backgroundColor: '#F9FAFB' }}
       contentContainerStyle={{ padding: 16, gap: 24 }}
       keyboardShouldPersistTaps="handled"
     >
       {/* Volume */}
       <View className="gap-3">
-        <Label>{i18n.t('urination.volume')}</Label>
+        <Label>{t('urination.volume')}</Label>
         <VolumePicker value={volume} onChange={setVolume} />
       </View>
 
       {/* Urgency */}
       <View className="gap-3">
-        <Label>{i18n.t('urination.urgency')}</Label>
+        <Label>{t('urination.urgency')}</Label>
         <UrgencyScale value={urgency} onChange={setUrgency} />
       </View>
 
       {/* Had Leak Toggle */}
       <View className="flex-row items-center justify-between py-2">
-        <Label>{i18n.t('urination.hadLeak')}</Label>
+        <Label>{t('urination.hadLeak')}</Label>
         <Switch
           value={hadLeak}
           onValueChange={(value) => {
             setHadLeak(value);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
           }}
           trackColor={{ true: '#006D77' }}
         />
@@ -68,12 +74,14 @@ export default function UrinationScreen() {
 
       {/* Had Pain Toggle */}
       <View className="flex-row items-center justify-between py-2">
-        <Label>{i18n.t('urination.hadPain')}</Label>
+        <Label>{t('urination.hadPain')}</Label>
         <Switch
           value={hadPain}
           onValueChange={(value) => {
             setHadPain(value);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
           }}
           trackColor={{ true: '#006D77' }}
         />
@@ -81,11 +89,11 @@ export default function UrinationScreen() {
 
       {/* Notes */}
       <View className="gap-3">
-        <Label>{i18n.t('urination.notes')}</Label>
+        <Label>{t('urination.notes')}</Label>
         <Input
           value={notes}
           onChangeText={setNotes}
-          placeholder="Add any additional notes..."
+          placeholder={t('common.notesPlaceholder')}
           multiline
           numberOfLines={3}
           className="min-h-[80px]"
@@ -95,7 +103,7 @@ export default function UrinationScreen() {
 
       {/* Save Button */}
       <Button onPress={handleSave} className="mt-4">
-        <Text>{i18n.t('common.save')}</Text>
+        <Text>{t('common.save')}</Text>
       </Button>
     </ScrollView>
   );

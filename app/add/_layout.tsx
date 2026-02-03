@@ -1,41 +1,44 @@
 import { Stack } from 'expo-router';
-import { colors } from '@/lib/theme/colors';
+import { useI18n } from '@/lib/i18n/context';
 
 export default function AddLayout() {
+  const { t } = useI18n();
+
   return (
     <Stack
       screenOptions={{
+        headerShown: true,
         headerStyle: {
-          backgroundColor: colors.surface,
+          backgroundColor: '#FFFFFF',
         },
         headerTitleStyle: {
-          color: colors.text,
+          color: '#333333',
           fontWeight: '600',
         },
-        headerTintColor: colors.primary.DEFAULT,
-        presentation: 'formSheet',
-        // Native form sheet with swipe-to-dismiss
-        sheetAllowedDetents: 'fitToContents',
-        sheetGrabberVisible: true,
-        sheetCornerRadius: 20,
+        headerTintColor: '#006D77',
+        contentStyle: {
+          backgroundColor: '#F9FAFB',
+        },
+        // NOTE: Presentation settings (formSheet, sheetAllowedDetents, etc.)
+        // are configured in app/_layout.tsx at the root level to avoid conflicts
       }}
     >
       <Stack.Screen
         name="urination"
         options={{
-          title: 'Log Urination',
+          title: t('urination.title'),
         }}
       />
       <Stack.Screen
         name="fluid"
         options={{
-          title: 'Log Fluid',
+          title: t('fluid.title'),
         }}
       />
       <Stack.Screen
         name="leak"
         options={{
-          title: 'Log Leak',
+          title: t('leak.title'),
         }}
       />
     </Stack>

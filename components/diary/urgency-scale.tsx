@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { cn } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
+import { useI18n } from '@/lib/i18n/context';
 
 type UrgencyLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -11,14 +12,6 @@ interface UrgencyScaleProps {
   onChange: (value: UrgencyLevel) => void;
   disabled?: boolean;
 }
-
-const urgencyLabels: Record<UrgencyLevel, string> = {
-  1: 'None',
-  2: 'Mild',
-  3: 'Moderate',
-  4: 'Strong',
-  5: 'Urgent',
-};
 
 const urgencyColors: Record<UrgencyLevel, string> = {
   1: 'bg-green-500',
@@ -29,10 +22,14 @@ const urgencyColors: Record<UrgencyLevel, string> = {
 };
 
 export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
+  const { t } = useI18n();
+  
   const handlePress = React.useCallback(
     (level: UrgencyLevel) => {
       if (disabled) return;
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
       onChange(level);
     },
     [disabled, onChange]
@@ -67,7 +64,7 @@ export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
         ))}
       </View>
       <Text className="text-center text-sm text-muted-foreground">
-        {urgencyLabels[value]}
+        {t(`urgency.${value}`)}
       </Text>
     </View>
   );

@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { cn } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
+import { useI18n } from '@/lib/i18n/context';
 
 type VolumeSize = 'small' | 'medium' | 'large';
 
@@ -16,22 +17,22 @@ interface VolumePickerProps {
 
 const volumeConfig: Record<
   VolumeSize,
-  { label: string; icon: string; size: number; description: string }
+  { labelKey: string; icon: string; size: number; description: string }
 > = {
   small: {
-    label: 'Small',
+    labelKey: 'urination.volumeSmall',
     icon: 'water-outline',
     size: 24,
     description: '< 100ml',
   },
   medium: {
-    label: 'Medium',
+    labelKey: 'urination.volumeMedium',
     icon: 'water',
     size: 32,
     description: '100-300ml',
   },
   large: {
-    label: 'Large',
+    labelKey: 'urination.volumeLarge',
     icon: 'water',
     size: 40,
     description: '> 300ml',
@@ -39,10 +40,14 @@ const volumeConfig: Record<
 };
 
 export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
+  const { t } = useI18n();
+  
   const handlePress = React.useCallback(
     (size: VolumeSize) => {
       if (disabled) return;
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
       onChange(size);
     },
     [disabled, onChange]
@@ -77,7 +82,7 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
                 isSelected ? 'text-white' : 'text-foreground'
               )}
             >
-              {config.label}
+              {t(config.labelKey)}
             </Text>
             <Text
               className={cn(

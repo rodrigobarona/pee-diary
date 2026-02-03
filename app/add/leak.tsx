@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { UrgencyScale } from '@/components/diary';
 import { useDiaryStore } from '@/lib/store';
-import { i18n } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/theme';
 import { colors } from '@/lib/theme/colors';
 import type { LeakSeverity, UrgencyLevel } from '@/lib/store/types';
@@ -42,6 +42,7 @@ const severityOptions: {
 ];
 
 export default function LeakScreen() {
+  const { t } = useI18n();
   const router = useRouter();
   const addLeakEntry = useDiaryStore((state) => state.addLeakEntry);
 
@@ -55,19 +56,22 @@ export default function LeakScreen() {
       urgency,
       notes: notes.trim() || undefined,
     });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     router.back();
   }, [addLeakEntry, severity, urgency, notes, router]);
 
   return (
     <ScrollView
       className="flex-1 bg-background"
+      style={{ flex: 1, backgroundColor: '#F9FAFB' }}
       contentContainerStyle={{ padding: 16, gap: 24 }}
       keyboardShouldPersistTaps="handled"
     >
       {/* Severity */}
       <View className="gap-3">
-        <Label>{i18n.t('leak.severity')}</Label>
+        <Label>{t('leak.severity')}</Label>
         <View className="gap-3">
           {severityOptions.map((option) => {
             const isSelected = severity === option.value;
@@ -75,7 +79,9 @@ export default function LeakScreen() {
               <Pressable
                 key={option.value}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  if (Platform.OS !== 'web') {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
                   setSeverity(option.value);
                 }}
                 className={cn(
@@ -104,7 +110,7 @@ export default function LeakScreen() {
                       isSelected ? 'text-destructive' : 'text-foreground'
                     )}
                   >
-                    {i18n.t(option.labelKey)}
+                    {t(option.labelKey)}
                   </Text>
                   <Text className="text-sm text-muted-foreground">
                     {option.description}
@@ -118,17 +124,17 @@ export default function LeakScreen() {
 
       {/* Urgency */}
       <View className="gap-3">
-        <Label>{i18n.t('leak.urgency')}</Label>
+        <Label>{t('leak.urgency')}</Label>
         <UrgencyScale value={urgency} onChange={setUrgency} />
       </View>
 
       {/* Notes */}
       <View className="gap-3">
-        <Label>{i18n.t('leak.notes')}</Label>
+        <Label>{t('leak.notes')}</Label>
         <Input
           value={notes}
           onChangeText={setNotes}
-          placeholder="Add any additional notes..."
+          placeholder={t('common.notesPlaceholder')}
           multiline
           numberOfLines={3}
           className="min-h-[80px]"
@@ -138,7 +144,7 @@ export default function LeakScreen() {
 
       {/* Save Button */}
       <Button onPress={handleSave} className="mt-4">
-        <Text>{i18n.t('common.save')}</Text>
+        <Text>{t('common.save')}</Text>
       </Button>
     </ScrollView>
   );

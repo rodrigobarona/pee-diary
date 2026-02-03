@@ -4,11 +4,14 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { colors } from '@/lib/theme/colors';
-import { i18n } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n/context';
 
 export default function TabLayout() {
+  const { t, locale } = useI18n();
+
   return (
     <Tabs
+      key={locale} // Force re-mount on locale change to update tab titles
       screenOptions={{
         tabBarActiveTintColor: colors.primary.DEFAULT,
         tabBarInactiveTintColor: colors.textMuted,
@@ -30,28 +33,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: i18n.t('tabs.home'),
-          headerLargeTitle: true,
+          title: t('tabs.home'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-today" size={size} color={color} />
+            <MaterialCommunityIcons name="calendar-today" size={size || 24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: i18n.t('tabs.history'),
+          title: t('tabs.history'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-month" size={size} color={color} />
+            <MaterialCommunityIcons name="calendar-month" size={size || 24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: i18n.t('tabs.settings'),
+          title: t('tabs.settings'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cog" size={size} color={color} />
+            <MaterialCommunityIcons name="cog" size={size || 24} color={color} />
           ),
         }}
       />

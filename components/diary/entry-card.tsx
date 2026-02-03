@@ -5,6 +5,7 @@ import { cn } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { colors } from '@/lib/theme/colors';
+import { useI18n } from '@/lib/i18n/context';
 import type { DiaryEntry } from '@/lib/store/types';
 
 interface EntryCardProps {
@@ -17,45 +18,52 @@ const entryConfig = {
     icon: 'toilet' as const,
     color: colors.primary.DEFAULT,
     bgColor: 'bg-primary/10',
-    label: 'Urination',
+    labelKey: 'entry.urination',
   },
   fluid: {
     icon: 'cup-water' as const,
     color: colors.secondary.DEFAULT,
     bgColor: 'bg-secondary/10',
-    label: 'Fluid Intake',
+    labelKey: 'entry.fluid',
   },
   leak: {
     icon: 'water-alert' as const,
     color: colors.error,
     bgColor: 'bg-destructive/10',
-    label: 'Leak',
+    labelKey: 'entry.leak',
   },
 };
-
-// Hoisted date formatter - per js-hoist-intl rule
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  hour: 'numeric',
-  minute: '2-digit',
-  hour12: true,
-});
 
 // Memoized component for list performance - per list-performance-item-memo rule
 export const EntryCard = React.memo(function EntryCard({
   entry,
   onPress,
 }: EntryCardProps) {
+  const { t, locale } = useI18n();
   const config = entryConfig[entry.type];
+  
+  // Create formatter based on current locale
+  const timeFormatter = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      }),
+    [locale]
+  );
+  
   const time = timeFormatter.format(new Date(entry.timestamp));
+  const label = t(config.labelKey);
 
   const getDescription = () => {
     switch (entry.type) {
       case 'urination':
-        return `${entry.volume} volume • Urgency ${entry.urgency}/5`;
+        return `${t(`urination.volume${entry.volume.charAt(0).toUpperCase()}${entry.volume.slice(1)}`)} • ${t('urination.urgency')} ${entry.urgency}/5`;
       case 'fluid':
-        return `${entry.drinkType} • ${entry.amount}ml`;
+        return `${t(`fluid.${entry.drinkType}`)} • ${entry.amount}ml`;
       case 'leak':
-        return `${entry.severity} • Urgency ${entry.urgency}/5`;
+        return `${t(`leak.${entry.severity}`)} • ${t('leak.urgency')} ${entry.urgency}/5`;
       default:
         return '';
     }
@@ -72,7 +80,7 @@ export const EntryCard = React.memo(function EntryCard({
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
         }}
         accessibilityRole="button"
-        accessibilityLabel={`${config.label} entry at ${time}`}
+        accessibilityLabel={`${label} entry at ${time}`}
         accessibilityHint={description}
       >
         <View
@@ -87,7 +95,7 @@ export const EntryCard = React.memo(function EntryCard({
         </View>
         <View className="flex-1 gap-1">
           <Text className="font-semibold text-foreground">
-            {config.label}
+            {label}
           </Text>
           <Text className="text-sm text-muted-foreground">
             {description}

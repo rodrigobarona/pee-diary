@@ -1,16 +1,15 @@
 import * as React from 'react';
-import { View, ScrollView, Pressable, Alert } from 'react-native';
+import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet } from 'react-native';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import * as Haptics from 'expo-haptics';
-import * as DropdownMenu from 'zeego/dropdown-menu';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 
 import { Text } from '@/components/ui/text';
 import { Separator } from '@/components/ui/separator';
 import { useDiaryStore } from '@/lib/store';
-import { i18n, updateLocale, type SupportedLocale } from '@/lib/i18n';
+import { useI18n, type SupportedLocale } from '@/lib/i18n/context';
 import { cn } from '@/lib/theme';
 import { colors } from '@/lib/theme/colors';
 
@@ -94,22 +93,26 @@ const languageOptions: { value: SupportedLocale; label: string }[] = [
 ];
 
 export default function SettingsScreen() {
-  const language = useDiaryStore((state) => state.language);
-  const setLanguage = useDiaryStore((state) => state.setLanguage);
+  const { t, locale, setLocale } = useI18n();
   const entries = useDiaryStore((state) => state.entries);
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
+  const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
 
   const handleLanguageChange = React.useCallback(
     (newLanguage: SupportedLocale) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setLanguage(newLanguage);
-      updateLocale(newLanguage);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      setLocale(newLanguage);
+      setShowLanguagePicker(false);
     },
-    [setLanguage]
+    [setLocale]
   );
 
   const handleExport = React.useCallback(async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
 
     if (entries.length === 0) {
       Alert.alert('No Data', 'There are no entries to export.');
@@ -199,30 +202,34 @@ export default function SettingsScreen() {
   }, [entries]);
 
   const handleClearData = React.useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
 
     Alert.alert(
-      i18n.t('settings.clearData'),
-      i18n.t('settings.clearDataConfirm'),
+      t('settings.clearData'),
+      t('settings.clearDataConfirm'),
       [
         {
-          text: i18n.t('common.cancel'),
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: i18n.t('common.delete'),
+          text: t('common.delete'),
           style: 'destructive',
           onPress: () => {
             clearAllEntries();
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            if (Platform.OS !== 'web') {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
           },
         },
       ]
     );
-  }, [clearAllEntries]);
+  }, [clearAllEntries, t]);
 
   const currentLanguageLabel =
-    languageOptions.find((l) => l.value === language)?.label || 'English';
+    languageOptions.find((l) => l.value === locale)?.label || 'English';
 
   return (
     <ScrollView
@@ -230,6 +237,50 @@ export default function SettingsScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16 }}
     >
+      {/* Language Picker Modal */}
+      <Modal
+        visible={showLanguagePicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLanguagePicker(false)}
+      >
+        <Pressable
+          style={modalStyles.overlay}
+          onPress={() => setShowLanguagePicker(false)}
+        >
+          <View style={modalStyles.content}>
+            <Text className="text-lg font-semibold text-foreground mb-4">
+              {t('settings.language')}
+            </Text>
+            {languageOptions.map((option) => (
+              <Pressable
+                key={option.value}
+                onPress={() => handleLanguageChange(option.value)}
+                style={modalStyles.option}
+              >
+                <Text
+                  className={cn(
+                    'text-base',
+                    locale === option.value
+                      ? 'text-primary font-semibold'
+                      : 'text-foreground'
+                  )}
+                >
+                  {option.label}
+                </Text>
+                {locale === option.value ? (
+                  <MaterialCommunityIcons
+                    name="check"
+                    size={20}
+                    color="#006D77"
+                  />
+                ) : null}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
       {/* General Section */}
       <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2">
         General
@@ -240,35 +291,10 @@ export default function SettingsScreen() {
       >
         <SettingRow
           icon="translate"
-          label={i18n.t('settings.language')}
-        >
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <Pressable className="flex-row items-center gap-2 active:opacity-70">
-                <Text className="text-muted-foreground">
-                  {currentLanguageLabel}
-                </Text>
-                <MaterialCommunityIcons
-                  name="chevron-down"
-                  size={18}
-                  color={colors.textMuted}
-                />
-              </Pressable>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              {languageOptions.map((option) => (
-                <DropdownMenu.CheckboxItem
-                  key={option.value}
-                  value={language === option.value ? 'on' : 'off'}
-                  onValueChange={() => handleLanguageChange(option.value)}
-                >
-                  <DropdownMenu.ItemIndicator />
-                  <DropdownMenu.ItemTitle>{option.label}</DropdownMenu.ItemTitle>
-                </DropdownMenu.CheckboxItem>
-              ))}
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </SettingRow>
+          label={t('settings.language')}
+          onPress={() => setShowLanguagePicker(true)}
+          value={currentLanguageLabel}
+        />
       </View>
 
       {/* Data Section */}
@@ -281,15 +307,15 @@ export default function SettingsScreen() {
       >
         <SettingRow
           icon="download"
-          label={i18n.t('settings.export')}
-          description={i18n.t('settings.exportDescription')}
+          label={t('settings.export')}
+          description={t('settings.exportDescription')}
           onPress={handleExport}
         />
         <Separator />
         <SettingRow
           icon="delete"
-          label={i18n.t('settings.clearData')}
-          description={i18n.t('settings.clearDataDescription')}
+          label={t('settings.clearData')}
+          description={t('settings.clearDataDescription')}
           onPress={handleClearData}
           destructive
         />
@@ -297,7 +323,7 @@ export default function SettingsScreen() {
 
       {/* About Section */}
       <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2 mt-6">
-        {i18n.t('settings.about')}
+        {t('settings.about')}
       </Text>
       <View
         className="bg-surface rounded-xl px-4"
@@ -305,7 +331,7 @@ export default function SettingsScreen() {
       >
         <SettingRow
           icon="information"
-          label={i18n.t('settings.version')}
+          label={t('settings.version')}
           value="1.0.0"
         />
         <Separator />
@@ -325,3 +351,28 @@ export default function SettingsScreen() {
     </ScrollView>
   );
 }
+
+const modalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  content: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 320,
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+});

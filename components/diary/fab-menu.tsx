@@ -1,27 +1,29 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, Pressable, Platform, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as DropdownMenu from 'zeego/dropdown-menu';
 import * as Haptics from 'expo-haptics';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  interpolate,
-  runOnJS,
-} from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { i18n } from '@/lib/i18n';
+import { Text } from '@/components/ui/text';
+import { useI18n } from '@/lib/i18n/context';
 
 export function FABMenu() {
+  const { t } = useI18n();
   const router = useRouter();
-  const pressed = useSharedValue(0);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleToggle = React.useCallback(() => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const handleSelect = React.useCallback(
     (action: string) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+      setIsOpen(false);
       switch (action) {
         case 'urination':
           router.push('/add/urination');
@@ -37,93 +39,154 @@ export function FABMenu() {
     [router]
   );
 
-  const triggerHaptic = React.useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
-
-  // GestureDetector for animated press states - per animation-gesture-detector-press rule
-  const tapGesture = Gesture.Tap()
-    .onBegin(() => {
-      pressed.value = withSpring(1, { damping: 15, stiffness: 400 });
-      runOnJS(triggerHaptic)();
-    })
-    .onFinalize(() => {
-      pressed.value = withTiming(0, { duration: 200 });
-    });
-
-  // Derived animation values - only transform and opacity for GPU acceleration
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: interpolate(pressed.value, [0, 1], [1, 0.92]) },
-      { rotate: `${interpolate(pressed.value, [0, 1], [0, 45])}deg` },
-    ],
-    opacity: interpolate(pressed.value, [0, 1], [1, 0.9]),
-  }));
+  // Use text fallback on web if icons don't render
+  const renderIcon = (name: string, size: number, color: string) => {
+    if (Platform.OS === 'web') {
+      // Use unicode symbols as fallback
+      const iconMap: Record<string, string> = {
+        'plus': '+',
+        'close': '×',
+        'toilet': '🚽',
+        'cup-water': '💧',
+        'water-alert': '⚠️',
+      };
+      if (name === 'plus' || name === 'close') {
+        return (
+          <Text style={{ fontSize: size, color, fontWeight: 'bold', lineHeight: size }}>
+            {iconMap[name]}
+          </Text>
+        );
+      }
+    }
+    return <MaterialCommunityIcons name={name as any} size={size} color={color} />;
+  };
 
   return (
-    <View className="absolute bottom-6 right-6">
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <GestureDetector gesture={tapGesture}>
-            <Animated.View
-              className="h-14 w-14 items-center justify-center rounded-full bg-primary"
-              style={[
-                animatedStyle,
-                {
-                  borderCurve: 'continuous',
-                  boxShadow: '0 4px 12px rgba(0, 109, 119, 0.3)',
-                },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Add new entry"
-              accessibilityHint="Opens menu to add urination, fluid intake, or leak entry"
-            >
-              <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
-            </Animated.View>
-          </GestureDetector>
-        </DropdownMenu.Trigger>
-
-        <DropdownMenu.Content>
-          <DropdownMenu.Item
-            key="urination"
-            onSelect={() => handleSelect('urination')}
+    <View style={styles.container}>
+      {/* Menu Items - shown when open */}
+      {isOpen ? (
+        <View style={styles.menuContainer}>
+          <Pressable
+            onPress={() => handleSelect('urination')}
+            style={styles.menuItem}
           >
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'drop.fill', pointSize: 18 }}
-              androidIconName="water"
-            />
-            <DropdownMenu.ItemTitle>
-              {i18n.t('entry.addUrination')}
-            </DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
+            <View style={[styles.menuIcon, { backgroundColor: '#83C5BE' }]}>
+              {renderIcon('toilet', 20, '#006D77')}
+            </View>
+            <Text className="text-sm font-medium text-foreground">
+              {t('entry.addUrination')}
+            </Text>
+          </Pressable>
 
-          <DropdownMenu.Item
-            key="fluid"
-            onSelect={() => handleSelect('fluid')}
+          <Pressable
+            onPress={() => handleSelect('fluid')}
+            style={styles.menuItem}
           >
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'cup.and.saucer.fill', pointSize: 18 }}
-              androidIconName="local_cafe"
-            />
-            <DropdownMenu.ItemTitle>
-              {i18n.t('entry.addFluid')}
-            </DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
+            <View style={[styles.menuIcon, { backgroundColor: '#FFDDD2' }]}>
+              {renderIcon('cup-water', 20, '#E29578')}
+            </View>
+            <Text className="text-sm font-medium text-foreground">
+              {t('entry.addFluid')}
+            </Text>
+          </Pressable>
 
-          <DropdownMenu.Item
-            key="leak"
-            onSelect={() => handleSelect('leak')}
+          <Pressable
+            onPress={() => handleSelect('leak')}
+            style={styles.menuItem}
           >
-            <DropdownMenu.ItemIcon
-              ios={{ name: 'exclamationmark.triangle.fill', pointSize: 18 }}
-              androidIconName="warning"
-            />
-            <DropdownMenu.ItemTitle>
-              {i18n.t('entry.addLeak')}
-            </DropdownMenu.ItemTitle>
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+            <View style={[styles.menuIcon, { backgroundColor: '#FEE2E2' }]}>
+              {renderIcon('water-alert', 20, '#EF4444')}
+            </View>
+            <Text className="text-sm font-medium text-foreground">
+              {t('entry.addLeak')}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {/* FAB Button */}
+      <Pressable
+        onPress={handleToggle}
+        style={({ pressed }) => [
+          styles.fab,
+          pressed && styles.fabPressed,
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel="Add new entry"
+        accessibilityHint="Opens menu to add urination, fluid intake, or leak entry"
+      >
+        {Platform.OS === 'web' ? (
+          <Text style={styles.fabIconText}>
+            {isOpen ? '×' : '+'}
+          </Text>
+        ) : (
+          <MaterialCommunityIcons
+            name={isOpen ? 'close' : 'plus'}
+            size={28}
+            color="#FFFFFF"
+          />
+        )}
+      </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    alignItems: 'flex-end',
+    zIndex: 100,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#006D77',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  fabPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+  },
+  fabIconText: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: '300',
+    lineHeight: 32,
+    textAlign: 'center',
+  },
+  menuContainer: {
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+    minWidth: 200,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  menuIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

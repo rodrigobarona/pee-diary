@@ -2,19 +2,36 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  startOfDay,
-  endOfDay,
-  isWithinInterval,
-  parseISO,
-  format,
-} from 'date-fns';
+import { getLocales } from 'expo-localization';
 import type {
   DiaryEntry,
   CreateUrinationEntry,
   CreateFluidEntry,
   CreateLeakEntry,
 } from './types';
+
+// Detect system language on first launch
+const getInitialLanguage = (): 'en' | 'es' | 'pt' => {
+  const deviceLocale = getLocales()[0]?.languageCode ?? 'en';
+  
+  // Check if device locale is one of our supported languages
+  if (deviceLocale === 'en' || deviceLocale === 'es' || deviceLocale === 'pt') {
+    return deviceLocale;
+  }
+  
+  // Handle pt-BR, pt-PT, etc. -> pt
+  if (deviceLocale.startsWith('pt')) {
+    return 'pt';
+  }
+  
+  // Handle es-MX, es-AR, etc. -> es
+  if (deviceLocale.startsWith('es')) {
+    return 'es';
+  }
+  
+  // Default to English
+  return 'en';
+};
 
 interface DiaryState {
   entries: DiaryEntry[];
@@ -36,7 +53,7 @@ export const useDiaryStore = create<DiaryState>()(
   persist(
     (set, get) => ({
       entries: [],
-      language: 'en',
+      language: getInitialLanguage(),
 
       addUrinationEntry: (entry) =>
         set((state) => ({
@@ -93,55 +110,7 @@ export const useDiaryStore = create<DiaryState>()(
   )
 );
 
-// Selector functions for use in components
-// These enable granular subscriptions - components only re-render when their specific data changes
-
-export const selectEntriesForDate = (date: Date) => (state: DiaryState) =>
-  state.entries.filter((entry) =>
-    isWithinInterval(parseISO(entry.timestamp), {
-      start: startOfDay(date),
-      end: endOfDay(date),
-    })
-  );
-
-export const selectTodayEntries = (state: DiaryState) =>
-  state.entries.filter((entry) =>
-    isWithinInterval(parseISO(entry.timestamp), {
-      start: startOfDay(new Date()),
-      end: endOfDay(new Date()),
-    })
-  );
-
-export const selectTodaySummary = (state: DiaryState) => {
-  const today = new Date();
-  const todayEntries = state.entries.filter((entry) =>
-    isWithinInterval(parseISO(entry.timestamp), {
-      start: startOfDay(today),
-      end: endOfDay(today),
-    })
-  );
-
-  const voids = todayEntries.filter((e) => e.type === 'urination').length;
-  const fluids = todayEntries
-    .filter((e) => e.type === 'fluid')
-    .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
-  const leaks = todayEntries.filter((e) => e.type === 'leak').length;
-
-  return { voids, fluids, leaks };
-};
-
-export const selectEntriesByDateRange = (startDate: Date, endDate: Date) => (state: DiaryState) =>
-  state.entries.filter((entry) =>
-    isWithinInterval(parseISO(entry.timestamp), {
-      start: startOfDay(startDate),
-      end: endOfDay(endDate),
-    })
-  );
-
-export const selectDatesWithEntries = (state: DiaryState) => {
-  const dates = new Set<string>();
-  state.entries.forEach((entry) => {
-    dates.add(format(parseISO(entry.timestamp), 'yyyy-MM-dd'));
-  });
-  return dates;
-};
+// Note: Complex selectors that return new objects/arrays on each call
+// should NOT be used directly with useDiaryStore() as they cause infinite loops.
+// Instead, use useShallow() or compute derived data in useMemo() within components.
+// Example: const entries = useDiaryStore(useShallow((state) => state.entries));

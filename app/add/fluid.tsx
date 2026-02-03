@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useDiaryStore } from '@/lib/store';
-import { i18n } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n/context';
 import { cn } from '@/lib/theme';
 import { colors } from '@/lib/theme/colors';
 import type { DrinkType } from '@/lib/store/types';
@@ -26,6 +26,7 @@ const drinkTypes: { type: DrinkType; icon: string; labelKey: string }[] = [
 const quickAmounts = [100, 200, 250, 330, 500];
 
 export default function FluidScreen() {
+  const { t } = useI18n();
   const router = useRouter();
   const addFluidEntry = useDiaryStore((state) => state.addFluidEntry);
 
@@ -44,24 +45,29 @@ export default function FluidScreen() {
       amount: amountNum,
       notes: notes.trim() || undefined,
     });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     router.back();
   }, [addFluidEntry, drinkType, amount, notes, router]);
 
   const handleQuickAmount = React.useCallback((value: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     setAmount(value.toString());
   }, []);
 
   return (
     <ScrollView
       className="flex-1 bg-background"
+      style={{ flex: 1, backgroundColor: '#F9FAFB' }}
       contentContainerStyle={{ padding: 16, gap: 24 }}
       keyboardShouldPersistTaps="handled"
     >
       {/* Drink Type */}
       <View className="gap-3">
-        <Label>{i18n.t('fluid.drinkType')}</Label>
+        <Label>{t('fluid.drinkType')}</Label>
         <View className="flex-row flex-wrap gap-2">
           {drinkTypes.map((drink) => {
             const isSelected = drinkType === drink.type;
@@ -69,7 +75,9 @@ export default function FluidScreen() {
               <Pressable
                 key={drink.type}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  if (Platform.OS !== 'web') {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
                   setDrinkType(drink.type);
                 }}
                 className={cn(
@@ -89,7 +97,7 @@ export default function FluidScreen() {
                     isSelected ? 'text-white' : 'text-foreground'
                   )}
                 >
-                  {i18n.t(drink.labelKey)}
+                  {t(drink.labelKey)}
                 </Text>
               </Pressable>
             );
@@ -99,7 +107,7 @@ export default function FluidScreen() {
 
       {/* Amount */}
       <View className="gap-3">
-        <Label>{i18n.t('fluid.amount')}</Label>
+        <Label>{t('fluid.amount')}</Label>
         <Input
           value={amount}
           onChangeText={setAmount}
@@ -132,11 +140,11 @@ export default function FluidScreen() {
 
       {/* Notes */}
       <View className="gap-3">
-        <Label>{i18n.t('fluid.notes')}</Label>
+        <Label>{t('fluid.notes')}</Label>
         <Input
           value={notes}
           onChangeText={setNotes}
-          placeholder="Add any additional notes..."
+          placeholder={t('common.notesPlaceholder')}
           multiline
           numberOfLines={3}
           className="min-h-[80px]"
@@ -146,7 +154,7 @@ export default function FluidScreen() {
 
       {/* Save Button */}
       <Button onPress={handleSave} className="mt-4">
-        <Text>{i18n.t('common.save')}</Text>
+        <Text>{t('common.save')}</Text>
       </Button>
     </ScrollView>
   );
