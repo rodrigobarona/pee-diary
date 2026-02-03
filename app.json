@@ -10,7 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "care.eleva.peediary"
+      "bundleIdentifier": "care.eleva.peediary",
+      "infoPlist": {
+        "CFBundleLocalizations": [
+          "en",
+          "es",
+          "pt"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -63,6 +70,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2bbabb99-0ddf-4ec3-9842-fd23c50cc299"
+      }
+    },
+    "owner": "eleva-care"
   }
 }
