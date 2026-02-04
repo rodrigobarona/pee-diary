@@ -63,7 +63,12 @@
     "voidDescription": "Expected visits per day",
     "perDay": "per day",
     "voids": "voids",
-    "medicalInfo": "Medical guidelines suggest 2000ml of fluids and 6-8 bathroom visits per day. Adjust based on your doctor's advice."
+    "medicalInfo": "Medical guidelines suggest 2000ml of fluids and 6-8 bathroom visits per day. Adjust based on your doctor's advice.",
+    "history": "Goal History",
+    "historyEmpty": "No changes yet",
+    "changedTo": "Changed to",
+    "fluids": "Fluids",
+    "visits": "Visits"
   },
   "streak": {
     "day": "day",
@@ -183,7 +188,9 @@
     "restoreSuccess": "Restored {{count}} entries from iCloud",
     "restoreError": "Failed to restore. Please try again.",
     "autoBackup": "Auto-backup enabled",
-    "autoBackupDescription": "Your data is automatically backed up to Google Drive"
+    "autoBackupDescription": "Your data is automatically backed up to Google Drive",
+    "openAddMenuOnLaunch": "Open Add Menu on Launch",
+    "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app"
   },
   "urgency": {
     "1": "None",

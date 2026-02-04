@@ -12,11 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "care.eleva.peediary",
       "infoPlist": {
-        "CFBundleLocalizations": [
-          "en",
-          "es",
-          "pt"
-        ]
+        "CFBundleLocalizations": ["en", "es", "pt"]
       },
       "entitlements": {
         "com.apple.developer.ubiquity-kvstore-identifier": "$(TeamIdentifierPrefix)$(CFBundleIdentifier)"
@@ -56,16 +52,8 @@
         "expo-localization",
         {
           "supportedLocales": {
-            "ios": [
-              "en",
-              "es",
-              "pt"
-            ],
-            "android": [
-              "en",
-              "es",
-              "pt"
-            ]
+            "ios": ["en", "es", "pt"],
+            "android": ["en", "es", "pt"]
           }
         }
       ],

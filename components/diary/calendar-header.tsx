@@ -65,14 +65,24 @@ export function CalendarHeader({
   const translateX = useSharedValue(0);
   const today = new Date();
   const todayWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+  
+  // Track previous selectedDate to detect external changes
+  const prevSelectedDateRef = React.useRef(selectedDate);
 
-  // Sync week view when selectedDate changes from external navigation
+  // Sync week view ONLY when selectedDate changes from external navigation
+  // Do NOT include currentWeekStart in dependencies - that causes the revert bug
   React.useEffect(() => {
-    const newWeekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
-    if (!isSameWeek(newWeekStart, currentWeekStart, { weekStartsOn: 1 })) {
-      setCurrentWeekStart(newWeekStart);
+    // Only sync if selectedDate actually changed (external navigation)
+    if (prevSelectedDateRef.current.getTime() !== selectedDate.getTime()) {
+      const newWeekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
+      
+      // Only update week view if the new date is in a different week than previous
+      if (!isSameWeek(selectedDate, prevSelectedDateRef.current, { weekStartsOn: 1 })) {
+        setCurrentWeekStart(newWeekStart);
+      }
+      prevSelectedDateRef.current = selectedDate;
     }
-  }, [selectedDate, currentWeekStart]);
+  }, [selectedDate]);
 
   // Check if we're viewing the current week
   const isCurrentWeek = isSameWeek(currentWeekStart, todayWeekStart, { weekStartsOn: 1 });
@@ -170,13 +180,21 @@ export function CalendarHeader({
 
   // Swipe gesture for week navigation
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-10, 10]) // Only activate after 10px horizontal movement
+    .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20px (prevents conflict with scrolling)
     .onUpdate((event) => {
       translateX.value = event.translationX * 0.5;
     })
     .onEnd((event) => {
-      if (event.translationX > SWIPE_THRESHOLD) {
+      // Check both displacement and velocity for better swipe detection (quick flicks)
+      const shouldGoToPrevious = (event.translationX > SWIPE_THRESHOLD) || 
+        (event.translationX > 20 && event.velocityX > 500);
+      const shouldGoToNext = (event.translationX < -SWIPE_THRESHOLD) || 
+        (event.translationX < -20 && event.velocityX < -500);
+      
+      if (shouldGoToPrevious) {
         runOnJS(goToPreviousWeek)();
-      } else if (event.translationX < -SWIPE_THRESHOLD) {
+      } else if (shouldGoToNext) {
         runOnJS(goToNextWeek)();
       } else {
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });

@@ -14,6 +14,7 @@ import type {
   UpdateLeakEntry,
   EditRecord,
   DailyGoals,
+  GoalHistoryRecord,
   StreakInfo,
 } from './types';
 
@@ -115,7 +116,9 @@ interface DiaryState {
   entries: DiaryEntry[];
   language: 'en' | 'es' | 'pt';
   goals: DailyGoals;
+  goalHistory: GoalHistoryRecord[];
   streak: StreakInfo;
+  openAddMenuOnLaunch: boolean;
 
   // Actions
   addUrinationEntry: (entry: CreateUrinationEntry) => void;
@@ -127,7 +130,9 @@ interface DiaryState {
   setLanguage: (language: 'en' | 'es' | 'pt') => void;
   getEntryById: (id: string) => DiaryEntry | undefined;
   updateGoals: (goals: Partial<DailyGoals>) => void;
+  getGoalsForDate: (date: string) => DailyGoals;
   refreshStreak: () => void;
+  setOpenAddMenuOnLaunch: (enabled: boolean) => void;
 }
 
 export const useDiaryStore = create<DiaryState>()(
@@ -136,7 +141,9 @@ export const useDiaryStore = create<DiaryState>()(
       entries: [],
       language: getInitialLanguage(),
       goals: DEFAULT_GOALS,
+      goalHistory: [],
       streak: { currentStreak: 0, lastActiveDate: null },
+      openAddMenuOnLaunch: true,
 
       addUrinationEntry: (entry) => {
         const now = new Date().toISOString();
@@ -239,16 +246,70 @@ export const useDiaryStore = create<DiaryState>()(
 
       getEntryById: (id) => get().entries.find((e) => e.id === id),
 
-      updateGoals: (goals) =>
-        set((state) => ({
-          goals: { ...state.goals, ...goals },
-        })),
+      updateGoals: (newGoals) =>
+        set((state) => {
+          // Track changes for goal history
+          const changes: GoalHistoryRecord['changes'] = {};
+          
+          if (newGoals.fluidTarget !== undefined && newGoals.fluidTarget !== state.goals.fluidTarget) {
+            changes.fluidTarget = { from: state.goals.fluidTarget, to: newGoals.fluidTarget };
+          }
+          if (newGoals.voidTarget !== undefined && newGoals.voidTarget !== state.goals.voidTarget) {
+            changes.voidTarget = { from: state.goals.voidTarget, to: newGoals.voidTarget };
+          }
+
+          // Only add history record if there were actual changes
+          if (Object.keys(changes).length === 0) {
+            return state;
+          }
+
+          const updatedGoals = { ...state.goals, ...newGoals };
+          const historyRecord: GoalHistoryRecord = {
+            changedAt: new Date().toISOString(),
+            goals: updatedGoals,
+            changes,
+          };
+
+          return {
+            goals: updatedGoals,
+            goalHistory: [...state.goalHistory, historyRecord],
+          };
+        }),
+
+      getGoalsForDate: (date) => {
+        const state = get();
+        
+        // If no history, return current goals (they've always been the default)
+        if (state.goalHistory.length === 0) {
+          return state.goals;
+        }
+
+        // Find the most recent goal change that happened before or on the given date
+        // Goal history is sorted chronologically (oldest first)
+        const targetDate = new Date(date);
+        
+        // Find the last record where changedAt is before or equal to the target date
+        let applicableGoals = DEFAULT_GOALS;
+        
+        for (const record of state.goalHistory) {
+          const recordDate = new Date(record.changedAt);
+          if (recordDate <= targetDate) {
+            applicableGoals = record.goals;
+          } else {
+            break;
+          }
+        }
+
+        return applicableGoals;
+      },
 
       refreshStreak: () => {
         const state = get();
         const newStreak = calculateStreak(state.entries, state.streak.lastActiveDate);
         set({ streak: newStreak });
       },
+
+      setOpenAddMenuOnLaunch: (enabled) => set({ openAddMenuOnLaunch: enabled }),
     }),
     {
       name: 'pee-diary-storage',

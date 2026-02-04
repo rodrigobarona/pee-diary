@@ -92,6 +92,16 @@ export interface DailyGoals {
   voidTarget: number;   // Default: 7 (6-8 range)
 }
 
+// Goal History - tracks when goals were changed
+export interface GoalHistoryRecord {
+  changedAt: string;  // ISO datetime when the change was made
+  goals: DailyGoals;  // The new goals after the change
+  changes: {
+    fluidTarget?: { from: number; to: number };
+    voidTarget?: { from: number; to: number };
+  };
+}
+
 // Streak tracking
 export interface StreakInfo {
   currentStreak: number;

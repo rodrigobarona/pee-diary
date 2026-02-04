@@ -386,7 +386,14 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerText}>
             <Text style={styles.greeting}>{greeting}</Text>
-            <Text style={styles.date}>{dateLabel}</Text>
+            <Text 
+              style={styles.date} 
+              numberOfLines={1} 
+              adjustsFontSizeToFit 
+              minimumFontScale={0.8}
+            >
+              {dateLabel}
+            </Text>
           </View>
           <StreakBadge streak={streak.currentStreak} onPress={handleStreakPress} />
         </View>

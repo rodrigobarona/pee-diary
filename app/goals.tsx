@@ -1,19 +1,30 @@
 import * as React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
+import { useShallow } from 'zustand/shallow';
 
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
 import { useDiaryStore } from '@/lib/store';
+import { formatDate, formatTime } from '@/lib/utils/date';
 
 export default function GoalsScreen() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const goals = useDiaryStore((state) => state.goals);
+  const goalHistory = useDiaryStore(useShallow((state) => state.goalHistory));
   const updateGoals = useDiaryStore((state) => state.updateGoals);
+  const [historyExpanded, setHistoryExpanded] = React.useState(false);
+
+  const toggleHistory = () => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setHistoryExpanded(!historyExpanded);
+  };
 
   const adjustFluidGoal = (delta: number) => {
     const newValue = Math.max(500, Math.min(5000, goals.fluidTarget + delta));
@@ -40,8 +51,18 @@ export default function GoalsScreen() {
   const isVoidMin = goals.voidTarget <= 3;
   const isVoidMax = goals.voidTarget >= 15;
 
+  // Reverse history to show most recent first
+  const sortedHistory = React.useMemo(() => 
+    [...goalHistory].reverse(),
+    [goalHistory]
+  );
+
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) }]}>
+    <ScrollView 
+      style={styles.scrollView}
+      contentContainerStyle={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) }]}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Title */}
       <Text style={styles.title}>{t('goals.title')}</Text>
       <Text style={styles.subtitle}>{t('goals.description')}</Text>
@@ -121,14 +142,68 @@ export default function GoalsScreen() {
         <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
         <Text style={styles.infoText}>{t('goals.medicalInfo')}</Text>
       </View>
-    </View>
+
+      {/* Goal History Section */}
+      <View style={styles.historySection}>
+        <Pressable onPress={toggleHistory} style={styles.historyHeader}>
+          <View style={styles.historyTitleRow}>
+            <MaterialCommunityIcons name="history" size={18} color="#6B7280" />
+            <Text style={styles.historyTitle}>{t('goals.history')}</Text>
+          </View>
+          <MaterialCommunityIcons 
+            name={historyExpanded ? 'chevron-up' : 'chevron-down'} 
+            size={20} 
+            color="#9CA3AF" 
+          />
+        </Pressable>
+
+        {historyExpanded ? (
+          <View style={styles.historyContent}>
+            {sortedHistory.length === 0 ? (
+              <Text style={styles.historyEmpty}>{t('goals.historyEmpty')}</Text>
+            ) : (
+              sortedHistory.map((record, index) => (
+                <View key={record.changedAt} style={[
+                  styles.historyItem,
+                  index < sortedHistory.length - 1 ? styles.historyItemBorder : undefined,
+                ]}>
+                  <Text style={styles.historyDate}>
+                    {formatDate(record.changedAt, 'medium')} • {formatTime(record.changedAt)}
+                  </Text>
+                  <View style={styles.historyChanges}>
+                    {record.changes.fluidTarget ? (
+                      <View style={styles.historyChange}>
+                        <MaterialCommunityIcons name="cup-water" size={14} color={colors.secondary.DEFAULT} />
+                        <Text style={styles.historyChangeText}>
+                          {t('goals.fluids')}: {record.changes.fluidTarget.from}ml → {record.changes.fluidTarget.to}ml
+                        </Text>
+                      </View>
+                    ) : null}
+                    {record.changes.voidTarget ? (
+                      <View style={styles.historyChange}>
+                        <MaterialCommunityIcons name="toilet" size={14} color={colors.primary.DEFAULT} />
+                        <Text style={styles.historyChangeText}>
+                          {t('goals.visits')}: {record.changes.voidTarget.from} → {record.changes.voidTarget.to}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              ))
+            )}
+          </View>
+        ) : null}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  container: {
     paddingHorizontal: 20,
     paddingTop: 24,
   },
@@ -238,5 +313,65 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 18,
     marginLeft: 10,
+  },
+  // History section
+  historySection: {
+    marginTop: 24,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  historyTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  historyTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  historyContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  historyEmpty: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    paddingVertical: 8,
+  },
+  historyItem: {
+    paddingVertical: 12,
+  },
+  historyItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  historyDate: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  historyChanges: {
+    gap: 6,
+  },
+  historyChange: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  historyChangeText: {
+    fontSize: 14,
+    color: '#374151',
   },
 });

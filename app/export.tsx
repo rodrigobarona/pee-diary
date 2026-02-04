@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   View,
   ScrollView,
@@ -7,33 +7,38 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as Haptics from 'expo-haptics';
-import { useShallow } from 'zustand/react/shallow';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import { useShallow } from "zustand/react/shallow";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
   withSpring,
   interpolate,
-} from 'react-native-reanimated';
-import { format } from 'date-fns';
+} from "react-native-reanimated";
+import { format } from "date-fns";
 
-import { Text } from '@/components/ui/text';
-import { DateRangePicker } from '@/components/diary/date-range-picker';
-import { useDiaryStore, useStoreHydrated } from '@/lib/store';
-import { useI18n } from '@/lib/i18n/context';
-import { colors } from '@/lib/theme/colors';
+import { Text } from "@/components/ui/text";
+import { DateRangePicker } from "@/components/diary/date-range-picker";
+import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
 import {
   filterEntriesByDateRange,
   exportAndShare,
   getDateRangePreset,
   type ExportFormat,
-} from '@/lib/utils/export';
+} from "@/lib/utils/export";
 
-type PresetKey = 'last7days' | 'last30days' | 'thisMonth' | 'allTime' | 'custom';
+type PresetKey =
+  | "last7days"
+  | "last30days"
+  | "thisMonth"
+  | "allTime"
+  | "custom";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -46,7 +51,13 @@ interface OptionRowProps {
   color?: string;
 }
 
-function OptionRow({ icon, label, isSelected, onPress, color }: OptionRowProps) {
+function OptionRow({
+  icon,
+  label,
+  isSelected,
+  onPress,
+  color,
+}: OptionRowProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -61,7 +72,7 @@ function OptionRow({ icon, label, isSelected, onPress, color }: OptionRowProps) 
     scale.value = withTiming(1, { duration: 150 });
   };
 
-  const iconColor = color || (isSelected ? colors.primary.DEFAULT : '#6B7280');
+  const iconColor = color || (isSelected ? colors.primary.DEFAULT : "#6B7280");
 
   return (
     <AnimatedPressable
@@ -74,16 +85,20 @@ function OptionRow({ icon, label, isSelected, onPress, color }: OptionRowProps) 
         style={[
           styles.optionIcon,
           {
-            backgroundColor: isSelected ? `${iconColor}15` : '#F3F4F6',
+            backgroundColor: isSelected ? `${iconColor}15` : "#F3F4F6",
           },
         ]}
       >
-        <MaterialCommunityIcons name={icon as any} size={22} color={iconColor} />
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={22}
+          color={iconColor}
+        />
       </View>
       <Text
         style={[
           styles.optionLabel,
-          isSelected && { color: colors.primary.DEFAULT, fontWeight: '600' },
+          isSelected && { color: colors.primary.DEFAULT, fontWeight: "600" },
         ]}
       >
         {label}
@@ -102,7 +117,8 @@ export default function ExportScreen() {
   const entries = useDiaryStore(useShallow((state) => state.entries));
 
   // State
-  const [activePreset, setActivePreset] = React.useState<PresetKey>('last30days');
+  const [activePreset, setActivePreset] =
+    React.useState<PresetKey>("last30days");
   const [startDate, setStartDate] = React.useState(() => {
     const date = new Date();
     date.setDate(date.getDate() - 29);
@@ -114,7 +130,8 @@ export default function ExportScreen() {
     date.setHours(23, 59, 59, 999);
     return date;
   });
-  const [selectedFormat, setSelectedFormat] = React.useState<ExportFormat>('pdf');
+  const [selectedFormat, setSelectedFormat] =
+    React.useState<ExportFormat>("pdf");
   const [isExporting, setIsExporting] = React.useState(false);
 
   // Animation for custom range
@@ -136,14 +153,17 @@ export default function ExportScreen() {
   // Handle preset selection
   const handlePresetSelect = React.useCallback(
     (preset: PresetKey) => {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
 
       setActivePreset(preset);
 
-      if (preset === 'custom') {
-        customRangeHeight.value = withSpring(140, { damping: 18, stiffness: 120 });
+      if (preset === "custom") {
+        customRangeHeight.value = withSpring(140, {
+          damping: 18,
+          stiffness: 120,
+        });
       } else {
         customRangeHeight.value = withTiming(0, { duration: 200 });
         const range = getDateRangePreset(preset, entries);
@@ -151,12 +171,12 @@ export default function ExportScreen() {
         setEndDate(range.end);
       }
     },
-    [entries, customRangeHeight]
+    [entries, customRangeHeight],
   );
 
   // Handle format selection
   const handleFormatSelect = React.useCallback((fmt: ExportFormat) => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setSelectedFormat(fmt);
@@ -165,11 +185,11 @@ export default function ExportScreen() {
   // Handle export
   const handleExport = React.useCallback(async () => {
     if (filteredEntries.length === 0) {
-      Alert.alert(t('export.title'), t('export.noEntries'));
+      Alert.alert(t("export.title"), t("export.noEntries"));
       return;
     }
 
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
@@ -182,15 +202,15 @@ export default function ExportScreen() {
       });
 
       if (result.success) {
-        if (Platform.OS !== 'web') {
+        if (Platform.OS !== "web") {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
       } else if (result.error) {
-        Alert.alert(t('common.error'), result.error);
+        Alert.alert(t("common.error"), result.error);
       }
     } catch (error) {
-      console.error('Export error:', error);
-      Alert.alert(t('common.error'), t('export.error'));
+      console.error("Export error:", error);
+      Alert.alert(t("common.error"), t("export.error"));
     } finally {
       setIsExporting(false);
     }
@@ -200,27 +220,51 @@ export default function ExportScreen() {
   const customRangeStyle = useAnimatedStyle(() => ({
     height: customRangeHeight.value,
     opacity: interpolate(customRangeHeight.value, [0, 140], [0, 1]),
-    overflow: 'hidden',
+    overflow: "hidden",
   }));
 
   // Preset options
   const presets: { key: PresetKey; label: string; icon: string }[] = [
-    { key: 'last7days', label: t('export.last7Days'), icon: 'calendar-week' },
-    { key: 'last30days', label: t('export.last30Days'), icon: 'calendar-month' },
-    { key: 'thisMonth', label: t('export.thisMonth'), icon: 'calendar-today' },
-    { key: 'allTime', label: t('export.allTime'), icon: 'calendar-star' },
-    { key: 'custom', label: t('export.customRange'), icon: 'calendar-edit' },
+    { key: "last7days", label: t("export.last7Days"), icon: "calendar-week" },
+    {
+      key: "last30days",
+      label: t("export.last30Days"),
+      icon: "calendar-month",
+    },
+    { key: "thisMonth", label: t("export.thisMonth"), icon: "calendar-today" },
+    { key: "allTime", label: t("export.allTime"), icon: "calendar-star" },
+    { key: "custom", label: t("export.customRange"), icon: "calendar-edit" },
   ];
 
   // Format options
-  const formats: { key: ExportFormat; label: string; icon: string; color: string }[] = [
-    { key: 'pdf', label: `${t('export.pdf')} - ${t('export.pdfDesc')}`, icon: 'file-pdf-box', color: '#DC2626' },
-    { key: 'csv', label: `${t('export.csv')} - ${t('export.csvDesc')}`, icon: 'file-delimited', color: '#059669' },
-    { key: 'json', label: `${t('export.json')} - ${t('export.jsonDesc')}`, icon: 'code-json', color: '#7C3AED' },
+  const formats: {
+    key: ExportFormat;
+    label: string;
+    icon: string;
+    color: string;
+  }[] = [
+    {
+      key: "pdf",
+      label: `${t("export.pdf")} - ${t("export.pdfDesc")}`,
+      icon: "file-pdf-box",
+      color: "#DC2626",
+    },
+    {
+      key: "csv",
+      label: `${t("export.csv")} - ${t("export.csvDesc")}`,
+      icon: "file-delimited",
+      color: "#059669",
+    },
+    {
+      key: "json",
+      label: `${t("export.json")} - ${t("export.jsonDesc")}`,
+      icon: "code-json",
+      color: "#7C3AED",
+    },
   ];
 
   // Date range text
-  const dateRangeText = `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+  const dateRangeText = `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`;
 
   return (
     <ScrollView
@@ -228,18 +272,19 @@ export default function ExportScreen() {
       contentContainerStyle={[
         styles.scrollContent,
         {
-          paddingBottom: Platform.OS === 'ios' ? Math.max(insets.bottom, 20) + 16 : 20,
-          paddingTop: Platform.OS === 'ios' ? 50 : 24,
+          paddingBottom:
+            Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 16 : 20,
+          paddingTop: Platform.OS === "ios" ? 50 : 24,
         },
       ]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
-      <Text style={styles.title}>{t('export.title')}</Text>
-      <Text style={styles.subtitle}>{t('settings.exportDescription')}</Text>
+      <Text style={styles.title}>{t("export.title")}</Text>
+      <Text style={styles.subtitle}>{t("settings.exportDescription")}</Text>
 
       {/* Date Range Section */}
-      <Text style={styles.sectionTitle}>{t('export.dateRange')}</Text>
+      <Text style={styles.sectionTitle}>{t("export.dateRange")}</Text>
       <View style={styles.card}>
         {presets.map((preset, index) => (
           <React.Fragment key={preset.key}>
@@ -284,13 +329,13 @@ export default function ExportScreen() {
         <Text style={styles.selectedRangeText}>{dateRangeText}</Text>
         <Text style={styles.entryCount}>
           {isHydrated
-            ? `${filteredEntries.length} ${filteredEntries.length === 1 ? 'entry' : 'entries'}`
-            : '...'}
+            ? `${filteredEntries.length} ${filteredEntries.length === 1 ? "entry" : "entries"}`
+            : "..."}
         </Text>
       </View>
 
       {/* Format Section */}
-      <Text style={styles.sectionTitle}>{t('export.format')}</Text>
+      <Text style={styles.sectionTitle}>{t("export.format")}</Text>
       <View style={styles.card}>
         {formats.map((fmt, index) => (
           <React.Fragment key={fmt.key}>
@@ -310,7 +355,8 @@ export default function ExportScreen() {
       <Pressable
         style={[
           styles.exportButton,
-          (filteredEntries.length === 0 || isExporting) && styles.exportButtonDisabled,
+          (filteredEntries.length === 0 || isExporting) &&
+            styles.exportButtonDisabled,
         ]}
         onPress={handleExport}
         disabled={filteredEntries.length === 0 || isExporting}
@@ -318,10 +364,14 @@ export default function ExportScreen() {
         {isExporting ? (
           <ActivityIndicator size="small" color="#FFFFFF" />
         ) : (
-          <MaterialCommunityIcons name="share-variant" size={22} color="#FFFFFF" />
+          <MaterialCommunityIcons
+            name="share-variant"
+            size={22}
+            color="#FFFFFF"
+          />
         )}
         <Text style={styles.exportButtonText}>
-          {isExporting ? t('export.exporting') : t('export.exportAndShare')}
+          {isExporting ? t("export.exporting") : t("export.exportAndShare")}
         </Text>
       </Pressable>
     </ScrollView>
@@ -331,47 +381,47 @@ export default function ExportScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   scrollContent: {
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
+    fontWeight: "700",
+    color: "#111827",
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
+    color: "#6B7280",
+    textAlign: "center",
     lineHeight: 20,
     marginTop: 4,
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#6B7280',
-    textTransform: 'uppercase',
+    fontWeight: "600",
+    color: "#6B7280",
+    textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 10,
     marginLeft: 4,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
   },
   optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
@@ -379,23 +429,23 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 14,
   },
   optionLabel: {
     flex: 1,
     fontSize: 16,
-    color: '#374151',
+    color: "#374151",
   },
   radioOuter: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#D1D5DB",
+    alignItems: "center",
+    justifyContent: "center",
   },
   radioOuterActive: {
     borderColor: colors.primary.DEFAULT,
@@ -408,7 +458,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
     marginLeft: 70,
   },
   customRangePicker: {
@@ -416,12 +466,12 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: "#F3F4F6",
   },
   selectedRange: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -431,20 +481,20 @@ const styles = StyleSheet.create({
   },
   selectedRangeText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.primary.DEFAULT,
   },
   entryCount: {
     fontSize: 13,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   exportButton: {
     backgroundColor: colors.primary.DEFAULT,
     borderRadius: 14,
     padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 10,
     marginTop: 4,
   },
@@ -453,7 +503,7 @@ const styles = StyleSheet.create({
   },
   exportButtonText: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
 });
