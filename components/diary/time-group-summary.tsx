@@ -7,30 +7,33 @@ import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
 import type { DiaryEntry } from '@/lib/store/types';
 
-type TimePeriod = 'morning' | 'afternoon' | 'evening';
+type TimePeriod = 'morning' | 'afternoon' | 'evening' | 'night';
 
 interface TimeGroupSummaryProps {
   entries: DiaryEntry[];
   onPeriodPress?: (period: TimePeriod) => void;
 }
 
-// Helper to categorize entry by time period
+// Helper to categorize entry by time period (matching history page)
 const getTimePeriod = (timestamp: string): TimePeriod => {
   const hour = getHours(parseISO(timestamp));
-  if (hour >= 6 && hour < 12) return 'morning';
-  if (hour >= 12 && hour < 18) return 'afternoon';
-  return 'evening'; // 18-6
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 21) return 'evening';
+  return 'night'; // 21-5
 };
 
 // Get period time range label
 const getPeriodTimeRange = (period: TimePeriod): string => {
   switch (period) {
     case 'morning':
-      return '6am - 12pm';
+      return '5am - 12pm';
     case 'afternoon':
-      return '12pm - 6pm';
+      return '12pm - 5pm';
     case 'evening':
-      return '6pm - 6am';
+      return '5pm - 9pm';
+    case 'night':
+      return '9pm - 5am';
   }
 };
 
@@ -42,6 +45,8 @@ const getPeriodIcon = (period: TimePeriod): keyof typeof MaterialCommunityIcons.
     case 'afternoon':
       return 'white-balance-sunny';
     case 'evening':
+      return 'weather-sunset';
+    case 'night':
       return 'weather-night';
   }
 };
@@ -62,6 +67,7 @@ export function TimeGroupSummary({ entries, onPeriodPress }: TimeGroupSummaryPro
       morning: { voids: 0, fluids: 0, fluidAmount: 0, leaks: 0 },
       afternoon: { voids: 0, fluids: 0, fluidAmount: 0, leaks: 0 },
       evening: { voids: 0, fluids: 0, fluidAmount: 0, leaks: 0 },
+      night: { voids: 0, fluids: 0, fluidAmount: 0, leaks: 0 },
     };
 
     entries.forEach((entry) => {
@@ -79,7 +85,7 @@ export function TimeGroupSummary({ entries, onPeriodPress }: TimeGroupSummaryPro
     return groups;
   }, [entries]);
 
-  const periods: TimePeriod[] = ['morning', 'afternoon', 'evening'];
+  const periods: TimePeriod[] = ['morning', 'afternoon', 'evening', 'night'];
 
   return (
     <View style={styles.container}>

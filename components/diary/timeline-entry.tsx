@@ -204,10 +204,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     minHeight: 56,
+    paddingBottom: 8,
   },
   // Left column containing time + track
   leftColumn: {
-    width: 80,
+    width: 90,
     alignItems: 'flex-end',
   },
   // Time and dot aligned horizontally
@@ -217,9 +218,9 @@ const styles = StyleSheet.create({
   },
   // Time column - wide enough for "12:30 AM"
   timeColumn: {
-    width: 60,
+    width: 70,
     alignItems: 'flex-end',
-    paddingRight: 6,
+    paddingRight: 8,
   },
   timeText: {
     fontSize: 12,
@@ -267,7 +268,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginLeft: 8,
     marginRight: 12,
-    marginBottom: 8,
     padding: 12,
     ...(Platform.OS === 'web'
       ? { boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.06)' }

@@ -42,6 +42,17 @@
       "leaks": "Leaks"
     }
   },
+  "insights": {
+    "title": "Insights",
+    "avgFluids": "Avg Fluids",
+    "avgVoids": "Avg Voids",
+    "goalsMet": "Goals Met",
+    "vsLastWeek": "vs last week",
+    "thisWeek": "This Week",
+    "week": "Week",
+    "month": "Month",
+    "last30Days": "Last 30 days summary"
+  },
   "goals": {
     "title": "Daily Goals",
     "description": "Set your daily targets to track your progress. These are based on medical recommendations.",

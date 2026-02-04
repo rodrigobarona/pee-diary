@@ -42,6 +42,17 @@
       "leaks": "Perdas"
     }
   },
+  "insights": {
+    "title": "Estatísticas",
+    "avgFluids": "Média Líquidos",
+    "avgVoids": "Média Micções",
+    "goalsMet": "Metas Atingidas",
+    "vsLastWeek": "vs semana passada",
+    "thisWeek": "Esta Semana",
+    "week": "Semana",
+    "month": "Mês",
+    "last30Days": "Resumo dos últimos 30 dias"
+  },
   "goals": {
     "title": "Metas diárias",
     "description": "Defina suas metas diárias para acompanhar seu progresso. Baseadas em recomendações médicas.",

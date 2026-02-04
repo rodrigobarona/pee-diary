@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,6 +7,7 @@ import Animated, {
   withSequence,
   withDelay,
 } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Text } from '@/components/ui/text';
 import { useI18n } from '@/lib/i18n/context';
@@ -14,9 +15,10 @@ import { useI18n } from '@/lib/i18n/context';
 interface StreakBadgeProps {
   streak: number;
   showLabel?: boolean;
+  onPress?: () => void;
 }
 
-export function StreakBadge({ streak, showLabel = true }: StreakBadgeProps) {
+export function StreakBadge({ streak, showLabel = true, onPress }: StreakBadgeProps) {
   const { t } = useI18n();
   const scale = useSharedValue(1);
   const prevStreak = React.useRef(streak);
@@ -48,7 +50,14 @@ export function StreakBadge({ streak, showLabel = true }: StreakBadgeProps) {
     return '#FBBF24'; // Yellow for < 7 days
   };
 
-  return (
+  const handlePress = () => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onPress?.();
+  };
+
+  const content = (
     <Animated.View style={[styles.container, animatedStyle]}>
       <MaterialCommunityIcons
         name="fire"
@@ -56,13 +65,23 @@ export function StreakBadge({ streak, showLabel = true }: StreakBadgeProps) {
         color={getFireColor()}
       />
       <Text style={styles.streakNumber}>{streak}</Text>
-      {showLabel && (
+      {showLabel ? (
         <Text style={styles.label}>
           {streak === 1 ? t('streak.day') : t('streak.days')}
         </Text>
-      )}
+      ) : null}
     </Animated.View>
   );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={handlePress}>
+        {content}
+      </Pressable>
+    );
+  }
+
+  return content;
 }
 
 // Larger version for empty state or milestones

@@ -42,6 +42,17 @@
       "leaks": "Pérdidas"
     }
   },
+  "insights": {
+    "title": "Estadísticas",
+    "avgFluids": "Prom. Líquidos",
+    "avgVoids": "Prom. Micciones",
+    "goalsMet": "Metas Cumplidas",
+    "vsLastWeek": "vs semana pasada",
+    "thisWeek": "Esta Semana",
+    "week": "Semana",
+    "month": "Mes",
+    "last30Days": "Resumen de los últimos 30 días"
+  },
   "goals": {
     "title": "Objetivos diarios",
     "description": "Establece tus metas diarias para seguir tu progreso. Basadas en recomendaciones médicas.",

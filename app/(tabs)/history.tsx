@@ -1,13 +1,16 @@
 import * as React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable, Platform, LayoutAnimation, UIManager } from 'react-native';
 import {
   format,
   parseISO,
+  parse,
   isToday,
   isYesterday,
+  isValid,
 } from 'date-fns';
 import { useShallow } from 'zustand/shallow';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
@@ -15,7 +18,6 @@ import {
   CalendarHeader,
   FilterChips,
   TimelineEntry,
-  TimePeriodHeader,
   getTimePeriod,
   DailyStatsBar,
 } from '@/components/diary';
@@ -24,6 +26,11 @@ import { useDiaryStore } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
 import type { DiaryEntry } from '@/lib/store/types';
 import type { FilterType } from '@/components/diary/filter-chips';
+
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type TimePeriod = 'morning' | 'afternoon' | 'evening' | 'night';
 
@@ -35,9 +42,63 @@ interface PeriodGroup {
 export default function HistoryScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const params = useLocalSearchParams<{ date?: string; filter?: string; period?: string }>();
+  
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [filter, setFilter] = React.useState<FilterType>('all');
+  const [expandedPeriods, setExpandedPeriods] = React.useState<Set<TimePeriod>>(
+    new Set(['morning', 'afternoon', 'evening', 'night'])
+  );
+  
   const entries = useDiaryStore(useShallow((state) => state.entries));
+  
+  // Toggle period expansion with animation
+  const togglePeriod = React.useCallback((period: TimePeriod) => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpandedPeriods(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(period)) {
+        newSet.delete(period);
+      } else {
+        newSet.add(period);
+      }
+      return newSet;
+    });
+  }, []);
+  
+  // Apply URL params every time screen comes into focus (e.g., navigating from home)
+  useFocusEffect(
+    React.useCallback(() => {
+      if (params.date) {
+        const parsed = parse(params.date, 'yyyy-MM-dd', new Date());
+        if (isValid(parsed)) {
+          setSelectedDate(parsed);
+        }
+      }
+      if (params.filter) {
+        const validFilters: FilterType[] = ['all', 'urination', 'fluid', 'leak'];
+        if (validFilters.includes(params.filter as FilterType)) {
+          setFilter(params.filter as FilterType);
+        }
+      } else {
+        // Reset filter if not specified
+        setFilter('all');
+      }
+      // If a period param is passed, expand only that period
+      if (params.period) {
+        const validPeriods: TimePeriod[] = ['morning', 'afternoon', 'evening', 'night'];
+        if (validPeriods.includes(params.period as TimePeriod)) {
+          setExpandedPeriods(new Set([params.period as TimePeriod]));
+        }
+      } else {
+        // Expand all periods by default
+        setExpandedPeriods(new Set(['morning', 'afternoon', 'evening', 'night']));
+      }
+    }, [params.date, params.filter, params.period])
+  );
 
   // Navigation handler for entry press
   const handleEntryPress = React.useCallback(
@@ -101,7 +162,7 @@ export default function HistoryScreen() {
       (entry) => format(parseISO(entry.timestamp), 'yyyy-MM-dd') === dateKey
     );
     
-    // Apply filter
+    // Apply type filter
     const filteredDayEntries = filter === 'all' 
       ? dayEntries 
       : dayEntries.filter((entry) => entry.type === filter);
@@ -192,28 +253,55 @@ export default function HistoryScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {selectedDayData.periods.map((periodGroup) => (
-              <View key={periodGroup.period}>
-                {/* Period Header */}
-                <TimePeriodHeader 
-                  period={periodGroup.period} 
-                  count={periodGroup.entries.length} 
-                />
+            {selectedDayData.periods.map((periodGroup) => {
+              const isExpanded = expandedPeriods.has(periodGroup.period);
+              const periodConfig = {
+                morning: { icon: 'weather-sunny' as const, color: '#F59E0B' },
+                afternoon: { icon: 'white-balance-sunny' as const, color: '#F97316' },
+                evening: { icon: 'weather-sunset' as const, color: '#8B5CF6' },
+                night: { icon: 'weather-night' as const, color: '#6366F1' },
+              };
+              const config = periodConfig[periodGroup.period];
 
-                {/* Entries in this period */}
-                <View style={styles.entriesList}>
-                  {periodGroup.entries.map((entry, entryIndex) => (
-                    <TimelineEntry
-                      key={entry.id}
-                      entry={entry}
-                      isFirst={entryIndex === 0}
-                      isLast={entryIndex === periodGroup.entries.length - 1}
-                      onPress={() => handleEntryPress(entry.id)}
+              return (
+                <View key={periodGroup.period} style={styles.periodSection}>
+                  {/* Collapsible Period Header - Minimal */}
+                  <Pressable
+                    style={styles.periodHeader}
+                    onPress={() => togglePeriod(periodGroup.period)}
+                  >
+                    <View style={styles.periodIconContainer}>
+                      <MaterialCommunityIcons name={config.icon} size={14} color={config.color} />
+                    </View>
+                    <Text style={styles.periodLabel}>{t(`timePeriod.${periodGroup.period}`)}</Text>
+                    <View style={styles.periodBadge}>
+                      <Text style={styles.periodBadgeText}>{periodGroup.entries.length}</Text>
+                    </View>
+                    <View style={styles.periodLine} />
+                    <MaterialCommunityIcons 
+                      name={isExpanded ? 'chevron-up' : 'chevron-down'} 
+                      size={16} 
+                      color="#D1D5DB" 
                     />
-                  ))}
+                  </Pressable>
+
+                  {/* Entries in this period (collapsible) */}
+                  {isExpanded && (
+                    <View style={styles.entriesList}>
+                      {periodGroup.entries.map((entry, entryIndex) => (
+                        <TimelineEntry
+                          key={entry.id}
+                          entry={entry}
+                          isFirst={entryIndex === 0}
+                          isLast={entryIndex === periodGroup.entries.length - 1}
+                          onPress={() => handleEntryPress(entry.id)}
+                        />
+                      ))}
+                    </View>
+                  )}
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </ScrollView>
         ) : (
           /* Empty State - Full height centered */
@@ -294,6 +382,48 @@ const styles = StyleSheet.create({
   },
   entriesList: {
     paddingHorizontal: 8,
+  },
+  // Accordion period styles (minimal)
+  periodSection: {
+    marginTop: 8,
+  },
+  periodHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  periodIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  periodLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  periodBadge: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  periodBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  periodLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+    marginLeft: 12,
+    marginRight: 8,
   },
   // Empty state - full height with arrow at bottom
   emptyState: {
