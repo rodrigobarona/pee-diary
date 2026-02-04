@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
-import { format, startOfDay, endOfDay, isWithinInterval, parseISO } from 'date-fns';
+import { startOfDay, endOfDay, isWithinInterval, parseISO } from 'date-fns';
 import { useShallow } from 'zustand/shallow';
 
 import { Text } from '@/components/ui/text';
 import { EntryCard, SummaryCard, FABMenu } from '@/components/diary';
 import { useDiaryStore } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
+import { formatDateHeader } from '@/lib/utils/date';
 import type { DiaryEntry } from '@/lib/store/types';
 
 // Hoisted renderItem function - per list-performance-callbacks rule
@@ -91,7 +92,7 @@ export default function HomeScreen() {
   }, [allEntries]);
 
   const today = new Date();
-  const dateLabel = format(today, 'EEEE, MMMM d');
+  const dateLabel = formatDateHeader(today);
 
   return (
     <View className="flex-1 bg-background">

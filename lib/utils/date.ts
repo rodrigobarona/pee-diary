@@ -1,4 +1,4 @@
-import { format, isToday, isYesterday, startOfWeek, endOfWeek } from 'date-fns';
+import { isToday, isYesterday, startOfWeek, endOfWeek } from 'date-fns';
 import { dateFormatters } from '@/lib/i18n';
 
 /**
@@ -37,7 +37,9 @@ export const getRelativeDateLabel = (date: Date | string) => {
  * Format date for display in headers
  */
 export const formatDateHeader = (date: Date) => {
-  return format(date, 'EEEE, MMMM d');
+  const weekday = dateFormatters.weekday.format(date);
+  const longDate = dateFormatters.long.format(date);
+  return `${weekday}, ${longDate}`;
 };
 
 /**

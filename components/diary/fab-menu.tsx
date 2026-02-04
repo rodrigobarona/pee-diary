@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { View, Pressable, Platform, StyleSheet } from 'react-native';
+import { View, Pressable, Platform, StyleSheet, Text as RNText } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Text } from '@/components/ui/text';
 import { useI18n } from '@/lib/i18n/context';
 
@@ -62,7 +62,7 @@ export function FABMenu() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents="box-none">
       {/* Menu Items - shown when open */}
       {isOpen ? (
         <View style={styles.menuContainer}>
@@ -115,17 +115,7 @@ export function FABMenu() {
         accessibilityLabel="Add new entry"
         accessibilityHint="Opens menu to add urination, fluid intake, or leak entry"
       >
-        {Platform.OS === 'web' ? (
-          <Text style={styles.fabIconText}>
-            {isOpen ? '×' : '+'}
-          </Text>
-        ) : (
-          <MaterialCommunityIcons
-            name={isOpen ? 'close' : 'plus'}
-            size={28}
-            color="#FFFFFF"
-          />
-        )}
+        <RNText style={styles.fabIconText}>{isOpen ? '×' : '+'}</RNText>
       </Pressable>
     </View>
   );
@@ -146,11 +136,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#006D77',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)' }
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8,
+        }),
   },
   fabPressed: {
     opacity: 0.8,
@@ -168,11 +162,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)' }
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          elevation: 4,
+        }),
     minWidth: 200,
   },
   menuItem: {

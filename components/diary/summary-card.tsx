@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { cn } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';

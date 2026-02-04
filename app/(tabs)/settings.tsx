@@ -3,7 +3,7 @@ import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet } from 
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import * as Haptics from 'expo-haptics';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { format } from 'date-fns';
 
 import { Text } from '@/components/ui/text';

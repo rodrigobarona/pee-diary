@@ -58,7 +58,13 @@ export type VolumeSize = 'small' | 'medium' | 'large';
 export type DrinkType = FluidEntry['drinkType'];
 export type LeakSeverity = LeakEntry['severity'];
 
-// Helper types for creating entries
-export type CreateUrinationEntry = Omit<UrinationEntry, 'id' | 'timestamp' | 'type'>;
-export type CreateFluidEntry = Omit<FluidEntry, 'id' | 'timestamp' | 'type'>;
-export type CreateLeakEntry = Omit<LeakEntry, 'id' | 'timestamp' | 'type'>;
+// Helper types for creating entries (timestamp is optional - defaults to now)
+export type CreateUrinationEntry = Omit<UrinationEntry, 'id' | 'timestamp' | 'type'> & {
+  timestamp?: string;
+};
+export type CreateFluidEntry = Omit<FluidEntry, 'id' | 'timestamp' | 'type'> & {
+  timestamp?: string;
+};
+export type CreateLeakEntry = Omit<LeakEntry, 'id' | 'timestamp' | 'type'> & {
+  timestamp?: string;
+};

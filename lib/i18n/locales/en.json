@@ -106,5 +106,12 @@
     "3": "Moderate",
     "4": "Strong",
     "5": "Urgent"
+  },
+  "time": {
+    "when": "When",
+    "now": "Now",
+    "1hAgo": "1h ago",
+    "2hAgo": "2h ago",
+    "3hAgo": "3h ago"
   }
 }

@@ -2,10 +2,11 @@ import { Stack } from 'expo-router';
 import { useI18n } from '@/lib/i18n/context';
 
 export default function AddLayout() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   return (
     <Stack
+      key={locale} // Ensure titles update when locale changes
       screenOptions={{
         headerShown: true,
         headerStyle: {
@@ -16,10 +17,8 @@ export default function AddLayout() {
           fontWeight: '600',
         },
         headerTintColor: '#006D77',
-        contentStyle: {
-          backgroundColor: '#F9FAFB',
-        },
-        // NOTE: Presentation settings (formSheet, sheetAllowedDetents, etc.)
+        // NOTE: contentStyle removed - let individual screens handle background
+        // Presentation settings (formSheet, sheetAllowedDetents, etc.)
         // are configured in app/_layout.tsx at the root level to avoid conflicts
       }}
     >

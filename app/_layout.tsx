@@ -1,10 +1,14 @@
 import '../global.css';
 
+import { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, LogBox, type ColorSchemeName } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -13,6 +17,9 @@ import { I18nProvider, useI18n } from '@/lib/i18n/context';
 // Suppress deprecation warning from dependencies (react-native-bottom-tabs)
 // This can be removed once the library updates to use react-native-safe-area-context
 LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
+
+// Prevent the splash screen from auto-hiding before fonts are loaded
+SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -36,14 +43,8 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         <Stack.Screen
           name="add"
           options={{
-            presentation: Platform.OS === 'web' ? 'card' : 'formSheet',
+            presentation: Platform.OS === 'web' ? 'card' : 'modal',
             headerShown: Platform.OS === 'web', // Header shown only on web, native uses sheet grabber
-            ...(Platform.OS !== 'web' && {
-              sheetAllowedDetents: [0.75, 1.0],
-              sheetGrabberVisible: true,
-              sheetCornerRadius: 20,
-              sheetExpandsWhenScrolledToEdge: true,
-            }),
           }}
         />
       </Stack>
@@ -54,6 +55,28 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  // Explicitly load MaterialCommunityIcons font to ensure icons render
+  const [fontsLoaded, fontError] = useFonts({
+    ...MaterialCommunityIcons.font,
+  });
+
+  useEffect(() => {
+    if (fontError) {
+      console.error('Font loading error:', fontError);
+    }
+  }, [fontError]);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  // Don't render until fonts are loaded
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

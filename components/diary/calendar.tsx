@@ -13,7 +13,7 @@ import {
   startOfWeek,
   endOfWeek,
 } from 'date-fns';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/theme';

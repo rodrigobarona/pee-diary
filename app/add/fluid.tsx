@@ -1,8 +1,14 @@
 import * as React from 'react';
-import { View, ScrollView, Pressable, Platform } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
@@ -25,14 +31,31 @@ const drinkTypes: { type: DrinkType; icon: string; labelKey: string }[] = [
 
 const quickAmounts = [100, 200, 250, 330, 500];
 
+// Offset to scroll input into view above keyboard
+const SCROLL_OFFSET = 120;
+
 export default function FluidScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const addFluidEntry = useDiaryStore((state) => state.addFluidEntry);
 
+  // Refs
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const notesLayoutY = React.useRef<number>(0);
+
   const [drinkType, setDrinkType] = React.useState<DrinkType>('water');
   const [amount, setAmount] = React.useState('250');
   const [notes, setNotes] = React.useState('');
+
+  // Scroll to notes when focused
+  const handleNotesFocus = React.useCallback(() => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({
+        y: notesLayoutY.current - SCROLL_OFFSET,
+        animated: true,
+      });
+    }, 100);
+  }, []);
 
   const handleSave = React.useCallback(() => {
     const amountNum = parseInt(amount, 10);
@@ -59,103 +82,116 @@ export default function FluidScreen() {
   }, []);
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
+    <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: '#F9FAFB' }}
-      contentContainerStyle={{ padding: 16, gap: 24 }}
-      keyboardShouldPersistTaps="handled"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      {/* Drink Type */}
-      <View className="gap-3">
-        <Label>{t('fluid.drinkType')}</Label>
-        <View className="flex-row flex-wrap gap-2">
-          {drinkTypes.map((drink) => {
-            const isSelected = drinkType === drink.type;
-            return (
+      <ScrollView
+        ref={scrollViewRef}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 60 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Drink Type */}
+        <View className="gap-3">
+          <Label>{t('fluid.drinkType')}</Label>
+          <View className="flex-row flex-wrap gap-2">
+            {drinkTypes.map((drink) => {
+              const isSelected = drinkType === drink.type;
+              return (
+                <Pressable
+                  key={drink.type}
+                  onPress={() => {
+                    if (Platform.OS !== 'web') {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }
+                    setDrinkType(drink.type);
+                  }}
+                  className={cn(
+                    'flex-row items-center gap-2 px-4 py-3 rounded-xl',
+                    isSelected ? 'bg-primary' : 'bg-muted/30'
+                  )}
+                  style={{ borderCurve: 'continuous' }}
+                >
+                  <MaterialCommunityIcons
+                    name={drink.icon as any}
+                    size={20}
+                    color={isSelected ? '#FFFFFF' : colors.primary.DEFAULT}
+                  />
+                  <Text
+                    className={cn(
+                      'font-medium',
+                      isSelected ? 'text-white' : 'text-foreground'
+                    )}
+                  >
+                    {t(drink.labelKey)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Amount */}
+        <View className="gap-3">
+          <Label>{t('fluid.amount')}</Label>
+          <Input
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholder="250"
+          />
+          <View className="flex-row flex-wrap gap-2">
+            {quickAmounts.map((value) => (
               <Pressable
-                key={drink.type}
-                onPress={() => {
-                  if (Platform.OS !== 'web') {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-                  setDrinkType(drink.type);
-                }}
+                key={value}
+                onPress={() => handleQuickAmount(value)}
                 className={cn(
-                  'flex-row items-center gap-2 px-4 py-3 rounded-xl',
-                  isSelected ? 'bg-primary' : 'bg-muted/30'
+                  'px-4 py-2 rounded-lg',
+                  amount === value.toString() ? 'bg-primary' : 'bg-muted/30'
                 )}
                 style={{ borderCurve: 'continuous' }}
               >
-                <MaterialCommunityIcons
-                  name={drink.icon as any}
-                  size={20}
-                  color={isSelected ? '#FFFFFF' : colors.primary.DEFAULT}
-                />
                 <Text
                   className={cn(
                     'font-medium',
-                    isSelected ? 'text-white' : 'text-foreground'
+                    amount === value.toString() ? 'text-white' : 'text-foreground'
                   )}
                 >
-                  {t(drink.labelKey)}
+                  {value}ml
                 </Text>
               </Pressable>
-            );
-          })}
+            ))}
+          </View>
         </View>
-      </View>
 
-      {/* Amount */}
-      <View className="gap-3">
-        <Label>{t('fluid.amount')}</Label>
-        <Input
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          placeholder="250"
-        />
-        <View className="flex-row flex-wrap gap-2">
-          {quickAmounts.map((value) => (
-            <Pressable
-              key={value}
-              onPress={() => handleQuickAmount(value)}
-              className={cn(
-                'px-4 py-2 rounded-lg',
-                amount === value.toString() ? 'bg-primary' : 'bg-muted/30'
-              )}
-              style={{ borderCurve: 'continuous' }}
-            >
-              <Text
-                className={cn(
-                  'font-medium',
-                  amount === value.toString() ? 'text-white' : 'text-foreground'
-                )}
-              >
-                {value}ml
-              </Text>
-            </Pressable>
-          ))}
+        {/* Notes */}
+        <View
+          className="gap-3"
+          onLayout={(e) => {
+            notesLayoutY.current = e.nativeEvent.layout.y;
+          }}
+        >
+          <Label>{t('fluid.notes')}</Label>
+          <Input
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t('common.notesPlaceholder')}
+            multiline
+            numberOfLines={3}
+            className="min-h-[100px]"
+            textAlignVertical="top"
+            onFocus={handleNotesFocus}
+          />
         </View>
-      </View>
 
-      {/* Notes */}
-      <View className="gap-3">
-        <Label>{t('fluid.notes')}</Label>
-        <Input
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={t('common.notesPlaceholder')}
-          multiline
-          numberOfLines={3}
-          className="min-h-[80px]"
-          textAlignVertical="top"
-        />
-      </View>
-
-      {/* Save Button */}
-      <Button onPress={handleSave} className="mt-4">
-        <Text>{t('common.save')}</Text>
-      </Button>
-    </ScrollView>
+        {/* Save Button */}
+        <Button onPress={handleSave} size="lg" className="mt-6">
+          <Text>{t('common.save')}</Text>
+        </Button>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

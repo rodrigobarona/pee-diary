@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { v4 as uuidv4 } from 'uuid';
 import { getLocales } from 'expo-localization';
+import { Platform } from 'react-native';
 import type {
   DiaryEntry,
   CreateUrinationEntry,
@@ -33,6 +33,14 @@ const getInitialLanguage = (): 'en' | 'es' | 'pt' => {
   return 'en';
 };
 
+const createId = (): string => {
+  const cryptoObj = globalThis.crypto as { randomUUID?: () => string } | undefined;
+  if (cryptoObj?.randomUUID) {
+    return cryptoObj.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
 interface DiaryState {
   entries: DiaryEntry[];
   language: 'en' | 'es' | 'pt';
@@ -61,8 +69,8 @@ export const useDiaryStore = create<DiaryState>()(
             ...state.entries,
             {
               ...entry,
-              id: uuidv4(),
-              timestamp: new Date().toISOString(),
+              id: createId(),
+              timestamp: entry.timestamp ?? new Date().toISOString(),
               type: 'urination' as const,
             },
           ],
@@ -74,8 +82,8 @@ export const useDiaryStore = create<DiaryState>()(
             ...state.entries,
             {
               ...entry,
-              id: uuidv4(),
-              timestamp: new Date().toISOString(),
+              id: createId(),
+              timestamp: entry.timestamp ?? new Date().toISOString(),
               type: 'fluid' as const,
             },
           ],
@@ -87,8 +95,8 @@ export const useDiaryStore = create<DiaryState>()(
             ...state.entries,
             {
               ...entry,
-              id: uuidv4(),
-              timestamp: new Date().toISOString(),
+              id: createId(),
+              timestamp: entry.timestamp ?? new Date().toISOString(),
               type: 'leak' as const,
             },
           ],
