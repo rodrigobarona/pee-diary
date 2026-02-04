@@ -157,34 +157,98 @@ function getUrgencyLabel(urgency: number): string {
 }
 
 /**
- * Helper to get entry type icon/emoji
+ * Helper type for daily statistics
  */
-function getEntryTypeEmoji(type: string): string {
-  switch (type) {
-    case "urination":
-      return "🚽";
-    case "fluid":
-      return "💧";
-    case "leak":
-      return "⚠️";
-    default:
-      return "📝";
-  }
+interface DailyStats {
+  date: string;
+  dayName: string;
+  voidCount: number;
+  totalFluids: number;
+  avgUrgency: string;
+  maxUrgency: number;
+  leakCount: number;
+  painCount: number;
+  fluidBreakdown: {
+    water: number;
+    coffee: number;
+    tea: number;
+    juice: number;
+    alcohol: number;
+    other: number;
+  };
 }
 
 /**
- * Generate HTML for PDF export with beautiful formatting
+ * Calculate daily statistics from entries grouped by date
+ */
+function calculateDailyStats(
+  groupedByDate: Record<string, DiaryEntry[]>,
+): DailyStats[] {
+  return Object.entries(groupedByDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, dayEntries]) => {
+      const urinationEntries = dayEntries.filter((e) => e.type === "urination");
+      const fluidEntries = dayEntries.filter((e) => e.type === "fluid");
+      const leakEntries = dayEntries.filter((e) => e.type === "leak");
+
+      // Calculate urgency stats
+      const urgencies = urinationEntries.map((e) =>
+        e.type === "urination" ? e.urgency : 0,
+      );
+      const avgUrgency =
+        urgencies.length > 0
+          ? (urgencies.reduce((a, b) => a + b, 0) / urgencies.length).toFixed(1)
+          : "-";
+      const maxUrgency = urgencies.length > 0 ? Math.max(...urgencies) : 0;
+
+      // Count pain incidents
+      const painCount = urinationEntries.filter(
+        (e) => e.type === "urination" && e.hadPain,
+      ).length;
+
+      // Calculate fluid breakdown
+      const fluidBreakdown = {
+        water: 0,
+        coffee: 0,
+        tea: 0,
+        juice: 0,
+        alcohol: 0,
+        other: 0,
+      };
+      fluidEntries.forEach((e) => {
+        if (e.type === "fluid") {
+          fluidBreakdown[e.drinkType] += e.amount;
+        }
+      });
+
+      const totalFluids = Object.values(fluidBreakdown).reduce(
+        (a, b) => a + b,
+        0,
+      );
+
+      return {
+        date,
+        dayName: format(new Date(date), "EEE"),
+        voidCount: urinationEntries.length,
+        totalFluids,
+        avgUrgency,
+        maxUrgency,
+        leakCount: leakEntries.length,
+        painCount,
+        fluidBreakdown,
+      };
+    });
+}
+
+/**
+ * Generate HTML for PDF export with table-based landscape layout
  */
 export function generatePDFHTML(
   entries: DiaryEntry[],
   dateRange: { start: Date; end: Date },
 ): string {
-  const sortedEntries = [...entries].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-  );
-
   // Group entries by date
-  const groupedByDate = sortedEntries.reduce((acc, entry) => {
+  const groupedByDate = entries.reduce((acc, entry) => {
     const dateKey = format(new Date(entry.timestamp), "yyyy-MM-dd");
     if (!acc[dateKey]) {
       acc[dateKey] = [];
@@ -193,7 +257,10 @@ export function generatePDFHTML(
     return acc;
   }, {} as Record<string, DiaryEntry[]>);
 
-  // Calculate summary stats
+  // Calculate daily statistics
+  const dailyStats = calculateDailyStats(groupedByDate);
+
+  // Calculate overall summary stats
   const urinationEntries = entries.filter((e) => e.type === "urination");
   const fluidEntries = entries.filter((e) => e.type === "fluid");
   const leakEntries = entries.filter((e) => e.type === "leak");
@@ -201,11 +268,97 @@ export function generatePDFHTML(
     (sum, e) => sum + (e.type === "fluid" ? e.amount : 0),
     0,
   );
+  const totalDays = Object.keys(groupedByDate).length;
+
+  // Calculate averages
+  const avgVoidsPerDay =
+    totalDays > 0 ? (urinationEntries.length / totalDays).toFixed(1) : "0";
+  const avgFluidsPerDay =
+    totalDays > 0 ? Math.round(totalFluids / totalDays) : 0;
+
+  // Calculate overall urgency average
+  const allUrgencies = urinationEntries.map((e) =>
+    e.type === "urination" ? e.urgency : 0,
+  );
+  const overallAvgUrgency =
+    allUrgencies.length > 0
+      ? (allUrgencies.reduce((a, b) => a + b, 0) / allUrgencies.length).toFixed(
+          1,
+        )
+      : "-";
+
+  // Total pain count
+  const totalPainCount = urinationEntries.filter(
+    (e) => e.type === "urination" && e.hadPain,
+  ).length;
 
   const dateRangeStr = `${format(dateRange.start, "MMM d, yyyy")} - ${format(
     dateRange.end,
     "MMM d, yyyy",
   )}`;
+
+  // Generate daily comparison table rows
+  const dailyTableRows = dailyStats
+    .map(
+      (day, index) => `
+    <tr class="${index % 2 === 0 ? "even" : "odd"}">
+      <td class="date-cell">${day.dayName} ${format(
+        new Date(day.date),
+        "d",
+      )}</td>
+      <td class="num-cell">${day.voidCount}</td>
+      <td class="num-cell">${day.totalFluids.toLocaleString()}</td>
+      <td class="num-cell">${day.avgUrgency}</td>
+      <td class="num-cell ${day.maxUrgency >= 4 ? "highlight-warning" : ""}">${
+        day.maxUrgency || "-"
+      }</td>
+      <td class="num-cell ${day.leakCount > 0 ? "highlight-warning" : ""}">${
+        day.leakCount
+      }</td>
+      <td class="num-cell ${day.painCount > 0 ? "highlight-danger" : ""}">${
+        day.painCount
+      }</td>
+    </tr>
+  `,
+    )
+    .join("");
+
+  // Generate fluid breakdown table rows
+  const fluidTableRows = dailyStats
+    .map(
+      (day, index) => `
+    <tr class="${index % 2 === 0 ? "even" : "odd"}">
+      <td class="date-cell">${day.dayName} ${format(
+        new Date(day.date),
+        "d",
+      )}</td>
+      <td class="num-cell">${day.fluidBreakdown.water || "-"}</td>
+      <td class="num-cell">${day.fluidBreakdown.coffee || "-"}</td>
+      <td class="num-cell">${day.fluidBreakdown.tea || "-"}</td>
+      <td class="num-cell">${day.fluidBreakdown.juice || "-"}</td>
+      <td class="num-cell ${
+        day.fluidBreakdown.alcohol > 0 ? "highlight-warning" : ""
+      }">${day.fluidBreakdown.alcohol || "-"}</td>
+      <td class="num-cell">${day.fluidBreakdown.other || "-"}</td>
+      <td class="num-cell total-cell">${day.totalFluids.toLocaleString()}</td>
+    </tr>
+  `,
+    )
+    .join("");
+
+  // Calculate fluid totals for footer
+  const fluidTotals = dailyStats.reduce(
+    (acc, day) => {
+      acc.water += day.fluidBreakdown.water;
+      acc.coffee += day.fluidBreakdown.coffee;
+      acc.tea += day.fluidBreakdown.tea;
+      acc.juice += day.fluidBreakdown.juice;
+      acc.alcohol += day.fluidBreakdown.alcohol;
+      acc.other += day.fluidBreakdown.other;
+      return acc;
+    },
+    { water: 0, coffee: 0, tea: 0, juice: 0, alcohol: 0, other: 0 },
+  );
 
   return `
 <!DOCTYPE html>
@@ -214,6 +367,10 @@ export function generatePDFHTML(
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    @page {
+      size: landscape;
+      margin: 12mm;
+    }
     * {
       margin: 0;
       padding: 0;
@@ -221,148 +378,149 @@ export function generatePDFHTML(
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #F9FAFB;
+      background: #FFFFFF;
       color: #111827;
-      line-height: 1.5;
-      padding: 40px;
+      font-size: 11px;
+      line-height: 1.4;
+      padding: 0;
     }
     .header {
       text-align: center;
-      margin-bottom: 32px;
-      padding-bottom: 24px;
-      border-bottom: 2px solid #E5E7EB;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #006D77;
     }
     .header h1 {
-      font-size: 28px;
+      font-size: 20px;
       font-weight: 700;
       color: #006D77;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .header .date-range {
-      font-size: 14px;
+      font-size: 12px;
       color: #6B7280;
     }
-    .summary {
+    
+    /* Summary Statistics Grid */
+    .summary-grid {
       display: flex;
-      justify-content: space-around;
-      margin-bottom: 32px;
-      padding: 24px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: #F0FDFA;
+      border: 1px solid #006D77;
+      border-radius: 8px;
     }
     .summary-item {
       text-align: center;
+      flex: 1;
+      border-right: 1px solid #99E2D8;
+      padding: 0 8px;
+    }
+    .summary-item:last-child {
+      border-right: none;
     }
     .summary-value {
-      font-size: 32px;
+      font-size: 22px;
       font-weight: 700;
       color: #006D77;
     }
     .summary-label {
-      font-size: 12px;
-      color: #6B7280;
+      font-size: 9px;
+      color: #4B5563;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .date-group {
-      margin-bottom: 24px;
-    }
-    .date-header {
-      font-size: 16px;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 12px;
-      padding: 8px 16px;
-      background: #E5E7EB;
-      border-radius: 8px;
-    }
-    .entries-list {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-    .entry {
-      padding: 16px;
-      border-bottom: 1px solid #F3F4F6;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .entry:last-child {
-      border-bottom: none;
-    }
-    .entry-icon {
-      font-size: 20px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #F3F4F6;
-      border-radius: 10px;
-    }
-    .entry-content {
-      flex: 1;
-    }
-    .entry-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .entry-type {
-      font-weight: 600;
-      color: #111827;
-      text-transform: capitalize;
-    }
-    .entry-time {
-      font-size: 13px;
+    .summary-sub {
+      font-size: 9px;
       color: #6B7280;
+      margin-top: 2px;
     }
-    .entry-details {
+    
+    /* Section Titles */
+    .section-title {
       font-size: 13px;
-      color: #4B5563;
+      font-weight: 600;
+      color: #006D77;
+      margin: 16px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #E5E7EB;
     }
-    .entry-notes {
-      font-size: 12px;
-      color: #6B7280;
-      font-style: italic;
-      margin-top: 4px;
+    
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 10px;
     }
-    .tag {
-      display: inline-block;
-      padding: 2px 8px;
-      background: #E0F2FE;
-      color: #0369A1;
-      border-radius: 12px;
-      font-size: 11px;
-      margin-right: 6px;
+    th {
+      background: #006D77;
+      color: white;
+      font-weight: 600;
+      padding: 8px 6px;
+      text-align: center;
+      border: 1px solid #005A63;
     }
-    .tag.warning {
-      background: #FEF3C7;
+    td {
+      padding: 6px;
+      border: 1px solid #E5E7EB;
+      text-align: center;
+    }
+    tr.even {
+      background: #FFFFFF;
+    }
+    tr.odd {
+      background: #F9FAFB;
+    }
+    tr.total-row {
+      background: #F0FDFA;
+      font-weight: 600;
+    }
+    .date-cell {
+      text-align: left;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .num-cell {
+      font-variant-numeric: tabular-nums;
+    }
+    .total-cell {
+      font-weight: 600;
+      background: #F0FDFA;
+    }
+    .highlight-warning {
+      background: #FEF3C7 !important;
       color: #B45309;
     }
-    .tag.danger {
-      background: #FEE2E2;
+    .highlight-danger {
+      background: #FEE2E2 !important;
       color: #DC2626;
     }
+    
+    /* Footer */
     .footer {
-      margin-top: 32px;
-      padding-top: 24px;
+      margin-top: 16px;
+      padding-top: 12px;
       border-top: 1px solid #E5E7EB;
       text-align: center;
-      font-size: 12px;
+      font-size: 9px;
       color: #9CA3AF;
     }
-    @media print {
-      body {
-        padding: 20px;
-      }
-      .date-group {
-        page-break-inside: avoid;
-      }
+    
+    /* Page breaks */
+    .page-break {
+      page-break-before: always;
+    }
+    table {
+      page-break-inside: auto;
+    }
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+    thead {
+      display: table-header-group;
     }
   </style>
 </head>
@@ -372,90 +530,99 @@ export function generatePDFHTML(
     <div class="date-range">${dateRangeStr}</div>
   </div>
 
-  <div class="summary">
+  <!-- Summary Statistics -->
+  <div class="summary-grid">
+    <div class="summary-item">
+      <div class="summary-value">${totalDays}</div>
+      <div class="summary-label">Days Tracked</div>
+    </div>
     <div class="summary-item">
       <div class="summary-value">${urinationEntries.length}</div>
-      <div class="summary-label">Bathroom Visits</div>
+      <div class="summary-label">Total Voids</div>
+      <div class="summary-sub">${avgVoidsPerDay} avg/day</div>
     </div>
     <div class="summary-item">
       <div class="summary-value">${totalFluids.toLocaleString()}</div>
-      <div class="summary-label">ml Fluids</div>
+      <div class="summary-label">Total Fluids (ml)</div>
+      <div class="summary-sub">${avgFluidsPerDay.toLocaleString()} avg/day</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-value">${overallAvgUrgency}</div>
+      <div class="summary-label">Avg Urgency</div>
+      <div class="summary-sub">Scale 1-5</div>
     </div>
     <div class="summary-item">
       <div class="summary-value">${leakEntries.length}</div>
-      <div class="summary-label">Leaks</div>
+      <div class="summary-label">Leak Incidents</div>
     </div>
     <div class="summary-item">
-      <div class="summary-value">${Object.keys(groupedByDate).length}</div>
-      <div class="summary-label">Days</div>
+      <div class="summary-value">${totalPainCount}</div>
+      <div class="summary-label">Pain Events</div>
     </div>
   </div>
 
-  ${Object.entries(groupedByDate)
-    .map(
-      ([date, dayEntries]) => `
-    <div class="date-group">
-      <div class="date-header">${format(
-        new Date(date),
-        "EEEE, MMMM d, yyyy",
-      )}</div>
-      <div class="entries-list">
-        ${dayEntries
-          .map((entry) => {
-            let details = "";
-            let tags = "";
+  <!-- Daily Comparison Table -->
+  <div class="section-title">Daily Comparison</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 80px;">Date</th>
+        <th style="width: 60px;">Voids</th>
+        <th style="width: 80px;">Fluids (ml)</th>
+        <th style="width: 70px;">Avg Urg.</th>
+        <th style="width: 70px;">Max Urg.</th>
+        <th style="width: 60px;">Leaks</th>
+        <th style="width: 60px;">Pain</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${dailyTableRows}
+      <tr class="total-row">
+        <td class="date-cell">TOTAL</td>
+        <td class="num-cell">${urinationEntries.length}</td>
+        <td class="num-cell">${totalFluids.toLocaleString()}</td>
+        <td class="num-cell">${overallAvgUrgency}</td>
+        <td class="num-cell">-</td>
+        <td class="num-cell">${leakEntries.length}</td>
+        <td class="num-cell">${totalPainCount}</td>
+      </tr>
+    </tbody>
+  </table>
 
-            if (entry.type === "urination") {
-              details = `Volume: ${entry.volume} • Urgency: ${getUrgencyLabel(
-                entry.urgency,
-              )}`;
-              if (entry.hadLeak)
-                tags += '<span class="tag warning">Had leak</span>';
-              if (entry.hadPain)
-                tags += '<span class="tag danger">Had pain</span>';
-            } else if (entry.type === "fluid") {
-              details = `${entry.amount}ml ${entry.drinkType}`;
-            } else if (entry.type === "leak") {
-              details = `Severity: ${
-                entry.severity
-              } • Urgency: ${getUrgencyLabel(entry.urgency)}`;
-            }
-
-            return `
-            <div class="entry">
-              <div class="entry-icon">${getEntryTypeEmoji(entry.type)}</div>
-              <div class="entry-content">
-                <div class="entry-header">
-                  <span class="entry-type">${
-                    entry.type === "fluid" ? "Fluid Intake" : entry.type
-                  }</span>
-                  <span class="entry-time">${format(
-                    new Date(entry.timestamp),
-                    "h:mm a",
-                  )}</span>
-                </div>
-                <div class="entry-details">${details}</div>
-                ${tags ? `<div style="margin-top: 6px">${tags}</div>` : ""}
-                ${
-                  entry.notes
-                    ? `<div class="entry-notes">"${entry.notes}"</div>`
-                    : ""
-                }
-              </div>
-            </div>
-          `;
-          })
-          .join("")}
-      </div>
-    </div>
-  `,
-    )
-    .join("")}
+  <!-- Fluid Intake Breakdown -->
+  <div class="section-title">Fluid Intake Breakdown (ml)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 80px;">Date</th>
+        <th>Water</th>
+        <th>Coffee</th>
+        <th>Tea</th>
+        <th>Juice</th>
+        <th>Alcohol</th>
+        <th>Other</th>
+        <th style="width: 80px;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${fluidTableRows}
+      <tr class="total-row">
+        <td class="date-cell">TOTAL</td>
+        <td class="num-cell">${fluidTotals.water.toLocaleString()}</td>
+        <td class="num-cell">${fluidTotals.coffee.toLocaleString()}</td>
+        <td class="num-cell">${fluidTotals.tea.toLocaleString()}</td>
+        <td class="num-cell">${fluidTotals.juice.toLocaleString()}</td>
+        <td class="num-cell">${fluidTotals.alcohol.toLocaleString()}</td>
+        <td class="num-cell">${fluidTotals.other.toLocaleString()}</td>
+        <td class="num-cell total-cell">${totalFluids.toLocaleString()}</td>
+      </tr>
+    </tbody>
+  </table>
 
   <div class="footer">
     Generated on ${format(
       new Date(),
-      "MMMM d, yyyy at h:mm a",
+      "MMMM d, yyyy 'at' h:mm a",
     )} • Eleva Diary by Eleva Care
   </div>
 </body>
