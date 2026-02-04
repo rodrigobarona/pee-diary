@@ -13,7 +13,8 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "notesPlaceholder": "Add any additional notes..."
+    "notesPlaceholder": "Add any additional notes...",
+    "options": "Options"
   },
   "tabs": {
     "home": "Today",
@@ -107,6 +108,7 @@
   },
   "urination": {
     "title": "Log Urination",
+    "subtitle": "Record your bathroom visit",
     "volume": "Volume",
     "volumeSmall": "Small",
     "volumeMedium": "Medium",
@@ -118,6 +120,7 @@
   },
   "fluid": {
     "title": "Log Fluid Intake",
+    "subtitle": "Track what you drank",
     "drinkType": "Drink Type",
     "water": "Water",
     "coffee": "Coffee",
@@ -130,6 +133,7 @@
   },
   "leak": {
     "title": "Log Leak/Accident",
+    "subtitle": "Record any incidents",
     "severity": "Severity",
     "drops": "Drops",
     "moderate": "Moderate",

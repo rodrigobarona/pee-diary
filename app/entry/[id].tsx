@@ -1,52 +1,48 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   View,
   ScrollView,
-  Switch,
   Pressable,
   Alert,
   Platform,
   KeyboardAvoidingView,
   StyleSheet,
   ActivityIndicator,
-} from "react-native";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import * as Haptics from "expo-haptics";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { parseISO } from "date-fns";
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { parseISO } from 'date-fns';
 
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Text } from '@/components/ui/text';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  ScreenHeader,
+  SectionTitle,
+  FormCard,
+  ToggleRow,
+  AnimatedPressable,
+} from '@/components/ui';
 import {
   UrgencyScale,
   VolumePicker,
   TimePicker,
   DrinkTypePicker,
   AmountPicker,
-} from "@/components/diary";
-import { useDiaryStore } from "@/lib/store";
-import { useI18n } from "@/lib/i18n/context";
-import { dateFormatters } from "@/lib/i18n";
-import { colors } from "@/lib/theme/colors";
-import { cn } from "@/lib/theme";
+} from '@/components/diary';
+import { useDiaryStore } from '@/lib/store';
+import { useI18n } from '@/lib/i18n/context';
+import { dateFormatters } from '@/lib/i18n';
+import { colors } from '@/lib/theme/colors';
 import type {
   UrgencyLevel,
   VolumeSize,
   DrinkType,
   LeakSeverity,
-} from "@/lib/store/types";
-
-// Toggle colors
-const TOGGLE_COLORS = {
-  trackTrue: "#006D77",
-  trackFalse: "#D1D5DB",
-  thumbTrue: "#FFFFFF",
-  thumbFalse: "#F9FAFB",
-};
+} from '@/lib/store/types';
 
 // Severity options for leak form
 const severityOptions: {
@@ -54,9 +50,9 @@ const severityOptions: {
   icon: string;
   labelKey: string;
 }[] = [
-  { value: "drops", icon: "water-outline", labelKey: "leak.drops" },
-  { value: "moderate", icon: "water", labelKey: "leak.moderate" },
-  { value: "full", icon: "water-alert", labelKey: "leak.full" },
+  { value: 'drops', icon: 'water-outline', labelKey: 'leak.drops' },
+  { value: 'moderate', icon: 'water', labelKey: 'leak.moderate' },
+  { value: 'full', icon: 'water-alert', labelKey: 'leak.full' },
 ];
 
 export default function EntryDetailScreen() {
@@ -73,16 +69,16 @@ export default function EntryDetailScreen() {
   const updateEntry = useDiaryStore((state) => state.updateEntry);
   const deleteEntry = useDiaryStore((state) => state.deleteEntry);
 
-  // Form state - all with defaults
-  const [timestamp, setTimestamp] = React.useState(new Date());
-  const [volume, setVolume] = React.useState<VolumeSize>("medium");
+  // Form state - all with defaults (use lazy initializer)
+  const [timestamp, setTimestamp] = React.useState(() => new Date());
+  const [volume, setVolume] = React.useState<VolumeSize>('medium');
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
   const [hadLeak, setHadLeak] = React.useState(false);
   const [hadPain, setHadPain] = React.useState(false);
-  const [drinkType, setDrinkType] = React.useState<DrinkType>("water");
-  const [amount, setAmount] = React.useState("250");
-  const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
-  const [notes, setNotes] = React.useState("");
+  const [drinkType, setDrinkType] = React.useState<DrinkType>('water');
+  const [amount, setAmount] = React.useState('250');
+  const [severity, setSeverity] = React.useState<LeakSeverity>('drops');
+  const [notes, setNotes] = React.useState('');
   const [showEditHistory, setShowEditHistory] = React.useState(false);
 
   // Track if we've loaded the entry data
@@ -92,17 +88,17 @@ export default function EntryDetailScreen() {
   React.useEffect(() => {
     if (entry && !isLoaded) {
       setTimestamp(parseISO(entry.timestamp));
-      setNotes(entry.notes ?? "");
+      setNotes(entry.notes ?? '');
 
-      if (entry.type === "urination") {
+      if (entry.type === 'urination') {
         setVolume(entry.volume);
         setUrgency(entry.urgency);
         setHadLeak(entry.hadLeak);
         setHadPain(entry.hadPain);
-      } else if (entry.type === "fluid") {
+      } else if (entry.type === 'fluid') {
         setDrinkType(entry.drinkType);
         setAmount(entry.amount.toString());
-      } else if (entry.type === "leak") {
+      } else if (entry.type === 'leak') {
         setSeverity(entry.severity);
         setUrgency(entry.urgency);
       }
@@ -129,19 +125,19 @@ export default function EntryDetailScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#006D77" />
-        <Text style={styles.loadingText}>{t("common.loading")}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   const getTitle = () => {
     switch (entry.type) {
-      case "urination":
-        return t("detail.editUrination");
-      case "fluid":
-        return t("detail.editFluid");
-      case "leak":
-        return t("detail.editLeak");
+      case 'urination':
+        return t('detail.editUrination');
+      case 'fluid':
+        return t('detail.editFluid');
+      case 'leak':
+        return t('detail.editLeak');
     }
   };
 
@@ -151,35 +147,35 @@ export default function EntryDetailScreen() {
       notes: notes.trim() || undefined,
     };
 
-    if (entry.type === "urination") {
+    if (entry.type === 'urination') {
       updates.volume = volume;
       updates.urgency = urgency;
       updates.hadLeak = hadLeak;
       updates.hadPain = hadPain;
-    } else if (entry.type === "fluid") {
+    } else if (entry.type === 'fluid') {
       updates.drinkType = drinkType;
       updates.amount = parseInt(amount, 10);
-    } else if (entry.type === "leak") {
+    } else if (entry.type === 'leak') {
       updates.severity = severity;
       updates.urgency = urgency;
     }
 
     updateEntry(id!, updates);
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     router.back();
   };
 
   const handleDelete = () => {
-    Alert.alert(t("common.delete"), t("detail.deleteConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
+    Alert.alert(t('common.delete'), t('detail.deleteConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: t("common.delete"),
-        style: "destructive",
+        text: t('common.delete'),
+        style: 'destructive',
         onPress: () => {
           deleteEntry(id!);
-          if (Platform.OS !== "web") {
+          if (Platform.OS !== 'web') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           }
           router.back();
@@ -188,338 +184,425 @@ export default function EntryDetailScreen() {
     ]);
   };
 
+  const handleSeveritySelect = (value: LeakSeverity) => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setSeverity(value);
+  };
+
   const formatChangeValue = (key: string, value: unknown): string => {
-    if (key === "timestamp" && typeof value === "string") {
+    if (key === 'timestamp' && typeof value === 'string') {
       return dateFormatters.time.format(parseISO(value));
     }
-    if (typeof value === "boolean") {
-      return value ? t("common.yes") : t("common.no");
+    if (typeof value === 'boolean') {
+      return value ? t('common.yes') : t('common.no');
     }
-    if (key === "volume") {
+    if (key === 'volume') {
       return t(
-        `urination.volume${(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}`,
+        `urination.volume${(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}`
       );
     }
-    if (key === "urgency") {
+    if (key === 'urgency') {
       return t(`urgency.${value}`);
     }
-    if (key === "drinkType") {
+    if (key === 'drinkType') {
       return t(`fluid.${value}`);
     }
-    if (key === "severity") {
+    if (key === 'severity') {
       return t(`leak.${value}`);
     }
-    if (key === "amount") {
+    if (key === 'amount') {
       return `${value}ml`;
     }
-    return String(value ?? "");
+    return String(value ?? '');
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: getTitle(),
-          headerRight: () => (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: Platform.OS === 'ios' ? 24 : 16 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <ScreenHeader title={getTitle()} />
+          <Pressable
+            onPress={handleDelete}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.deleteButton}
+          >
+            <MaterialCommunityIcons
+              name="trash-can-outline"
+              size={22}
+              color="#EF4444"
+            />
+          </Pressable>
+        </View>
+
+        {/* Time */}
+        <TimePicker value={timestamp} onChange={setTimestamp} />
+
+        {/* Type-specific form */}
+        {entry.type === 'urination' ? (
+          <>
+            <View style={styles.section}>
+              <SectionTitle>{t('urination.volume')}</SectionTitle>
+              <VolumePicker value={volume} onChange={setVolume} />
+            </View>
+
+            <View style={styles.section}>
+              <SectionTitle>{t('urination.urgency')}</SectionTitle>
+              <UrgencyScale value={urgency} onChange={setUrgency} />
+            </View>
+
+            <View style={styles.section}>
+              <SectionTitle>{t('common.options')}</SectionTitle>
+              <FormCard>
+                <ToggleRow
+                  label={t('urination.hadLeak')}
+                  value={hadLeak}
+                  onValueChange={setHadLeak}
+                />
+                <View style={styles.separator} />
+                <ToggleRow
+                  label={t('urination.hadPain')}
+                  value={hadPain}
+                  onValueChange={setHadPain}
+                />
+              </FormCard>
+            </View>
+          </>
+        ) : null}
+
+        {entry.type === 'fluid' ? (
+          <>
+            <View style={styles.section}>
+              <SectionTitle>{t('fluid.drinkType')}</SectionTitle>
+              <DrinkTypePicker value={drinkType} onChange={setDrinkType} />
+            </View>
+
+            <View style={styles.section}>
+              <SectionTitle>{t('fluid.amount')}</SectionTitle>
+              <AmountPicker
+                value={amount}
+                onChange={setAmount}
+                drinkType={drinkType}
+                showInput={false}
+              />
+            </View>
+          </>
+        ) : null}
+
+        {entry.type === 'leak' ? (
+          <>
+            <View style={styles.section}>
+              <SectionTitle>{t('leak.severity')}</SectionTitle>
+              <View style={styles.severityOptions}>
+                {severityOptions.map((option) => {
+                  const isSelected = severity === option.value;
+                  return (
+                    <AnimatedPressable
+                      key={option.value}
+                      onPress={() => handleSeveritySelect(option.value)}
+                      haptic={false}
+                      style={[
+                        styles.severityOption,
+                        isSelected
+                          ? styles.severityOptionSelected
+                          : styles.severityOptionUnselected,
+                      ]}
+                    >
+                      <View
+                        style={[
+                          styles.severityIconContainer,
+                          isSelected
+                            ? styles.severityIconSelected
+                            : styles.severityIconUnselected,
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={option.icon as any}
+                          size={24}
+                          color={isSelected ? '#FFFFFF' : colors.error}
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.severityLabel,
+                          isSelected ? styles.severityLabelSelected : undefined,
+                        ]}
+                      >
+                        {t(option.labelKey)}
+                      </Text>
+                    </AnimatedPressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <SectionTitle>{t('leak.urgency')}</SectionTitle>
+              <UrgencyScale value={urgency} onChange={setUrgency} />
+            </View>
+          </>
+        ) : null}
+
+        {/* Notes */}
+        <View
+          style={styles.section}
+          onLayout={(e) => {
+            notesLayoutY.current = e.nativeEvent.layout.y;
+          }}
+        >
+          <SectionTitle>{t('urination.notes')}</SectionTitle>
+          <Input
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t('common.notesPlaceholder')}
+            multiline
+            numberOfLines={3}
+            style={styles.notesInput}
+            textAlignVertical="top"
+            onFocus={handleNotesFocus}
+          />
+        </View>
+
+        {/* Edit History */}
+        {entry.editHistory && entry.editHistory.length > 0 ? (
+          <View style={styles.section}>
             <Pressable
-              onPress={handleDelete}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
+              onPress={() => setShowEditHistory(!showEditHistory)}
+              style={styles.historyHeader}
             >
+              <View style={styles.historyHeaderLeft}>
+                <MaterialCommunityIcons
+                  name="history"
+                  size={20}
+                  color={colors.primary.DEFAULT}
+                />
+                <Text style={styles.historyTitle}>
+                  {t('detail.editHistory')} ({entry.editHistory.length})
+                </Text>
+              </View>
               <MaterialCommunityIcons
-                name="trash-can-outline"
-                size={22}
-                color="#EF4444"
+                name={showEditHistory ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#9CA3AF"
               />
             </Pressable>
-          ),
-        }}
-      />
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: "#F9FAFB" }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-      >
-        <ScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 160 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Time */}
-          <TimePicker value={timestamp} onChange={setTimestamp} />
 
-          {/* Type-specific form */}
-          {entry.type === "urination" && (
-            <>
-              <View className="gap-3">
-                <Label>{t("urination.volume")}</Label>
-                <VolumePicker value={volume} onChange={setVolume} />
-              </View>
-
-              <View className="gap-3">
-                <Label>{t("urination.urgency")}</Label>
-                <UrgencyScale value={urgency} onChange={setUrgency} />
-              </View>
-
-              <View className="flex-row items-center justify-between py-3 px-4 bg-white rounded-xl">
-                <Label className="flex-1">{t("urination.hadLeak")}</Label>
-                <Switch
-                  value={hadLeak}
-                  onValueChange={(value) => {
-                    setHadLeak(value);
-                    if (Platform.OS !== "web") {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    }
-                  }}
-                  trackColor={{
-                    true: TOGGLE_COLORS.trackTrue,
-                    false: TOGGLE_COLORS.trackFalse,
-                  }}
-                  thumbColor={
-                    hadLeak ? TOGGLE_COLORS.thumbTrue : TOGGLE_COLORS.thumbFalse
-                  }
-                  ios_backgroundColor={TOGGLE_COLORS.trackFalse}
-                />
-              </View>
-
-              <View className="flex-row items-center justify-between py-3 px-4 bg-white rounded-xl">
-                <Label className="flex-1">{t("urination.hadPain")}</Label>
-                <Switch
-                  value={hadPain}
-                  onValueChange={(value) => {
-                    setHadPain(value);
-                    if (Platform.OS !== "web") {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    }
-                  }}
-                  trackColor={{
-                    true: TOGGLE_COLORS.trackTrue,
-                    false: TOGGLE_COLORS.trackFalse,
-                  }}
-                  thumbColor={
-                    hadPain ? TOGGLE_COLORS.thumbTrue : TOGGLE_COLORS.thumbFalse
-                  }
-                  ios_backgroundColor={TOGGLE_COLORS.trackFalse}
-                />
-              </View>
-            </>
-          )}
-
-          {entry.type === "fluid" && (
-            <>
-              <View className="gap-3">
-                <Label>{t("fluid.drinkType")}</Label>
-                <DrinkTypePicker value={drinkType} onChange={setDrinkType} />
-              </View>
-
-              <View className="gap-3">
-                <Label>{t("fluid.amount")}</Label>
-                <AmountPicker
-                  value={amount}
-                  onChange={setAmount}
-                  drinkType={drinkType}
-                  showInput={false}
-                />
-              </View>
-            </>
-          )}
-
-          {entry.type === "leak" && (
-            <>
-              <View className="gap-3">
-                <Label>{t("leak.severity")}</Label>
-                <View className="gap-3">
-                  {severityOptions.map((option) => {
-                    const isSelected = severity === option.value;
-                    return (
-                      <Pressable
-                        key={option.value}
-                        onPress={() => {
-                          if (Platform.OS !== "web") {
-                            Haptics.impactAsync(
-                              Haptics.ImpactFeedbackStyle.Light,
-                            );
-                          }
-                          setSeverity(option.value);
-                        }}
-                        className={cn(
-                          "flex-row items-center gap-4 p-4 rounded-xl",
-                          isSelected
-                            ? "bg-destructive/10 border border-destructive"
-                            : "bg-muted/30",
-                        )}
-                        style={{ borderCurve: "continuous" }}
-                      >
-                        <View
-                          className={cn(
-                            "h-12 w-12 items-center justify-center rounded-xl",
-                            isSelected ? "bg-destructive" : "bg-muted/50",
-                          )}
-                          style={{ borderCurve: "continuous" }}
-                        >
-                          <MaterialCommunityIcons
-                            name={option.icon as any}
-                            size={24}
-                            color={isSelected ? "#FFFFFF" : colors.error}
-                          />
-                        </View>
-                        <Text
-                          className={cn(
-                            "font-semibold",
-                            isSelected ? "text-destructive" : "text-foreground",
-                          )}
-                        >
-                          {t(option.labelKey)}
+            {showEditHistory ? (
+              <View style={styles.historyContent}>
+                {entry.editHistory
+                  .slice()
+                  .reverse()
+                  .map((edit, index) => (
+                    <View key={index} style={styles.historyItem}>
+                      <Text style={styles.historyDate}>
+                        {t('detail.edited')}:{' '}
+                        {dateFormatters.long.format(parseISO(edit.editedAt))}{' '}
+                        {dateFormatters.time.format(parseISO(edit.editedAt))}
+                      </Text>
+                      {Object.entries(edit.changes).map(([key, change]) => (
+                        <Text key={key} style={styles.historyChangeText}>
+                          <Text style={styles.historyChangeKey}>{key}</Text>:{' '}
+                          {formatChangeValue(key, change.from)} →{' '}
+                          {formatChangeValue(key, change.to)}
                         </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
+                      ))}
+                    </View>
+                  ))}
               </View>
-
-              <View className="gap-3">
-                <Label>{t("leak.urgency")}</Label>
-                <UrgencyScale value={urgency} onChange={setUrgency} />
-              </View>
-            </>
-          )}
-
-          {/* Notes */}
-          <View
-            className="gap-3"
-            onLayout={(e) => {
-              notesLayoutY.current = e.nativeEvent.layout.y;
-            }}
-          >
-            <Label>{t("urination.notes")}</Label>
-            <Input
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t("common.notesPlaceholder")}
-              multiline
-              numberOfLines={3}
-              className="min-h-[100px]"
-              textAlignVertical="top"
-              onFocus={handleNotesFocus}
-            />
+            ) : null}
           </View>
+        ) : null}
+      </ScrollView>
 
-          {/* Edit History */}
-          {entry.editHistory && entry.editHistory.length > 0 && (
-            <View className="gap-3">
-              <Pressable
-                onPress={() => setShowEditHistory(!showEditHistory)}
-                className="flex-row items-center justify-between py-3 px-4 bg-white rounded-xl"
-              >
-                <View className="flex-row items-center gap-2">
-                  <MaterialCommunityIcons
-                    name="history"
-                    size={20}
-                    color={colors.primary.DEFAULT}
-                  />
-                  <Text className="font-medium">
-                    {t("detail.editHistory")} ({entry.editHistory.length})
-                  </Text>
-                </View>
-                <MaterialCommunityIcons
-                  name={showEditHistory ? "chevron-up" : "chevron-down"}
-                  size={20}
-                  color="#9CA3AF"
-                />
-              </Pressable>
-
-              {showEditHistory && (
-                <View className="gap-2 px-4">
-                  {entry.editHistory
-                    .slice()
-                    .reverse()
-                    .map((edit, index) => (
-                      <View
-                        key={index}
-                        className="py-3 border-b border-muted/20"
-                      >
-                        <Text className="text-sm text-muted-foreground mb-2">
-                          {t("detail.edited")}:{" "}
-                          {dateFormatters.long.format(parseISO(edit.editedAt))}{" "}
-                          {dateFormatters.time.format(parseISO(edit.editedAt))}
-                        </Text>
-                        {Object.entries(edit.changes).map(([key, change]) => (
-                          <Text key={key} className="text-sm">
-                            <Text className="font-medium">{key}</Text>:{" "}
-                            {formatChangeValue(key, change.from)} →{" "}
-                            {formatChangeValue(key, change.to)}
-                          </Text>
-                        ))}
-                      </View>
-                    ))}
-                </View>
-              )}
-            </View>
-          )}
-        </ScrollView>
-
-        {/* Sticky Update Button */}
-        {Platform.OS === "ios" ? (
-          <BlurView intensity={80} tint="light" style={styles.footerBlur}>
-            <View
-              style={[
-                styles.footerContent,
-                { paddingBottom: Math.max(insets.bottom, 16) },
-              ]}
-            >
-              <Button
-                onPress={handleUpdate}
-                size="lg"
-                style={{ width: "100%" }}
-              >
-                <Text>{t("detail.update")}</Text>
-              </Button>
-            </View>
-          </BlurView>
-        ) : (
+      {/* Sticky Update Button */}
+      {Platform.OS === 'ios' ? (
+        <BlurView intensity={80} tint="light" style={styles.footerBlur}>
           <View
             style={[
-              styles.footer,
+              styles.footerContent,
               { paddingBottom: Math.max(insets.bottom, 16) },
             ]}
           >
-            <Button onPress={handleUpdate} size="lg" style={{ width: "100%" }}>
-              <Text>{t("detail.update")}</Text>
+            <Button onPress={handleUpdate} size="lg" style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>{t('detail.update')}</Text>
             </Button>
           </View>
-        )}
-      </KeyboardAvoidingView>
-    </>
+        </BlurView>
+      ) : (
+        <View
+          style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}
+        >
+          <Button onPress={handleUpdate} size="lg" style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>{t('detail.update')}</Text>
+          </Button>
+        </View>
+      )}
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 160,
+    gap: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  deleteButton: {
+    padding: 8,
+    marginTop: -8,
+  },
+  section: {
+    gap: 12,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginHorizontal: 16,
+  },
+  severityOptions: {
+    gap: 12,
+  },
+  severityOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    padding: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+  },
+  severityOptionSelected: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  severityOptionUnselected: {
+    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+  },
+  severityIconContainer: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
+    borderCurve: 'continuous',
+  },
+  severityIconSelected: {
+    backgroundColor: colors.error,
+  },
+  severityIconUnselected: {
+    backgroundColor: 'rgba(0, 109, 119, 0.15)',
+  },
+  severityLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  severityLabelSelected: {
+    color: colors.error,
+  },
+  notesInput: {
+    minHeight: 100,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderCurve: 'continuous',
+  },
+  historyHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  historyTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  historyContent: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  historyItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  historyDate: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  historyChangeText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  historyChangeKey: {
+    fontWeight: '500',
+  },
   loadingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F9FAFB",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F9FAFB',
     gap: 16,
   },
   loadingText: {
     fontSize: 16,
-    color: "#9CA3AF",
+    color: '#9CA3AF',
   },
   footer: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: '#F9FAFB',
     paddingHorizontal: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
+    borderTopColor: '#E5E7EB',
   },
   footerBlur: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(0, 0, 0, 0.1)",
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
   footerContent: {
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+  saveButton: {
+    width: '100%',
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 17,
   },
 });

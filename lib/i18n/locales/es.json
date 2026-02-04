@@ -9,11 +9,12 @@
     "done": "Hecho",
     "loading": "Cargando...",
     "error": "Error",
-    "success": "Éxito",
+    "success": "Correcto",
     "confirm": "Confirmar",
     "yes": "Sí",
     "no": "No",
-    "notesPlaceholder": "Añade notas adicionales..."
+    "notesPlaceholder": "Añade notas adicionales...",
+    "options": "Opciones"
   },
   "tabs": {
     "home": "Hoy",
@@ -29,8 +30,8 @@
     "title": "Hoy",
     "timeline": "Cronología",
     "noEntries": "Sin registros hoy",
-    "addFirst": "Toca el botón + de abajo para añadir tu primer registro",
-    "tapToEditGoals": "Toca para editar objetivos",
+    "addFirst": "Pulsa el botón + de abajo para añadir tu primer registro",
+    "tapToEditGoals": "Pulsa para editar objetivos",
     "editGoals": "Editar objetivos diarios",
     "exportData": "Exportar tus datos",
     "todayActivity": "Actividad de hoy",
@@ -45,9 +46,9 @@
   },
   "insights": {
     "title": "Estadísticas",
-    "avgFluids": "Prom. Líquidos",
-    "avgVoids": "Prom. Micciones",
-    "goalsMet": "Metas Cumplidas",
+    "avgFluids": "Media Líquidos",
+    "avgVoids": "Media Micciones",
+    "goalsMet": "Objetivos Cumplidos",
     "vsLastWeek": "vs semana pasada",
     "thisWeek": "Esta Semana",
     "week": "Semana",
@@ -56,9 +57,9 @@
   },
   "goals": {
     "title": "Objetivos diarios",
-    "description": "Establece tus metas diarias para seguir tu progreso. Basadas en recomendaciones médicas.",
+    "description": "Establece tus objetivos diarios para seguir tu progreso. Basados en recomendaciones médicas.",
     "fluidTarget": "Ingesta de líquidos",
-    "fluidDescription": "Meta diaria de líquidos",
+    "fluidDescription": "Objetivo diario de líquidos",
     "voidTarget": "Visitas al baño",
     "voidDescription": "Visitas esperadas por día",
     "perDay": "por día",
@@ -107,17 +108,19 @@
   },
   "urination": {
     "title": "Registrar Micción",
+    "subtitle": "Registra tu visita al baño",
     "volume": "Volumen",
     "volumeSmall": "Pequeño",
     "volumeMedium": "Mediano",
     "volumeLarge": "Grande",
     "urgency": "Nivel de urgencia",
     "hadLeak": "¿Hubo alguna pérdida?",
-    "hadPain": "¿Experimentó dolor o molestia?",
+    "hadPain": "¿Experimentaste dolor o molestia?",
     "notes": "Notas (opcional)"
   },
   "fluid": {
     "title": "Registrar Ingesta de Líquidos",
+    "subtitle": "Registra lo que bebiste",
     "drinkType": "Tipo de bebida",
     "water": "Agua",
     "coffee": "Café",
@@ -130,7 +133,8 @@
   },
   "leak": {
     "title": "Registrar Pérdida/Accidente",
-    "severity": "Severidad",
+    "subtitle": "Registra cualquier incidente",
+    "severity": "Gravedad",
     "drops": "Gotas",
     "moderate": "Moderado",
     "full": "Completo",
@@ -147,12 +151,12 @@
     "all": "Todo",
     "voids": "micciones",
     "leaks": "pérdidas",
-    "avgUrgency": "urgencia promedio",
+    "avgUrgency": "urgencia media",
     "noEntriesYet": "Sin registros aún",
     "startTracking": "Comienza a registrar para ver tu historial",
     "noDataForDay": "Sin registros para este día",
     "noEntriesForDate": "No se registró nada en esta fecha",
-    "tapToAdd": "Toca aquí para agregar",
+    "tapToAdd": "Pulsa aquí para añadir",
     "weekly": "Semanal",
     "monthly": "Mensual"
   },
@@ -174,7 +178,7 @@
     "privacy": "Política de privacidad",
     "dailyGoals": "Objetivos diarios",
     "editGoals": "Editar objetivos",
-    "goalsDescription": "Establece tus metas diarias",
+    "goalsDescription": "Establece tus objetivos diarios",
     "cloudSync": "Sincronización",
     "iCloudSync": "Sincronizar con iCloud",
     "iCloudSyncDescription": "Tus datos se sincronizan automáticamente entre dispositivos",
@@ -188,9 +192,9 @@
     "restoreSuccess": "Se restauraron {{count}} registros desde iCloud",
     "restoreError": "Error al restaurar. Inténtalo de nuevo.",
     "autoBackup": "Copia de seguridad automática",
-    "autoBackupDescription": "Tus datos se respaldan automáticamente en Google Drive",
+    "autoBackupDescription": "Tus datos se guardan automáticamente en Google Drive",
     "openAddMenuOnLaunch": "Abrir menú al iniciar",
-    "openAddMenuOnLaunchDescription": "Mostrar el menú de añadir al abrir la app"
+    "openAddMenuOnLaunchDescription": "Mostrar el menú de añadir al abrir la aplicación"
   },
   "urgency": {
     "1": "Ninguna",
@@ -242,7 +246,7 @@
     "noEntries": "Sin registros en el rango seleccionado",
     "exportAndShare": "Exportar y Compartir",
     "exporting": "Exportando...",
-    "success": "Datos exportados exitosamente",
+    "success": "Datos exportados correctamente",
     "error": "Error al exportar los datos"
   }
 }

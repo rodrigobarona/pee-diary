@@ -21,8 +21,11 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [showTimePicker, setShowTimePicker] = React.useState(false);
 
-  const formattedTime = dateFormatters.time.format(value);
-  const formattedDate = dateFormatters.short.format(value);
+  // Ensure value is a valid Date, fallback to current date/time
+  const safeValue = value instanceof Date && !isNaN(value.getTime()) ? value : new Date();
+
+  const formattedTime = dateFormatters.time.format(safeValue);
+  const formattedDate = dateFormatters.short.format(safeValue);
 
   const handleDateChange = React.useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -33,11 +36,11 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
       if (event.type === 'set' && selectedDate) {
         // Keep current time, change only date
         const newDate = new Date(selectedDate);
-        newDate.setHours(value.getHours(), value.getMinutes(), value.getSeconds());
+        newDate.setHours(safeValue.getHours(), safeValue.getMinutes(), safeValue.getSeconds());
         onChange(newDate);
       }
     },
-    [onChange, value]
+    [onChange, safeValue]
   );
 
   const handleTimeChange = React.useCallback(
@@ -64,10 +67,10 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
             <Text style={styles.chipText}>{formattedDate}</Text>
             <input
               type="date"
-              value={value.toISOString().split('T')[0]}
+              value={safeValue.toISOString().split('T')[0]}
               onChange={(e) => {
                 const newDate = new Date(e.target.value);
-                newDate.setHours(value.getHours(), value.getMinutes());
+                newDate.setHours(safeValue.getHours(), safeValue.getMinutes());
                 onChange(newDate);
               }}
               style={styles.hiddenInput as any}
@@ -79,10 +82,10 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
             <Text style={styles.chipText}>{formattedTime}</Text>
             <input
               type="time"
-              value={`${value.getHours().toString().padStart(2, '0')}:${value.getMinutes().toString().padStart(2, '0')}`}
+              value={`${safeValue.getHours().toString().padStart(2, '0')}:${safeValue.getMinutes().toString().padStart(2, '0')}`}
               onChange={(e) => {
                 const [hours, minutes] = e.target.value.split(':').map(Number);
-                const newDate = new Date(value);
+                const newDate = new Date(safeValue);
                 newDate.setHours(hours, minutes);
                 onChange(newDate);
               }}
@@ -101,7 +104,7 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
         {showLabel && <Text style={styles.label}>{t('time.when')}</Text>}
         <View style={styles.chipsContainer}>
           <DateTimePicker
-            value={value}
+            value={safeValue}
             mode="date"
             display="compact"
             onChange={handleDateChange}
@@ -110,7 +113,7 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
             accentColor={colors.primary.DEFAULT}
           />
           <DateTimePicker
-            value={value}
+            value={safeValue}
             mode="time"
             display="compact"
             onChange={handleTimeChange}
@@ -143,7 +146,7 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
       {/* Android Date Picker Dialog */}
       {showDatePicker && (
         <DateTimePicker
-          value={value}
+          value={safeValue}
           mode="date"
           display="default"
           onChange={handleDateChange}
@@ -154,7 +157,7 @@ export function TimePicker({ value, onChange, showLabel = true }: TimePickerProp
       {/* Android Time Picker Dialog */}
       {showTimePicker && (
         <DateTimePicker
-          value={value}
+          value={safeValue}
           mode="time"
           display="default"
           onChange={handleTimeChange}

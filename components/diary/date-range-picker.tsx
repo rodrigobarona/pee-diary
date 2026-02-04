@@ -31,8 +31,13 @@ export function DateRangePicker({
   const [showStartPicker, setShowStartPicker] = React.useState(false);
   const [showEndPicker, setShowEndPicker] = React.useState(false);
 
-  const formattedStartDate = dateFormatters.short.format(startDate);
-  const formattedEndDate = dateFormatters.short.format(endDate);
+  // Ensure dates are valid, fallback to current date
+  const safeStartDate = startDate instanceof Date && !isNaN(startDate.getTime()) ? startDate : new Date();
+  const safeEndDate = endDate instanceof Date && !isNaN(endDate.getTime()) ? endDate : new Date();
+  const safeMaxDate = maxDate instanceof Date && !isNaN(maxDate.getTime()) ? maxDate : new Date();
+
+  const formattedStartDate = dateFormatters.short.format(safeStartDate);
+  const formattedEndDate = dateFormatters.short.format(safeEndDate);
 
   const handleStartDateChange = React.useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -41,13 +46,13 @@ export function DateRangePicker({
       }
       if (event.type === "set" && selectedDate) {
         // Ensure start date is not after end date
-        if (selectedDate > endDate) {
+        if (selectedDate > safeEndDate) {
           onEndDateChange(selectedDate);
         }
         onStartDateChange(selectedDate);
       }
     },
-    [endDate, onStartDateChange, onEndDateChange],
+    [safeEndDate, onStartDateChange, onEndDateChange],
   );
 
   const handleEndDateChange = React.useCallback(
@@ -57,13 +62,13 @@ export function DateRangePicker({
       }
       if (event.type === "set" && selectedDate) {
         // Ensure end date is not before start date
-        if (selectedDate < startDate) {
+        if (selectedDate < safeStartDate) {
           onStartDateChange(selectedDate);
         }
         onEndDateChange(selectedDate);
       }
     },
-    [startDate, onStartDateChange, onEndDateChange],
+    [safeStartDate, onStartDateChange, onEndDateChange],
   );
 
   // Web fallback
@@ -81,8 +86,8 @@ export function DateRangePicker({
             <Text style={styles.chipText}>{formattedStartDate}</Text>
             <input
               type="date"
-              value={startDate.toISOString().split("T")[0]}
-              max={endDate.toISOString().split("T")[0]}
+              value={safeStartDate.toISOString().split("T")[0]}
+              max={safeEndDate.toISOString().split("T")[0]}
               onChange={(e) => {
                 const newDate = new Date(e.target.value);
                 onStartDateChange(newDate);
@@ -103,9 +108,9 @@ export function DateRangePicker({
             <Text style={styles.chipText}>{formattedEndDate}</Text>
             <input
               type="date"
-              value={endDate.toISOString().split("T")[0]}
-              min={startDate.toISOString().split("T")[0]}
-              max={maxDate.toISOString().split("T")[0]}
+              value={safeEndDate.toISOString().split("T")[0]}
+              min={safeStartDate.toISOString().split("T")[0]}
+              max={safeMaxDate.toISOString().split("T")[0]}
               onChange={(e) => {
                 const newDate = new Date(e.target.value);
                 onEndDateChange(newDate);
@@ -125,12 +130,12 @@ export function DateRangePicker({
         <View style={styles.dateRow}>
           <Text style={styles.label}>{t("export.startDate")}</Text>
           <DateTimePicker
-            value={startDate}
+            value={safeStartDate}
             mode="date"
             display="compact"
             onChange={handleStartDateChange}
             minimumDate={minDate}
-            maximumDate={endDate}
+            maximumDate={safeEndDate}
             themeVariant="light"
             accentColor={colors.primary.DEFAULT}
           />
@@ -139,12 +144,12 @@ export function DateRangePicker({
         <View style={styles.dateRow}>
           <Text style={styles.label}>{t("export.endDate")}</Text>
           <DateTimePicker
-            value={endDate}
+            value={safeEndDate}
             mode="date"
             display="compact"
             onChange={handleEndDateChange}
-            minimumDate={startDate}
-            maximumDate={maxDate}
+            minimumDate={safeStartDate}
+            maximumDate={safeMaxDate}
             themeVariant="light"
             accentColor={colors.primary.DEFAULT}
           />
@@ -183,23 +188,23 @@ export function DateRangePicker({
       {/* Android Date Picker Dialogs */}
       {showStartPicker && (
         <DateTimePicker
-          value={startDate}
+          value={safeStartDate}
           mode="date"
           display="default"
           onChange={handleStartDateChange}
           minimumDate={minDate}
-          maximumDate={endDate}
+          maximumDate={safeEndDate}
         />
       )}
 
       {showEndPicker && (
         <DateTimePicker
-          value={endDate}
+          value={safeEndDate}
           mode="date"
           display="default"
           onChange={handleEndDateChange}
-          minimumDate={startDate}
-          maximumDate={maxDate}
+          minimumDate={safeStartDate}
+          maximumDate={safeMaxDate}
         />
       )}
     </View>

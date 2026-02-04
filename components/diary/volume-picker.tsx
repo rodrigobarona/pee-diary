@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { View, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { cn } from '@/lib/theme';
+
 import { Text } from '@/components/ui/text';
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
 
@@ -41,7 +42,7 @@ const volumeConfig: Record<
 
 export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
   const { t } = useI18n();
-  
+
   const handlePress = React.useCallback(
     (size: VolumeSize) => {
       if (disabled) return;
@@ -54,22 +55,22 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
   );
 
   return (
-    <View className="flex-row justify-between gap-3">
+    <View style={styles.container}>
       {(['small', 'medium', 'large'] as VolumeSize[]).map((size) => {
         const config = volumeConfig[size];
         const isSelected = value === size;
 
         return (
-          <Pressable
+          <AnimatedPressable
             key={size}
             onPress={() => handlePress(size)}
             disabled={disabled}
-            className={cn(
-              'flex-1 items-center justify-center rounded-xl py-4 gap-2',
-              isSelected ? 'bg-primary' : 'bg-muted/30',
-              disabled && 'opacity-50'
-            )}
-            style={{ borderCurve: 'continuous' }}
+            haptic={false}
+            style={[
+              styles.option,
+              isSelected ? styles.optionSelected : styles.optionUnselected,
+              disabled ? styles.optionDisabled : undefined,
+            ]}
           >
             <MaterialCommunityIcons
               name={config.icon as any}
@@ -77,24 +78,65 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
               color={isSelected ? '#FFFFFF' : colors.primary.DEFAULT}
             />
             <Text
-              className={cn(
-                'font-semibold',
-                isSelected ? 'text-white' : 'text-foreground'
-              )}
+              style={[
+                styles.label,
+                isSelected ? styles.labelSelected : undefined,
+              ]}
             >
               {t(config.labelKey)}
             </Text>
             <Text
-              className={cn(
-                'text-xs',
-                isSelected ? 'text-white/70' : 'text-muted-foreground'
-              )}
+              style={[
+                styles.description,
+                isSelected ? styles.descriptionSelected : undefined,
+              ]}
             >
               {config.description}
             </Text>
-          </Pressable>
+          </AnimatedPressable>
         );
       })}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  option: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    paddingVertical: 16,
+    gap: 8,
+  },
+  optionSelected: {
+    backgroundColor: colors.primary.DEFAULT,
+  },
+  optionUnselected: {
+    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+  },
+  optionDisabled: {
+    opacity: 0.5,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  labelSelected: {
+    color: '#FFFFFF',
+  },
+  description: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  descriptionSelected: {
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+});

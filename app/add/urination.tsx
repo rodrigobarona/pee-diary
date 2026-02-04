@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   View,
   ScrollView,
-  Switch,
   Platform,
   KeyboardAvoidingView,
   StyleSheet,
@@ -16,18 +15,11 @@ import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { ScreenHeader, FormCard, ToggleRow, SectionTitle } from '@/components/ui';
 import { UrgencyScale, VolumePicker, TimePicker } from '@/components/diary';
 import { useDiaryStore } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
 import type { UrgencyLevel, VolumeSize } from '@/lib/store/types';
-
-// Toggle colors for better contrast
-const TOGGLE_COLORS = {
-  trackTrue: '#006D77',
-  trackFalse: '#D1D5DB',
-  thumbTrue: '#FFFFFF',
-  thumbFalse: '#F9FAFB',
-};
 
 // Offset to scroll input into view above keyboard
 const SCROLL_OFFSET = 120;
@@ -42,7 +34,7 @@ export default function UrinationScreen() {
   const scrollViewRef = React.useRef<ScrollView>(null);
   const notesLayoutY = React.useRef<number>(0);
 
-  // Form state - using React state for form inputs
+  // Form state
   const [timestamp, setTimestamp] = React.useState(() => new Date());
   const [volume, setVolume] = React.useState<VolumeSize>('medium');
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
@@ -77,87 +69,74 @@ export default function UrinationScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#F9FAFB' }}
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <ScrollView
         ref={scrollViewRef}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 100 }}
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: Platform.OS === 'ios' ? 24 : 16 },
+        ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {/* Header */}
+        <ScreenHeader
+          title={t('urination.title')}
+          subtitle={t('urination.subtitle')}
+        />
+
         {/* Time */}
         <TimePicker value={timestamp} onChange={setTimestamp} />
 
         {/* Volume */}
-        <View className="gap-3">
-          <Label>{t('urination.volume')}</Label>
+        <View style={styles.section}>
+          <SectionTitle>{t('urination.volume')}</SectionTitle>
           <VolumePicker value={volume} onChange={setVolume} />
         </View>
 
         {/* Urgency */}
-        <View className="gap-3">
-          <Label>{t('urination.urgency')}</Label>
+        <View style={styles.section}>
+          <SectionTitle>{t('urination.urgency')}</SectionTitle>
           <UrgencyScale value={urgency} onChange={setUrgency} />
         </View>
 
-        {/* Had Leak Toggle */}
-        <View className="flex-row items-center justify-between py-3 px-4 bg-white rounded-xl">
-          <Label className="flex-1">{t('urination.hadLeak')}</Label>
-          <Switch
-            value={hadLeak}
-            onValueChange={(value) => {
-              setHadLeak(value);
-              if (Platform.OS !== 'web') {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
-            }}
-            trackColor={{
-              true: TOGGLE_COLORS.trackTrue,
-              false: TOGGLE_COLORS.trackFalse,
-            }}
-            thumbColor={hadLeak ? TOGGLE_COLORS.thumbTrue : TOGGLE_COLORS.thumbFalse}
-            ios_backgroundColor={TOGGLE_COLORS.trackFalse}
-          />
-        </View>
-
-        {/* Had Pain Toggle */}
-        <View className="flex-row items-center justify-between py-3 px-4 bg-white rounded-xl">
-          <Label className="flex-1">{t('urination.hadPain')}</Label>
-          <Switch
-            value={hadPain}
-            onValueChange={(value) => {
-              setHadPain(value);
-              if (Platform.OS !== 'web') {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
-            }}
-            trackColor={{
-              true: TOGGLE_COLORS.trackTrue,
-              false: TOGGLE_COLORS.trackFalse,
-            }}
-            thumbColor={hadPain ? TOGGLE_COLORS.thumbTrue : TOGGLE_COLORS.thumbFalse}
-            ios_backgroundColor={TOGGLE_COLORS.trackFalse}
-          />
+        {/* Additional Options */}
+        <View style={styles.section}>
+          <SectionTitle>{t('common.options')}</SectionTitle>
+          <FormCard>
+            <ToggleRow
+              label={t('urination.hadLeak')}
+              value={hadLeak}
+              onValueChange={setHadLeak}
+            />
+            <View style={styles.separator} />
+            <ToggleRow
+              label={t('urination.hadPain')}
+              value={hadPain}
+              onValueChange={setHadPain}
+            />
+          </FormCard>
         </View>
 
         {/* Notes */}
         <View
-          className="gap-3"
+          style={styles.section}
           onLayout={(e) => {
             notesLayoutY.current = e.nativeEvent.layout.y;
           }}
         >
-          <Label>{t('urination.notes')}</Label>
+          <SectionTitle>{t('urination.notes')}</SectionTitle>
           <Input
             value={notes}
             onChangeText={setNotes}
             placeholder={t('common.notesPlaceholder')}
             multiline
             numberOfLines={3}
-            className="min-h-[100px]"
+            style={styles.notesInput}
             textAlignVertical="top"
             onFocus={handleNotesFocus}
           />
@@ -168,15 +147,15 @@ export default function UrinationScreen() {
       {Platform.OS === 'ios' ? (
         <BlurView intensity={80} tint="light" style={styles.footerBlur}>
           <View style={[styles.footerContent, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-            <Button onPress={handleSave} size="lg" style={{ width: '100%' }}>
-              <Text>{t('common.save')}</Text>
+            <Button onPress={handleSave} size="lg" style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>{t('common.save')}</Text>
             </Button>
           </View>
         </BlurView>
       ) : (
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-          <Button onPress={handleSave} size="lg" style={{ width: '100%' }}>
-            <Text>{t('common.save')}</Text>
+          <Button onPress={handleSave} size="lg" style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>{t('common.save')}</Text>
           </Button>
         </View>
       )}
@@ -185,6 +164,29 @@ export default function UrinationScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 100,
+    gap: 20,
+  },
+  section: {
+    gap: 12,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginHorizontal: 16,
+  },
+  notesInput: {
+    minHeight: 100,
+  },
   footer: {
     backgroundColor: '#F9FAFB',
     paddingHorizontal: 16,
@@ -199,5 +201,13 @@ const styles = StyleSheet.create({
   footerContent: {
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+  saveButton: {
+    width: '100%',
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 17,
   },
 });

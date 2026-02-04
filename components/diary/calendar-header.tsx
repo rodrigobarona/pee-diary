@@ -60,7 +60,10 @@ export function CalendarHeader({
   const [currentWeekStart, setCurrentWeekStart] = React.useState(() => 
     startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
-  const [pickerDate, setPickerDate] = React.useState(new Date());
+  // Use selectedDate directly for picker, ensuring it's always valid
+  const pickerDate = selectedDate instanceof Date && !isNaN(selectedDate.getTime()) 
+    ? selectedDate 
+    : new Date();
   
   const translateX = useSharedValue(0);
   const today = new Date();
@@ -162,9 +165,8 @@ export function CalendarHeader({
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setPickerDate(selectedDate);
     setShowDatePicker(true);
-  }, [selectedDate]);
+  }, []);
 
   const handleDatePickerChange = React.useCallback((event: any, date?: Date) => {
     if (Platform.OS === 'android') {

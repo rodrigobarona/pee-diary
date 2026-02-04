@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { View, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { cn } from '@/lib/theme';
+
 import { Text } from '@/components/ui/text';
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { useI18n } from '@/lib/i18n/context';
 
 type UrgencyLevel = 1 | 2 | 3 | 4 | 5;
@@ -13,17 +14,18 @@ interface UrgencyScaleProps {
   disabled?: boolean;
 }
 
+// Urgency colors matching the original design
 const urgencyColors: Record<UrgencyLevel, string> = {
-  1: 'bg-green-500',
-  2: 'bg-lime-500',
-  3: 'bg-yellow-500',
-  4: 'bg-orange-500',
-  5: 'bg-red-500',
+  1: '#22C55E', // green-500
+  2: '#84CC16', // lime-500
+  3: '#EAB308', // yellow-500
+  4: '#F97316', // orange-500
+  5: '#EF4444', // red-500
 };
 
 export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
   const { t } = useI18n();
-  
+
   const handlePress = React.useCallback(
     (level: UrgencyLevel) => {
       if (disabled) return;
@@ -36,36 +38,74 @@ export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
   );
 
   return (
-    <View className="gap-3">
-      <View className="flex-row justify-between gap-2">
-        {([1, 2, 3, 4, 5] as UrgencyLevel[]).map((level) => (
-          <Pressable
-            key={level}
-            onPress={() => handlePress(level)}
-            disabled={disabled}
-            className={cn(
-              'flex-1 items-center justify-center rounded-xl py-4',
-              value === level
-                ? urgencyColors[level]
-                : 'bg-muted/30',
-              disabled && 'opacity-50'
-            )}
-            style={{ borderCurve: 'continuous' }}
-          >
-            <Text
-              className={cn(
-                'text-2xl font-bold',
-                value === level ? 'text-white' : 'text-foreground'
-              )}
+    <View style={styles.container}>
+      <View style={styles.scaleContainer}>
+        {([1, 2, 3, 4, 5] as UrgencyLevel[]).map((level) => {
+          const isSelected = value === level;
+          return (
+            <AnimatedPressable
+              key={level}
+              onPress={() => handlePress(level)}
+              disabled={disabled}
+              haptic={false}
+              style={[
+                styles.option,
+                {
+                  backgroundColor: isSelected
+                    ? urgencyColors[level]
+                    : 'rgba(0, 109, 119, 0.08)',
+                },
+                disabled ? styles.optionDisabled : undefined,
+              ]}
             >
-              {level}
-            </Text>
-          </Pressable>
-        ))}
+              <Text
+                style={[
+                  styles.levelText,
+                  isSelected ? styles.levelTextSelected : undefined,
+                ]}
+              >
+                {level}
+              </Text>
+            </AnimatedPressable>
+          );
+        })}
       </View>
-      <Text className="text-center text-sm text-muted-foreground">
-        {t(`urgency.${value}`)}
-      </Text>
+      <Text style={styles.description}>{t(`urgency.${value}`)}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 12,
+  },
+  scaleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  option: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    paddingVertical: 16,
+  },
+  optionDisabled: {
+    opacity: 0.5,
+  },
+  levelText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#374151',
+  },
+  levelTextSelected: {
+    color: '#FFFFFF',
+  },
+  description: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#6B7280',
+  },
+});

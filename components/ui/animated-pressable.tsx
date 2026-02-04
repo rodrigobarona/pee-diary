@@ -47,23 +47,25 @@ export function AnimatedPressable({
   const tapGesture = Gesture.Tap()
     .enabled(!disabled)
     .onBegin(() => {
-      pressed.value = withTiming(1, { duration: 100 });
+      // Use .set() for React Compiler compatibility (Rule 8.2)
+      pressed.set(withTiming(1, { duration: 100 }));
     })
     .onFinalize(() => {
-      pressed.value = withTiming(0, { duration: 200 });
+      pressed.set(withTiming(0, { duration: 200 }));
     })
     .onEnd(() => {
       runOnJS(handlePress)();
     });
 
   // Derived animation values - per animation-derived-value rule
+  // Use .get() for React Compiler compatibility (Rule 8.2)
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        scale: interpolate(pressed.value, [0, 1], [1, 0.97]),
+        scale: interpolate(pressed.get(), [0, 1], [1, 0.97]),
       },
     ],
-    opacity: interpolate(pressed.value, [0, 1], [1, 0.8]),
+    opacity: interpolate(pressed.get(), [0, 1], [1, 0.9]),
   }));
 
   return (

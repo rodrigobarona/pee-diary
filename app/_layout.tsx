@@ -68,10 +68,33 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="add"
+          name="add/urination"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
-            headerShown: Platform.OS === "web", // Header shown only on web, native uses sheet grabber
+            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === "ios",
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen
+          name="add/fluid"
+          options={{
+            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === "ios",
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen
+          name="add/leak"
+          options={{
+            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === "ios",
+            sheetCornerRadius: 24,
           }}
         />
         <Stack.Screen
@@ -96,10 +119,13 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="entry"
+          name="entry/[id]"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
-            headerShown: Platform.OS === "web", // Header shown only on web, native uses nested layout
+            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === "ios",
+            sheetCornerRadius: 24,
           }}
         />
         <Stack.Screen
