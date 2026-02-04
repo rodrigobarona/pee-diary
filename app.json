@@ -17,6 +17,9 @@
           "es",
           "pt"
         ]
+      },
+      "entitlements": {
+        "com.apple.developer.ubiquity-kvstore-identifier": "$(TeamIdentifierPrefix)$(CFBundleIdentifier)"
       }
     },
     "android": {
@@ -28,7 +31,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "care.eleva.peediary"
+      "package": "care.eleva.peediary",
+      "allowBackup": true
     },
     "web": {
       "output": "static",

@@ -169,7 +169,21 @@
     "privacy": "Privacy Policy",
     "dailyGoals": "Daily Goals",
     "editGoals": "Edit Daily Goals",
-    "goalsDescription": "Set your daily targets"
+    "goalsDescription": "Set your daily targets",
+    "cloudSync": "Cloud Sync",
+    "iCloudSync": "Sync with iCloud",
+    "iCloudSyncDescription": "Your data syncs automatically across devices",
+    "iCloudNotAvailable": "Sign in to iCloud in Settings to enable sync",
+    "syncSuccess": "Your data has been synced to iCloud",
+    "syncError": "Failed to sync. Please try again.",
+    "restoreFromCloud": "Restore from iCloud",
+    "restoreDescription": "Download your data from iCloud",
+    "restoreConfirm": "This will replace your current data with the backup from iCloud. Continue?",
+    "restore": "Restore",
+    "restoreSuccess": "Restored {{count}} entries from iCloud",
+    "restoreError": "Failed to restore. Please try again.",
+    "autoBackup": "Auto-backup enabled",
+    "autoBackupDescription": "Your data is automatically backed up to Google Drive"
   },
   "urgency": {
     "1": "None",

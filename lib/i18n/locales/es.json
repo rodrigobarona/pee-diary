@@ -169,7 +169,21 @@
     "privacy": "Política de privacidad",
     "dailyGoals": "Objetivos diarios",
     "editGoals": "Editar objetivos",
-    "goalsDescription": "Establece tus metas diarias"
+    "goalsDescription": "Establece tus metas diarias",
+    "cloudSync": "Sincronización",
+    "iCloudSync": "Sincronizar con iCloud",
+    "iCloudSyncDescription": "Tus datos se sincronizan automáticamente entre dispositivos",
+    "iCloudNotAvailable": "Inicia sesión en iCloud en Ajustes para activar la sincronización",
+    "syncSuccess": "Tus datos se han sincronizado con iCloud",
+    "syncError": "Error al sincronizar. Inténtalo de nuevo.",
+    "restoreFromCloud": "Restaurar desde iCloud",
+    "restoreDescription": "Descargar tus datos desde iCloud",
+    "restoreConfirm": "Esto reemplazará tus datos actuales con la copia de iCloud. ¿Continuar?",
+    "restore": "Restaurar",
+    "restoreSuccess": "Se restauraron {{count}} registros desde iCloud",
+    "restoreError": "Error al restaurar. Inténtalo de nuevo.",
+    "autoBackup": "Copia de seguridad automática",
+    "autoBackupDescription": "Tus datos se respaldan automáticamente en Google Drive"
   },
   "urgency": {
     "1": "Ninguna",

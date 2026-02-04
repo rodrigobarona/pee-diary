@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet } from 'react-native';
+import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -12,6 +12,7 @@ import { useDiaryStore, useStoreHydrated } from '@/lib/store';
 import { useI18n, type SupportedLocale } from '@/lib/i18n/context';
 import { cn } from '@/lib/theme';
 import { colors } from '@/lib/theme/colors';
+import { isCloudAvailable, syncToCloud, restoreFromCloud } from '@/lib/utils/backup';
 
 interface SettingRowProps {
   icon: string;
@@ -101,6 +102,8 @@ export default function SettingsScreen() {
   const goals = useDiaryStore((state) => state.goals);
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
   const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
+  const [isSyncing, setIsSyncing] = React.useState(false);
+  const cloudAvailable = isCloudAvailable();
 
   // Open goals screen if navigated with openGoals param
   React.useEffect(() => {
@@ -173,6 +176,74 @@ export default function SettingsScreen() {
       ]
     );
   }, [clearAllEntries, t]);
+
+  const handleSyncToCloud = React.useCallback(async () => {
+    if (isSyncing) return;
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    setIsSyncing(true);
+    try {
+      const result = await syncToCloud();
+      if (result.success) {
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+        Alert.alert(t('settings.iCloudSync'), t('settings.syncSuccess'));
+      } else {
+        Alert.alert(t('common.error'), result.error ?? t('settings.syncError'));
+      }
+    } catch {
+      Alert.alert(t('common.error'), t('settings.syncError'));
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [isSyncing, t]);
+
+  const handleRestoreFromCloud = React.useCallback(async () => {
+    if (isSyncing) return;
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    Alert.alert(
+      t('settings.restoreFromCloud'),
+      t('settings.restoreConfirm'),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('settings.restore'),
+          onPress: async () => {
+            setIsSyncing(true);
+            try {
+              const result = await restoreFromCloud();
+              if (result.success) {
+                if (Platform.OS !== 'web') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                }
+                Alert.alert(
+                  t('settings.restoreFromCloud'),
+                  t('settings.restoreSuccess', { count: result.entriesCount ?? 0 })
+                );
+              } else {
+                Alert.alert(t('common.error'), result.error ?? t('settings.restoreError'));
+              }
+            } catch {
+              Alert.alert(t('common.error'), t('settings.restoreError'));
+            } finally {
+              setIsSyncing(false);
+            }
+          },
+        },
+      ]
+    );
+  }, [isSyncing, t]);
 
   const currentLanguageLabel =
     languageOptions.find((l) => l.value === locale)?.label || 'English';
@@ -282,6 +353,53 @@ export default function SettingsScreen() {
           destructive
         />
       </View>
+
+      {/* Cloud Sync Section - following rendering-no-falsy-and rule */}
+      {Platform.OS === 'ios' ? (
+        <>
+          <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2 mt-6">
+            {t('settings.cloudSync')}
+          </Text>
+          <View
+            className="bg-surface rounded-xl px-4"
+            style={{ borderCurve: 'continuous' }}
+          >
+            <SettingRow
+              icon="cloud-sync"
+              label={t('settings.iCloudSync')}
+              description={cloudAvailable ? t('settings.iCloudSyncDescription') : t('settings.iCloudNotAvailable')}
+              onPress={cloudAvailable ? handleSyncToCloud : undefined}
+            >
+              {isSyncing ? (
+                <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+              ) : null}
+            </SettingRow>
+            <Separator />
+            <SettingRow
+              icon="cloud-download"
+              label={t('settings.restoreFromCloud')}
+              description={t('settings.restoreDescription')}
+              onPress={cloudAvailable ? handleRestoreFromCloud : undefined}
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2 mt-6">
+            {t('settings.cloudSync')}
+          </Text>
+          <View
+            className="bg-surface rounded-xl px-4"
+            style={{ borderCurve: 'continuous' }}
+          >
+            <SettingRow
+              icon="cloud-check"
+              label={t('settings.autoBackup')}
+              description={t('settings.autoBackupDescription')}
+            />
+          </View>
+        </>
+      )}
 
       {/* About Section */}
       <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2 mt-6">
