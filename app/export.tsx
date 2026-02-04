@@ -31,6 +31,7 @@ import {
   filterEntriesByDateRange,
   getDateRangePreset,
   type ExportFormat,
+  type PDFTranslations,
 } from "@/lib/utils/export";
 
 type PresetKey =
@@ -111,7 +112,7 @@ function OptionRow({
 }
 
 export default function ExportScreen() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const isHydrated = useStoreHydrated();
   const entries = useDiaryStore(useShallow((state) => state.entries));
@@ -182,6 +183,46 @@ export default function ExportScreen() {
     setSelectedFormat(fmt);
   }, []);
 
+  // Build PDF translations from i18n
+  const pdfTranslations: PDFTranslations = React.useMemo(
+    () => ({
+      title: t("pdf.title"),
+      generatedBy: t("pdf.generatedBy"),
+      generatedOn: t("pdf.generatedOn"),
+      page: t("pdf.page"),
+      of: t("pdf.of"),
+      time: t("pdf.time"),
+      fluidIntake: t("pdf.fluidIntake"),
+      type: t("pdf.type"),
+      ml: t("pdf.ml"),
+      voidVolume: t("pdf.voidVolume"),
+      urineLeaks: t("pdf.urineLeaks"),
+      drops: t("pdf.drops"),
+      moderate: t("pdf.moderate"),
+      full: t("pdf.full"),
+      urgency: t("pdf.urgency"),
+      pain: t("pdf.pain"),
+      notes: t("pdf.notes"),
+      dailyTotal: t("pdf.dailyTotal"),
+      voids: t("pdf.voids"),
+      leaks: t("pdf.leaks"),
+      fluidTypes: {
+        water: t("pdf.fluidTypes.water"),
+        coffee: t("pdf.fluidTypes.coffee"),
+        tea: t("pdf.fluidTypes.tea"),
+        juice: t("pdf.fluidTypes.juice"),
+        alcohol: t("pdf.fluidTypes.alcohol"),
+        other: t("pdf.fluidTypes.other"),
+      },
+      volumes: {
+        small: t("pdf.volumes.small"),
+        medium: t("pdf.volumes.medium"),
+        large: t("pdf.volumes.large"),
+      },
+    }),
+    [t],
+  );
+
   // Handle export
   const handleExport = React.useCallback(async () => {
     if (filteredEntries.length === 0) {
@@ -196,10 +237,13 @@ export default function ExportScreen() {
     setIsExporting(true);
 
     try {
-      const result = await exportAndShare(filteredEntries, selectedFormat, {
-        start: startDate,
-        end: endDate,
-      });
+      const result = await exportAndShare(
+        filteredEntries,
+        selectedFormat,
+        { start: startDate, end: endDate },
+        pdfTranslations,
+        locale,
+      );
 
       if (result.success) {
         if (Platform.OS !== "web") {
@@ -214,7 +258,7 @@ export default function ExportScreen() {
     } finally {
       setIsExporting(false);
     }
-  }, [filteredEntries, selectedFormat, startDate, endDate, t]);
+  }, [filteredEntries, selectedFormat, startDate, endDate, t, pdfTranslations, locale]);
 
   // Animated style for custom range
   const customRangeStyle = useAnimatedStyle(() => ({

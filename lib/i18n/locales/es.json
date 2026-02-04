@@ -172,7 +172,10 @@
     "exportError": "Error al exportar los datos. Inténtalo de nuevo.",
     "clearData": "Borrar todos los datos",
     "clearDataDescription": "Esta acción no se puede deshacer",
-    "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros?",
+    "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros? Esta acción no se puede deshacer.",
+    "clearDataTypeConfirm": "Escribe \"BORRAR\" para confirmar",
+    "clearDataConfirmWord": "BORRAR",
+    "clearDataPlaceholder": "BORRAR",
     "about": "Acerca de",
     "version": "Versión",
     "privacy": "Política de privacidad",
@@ -253,5 +256,40 @@
     "exporting": "Exportando...",
     "success": "Datos exportados correctamente",
     "error": "Error al exportar los datos"
+  },
+  "pdf": {
+    "title": "Diario Miccional",
+    "generatedBy": "Eleva Diary por Eleva Care",
+    "generatedOn": "Generado el",
+    "page": "Página",
+    "of": "de",
+    "time": "Hora",
+    "fluidIntake": "Líquidos Ingeridos",
+    "type": "Tipo",
+    "ml": "ml",
+    "voidVolume": "Vol. Micción",
+    "urineLeaks": "Pérdidas de Orina",
+    "drops": "Gotas",
+    "moderate": "Mod.",
+    "full": "Abund.",
+    "urgency": "Urg.",
+    "pain": "Dolor",
+    "notes": "Notas",
+    "dailyTotal": "Total Diario:",
+    "voids": "micciones",
+    "leaks": "pérdidas",
+    "fluidTypes": {
+      "water": "Agua",
+      "coffee": "Café",
+      "tea": "Té",
+      "juice": "Zumo",
+      "alcohol": "Alcohol",
+      "other": "Otro"
+    },
+    "volumes": {
+      "small": "Pequeño",
+      "medium": "Mediano",
+      "large": "Grande"
+    }
   }
 }

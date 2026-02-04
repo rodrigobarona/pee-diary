@@ -12,6 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
+  TextInput,
   View,
 } from "react-native";
 import { useShallow } from "zustand/react/shallow";
@@ -130,8 +131,15 @@ export default function SettingsScreen() {
   );
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
   const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
   const cloudAvailable = isCloudAvailable();
+
+  // Get the confirmation word for the current locale
+  const confirmWord = t("settings.clearDataConfirmWord");
+  const isDeleteConfirmed =
+    deleteConfirmText.toUpperCase() === confirmWord.toUpperCase();
 
   // Open goals screen if navigated with openGoals param
   React.useEffect(() => {
@@ -195,28 +203,69 @@ export default function SettingsScreen() {
     Linking.openURL(url);
   }, []);
 
-  const handleClearData = React.useCallback(() => {
+  const handleOpenDeleteConfirm = React.useCallback(() => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
 
-    Alert.alert(t("settings.clearData"), t("settings.clearDataConfirm"), [
-      {
-        text: t("common.cancel"),
-        style: "cancel",
-      },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: () => {
-          clearAllEntries();
-          if (Platform.OS !== "web") {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          }
-        },
-      },
-    ]);
-  }, [clearAllEntries, t]);
+    if (Platform.OS === "ios") {
+      // Use native iOS prompt with text input
+      Alert.prompt(
+        t("settings.clearData"),
+        `${t("settings.clearDataConfirm")}\n\n${t(
+          "settings.clearDataTypeConfirm",
+        )}`,
+        [
+          {
+            text: t("common.cancel"),
+            style: "cancel",
+          },
+          {
+            text: t("common.delete"),
+            style: "destructive",
+            onPress: (value) => {
+              if (value?.toUpperCase() === confirmWord.toUpperCase()) {
+                clearAllEntries();
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success,
+                );
+              } else {
+                // Show error if wrong word entered
+                Alert.alert(
+                  t("common.error"),
+                  t("settings.clearDataTypeConfirm"),
+                );
+              }
+            },
+          },
+        ],
+        "plain-text",
+        "",
+        "default",
+      );
+    } else {
+      // Use custom modal for Android
+      setDeleteConfirmText("");
+      setShowDeleteConfirm(true);
+    }
+  }, [t, confirmWord, clearAllEntries]);
+
+  const handleCloseDeleteConfirm = React.useCallback(() => {
+    setShowDeleteConfirm(false);
+    setDeleteConfirmText("");
+  }, []);
+
+  const handleConfirmDelete = React.useCallback(() => {
+    if (!isDeleteConfirmed) return;
+
+    clearAllEntries();
+    setShowDeleteConfirm(false);
+    setDeleteConfirmText("");
+
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }, [clearAllEntries, isDeleteConfirmed]);
 
   const handleSyncToCloud = React.useCallback(async () => {
     if (isSyncing) return;
@@ -340,6 +389,74 @@ export default function SettingsScreen() {
         </Pressable>
       </Modal>
 
+      {/* Delete Confirmation Modal (Android/Web only - iOS uses native Alert.prompt) */}
+      {Platform.OS !== "ios" && (
+        <Modal
+          visible={showDeleteConfirm}
+          transparent
+          animationType="fade"
+          onRequestClose={handleCloseDeleteConfirm}
+        >
+          <Pressable
+            style={styles.deleteModalOverlay}
+            onPress={handleCloseDeleteConfirm}
+          >
+            <Pressable
+              style={styles.deleteModalContent}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <Text style={styles.deleteModalTitle}>
+                {t("settings.clearData")}
+              </Text>
+              <Text style={styles.deleteModalDescription}>
+                {t("settings.clearDataConfirm")}
+              </Text>
+              <Text style={styles.deleteModalInstruction}>
+                {t("settings.clearDataTypeConfirm")}
+              </Text>
+              <TextInput
+                style={[
+                  styles.deleteInput,
+                  isDeleteConfirmed && styles.deleteInputConfirmed,
+                ]}
+                value={deleteConfirmText}
+                onChangeText={setDeleteConfirmText}
+                placeholder={confirmWord}
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="characters"
+                autoCorrect={false}
+                autoComplete="off"
+              />
+              <View style={styles.deleteModalButtons}>
+                <Pressable
+                  style={styles.deleteModalTextButton}
+                  onPress={handleCloseDeleteConfirm}
+                >
+                  <Text style={styles.deleteModalCancelText}>
+                    {t("common.cancel").toUpperCase()}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={styles.deleteModalTextButton}
+                  onPress={handleConfirmDelete}
+                  disabled={!isDeleteConfirmed}
+                >
+                  <Text
+                    style={[
+                      styles.deleteModalDeleteText,
+                      !isDeleteConfirmed &&
+                        styles.deleteModalDeleteTextDisabled,
+                    ]}
+                  >
+                    {t("common.delete").toUpperCase()}
+                  </Text>
+                </Pressable>
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      )}
+
       {/* Daily Goals Section */}
       <Text style={styles.sectionTitle}>{t("goals.title")}</Text>
       <View style={styles.card}>
@@ -394,7 +511,7 @@ export default function SettingsScreen() {
           icon="delete"
           label={t("settings.clearData")}
           description={t("settings.clearDataDescription")}
-          onPress={handleClearData}
+          onPress={handleOpenDeleteConfirm}
           destructive
         />
       </View>
@@ -620,5 +737,88 @@ const styles = StyleSheet.create({
   modalOptionTextSelected: {
     color: colors.primary.DEFAULT,
     fontWeight: "600",
+  },
+  // Delete confirmation modal styles (Material Design style for Android)
+  deleteModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  deleteModalContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 28,
+    paddingTop: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 8,
+    width: "100%",
+    maxWidth: 320,
+    elevation: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+  },
+  deleteModalTitle: {
+    fontSize: 24,
+    fontWeight: "400",
+    color: "#1F1F1F",
+    marginBottom: 16,
+  },
+  deleteModalDescription: {
+    fontSize: 14,
+    color: "#49454F",
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  deleteModalInstruction: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#1F1F1F",
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  deleteInput: {
+    width: "100%",
+    height: 56,
+    borderWidth: 1,
+    borderColor: "#79747E",
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: "#1F1F1F",
+    marginBottom: 16,
+    backgroundColor: "transparent",
+  },
+  deleteInputConfirmed: {
+    borderColor: colors.error,
+    borderWidth: 2,
+  },
+  deleteModalButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginTop: 8,
+  },
+  deleteModalTextButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+  },
+  deleteModalCancelText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.primary.DEFAULT,
+    letterSpacing: 0.1,
+  },
+  deleteModalDeleteText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.error,
+    letterSpacing: 0.1,
+  },
+  deleteModalDeleteTextDisabled: {
+    color: "#CAC4D0",
   },
 });

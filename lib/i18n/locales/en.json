@@ -172,7 +172,10 @@
     "exportError": "Failed to export data. Please try again.",
     "clearData": "Clear All Data",
     "clearDataDescription": "This action cannot be undone",
-    "clearDataConfirm": "Are you sure you want to delete all your diary entries?",
+    "clearDataConfirm": "Are you sure you want to delete all your diary entries? This action cannot be undone.",
+    "clearDataTypeConfirm": "Type \"DELETE\" to confirm",
+    "clearDataConfirmWord": "DELETE",
+    "clearDataPlaceholder": "DELETE",
     "about": "About",
     "version": "Version",
     "privacy": "Privacy Policy",
@@ -253,5 +256,40 @@
     "exporting": "Exporting...",
     "success": "Data exported successfully",
     "error": "Failed to export data"
+  },
+  "pdf": {
+    "title": "Bladder Diary",
+    "generatedBy": "Eleva Diary by Eleva Care",
+    "generatedOn": "Generated on",
+    "page": "Page",
+    "of": "of",
+    "time": "Time",
+    "fluidIntake": "Fluid Intake",
+    "type": "Type",
+    "ml": "ml",
+    "voidVolume": "Void Volume",
+    "urineLeaks": "Urine Leaks",
+    "drops": "Drops",
+    "moderate": "Mod.",
+    "full": "Full",
+    "urgency": "Urg.",
+    "pain": "Pain",
+    "notes": "Notes",
+    "dailyTotal": "Daily Total:",
+    "voids": "voids",
+    "leaks": "leaks",
+    "fluidTypes": {
+      "water": "Water",
+      "coffee": "Coffee",
+      "tea": "Tea",
+      "juice": "Juice",
+      "alcohol": "Alcohol",
+      "other": "Other"
+    },
+    "volumes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
   }
 }
