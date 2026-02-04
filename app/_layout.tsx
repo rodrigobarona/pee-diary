@@ -76,6 +76,16 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             headerShown: Platform.OS === 'web', // Header shown only on web, native uses nested layout
           }}
         />
+        <Stack.Screen
+          name="export"
+          options={{
+            presentation: Platform.OS === 'web' ? 'card' : 'formSheet',
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === 'ios' ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === 'ios',
+            sheetCornerRadius: 24,
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

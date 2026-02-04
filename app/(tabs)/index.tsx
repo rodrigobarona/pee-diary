@@ -346,6 +346,11 @@ export default function HomeScreen() {
     router.push('/(tabs)/settings?openGoals=true');
   }, [router]);
 
+  // Navigate to export screen
+  const handleExportData = React.useCallback(() => {
+    router.push('/export');
+  }, [router]);
+
   // Handle time period press - navigate to history with period filter
   const handlePeriodPress = React.useCallback((period: 'morning' | 'afternoon' | 'evening' | 'night') => {
     if (Platform.OS !== 'web') {
@@ -534,6 +539,12 @@ export default function HomeScreen() {
               color="#F59E0B"
             />
           </View>
+
+          {/* Export Data Link */}
+          <Pressable onPress={handleExportData} style={styles.exportDataLink}>
+            <MaterialCommunityIcons name="download" size={14} color="#9CA3AF" />
+            <Text style={styles.exportDataText}>{t('home.exportData')}</Text>
+          </Pressable>
         </View>
 
         {/* Empty state hint */}
@@ -647,6 +658,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     marginTop: 12,
+  },
+  exportDataLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    marginTop: 4,
+  },
+  exportDataText: {
+    fontSize: 13,
+    color: '#9CA3AF',
   },
   // Empty state
   emptyHint: {

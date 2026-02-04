@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { View, StyleSheet, Pressable, Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import * as React from "react";
+import { View, StyleSheet, Pressable, Platform } from "react-native";
+import * as Haptics from "expo-haptics";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { Text } from '@/components/ui/text';
+import { Text } from "@/components/ui/text";
 
 interface InsightCardProps {
   title: string;
   value: string;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   color: string;
@@ -25,7 +25,7 @@ export function InsightCard({
   onPress,
 }: InsightCardProps) {
   const handlePress = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     onPress?.();
@@ -33,23 +33,23 @@ export function InsightCard({
 
   const getTrendIcon = (): keyof typeof MaterialCommunityIcons.glyphMap => {
     switch (trend) {
-      case 'up':
-        return 'trending-up';
-      case 'down':
-        return 'trending-down';
+      case "up":
+        return "trending-up";
+      case "down":
+        return "trending-down";
       default:
-        return 'minus';
+        return "minus";
     }
   };
 
   const getTrendColor = (): string => {
     switch (trend) {
-      case 'up':
-        return '#10B981'; // Green
-      case 'down':
-        return '#EF4444'; // Red
+      case "up":
+        return "#10B981"; // Green
+      case "down":
+        return "#EF4444"; // Red
       default:
-        return '#D1D5DB'; // Light gray
+        return "#D1D5DB"; // Light gray
     }
   };
 
@@ -105,17 +105,24 @@ export function InsightCard({
 interface CompactInsightProps {
   label: string;
   value: string;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   color?: string;
 }
 
-export function CompactInsight({ label, value, trend, color = '#6B7280' }: CompactInsightProps) {
-  const getTrendIcon = (): keyof typeof MaterialCommunityIcons.glyphMap | null => {
+export function CompactInsight({
+  label,
+  value,
+  trend,
+  color = "#6B7280",
+}: CompactInsightProps) {
+  const getTrendIcon = ():
+    | keyof typeof MaterialCommunityIcons.glyphMap
+    | null => {
     switch (trend) {
-      case 'up':
-        return 'arrow-up';
-      case 'down':
-        return 'arrow-down';
+      case "up":
+        return "arrow-up";
+      case "down":
+        return "arrow-down";
       default:
         return null;
     }
@@ -123,12 +130,12 @@ export function CompactInsight({ label, value, trend, color = '#6B7280' }: Compa
 
   const getTrendColor = (): string => {
     switch (trend) {
-      case 'up':
-        return '#10B981';
-      case 'down':
-        return '#EF4444';
+      case "up":
+        return "#10B981";
+      case "down":
+        return "#EF4444";
       default:
-        return '#6B7280';
+        return "#6B7280";
     }
   };
 
@@ -157,48 +164,48 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 8,
-    alignItems: 'center',
+    alignItems: "center",
     minHeight: 100,
   },
   iconContainer: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 6,
   },
   value: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
+    fontWeight: "700",
+    color: "#111827",
+    textAlign: "center",
   },
   title: {
     fontSize: 10,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    color: "#9CA3AF",
+    textAlign: "center",
     marginTop: 2,
   },
   trendContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 2,
     marginTop: 4,
     minHeight: 14,
   },
   trendText: {
     fontSize: 10,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   trendPlaceholder: {
     fontSize: 10,
-    color: 'transparent',
+    color: "transparent",
   },
 });
 
@@ -208,15 +215,15 @@ const compactStyles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   valueRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   value: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

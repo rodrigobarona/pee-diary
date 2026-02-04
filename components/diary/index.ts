@@ -2,6 +2,7 @@ export * from './amount-picker';
 export * from './calendar';
 export * from './calendar-header';
 export * from './daily-stats-bar';
+export * from './date-range-picker';
 export * from './drink-type-picker';
 export * from './entry-card';
 export * from './fab-menu';

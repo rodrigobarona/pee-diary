@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet } from 'react-native';
-import { documentDirectory, writeAsStringAsync } from 'expo-file-system';
-import { shareAsync } from 'expo-sharing';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { format } from 'date-fns';
 
 import { useShallow } from 'zustand/react/shallow';
 
@@ -128,9 +125,9 @@ export default function SettingsScreen() {
     router.push('/goals');
   }, [router]);
 
-  const handleExport = async () => {
+  const handleExport = React.useCallback(() => {
     if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
     // Wait for store to be hydrated
@@ -139,119 +136,16 @@ export default function SettingsScreen() {
       return;
     }
 
-    // Get entries directly from store state
+    // Check if there are entries to export
     const currentEntries = useDiaryStore.getState().entries;
-
     if (currentEntries.length === 0) {
       Alert.alert(t('settings.export'), t('settings.noDataToExport'));
       return;
     }
 
-    if (!documentDirectory) {
-      Alert.alert(t('common.error'), t('settings.exportError'));
-      return;
-    }
-
-    try {
-      // Create CSV content with proper escaping
-      const escapeCSV = (value: string | number | undefined | null): string => {
-        if (value === undefined || value === null) return '';
-        const str = String(value);
-        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-          return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-      };
-
-      const headers = [
-        'ID',
-        'Type',
-        'Timestamp',
-        'Volume',
-        'Urgency',
-        'Had Leak',
-        'Had Pain',
-        'Drink Type',
-        'Amount (ml)',
-        'Severity',
-        'Notes',
-      ].join(',');
-
-      const rows = currentEntries.map((entry) => {
-        const base = [
-          escapeCSV(entry.id),
-          escapeCSV(entry.type),
-          escapeCSV(entry.timestamp),
-        ];
-
-        switch (entry.type) {
-          case 'urination':
-            return [
-              ...base,
-              escapeCSV(entry.volume),
-              escapeCSV(entry.urgency),
-              entry.hadLeak ? 'Yes' : 'No',
-              entry.hadPain ? 'Yes' : 'No',
-              '',
-              '',
-              '',
-              escapeCSV(entry.notes),
-            ].join(',');
-          case 'fluid':
-            return [
-              ...base,
-              '',
-              '',
-              '',
-              '',
-              escapeCSV(entry.drinkType),
-              escapeCSV(entry.amount),
-              '',
-              escapeCSV(entry.notes),
-            ].join(',');
-          case 'leak':
-            return [
-              ...base,
-              '',
-              escapeCSV(entry.urgency),
-              '',
-              '',
-              '',
-              '',
-              escapeCSV(entry.severity),
-              escapeCSV(entry.notes),
-            ].join(',');
-          default:
-            return base.join(',');
-        }
-      });
-
-      const csv = [headers, ...rows].join('\n');
-      const filename = `pee-diary-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-      const filePath = `${documentDirectory}${filename}`;
-
-      await writeAsStringAsync(filePath, csv);
-      
-      // Share the file - this might throw if user cancels, which is ok
-      try {
-        await shareAsync(filePath, {
-          mimeType: 'text/csv',
-          UTI: 'public.comma-separated-values-text',
-        });
-      } catch (shareError) {
-        // User cancelled share sheet - this is not an error
-        console.log('Share cancelled or failed:', shareError);
-      }
-
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      Alert.alert(t('common.error'), `${t('settings.exportError')}: ${errorMessage}`);
-    }
-  };
+    // Navigate to export screen
+    router.push('/export');
+  }, [isHydrated, t, router]);
 
   const handleClearData = React.useCallback(() => {
     if (Platform.OS !== 'web') {
