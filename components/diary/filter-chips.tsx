@@ -80,7 +80,7 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
             >
               <MaterialCommunityIcons
                 name={chip.icon}
-                size={14}
+                size={12}
                 color={isSelected ? '#FFFFFF' : chip.color}
               />
               <Text
@@ -132,27 +132,27 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    height: 48,
+    height: 36,
     position: 'relative',
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    gap: 8,
-    height: 48,
+    gap: 6,
+    height: 36,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     backgroundColor: '#F3F4F6',
-    borderRadius: 20,
+    borderRadius: 16,
   },
   chipText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '500',
     color: '#6B7280',
   },
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   countText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#9CA3AF',
     marginLeft: 2,

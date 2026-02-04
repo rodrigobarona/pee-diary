@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import { Platform } from 'react-native';
 import { useI18n } from '@/lib/i18n/context';
 
 export default function EntryLayout() {
@@ -10,15 +9,17 @@ export default function EntryLayout() {
       key={locale}
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: '#FFFFFF' },
-        headerTitleStyle: { fontWeight: '600', fontSize: 17 },
+        headerStyle: {
+          backgroundColor: '#FFFFFF',
+        },
+        headerTitleStyle: {
+          color: '#333333',
+          fontWeight: '600',
+        },
         headerTintColor: '#006D77',
-        headerTitleAlign: 'center',
-        contentStyle: { backgroundColor: '#F9FAFB' },
-        ...(Platform.OS === 'ios' && {
-          headerShadowVisible: false,
-          headerBackTitle: '',
-        }),
+        // NOTE: contentStyle removed - let individual screens handle background
+        // Presentation settings (formSheet, sheetAllowedDetents, etc.)
+        // are configured in app/_layout.tsx at the root level to avoid conflicts
       }}
     >
       <Stack.Screen

@@ -7,9 +7,11 @@ import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { format } from 'date-fns';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Text } from '@/components/ui/text';
 import { Separator } from '@/components/ui/separator';
-import { useDiaryStore } from '@/lib/store';
+import { useDiaryStore, useStoreHydrated } from '@/lib/store';
 import { useI18n, type SupportedLocale } from '@/lib/i18n/context';
 import { cn } from '@/lib/theme';
 import { colors } from '@/lib/theme/colors';
@@ -97,7 +99,8 @@ export default function SettingsScreen() {
   const { t, locale, setLocale } = useI18n();
   const router = useRouter();
   const params = useLocalSearchParams<{ openGoals?: string }>();
-  const entries = useDiaryStore((state) => state.entries);
+  const isHydrated = useStoreHydrated();
+  const entries = useDiaryStore(useShallow((state) => state.entries));
   const goals = useDiaryStore((state) => state.goals);
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
   const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
@@ -125,12 +128,21 @@ export default function SettingsScreen() {
     router.push('/goals');
   }, [router]);
 
-  const handleExport = React.useCallback(async () => {
+  const handleExport = async () => {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
-    if (entries.length === 0) {
+    // Wait for store to be hydrated
+    if (!isHydrated) {
+      Alert.alert(t('common.error'), 'Please wait for data to load...');
+      return;
+    }
+
+    // Get entries directly from store state
+    const currentEntries = useDiaryStore.getState().entries;
+
+    if (currentEntries.length === 0) {
       Alert.alert(t('settings.export'), t('settings.noDataToExport'));
       return;
     }
@@ -165,7 +177,7 @@ export default function SettingsScreen() {
         'Notes',
       ].join(',');
 
-      const rows = entries.map((entry) => {
+      const rows = currentEntries.map((entry) => {
         const base = [
           escapeCSV(entry.id),
           escapeCSV(entry.type),
@@ -219,19 +231,27 @@ export default function SettingsScreen() {
       const filePath = `${documentDirectory}${filename}`;
 
       await writeAsStringAsync(filePath, csv);
-      await shareAsync(filePath, {
-        mimeType: 'text/csv',
-        UTI: 'public.comma-separated-values-text',
-      });
+      
+      // Share the file - this might throw if user cancels, which is ok
+      try {
+        await shareAsync(filePath, {
+          mimeType: 'text/csv',
+          UTI: 'public.comma-separated-values-text',
+        });
+      } catch (shareError) {
+        // User cancelled share sheet - this is not an error
+        console.log('Share cancelled or failed:', shareError);
+      }
 
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
     } catch (error) {
       console.error('Export error:', error);
-      Alert.alert(t('common.error'), t('settings.exportError'));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      Alert.alert(t('common.error'), `${t('settings.exportError')}: ${errorMessage}`);
     }
-  }, [entries, t]);
+  };
 
   const handleClearData = React.useCallback(() => {
     if (Platform.OS !== 'web') {
@@ -393,7 +413,7 @@ export default function SettingsScreen() {
       {/* Stats */}
       <View className="mt-6 items-center">
         <Text className="text-sm text-muted-foreground">
-          {entries.length} entries recorded
+          {isHydrated ? `${entries.length} entries recorded` : 'Loading...'}
         </Text>
       </View>
     </ScrollView>

@@ -140,16 +140,21 @@ export function TimelineEntry({
             </View>
           </View>
 
+          {/* Edited indicator - subtle pencil icon */}
+          {entry.editHistory && entry.editHistory.length > 0 ? (
+            <MaterialCommunityIcons name="pencil-outline" size={12} color="#D1D5DB" style={styles.editedIcon} />
+          ) : null}
+
           {/* Arrow */}
           <MaterialCommunityIcons name="chevron-right" size={18} color="#D1D5DB" />
         </View>
 
         {/* Notes */}
-        {entry.notes && (
+        {entry.notes ? (
           <Text style={styles.notes} numberOfLines={1}>
             💬 {entry.notes}
           </Text>
-        )}
+        ) : null}
       </Pressable>
     </View>
   );
@@ -293,6 +298,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#111827',
+  },
+  editedIcon: {
+    marginRight: 4,
   },
   detailsRow: {
     flexDirection: 'row',

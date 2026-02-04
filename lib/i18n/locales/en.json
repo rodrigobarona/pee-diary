@@ -4,6 +4,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
+    "edited": "Edited",
     "back": "Back",
     "done": "Done",
     "loading": "Loading...",
@@ -133,6 +134,8 @@
     "noEntriesYet": "No entries yet",
     "startTracking": "Start tracking to see your history",
     "noDataForDay": "No entries for this day",
+    "noEntriesForDate": "Nothing was recorded on this date",
+    "tapToAdd": "Tap here to add",
     "weekly": "Weekly",
     "monthly": "Monthly"
   },
