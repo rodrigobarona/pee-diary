@@ -58,20 +58,28 @@ export function CalendarHeader({
   const { t } = useI18n();
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [currentWeekStart, setCurrentWeekStart] = React.useState(() => 
-    startOfWeek(selectedDate, { weekStartsOn: 0 })
+    startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
   const [pickerDate, setPickerDate] = React.useState(new Date());
   
   const translateX = useSharedValue(0);
   const today = new Date();
-  const todayWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+  const todayWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+
+  // Sync week view when selectedDate changes from external navigation
+  React.useEffect(() => {
+    const newWeekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    if (!isSameWeek(newWeekStart, currentWeekStart, { weekStartsOn: 1 })) {
+      setCurrentWeekStart(newWeekStart);
+    }
+  }, [selectedDate, currentWeekStart]);
 
   // Check if we're viewing the current week
-  const isCurrentWeek = isSameWeek(currentWeekStart, todayWeekStart, { weekStartsOn: 0 });
+  const isCurrentWeek = isSameWeek(currentWeekStart, todayWeekStart, { weekStartsOn: 1 });
 
   // Week days for the current week strip
   const weekDays = React.useMemo(() => {
-    const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 0 });
+    const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
     return eachDayOfInterval({ start: currentWeekStart, end: weekEnd });
   }, [currentWeekStart]);
 
@@ -79,12 +87,12 @@ export function CalendarHeader({
   const monthDays = React.useMemo(() => {
     const monthStart = startOfMonth(selectedDate);
     const monthEnd = endOfMonth(selectedDate);
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [selectedDate]);
 
-  const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   const animateWeekChange = React.useCallback((direction: 'left' | 'right', callback: () => void) => {
     const toValue = direction === 'left' ? -WEEK_WIDTH : WEEK_WIDTH;
@@ -126,7 +134,7 @@ export function CalendarHeader({
     }
     const todayDate = new Date();
     onSelectDate(todayDate);
-    setCurrentWeekStart(startOfWeek(todayDate, { weekStartsOn: 0 }));
+    setCurrentWeekStart(startOfWeek(todayDate, { weekStartsOn: 1 }));
   }, [onSelectDate]);
 
   const handleSelectDate = React.useCallback(
@@ -135,7 +143,7 @@ export function CalendarHeader({
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       onSelectDate(date);
-      setCurrentWeekStart(startOfWeek(date, { weekStartsOn: 0 }));
+      setCurrentWeekStart(startOfWeek(date, { weekStartsOn: 1 }));
     },
     [onSelectDate]
   );

@@ -70,19 +70,23 @@ export function InsightCard({
         {title}
       </Text>
 
-      {/* Trend indicator */}
-      {trend && trendValue ? (
-        <View style={styles.trendContainer}>
-          <MaterialCommunityIcons
-            name={getTrendIcon()}
-            size={11}
-            color={getTrendColor()}
-          />
-          <Text style={[styles.trendText, { color: getTrendColor() }]}>
-            {trendValue}
-          </Text>
-        </View>
-      ) : null}
+      {/* Trend indicator - always show container for consistent height */}
+      <View style={styles.trendContainer}>
+        {trend && trendValue ? (
+          <>
+            <MaterialCommunityIcons
+              name={getTrendIcon()}
+              size={11}
+              color={getTrendColor()}
+            />
+            <Text style={[styles.trendText, { color: getTrendColor() }]}>
+              {trendValue}
+            </Text>
+          </>
+        ) : (
+          <Text style={styles.trendPlaceholder}> </Text>
+        )}
+      </View>
     </View>
   );
 
@@ -183,12 +187,18 @@ const styles = StyleSheet.create({
   trendContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 2,
     marginTop: 4,
+    minHeight: 14,
   },
   trendText: {
     fontSize: 10,
     fontWeight: '500',
+  },
+  trendPlaceholder: {
+    fontSize: 10,
+    color: 'transparent',
   },
 });
 
