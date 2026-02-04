@@ -142,16 +142,19 @@ export default function UrinationScreen() {
           }}
         >
           <SectionTitle>{t("urination.notes")}</SectionTitle>
-          <Input
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t("common.notesPlaceholder")}
-            multiline
-            numberOfLines={3}
-            style={styles.notesInput}
-            textAlignVertical="top"
-            onFocus={handleNotesFocus}
-          />
+          <FormCard>
+            <Input
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t("common.notesPlaceholder")}
+              multiline
+              numberOfLines={3}
+              className="bg-transparent border-0 px-4 py-3 h-auto"
+              style={styles.notesInput}
+              textAlignVertical="top"
+              onFocus={handleNotesFocus}
+            />
+          </FormCard>
         </View>
       </ScrollView>
 

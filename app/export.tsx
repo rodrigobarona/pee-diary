@@ -250,12 +250,6 @@ export default function ExportScreen() {
       color: "#DC2626",
     },
     {
-      key: "xlsx",
-      label: `${t("export.xlsx")} - ${t("export.xlsxDesc")}`,
-      icon: "microsoft-excel",
-      color: "#217346",
-    },
-    {
       key: "csv",
       label: `${t("export.csv")} - ${t("export.csvDesc")}`,
       icon: "file-delimited",

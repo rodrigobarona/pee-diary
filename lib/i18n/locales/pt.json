@@ -116,7 +116,7 @@
     "urgency": "Nível de urgência",
     "hadLeak": "Houve alguma perda?",
     "hadPain": "Sentiu dor ou desconforto?",
-    "notes": "Notas (opcional)"
+    "notes": "Notas"
   },
   "fluid": {
     "title": "Registar Ingestão de Líquidos",
@@ -129,7 +129,7 @@
     "alcohol": "Álcool",
     "other": "Outro",
     "amount": "Quantidade (ml)",
-    "notes": "Notas (opcional)"
+    "notes": "Notas"
   },
   "leak": {
     "title": "Registar Perda/Acidente",
@@ -139,7 +139,7 @@
     "moderate": "Moderado",
     "full": "Completo",
     "urgency": "Nível de urgência",
-    "notes": "Notas (opcional)"
+    "notes": "Notas"
   },
   "history": {
     "title": "Histórico",
@@ -246,8 +246,6 @@
     "jsonDesc": "Programador",
     "pdf": "PDF",
     "pdfDesc": "Fácil de ler",
-    "xlsx": "Excel",
-    "xlsxDesc": "Análise em folha de cálculo",
     "preview": "Pré-visualização",
     "entriesCount": "{{count}} registos prontos",
     "noEntries": "Sem registos no período selecionado",

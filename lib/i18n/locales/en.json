@@ -116,7 +116,7 @@
     "urgency": "Urgency Level",
     "hadLeak": "Had any leakage?",
     "hadPain": "Experienced pain or discomfort?",
-    "notes": "Notes (optional)"
+    "notes": "Notes"
   },
   "fluid": {
     "title": "Log Fluid Intake",
@@ -129,7 +129,7 @@
     "alcohol": "Alcohol",
     "other": "Other",
     "amount": "Amount (ml)",
-    "notes": "Notes (optional)"
+    "notes": "Notes"
   },
   "leak": {
     "title": "Log Leak/Accident",
@@ -139,7 +139,7 @@
     "moderate": "Moderate",
     "full": "Full",
     "urgency": "Urgency Level",
-    "notes": "Notes (optional)"
+    "notes": "Notes"
   },
   "history": {
     "title": "History",
@@ -246,8 +246,6 @@
     "jsonDesc": "Developer",
     "pdf": "PDF",
     "pdfDesc": "Easy to read",
-    "xlsx": "Excel",
-    "xlsxDesc": "Spreadsheet analysis",
     "preview": "Preview",
     "entriesCount": "{{count}} entries ready",
     "noEntries": "No entries in selected range",

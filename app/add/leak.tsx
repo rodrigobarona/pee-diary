@@ -13,7 +13,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TimePicker, UrgencyScale } from "@/components/diary";
-import { AnimatedPressable, ScreenHeader, SectionTitle } from "@/components/ui";
+import {
+  AnimatedPressable,
+  FormCard,
+  ScreenHeader,
+  SectionTitle,
+} from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -186,16 +191,19 @@ export default function LeakScreen() {
           }}
         >
           <SectionTitle>{t("leak.notes")}</SectionTitle>
-          <Input
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t("common.notesPlaceholder")}
-            multiline
-            numberOfLines={3}
-            style={styles.notesInput}
-            textAlignVertical="top"
-            onFocus={handleNotesFocus}
-          />
+          <FormCard>
+            <Input
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t("common.notesPlaceholder")}
+              multiline
+              numberOfLines={3}
+              className="bg-transparent border-0 px-4 py-3 h-auto"
+              style={styles.notesInput}
+              textAlignVertical="top"
+              onFocus={handleNotesFocus}
+            />
+          </FormCard>
         </View>
       </ScrollView>
 

@@ -354,7 +354,9 @@ export default function SettingsScreen() {
       </View>
 
       {/* General Section */}
-      <Text style={styles.sectionTitle}>General</Text>
+      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
+        General
+      </Text>
       <View style={styles.card}>
         <SettingRow
           icon="translate"

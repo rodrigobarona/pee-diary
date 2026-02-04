@@ -3,28 +3,13 @@ import { format } from "date-fns";
 import {
   cacheDirectory,
   documentDirectory,
-  EncodingType,
   writeAsStringAsync,
 } from "expo-file-system";
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
-import * as XLSX from "xlsx";
 
 // Get available directory for file operations (null on web)
 const getFileDirectory = () => documentDirectory || cacheDirectory;
-
-// Check if running on web platform
-// On web, both documentDirectory and cacheDirectory are null
-const isWeb = () => {
-  // Primary check: expo-file-system directories are null on web
-  if (!documentDirectory && !cacheDirectory) {
-    return true;
-  }
-  // Fallback check: browser environment
-  return (
-    typeof window !== "undefined" && typeof window.document !== "undefined"
-  );
-};
 
 /**
  * Filter entries by date range (inclusive)
@@ -478,198 +463,7 @@ export function generatePDFHTML(
   `;
 }
 
-export type ExportFormat = "csv" | "json" | "pdf" | "xlsx";
-
-/**
- * Create Excel workbook with multiple sheets for comprehensive analysis
- */
-export function createExcelWorkbook(
-  entries: DiaryEntry[],
-  dateRange: { start: Date; end: Date },
-): XLSX.WorkBook {
-  const sortedEntries = [...entries].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
-
-  // Sheet 1: All Entries - Complete chronological list
-  const allEntriesData = sortedEntries.map((entry) => {
-    const entryDate = new Date(entry.timestamp);
-    const baseData = {
-      Date: format(entryDate, "yyyy-MM-dd"),
-      Time: format(entryDate, "HH:mm"),
-      Type: entry.type.charAt(0).toUpperCase() + entry.type.slice(1),
-      Volume: "",
-      Urgency: "",
-      "Drink Type": "",
-      "Amount (ml)": "",
-      Severity: "",
-      "Had Leak": "",
-      "Had Pain": "",
-      Notes: entry.notes || "",
-    };
-
-    if (entry.type === "urination") {
-      baseData.Volume =
-        entry.volume.charAt(0).toUpperCase() + entry.volume.slice(1);
-      baseData.Urgency = getUrgencyLabel(entry.urgency);
-      baseData["Had Leak"] = entry.hadLeak ? "Yes" : "No";
-      baseData["Had Pain"] = entry.hadPain ? "Yes" : "No";
-    } else if (entry.type === "fluid") {
-      baseData["Drink Type"] =
-        entry.drinkType.charAt(0).toUpperCase() + entry.drinkType.slice(1);
-      baseData["Amount (ml)"] = String(entry.amount);
-    } else if (entry.type === "leak") {
-      baseData.Severity =
-        entry.severity.charAt(0).toUpperCase() + entry.severity.slice(1);
-      baseData.Urgency = getUrgencyLabel(entry.urgency);
-    }
-
-    return baseData;
-  });
-
-  // Sheet 2: Daily Summary - Aggregated data per day
-  const groupedByDate = sortedEntries.reduce((acc, entry) => {
-    const dateKey = format(new Date(entry.timestamp), "yyyy-MM-dd");
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
-    acc[dateKey].push(entry);
-    return acc;
-  }, {} as Record<string, DiaryEntry[]>);
-
-  const dailySummaryData = Object.entries(groupedByDate).map(
-    ([date, dayEntries]) => {
-      const urinationEntries = dayEntries.filter((e) => e.type === "urination");
-      const fluidEntries = dayEntries.filter((e) => e.type === "fluid");
-      const leakEntries = dayEntries.filter((e) => e.type === "leak");
-
-      const totalFluids = fluidEntries.reduce(
-        (sum, e) => sum + (e.type === "fluid" ? e.amount : 0),
-        0,
-      );
-
-      const urgencySum = urinationEntries.reduce(
-        (sum, e) => sum + (e.type === "urination" ? e.urgency : 0),
-        0,
-      );
-      const avgUrgency =
-        urinationEntries.length > 0
-          ? (urgencySum / urinationEntries.length).toFixed(1)
-          : "-";
-
-      return {
-        Date: date,
-        "Day of Week": format(new Date(date), "EEEE"),
-        "Total Voids": urinationEntries.length,
-        "Total Fluids (ml)": totalFluids,
-        "Fluid Entries": fluidEntries.length,
-        "Avg Urgency": avgUrgency,
-        "Leak Count": leakEntries.length,
-        Entries: dayEntries.length,
-      };
-    },
-  );
-
-  // Sheet 3: Summary Stats - Overall statistics
-  const urinationEntries = entries.filter((e) => e.type === "urination");
-  const fluidEntries = entries.filter((e) => e.type === "fluid");
-  const leakEntries = entries.filter((e) => e.type === "leak");
-  const totalFluids = fluidEntries.reduce(
-    (sum, e) => sum + (e.type === "fluid" ? e.amount : 0),
-    0,
-  );
-
-  const dateRangeStr = `${format(dateRange.start, "MMM d, yyyy")} - ${format(
-    dateRange.end,
-    "MMM d, yyyy",
-  )}`;
-
-  const summaryStatsData = [
-    { Metric: "Report", Value: "Eleva Diary Export" },
-    { Metric: "Date Range", Value: dateRangeStr },
-    { Metric: "Export Date", Value: format(new Date(), "MMM d, yyyy HH:mm") },
-    { Metric: "", Value: "" },
-    { Metric: "Total Entries", Value: entries.length },
-    { Metric: "Total Days", Value: Object.keys(groupedByDate).length },
-    { Metric: "", Value: "" },
-    { Metric: "Urination Entries", Value: urinationEntries.length },
-    { Metric: "Fluid Entries", Value: fluidEntries.length },
-    { Metric: "Leak Entries", Value: leakEntries.length },
-    { Metric: "", Value: "" },
-    { Metric: "Total Fluids (ml)", Value: totalFluids },
-    {
-      Metric: "Avg Fluids per Day (ml)",
-      Value:
-        Object.keys(groupedByDate).length > 0
-          ? Math.round(totalFluids / Object.keys(groupedByDate).length)
-          : 0,
-    },
-    {
-      Metric: "Avg Voids per Day",
-      Value:
-        Object.keys(groupedByDate).length > 0
-          ? (
-              urinationEntries.length / Object.keys(groupedByDate).length
-            ).toFixed(1)
-          : 0,
-    },
-  ];
-
-  // Create workbook
-  const workbook = XLSX.utils.book_new();
-
-  // Add All Entries sheet
-  const allEntriesSheet = XLSX.utils.json_to_sheet(allEntriesData);
-  allEntriesSheet["!cols"] = [
-    { wch: 12 }, // Date
-    { wch: 6 }, // Time
-    { wch: 10 }, // Type
-    { wch: 8 }, // Volume
-    { wch: 10 }, // Urgency
-    { wch: 12 }, // Drink Type
-    { wch: 12 }, // Amount
-    { wch: 10 }, // Severity
-    { wch: 10 }, // Had Leak
-    { wch: 10 }, // Had Pain
-    { wch: 30 }, // Notes
-  ];
-  XLSX.utils.book_append_sheet(workbook, allEntriesSheet, "All Entries");
-
-  // Add Daily Summary sheet
-  const dailySummarySheet = XLSX.utils.json_to_sheet(dailySummaryData);
-  dailySummarySheet["!cols"] = [
-    { wch: 12 }, // Date
-    { wch: 12 }, // Day of Week
-    { wch: 12 }, // Total Voids
-    { wch: 16 }, // Total Fluids
-    { wch: 14 }, // Fluid Entries
-    { wch: 12 }, // Avg Urgency
-    { wch: 12 }, // Leak Count
-    { wch: 10 }, // Entries
-  ];
-  XLSX.utils.book_append_sheet(workbook, dailySummarySheet, "Daily Summary");
-
-  // Add Summary Stats sheet
-  const summaryStatsSheet = XLSX.utils.json_to_sheet(summaryStatsData);
-  summaryStatsSheet["!cols"] = [
-    { wch: 22 }, // Metric
-    { wch: 30 }, // Value
-  ];
-  XLSX.utils.book_append_sheet(workbook, summaryStatsSheet, "Summary");
-
-  return workbook;
-}
-
-/**
- * Generate Excel workbook and return as base64 string (for native platforms)
- */
-export function formatToExcel(
-  entries: DiaryEntry[],
-  dateRange: { start: Date; end: Date },
-): string {
-  const workbook = createExcelWorkbook(entries, dateRange);
-  return XLSX.write(workbook, { type: "base64", bookType: "xlsx" });
-}
+export type ExportFormat = "csv" | "json" | "pdf";
 
 /**
  * Export entries to file and share via native share sheet
@@ -695,58 +489,6 @@ export async function exportAndShare(
       filePath = uri;
       mimeType = "application/pdf";
       uti = "com.adobe.pdf";
-    } else if (exportFormat === "xlsx") {
-      // Generate Excel using SheetJS
-      const startStr = format(dateRange.start, "MMM-d");
-      const endStr = format(dateRange.end, "MMM-d-yyyy");
-      const filename = `eleva-diary-${startStr}-to-${endStr}.xlsx`;
-
-      if (isWeb()) {
-        // Excel export not fully supported on web platform
-        // Try to trigger download via data URL
-        try {
-          const b64 = formatToExcel(entries, dateRange);
-          const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64}`;
-
-          // Check if we have access to document APIs
-          if (typeof document !== "undefined" && document.createElement) {
-            const link = document.createElement("a");
-            link.href = dataUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            return { success: true };
-          }
-        } catch (e) {
-          // Fall through to error
-        }
-
-        // If we get here, web download failed
-        return {
-          success: false,
-          error:
-            "Excel export is only available on iOS and Android. Please use PDF or try from a mobile device.",
-        };
-      }
-
-      // On native, use base64 encoding with expo-file-system
-      const fileDir = getFileDirectory();
-      if (!fileDir) {
-        return { success: false, error: "File system not available" };
-      }
-
-      const b64 = formatToExcel(entries, dateRange);
-      filePath = `${fileDir}${filename}`;
-
-      // Write base64 encoded file
-      await writeAsStringAsync(filePath, b64, {
-        encoding: EncodingType.Base64,
-      });
-
-      mimeType =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-      uti = "org.openxmlformats.spreadsheetml.sheet";
     } else {
       const fileDir = getFileDirectory();
       if (!fileDir) {

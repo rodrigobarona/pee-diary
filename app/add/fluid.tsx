@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AmountPicker, DrinkTypePicker, TimePicker } from "@/components/diary";
-import { ScreenHeader, SectionTitle } from "@/components/ui";
+import { FormCard, ScreenHeader, SectionTitle } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -115,16 +115,19 @@ export default function FluidScreen() {
           }}
         >
           <SectionTitle>{t("fluid.notes")}</SectionTitle>
-          <Input
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t("common.notesPlaceholder")}
-            multiline
-            numberOfLines={3}
-            style={styles.notesInput}
-            textAlignVertical="top"
-            onFocus={handleNotesFocus}
-          />
+          <FormCard>
+            <Input
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t("common.notesPlaceholder")}
+              multiline
+              numberOfLines={3}
+              className="bg-transparent border-0 px-4 py-3 h-auto"
+              style={styles.notesInput}
+              textAlignVertical="top"
+              onFocus={handleNotesFocus}
+            />
+          </FormCard>
         </View>
       </ScrollView>
 
@@ -175,7 +178,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   notesInput: {
-    minHeight: 80,
+    minHeight: 100,
   },
   footer: {
     backgroundColor: "#F9FAFB",
