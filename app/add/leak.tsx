@@ -1,26 +1,26 @@
-import * as React from 'react';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import * as React from "react";
 import {
-  View,
-  ScrollView,
-  Platform,
   KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScreenHeader, SectionTitle, AnimatedPressable } from '@/components/ui';
-import { UrgencyScale, TimePicker } from '@/components/diary';
-import { useDiaryStore } from '@/lib/store';
-import { useI18n } from '@/lib/i18n/context';
-import { colors } from '@/lib/theme/colors';
-import type { LeakSeverity, UrgencyLevel } from '@/lib/store/types';
+import { TimePicker, UrgencyScale } from "@/components/diary";
+import { AnimatedPressable, ScreenHeader, SectionTitle } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { useDiaryStore } from "@/lib/store";
+import type { LeakSeverity, UrgencyLevel } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 
 const severityOptions: {
   value: LeakSeverity;
@@ -29,22 +29,22 @@ const severityOptions: {
   description: string;
 }[] = [
   {
-    value: 'drops',
-    icon: 'water-outline',
-    labelKey: 'leak.drops',
-    description: 'A few drops',
+    value: "drops",
+    icon: "water-outline",
+    labelKey: "leak.drops",
+    description: "A few drops",
   },
   {
-    value: 'moderate',
-    icon: 'water',
-    labelKey: 'leak.moderate',
-    description: 'Noticeable amount',
+    value: "moderate",
+    icon: "water",
+    labelKey: "leak.moderate",
+    description: "Noticeable amount",
   },
   {
-    value: 'full',
-    icon: 'water-alert',
-    labelKey: 'leak.full',
-    description: 'Full accident',
+    value: "full",
+    icon: "water-alert",
+    labelKey: "leak.full",
+    description: "Full accident",
   },
 ];
 
@@ -62,9 +62,9 @@ export default function LeakScreen() {
   const notesLayoutY = React.useRef<number>(0);
 
   const [timestamp, setTimestamp] = React.useState(() => new Date());
-  const [severity, setSeverity] = React.useState<LeakSeverity>('drops');
+  const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
-  const [notes, setNotes] = React.useState('');
+  const [notes, setNotes] = React.useState("");
 
   // Scroll to notes when focused
   const handleNotesFocus = React.useCallback(() => {
@@ -83,14 +83,14 @@ export default function LeakScreen() {
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     router.back();
   }, [addLeakEntry, severity, urgency, notes, timestamp, router]);
 
   const handleSeveritySelect = React.useCallback((value: LeakSeverity) => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setSeverity(value);
@@ -99,31 +99,31 @@ export default function LeakScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: Platform.OS === 'ios' ? 24 : 16 },
+          { paddingTop: Platform.OS === "ios" ? 24 : 16 },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
+        scrollEnabled={true}
+        bounces={true}
       >
         {/* Header */}
-        <ScreenHeader
-          title={t('leak.title')}
-          subtitle={t('leak.subtitle')}
-        />
+        <ScreenHeader title={t("leak.title")} subtitle={t("leak.subtitle")} />
 
         {/* Time */}
         <TimePicker value={timestamp} onChange={setTimestamp} />
 
         {/* Severity */}
         <View style={styles.section}>
-          <SectionTitle>{t('leak.severity')}</SectionTitle>
+          <SectionTitle>{t("leak.severity")}</SectionTitle>
           <View style={styles.severityOptions}>
             {severityOptions.map((option) => {
               const isSelected = severity === option.value;
@@ -150,7 +150,7 @@ export default function LeakScreen() {
                     <MaterialCommunityIcons
                       name={option.icon as any}
                       size={24}
-                      color={isSelected ? '#FFFFFF' : colors.error}
+                      color={isSelected ? "#FFFFFF" : colors.error}
                     />
                   </View>
                   <View style={styles.severityTextContainer}>
@@ -174,7 +174,7 @@ export default function LeakScreen() {
 
         {/* Urgency */}
         <View style={styles.section}>
-          <SectionTitle>{t('leak.urgency')}</SectionTitle>
+          <SectionTitle>{t("leak.urgency")}</SectionTitle>
           <UrgencyScale value={urgency} onChange={setUrgency} />
         </View>
 
@@ -185,11 +185,11 @@ export default function LeakScreen() {
             notesLayoutY.current = e.nativeEvent.layout.y;
           }}
         >
-          <SectionTitle>{t('leak.notes')}</SectionTitle>
+          <SectionTitle>{t("leak.notes")}</SectionTitle>
           <Input
             value={notes}
             onChangeText={setNotes}
-            placeholder={t('common.notesPlaceholder')}
+            placeholder={t("common.notesPlaceholder")}
             multiline
             numberOfLines={3}
             style={styles.notesInput}
@@ -200,18 +200,28 @@ export default function LeakScreen() {
       </ScrollView>
 
       {/* Sticky Save Button */}
-      {Platform.OS === 'ios' ? (
+      {Platform.OS === "ios" ? (
         <BlurView intensity={80} tint="light" style={styles.footerBlur}>
-          <View style={[styles.footerContent, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+          <View
+            style={[
+              styles.footerContent,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
+          >
             <Button onPress={handleSave} size="lg" style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+              <Text style={styles.saveButtonText}>{t("common.save")}</Text>
             </Button>
           </View>
         </BlurView>
       ) : (
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+        <View
+          style={[
+            styles.footer,
+            { paddingBottom: Math.max(insets.bottom, 16) },
+          ]}
+        >
           <Button onPress={handleSave} size="lg" style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+            <Text style={styles.saveButtonText}>{t("common.save")}</Text>
           </Button>
         </View>
       )}
@@ -222,7 +232,7 @@ export default function LeakScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   scrollView: {
     flex: 1,
@@ -239,75 +249,75 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   severityOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     padding: 16,
     borderRadius: 16,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   severityOptionSelected: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderWidth: 1,
     borderColor: colors.error,
   },
   severityOptionUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+    backgroundColor: "rgba(0, 109, 119, 0.08)",
   },
   severityIconContainer: {
     width: 48,
     height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 14,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   severityIconSelected: {
     backgroundColor: colors.error,
   },
   severityIconUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.15)',
+    backgroundColor: "rgba(0, 109, 119, 0.15)",
   },
   severityTextContainer: {
     flex: 1,
   },
   severityLabel: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   severityLabelSelected: {
     color: colors.error,
   },
   severityDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   notesInput: {
     minHeight: 100,
   },
   footer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
     paddingHorizontal: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: "#E5E7EB",
   },
   footerBlur: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    borderTopColor: "rgba(0, 0, 0, 0.1)",
   },
   footerContent: {
     paddingHorizontal: 16,
     paddingTop: 12,
   },
   saveButton: {
-    width: '100%',
+    width: "100%",
   },
   saveButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
     fontSize: 17,
   },
 });

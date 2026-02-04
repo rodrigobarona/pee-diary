@@ -1,18 +1,18 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import * as React from "react";
-import { View, Pressable, StyleSheet, Platform } from "react-native";
-import { useRouter } from "expo-router";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 
 import { Text } from "@/components/ui/text";
-import { colors } from "@/lib/theme/colors";
 import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -67,23 +67,22 @@ function AddOption({
 }
 
 export default function AddMenuScreen() {
-  const router = useRouter();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
 
-  const handleOptionPress = React.useCallback(
-    (route: string) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      router.dismiss();
-      // Small delay to allow modal to close smoothly
-      setTimeout(() => {
-        router.push(route as any);
-      }, 100);
-    },
-    [router],
-  );
+  const handleOptionPress = React.useCallback((route: string) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    // Dismiss the formSheet first, then push the modal form
+    router.dismiss();
+
+    // Use setTimeout to let the formSheet dismiss animation complete
+    setTimeout(() => {
+      router.push(route as any);
+    }, 300);
+  }, []);
 
   const options = [
     {
@@ -116,7 +115,7 @@ export default function AddMenuScreen() {
         {
           paddingBottom:
             Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 16 : 0,
-          paddingTop: Platform.OS === "ios" ? 50 : 0,
+          paddingTop: Platform.OS === "ios" ? 38 : 0,
         },
       ]}
     >

@@ -1,34 +1,34 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { format } from "date-fns";
+import * as Haptics from "expo-haptics";
 import * as React from "react";
 import {
-  View,
-  ScrollView,
-  Pressable,
+  ActivityIndicator,
   Alert,
   Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
-  ActivityIndicator,
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
-import { useShallow } from "zustand/react/shallow";
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
   withSpring,
-  interpolate,
+  withTiming,
 } from "react-native-reanimated";
-import { format } from "date-fns";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useShallow } from "zustand/react/shallow";
 
-import { Text } from "@/components/ui/text";
 import { DateRangePicker } from "@/components/diary/date-range-picker";
-import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import {
-  filterEntriesByDateRange,
   exportAndShare,
+  filterEntriesByDateRange,
   getDateRangePreset,
   type ExportFormat,
 } from "@/lib/utils/export";
@@ -250,6 +250,12 @@ export default function ExportScreen() {
       color: "#DC2626",
     },
     {
+      key: "xlsx",
+      label: `${t("export.xlsx")} - ${t("export.xlsxDesc")}`,
+      icon: "microsoft-excel",
+      color: "#217346",
+    },
+    {
       key: "csv",
       label: `${t("export.csv")} - ${t("export.csvDesc")}`,
       icon: "file-delimited",
@@ -264,7 +270,10 @@ export default function ExportScreen() {
   ];
 
   // Date range text
-  const dateRangeText = `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`;
+  const dateRangeText = `${format(startDate, "MMM d")} - ${format(
+    endDate,
+    "MMM d, yyyy",
+  )}`;
 
   return (
     <ScrollView
@@ -329,7 +338,9 @@ export default function ExportScreen() {
         <Text style={styles.selectedRangeText}>{dateRangeText}</Text>
         <Text style={styles.entryCount}>
           {isHydrated
-            ? `${filteredEntries.length} ${filteredEntries.length === 1 ? "entry" : "entries"}`
+            ? `${filteredEntries.length} ${
+                filteredEntries.length === 1 ? "entry" : "entries"
+              }`
             : "..."}
         </Text>
       </View>

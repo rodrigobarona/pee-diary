@@ -194,7 +194,12 @@
     "autoBackup": "Copia de seguridad automática",
     "autoBackupDescription": "Tus datos se guardan automáticamente en Google Drive",
     "openAddMenuOnLaunch": "Abrir menú al iniciar",
-    "openAddMenuOnLaunchDescription": "Mostrar el menú de añadir al abrir la aplicación"
+    "openAddMenuOnLaunchDescription": "Mostrar el menú de añadir al abrir la aplicación",
+    "legal": "Legal",
+    "privacyPolicy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "dataDelete": "Opciones de Privacidad",
+    "dataDeleteDescription": "Solicitar eliminación de datos"
   },
   "urgency": {
     "1": "Ninguna",
@@ -241,6 +246,8 @@
     "jsonDesc": "Desarrollador",
     "pdf": "PDF",
     "pdfDesc": "Fácil de leer",
+    "xlsx": "Excel",
+    "xlsxDesc": "Análisis en hoja de cálculo",
     "preview": "Vista Previa",
     "entriesCount": "{{count}} registros listos",
     "noEntries": "Sin registros en el rango seleccionado",

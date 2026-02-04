@@ -1,30 +1,31 @@
-import * as React from 'react';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import * as React from "react";
 import {
-  View,
-  ScrollView,
-  Pressable,
-  Alert,
-  Platform,
-  Modal,
-  StyleSheet,
   ActivityIndicator,
+  Alert,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
   Switch,
-} from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useShallow } from 'zustand/react/shallow';
+  View,
+} from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
-import { Text } from '@/components/ui/text';
-import { AnimatedPressable } from '@/components/ui/animated-pressable';
-import { useDiaryStore, useStoreHydrated } from '@/lib/store';
-import { useI18n, type SupportedLocale } from '@/lib/i18n/context';
-import { colors } from '@/lib/theme/colors';
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Text } from "@/components/ui/text";
+import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
+import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import { colors } from "@/lib/theme/colors";
 import {
   isCloudAvailable,
-  syncToCloud,
   restoreFromCloud,
-} from '@/lib/utils/backup';
+  syncToCloud,
+} from "@/lib/utils/backup";
 
 interface SettingRowProps {
   icon: string;
@@ -33,6 +34,7 @@ interface SettingRowProps {
   value?: string;
   onPress?: () => void;
   destructive?: boolean;
+  externalLink?: boolean;
   children?: React.ReactNode;
 }
 
@@ -43,6 +45,7 @@ function SettingRow({
   value,
   onPress,
   destructive,
+  externalLink,
   children,
 }: SettingRowProps) {
   const content = (
@@ -50,7 +53,9 @@ function SettingRow({
       <View
         style={[
           styles.settingIcon,
-          destructive ? styles.settingIconDestructive : styles.settingIconPrimary,
+          destructive
+            ? styles.settingIconDestructive
+            : styles.settingIconPrimary,
         ]}
       >
         <MaterialCommunityIcons
@@ -79,8 +84,8 @@ function SettingRow({
       ) : null}
       {onPress && !children ? (
         <MaterialCommunityIcons
-          name="chevron-right"
-          size={20}
+          name={externalLink ? "open-in-new" : "chevron-right"}
+          size={externalLink ? 18 : 20}
           color="#9CA3AF"
         />
       ) : null}
@@ -99,10 +104,16 @@ function SettingRow({
 }
 
 const languageOptions: { value: SupportedLocale; label: string }[] = [
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Español' },
-  { value: 'pt', label: 'Português' },
+  { value: "en", label: "English" },
+  { value: "es", label: "Español" },
+  { value: "pt", label: "Português" },
 ];
+
+const LEGAL_URLS = {
+  privacy: "https://diary.eleva.care/privacy",
+  terms: "https://diary.eleva.care/terms",
+  dataDelete: "https://diary.eleva.care/privacy#data-deletion",
+};
 
 export default function SettingsScreen() {
   const { t, locale, setLocale } = useI18n();
@@ -111,8 +122,12 @@ export default function SettingsScreen() {
   const isHydrated = useStoreHydrated();
   const entries = useDiaryStore(useShallow((state) => state.entries));
   const goals = useDiaryStore((state) => state.goals);
-  const openAddMenuOnLaunch = useDiaryStore((state) => state.openAddMenuOnLaunch);
-  const setOpenAddMenuOnLaunch = useDiaryStore((state) => state.setOpenAddMenuOnLaunch);
+  const openAddMenuOnLaunch = useDiaryStore(
+    (state) => state.openAddMenuOnLaunch,
+  );
+  const setOpenAddMenuOnLaunch = useDiaryStore(
+    (state) => state.setOpenAddMenuOnLaunch,
+  );
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
   const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
   const [isSyncing, setIsSyncing] = React.useState(false);
@@ -120,75 +135,82 @@ export default function SettingsScreen() {
 
   // Open goals screen if navigated with openGoals param
   React.useEffect(() => {
-    if (params.openGoals === 'true') {
+    if (params.openGoals === "true") {
       router.setParams({ openGoals: undefined });
-      router.push('/goals');
+      router.push("/goals");
     }
   }, [params.openGoals, router]);
 
   const handleLanguageChange = React.useCallback(
     (newLanguage: SupportedLocale) => {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       setLocale(newLanguage);
       setShowLanguagePicker(false);
     },
-    [setLocale]
+    [setLocale],
   );
 
   const handleToggleOpenAddMenu = React.useCallback(
     (value: boolean) => {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       setOpenAddMenuOnLaunch(value);
     },
-    [setOpenAddMenuOnLaunch]
+    [setOpenAddMenuOnLaunch],
   );
 
   const handleOpenGoals = React.useCallback(() => {
-    router.push('/goals');
+    router.push("/goals");
   }, [router]);
 
   const handleExport = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
     // Wait for store to be hydrated
     if (!isHydrated) {
-      Alert.alert(t('common.error'), 'Please wait for data to load...');
+      Alert.alert(t("common.error"), "Please wait for data to load...");
       return;
     }
 
     // Check if there are entries to export
     const currentEntries = useDiaryStore.getState().entries;
     if (currentEntries.length === 0) {
-      Alert.alert(t('settings.export'), t('settings.noDataToExport'));
+      Alert.alert(t("settings.export"), t("settings.noDataToExport"));
       return;
     }
 
     // Navigate to export screen
-    router.push('/export');
+    router.push("/export");
   }, [isHydrated, t, router]);
 
+  const handleOpenLink = React.useCallback((url: string) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    Linking.openURL(url);
+  }, []);
+
   const handleClearData = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
 
-    Alert.alert(t('settings.clearData'), t('settings.clearDataConfirm'), [
+    Alert.alert(t("settings.clearData"), t("settings.clearDataConfirm"), [
       {
-        text: t('common.cancel'),
-        style: 'cancel',
+        text: t("common.cancel"),
+        style: "cancel",
       },
       {
-        text: t('common.delete'),
-        style: 'destructive',
+        text: t("common.delete"),
+        style: "destructive",
         onPress: () => {
           clearAllEntries();
-          if (Platform.OS !== 'web') {
+          if (Platform.OS !== "web") {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           }
         },
@@ -199,7 +221,7 @@ export default function SettingsScreen() {
   const handleSyncToCloud = React.useCallback(async () => {
     if (isSyncing) return;
 
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
@@ -207,15 +229,15 @@ export default function SettingsScreen() {
     try {
       const result = await syncToCloud();
       if (result.success) {
-        if (Platform.OS !== 'web') {
+        if (Platform.OS !== "web") {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        Alert.alert(t('settings.iCloudSync'), t('settings.syncSuccess'));
+        Alert.alert(t("settings.iCloudSync"), t("settings.syncSuccess"));
       } else {
-        Alert.alert(t('common.error'), result.error ?? t('settings.syncError'));
+        Alert.alert(t("common.error"), result.error ?? t("settings.syncError"));
       }
     } catch {
-      Alert.alert(t('common.error'), t('settings.syncError'));
+      Alert.alert(t("common.error"), t("settings.syncError"));
     } finally {
       setIsSyncing(false);
     }
@@ -224,41 +246,41 @@ export default function SettingsScreen() {
   const handleRestoreFromCloud = React.useCallback(async () => {
     if (isSyncing) return;
 
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    Alert.alert(t('settings.restoreFromCloud'), t('settings.restoreConfirm'), [
+    Alert.alert(t("settings.restoreFromCloud"), t("settings.restoreConfirm"), [
       {
-        text: t('common.cancel'),
-        style: 'cancel',
+        text: t("common.cancel"),
+        style: "cancel",
       },
       {
-        text: t('settings.restore'),
+        text: t("settings.restore"),
         onPress: async () => {
           setIsSyncing(true);
           try {
             const result = await restoreFromCloud();
             if (result.success) {
-              if (Platform.OS !== 'web') {
+              if (Platform.OS !== "web") {
                 Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
+                  Haptics.NotificationFeedbackType.Success,
                 );
               }
               Alert.alert(
-                t('settings.restoreFromCloud'),
-                t('settings.restoreSuccess', {
+                t("settings.restoreFromCloud"),
+                t("settings.restoreSuccess", {
                   count: result.entriesCount ?? 0,
-                })
+                }),
               );
             } else {
               Alert.alert(
-                t('common.error'),
-                result.error ?? t('settings.restoreError')
+                t("common.error"),
+                result.error ?? t("settings.restoreError"),
               );
             }
           } catch {
-            Alert.alert(t('common.error'), t('settings.restoreError'));
+            Alert.alert(t("common.error"), t("settings.restoreError"));
           } finally {
             setIsSyncing(false);
           }
@@ -268,7 +290,7 @@ export default function SettingsScreen() {
   }, [isSyncing, t]);
 
   const currentLanguageLabel =
-    languageOptions.find((l) => l.value === locale)?.label || 'English';
+    languageOptions.find((l) => l.value === locale)?.label || "English";
 
   return (
     <ScrollView
@@ -288,7 +310,7 @@ export default function SettingsScreen() {
           onPress={() => setShowLanguagePicker(false)}
         >
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('settings.language')}</Text>
+            <Text style={styles.modalTitle}>{t("settings.language")}</Text>
             {languageOptions.map((option) => (
               <Pressable
                 key={option.value}
@@ -298,7 +320,9 @@ export default function SettingsScreen() {
                 <Text
                   style={[
                     styles.modalOptionText,
-                    locale === option.value ? styles.modalOptionTextSelected : undefined,
+                    locale === option.value
+                      ? styles.modalOptionTextSelected
+                      : undefined,
                   ]}
                 >
                   {option.label}
@@ -317,12 +341,14 @@ export default function SettingsScreen() {
       </Modal>
 
       {/* Daily Goals Section */}
-      <Text style={styles.sectionTitle}>{t('goals.title')}</Text>
+      <Text style={styles.sectionTitle}>{t("goals.title")}</Text>
       <View style={styles.card}>
         <SettingRow
           icon="target"
-          label={t('settings.editGoals')}
-          description={`${goals.fluidTarget}ml • ${goals.voidTarget} ${t('goals.voids')}`}
+          label={t("settings.editGoals")}
+          description={`${goals.fluidTarget}ml • ${goals.voidTarget} ${t(
+            "goals.voids",
+          )}`}
           onPress={handleOpenGoals}
         />
       </View>
@@ -332,20 +358,20 @@ export default function SettingsScreen() {
       <View style={styles.card}>
         <SettingRow
           icon="translate"
-          label={t('settings.language')}
+          label={t("settings.language")}
           onPress={() => setShowLanguagePicker(true)}
           value={currentLanguageLabel}
         />
         <View style={styles.separator} />
         <SettingRow
           icon="plus-circle"
-          label={t('settings.openAddMenuOnLaunch')}
-          description={t('settings.openAddMenuOnLaunchDescription')}
+          label={t("settings.openAddMenuOnLaunch")}
+          description={t("settings.openAddMenuOnLaunchDescription")}
         >
           <Switch
             value={openAddMenuOnLaunch}
             onValueChange={handleToggleOpenAddMenu}
-            trackColor={{ false: '#E2E8F0', true: colors.primary.DEFAULT }}
+            trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
             thumbColor="#FFFFFF"
             ios_backgroundColor="#E2E8F0"
           />
@@ -357,34 +383,34 @@ export default function SettingsScreen() {
       <View style={styles.card}>
         <SettingRow
           icon="download"
-          label={t('settings.export')}
-          description={t('settings.exportDescription')}
+          label={t("settings.export")}
+          description={t("settings.exportDescription")}
           onPress={handleExport}
         />
         <View style={styles.separator} />
         <SettingRow
           icon="delete"
-          label={t('settings.clearData')}
-          description={t('settings.clearDataDescription')}
+          label={t("settings.clearData")}
+          description={t("settings.clearDataDescription")}
           onPress={handleClearData}
           destructive
         />
       </View>
 
       {/* Cloud Sync Section */}
-      {Platform.OS === 'ios' ? (
+      {Platform.OS === "ios" ? (
         <>
           <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-            {t('settings.cloudSync')}
+            {t("settings.cloudSync")}
           </Text>
           <View style={styles.card}>
             <SettingRow
               icon="cloud-sync"
-              label={t('settings.iCloudSync')}
+              label={t("settings.iCloudSync")}
               description={
                 cloudAvailable
-                  ? t('settings.iCloudSyncDescription')
-                  : t('settings.iCloudNotAvailable')
+                  ? t("settings.iCloudSyncDescription")
+                  : t("settings.iCloudNotAvailable")
               }
               onPress={cloudAvailable ? handleSyncToCloud : undefined}
             >
@@ -398,8 +424,8 @@ export default function SettingsScreen() {
             <View style={styles.separator} />
             <SettingRow
               icon="cloud-download"
-              label={t('settings.restoreFromCloud')}
-              description={t('settings.restoreDescription')}
+              label={t("settings.restoreFromCloud")}
+              description={t("settings.restoreDescription")}
               onPress={cloudAvailable ? handleRestoreFromCloud : undefined}
             />
           </View>
@@ -407,13 +433,13 @@ export default function SettingsScreen() {
       ) : (
         <>
           <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-            {t('settings.cloudSync')}
+            {t("settings.cloudSync")}
           </Text>
           <View style={styles.card}>
             <SettingRow
               icon="cloud-check"
-              label={t('settings.autoBackup')}
-              description={t('settings.autoBackupDescription')}
+              label={t("settings.autoBackup")}
+              description={t("settings.autoBackupDescription")}
             />
           </View>
         </>
@@ -421,10 +447,14 @@ export default function SettingsScreen() {
 
       {/* About Section */}
       <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t('settings.about')}
+        {t("settings.about")}
       </Text>
       <View style={styles.card}>
-        <SettingRow icon="information" label={t('settings.version')} value="1.0.0" />
+        <SettingRow
+          icon="information"
+          label={t("settings.version")}
+          value="1.0.0"
+        />
         <View style={styles.separator} />
         <SettingRow
           icon="heart"
@@ -433,10 +463,38 @@ export default function SettingsScreen() {
         />
       </View>
 
+      {/* Legal Section */}
+      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
+        {t("settings.legal")}
+      </Text>
+      <View style={styles.card}>
+        <SettingRow
+          icon="shield-lock"
+          label={t("settings.privacyPolicy")}
+          onPress={() => handleOpenLink(LEGAL_URLS.privacy)}
+          externalLink
+        />
+        <View style={styles.separator} />
+        <SettingRow
+          icon="file-document"
+          label={t("settings.terms")}
+          onPress={() => handleOpenLink(LEGAL_URLS.terms)}
+          externalLink
+        />
+        <View style={styles.separator} />
+        <SettingRow
+          icon="delete-circle"
+          label={t("settings.dataDelete")}
+          description={t("settings.dataDeleteDescription")}
+          onPress={() => handleOpenLink(LEGAL_URLS.dataDelete)}
+          externalLink
+        />
+      </View>
+
       {/* Stats */}
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>
-          {isHydrated ? `${entries.length} entries recorded` : 'Loading...'}
+          {isHydrated ? `${entries.length} entries recorded` : "Loading..."}
         </Text>
       </View>
     </ScrollView>
@@ -446,16 +504,16 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   scrollContent: {
     padding: 16,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#6B7280',
-    textTransform: 'uppercase',
+    fontWeight: "600",
+    color: "#6B7280",
+    textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,
     marginLeft: 4,
@@ -464,101 +522,101 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
     paddingHorizontal: 16,
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
     marginLeft: 56,
   },
   settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     paddingVertical: 16,
   },
   settingIcon: {
     width: 40,
     height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 12,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   settingIconPrimary: {
-    backgroundColor: 'rgba(0, 109, 119, 0.1)',
+    backgroundColor: "rgba(0, 109, 119, 0.1)",
   },
   settingIconDestructive: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
   },
   settingContent: {
     flex: 1,
   },
   settingLabel: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
+    fontWeight: "500",
+    color: "#374151",
   },
   settingLabelDestructive: {
     color: colors.error,
   },
   settingDescription: {
     fontSize: 13,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   settingValue: {
     fontSize: 15,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   statsContainer: {
     marginTop: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statsText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
     padding: 24,
-    width: '100%',
+    width: "100%",
     maxWidth: 320,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
     marginBottom: 16,
   },
   modalOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: "#F3F4F6",
   },
   modalOptionText: {
     fontSize: 16,
-    color: '#374151',
+    color: "#374151",
   },
   modalOptionTextSelected: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

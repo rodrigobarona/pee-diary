@@ -1,48 +1,48 @@
-import * as React from 'react';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { parseISO } from "date-fns";
+import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import * as React from "react";
 import {
-  View,
-  ScrollView,
-  Pressable,
-  Alert,
-  Platform,
-  KeyboardAvoidingView,
-  StyleSheet,
   ActivityIndicator,
-} from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { parseISO } from 'date-fns';
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
-  ScreenHeader,
-  SectionTitle,
-  FormCard,
-  ToggleRow,
-  AnimatedPressable,
-} from '@/components/ui';
-import {
+  AmountPicker,
+  DrinkTypePicker,
+  TimePicker,
   UrgencyScale,
   VolumePicker,
-  TimePicker,
-  DrinkTypePicker,
-  AmountPicker,
-} from '@/components/diary';
-import { useDiaryStore } from '@/lib/store';
-import { useI18n } from '@/lib/i18n/context';
-import { dateFormatters } from '@/lib/i18n';
-import { colors } from '@/lib/theme/colors';
+} from "@/components/diary";
+import {
+  AnimatedPressable,
+  FormCard,
+  ScreenHeader,
+  SectionTitle,
+  ToggleRow,
+} from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { dateFormatters } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/context";
+import { useDiaryStore } from "@/lib/store";
 import type {
-  UrgencyLevel,
-  VolumeSize,
   DrinkType,
   LeakSeverity,
-} from '@/lib/store/types';
+  UrgencyLevel,
+  VolumeSize,
+} from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 
 // Severity options for leak form
 const severityOptions: {
@@ -50,9 +50,9 @@ const severityOptions: {
   icon: string;
   labelKey: string;
 }[] = [
-  { value: 'drops', icon: 'water-outline', labelKey: 'leak.drops' },
-  { value: 'moderate', icon: 'water', labelKey: 'leak.moderate' },
-  { value: 'full', icon: 'water-alert', labelKey: 'leak.full' },
+  { value: "drops", icon: "water-outline", labelKey: "leak.drops" },
+  { value: "moderate", icon: "water", labelKey: "leak.moderate" },
+  { value: "full", icon: "water-alert", labelKey: "leak.full" },
 ];
 
 export default function EntryDetailScreen() {
@@ -71,14 +71,14 @@ export default function EntryDetailScreen() {
 
   // Form state - all with defaults (use lazy initializer)
   const [timestamp, setTimestamp] = React.useState(() => new Date());
-  const [volume, setVolume] = React.useState<VolumeSize>('medium');
+  const [volume, setVolume] = React.useState<VolumeSize>("medium");
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
   const [hadLeak, setHadLeak] = React.useState(false);
   const [hadPain, setHadPain] = React.useState(false);
-  const [drinkType, setDrinkType] = React.useState<DrinkType>('water');
-  const [amount, setAmount] = React.useState('250');
-  const [severity, setSeverity] = React.useState<LeakSeverity>('drops');
-  const [notes, setNotes] = React.useState('');
+  const [drinkType, setDrinkType] = React.useState<DrinkType>("water");
+  const [amount, setAmount] = React.useState("250");
+  const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
+  const [notes, setNotes] = React.useState("");
   const [showEditHistory, setShowEditHistory] = React.useState(false);
 
   // Track if we've loaded the entry data
@@ -88,17 +88,17 @@ export default function EntryDetailScreen() {
   React.useEffect(() => {
     if (entry && !isLoaded) {
       setTimestamp(parseISO(entry.timestamp));
-      setNotes(entry.notes ?? '');
+      setNotes(entry.notes ?? "");
 
-      if (entry.type === 'urination') {
+      if (entry.type === "urination") {
         setVolume(entry.volume);
         setUrgency(entry.urgency);
         setHadLeak(entry.hadLeak);
         setHadPain(entry.hadPain);
-      } else if (entry.type === 'fluid') {
+      } else if (entry.type === "fluid") {
         setDrinkType(entry.drinkType);
         setAmount(entry.amount.toString());
-      } else if (entry.type === 'leak') {
+      } else if (entry.type === "leak") {
         setSeverity(entry.severity);
         setUrgency(entry.urgency);
       }
@@ -125,19 +125,19 @@ export default function EntryDetailScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#006D77" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t("common.loading")}</Text>
       </View>
     );
   }
 
   const getTitle = () => {
     switch (entry.type) {
-      case 'urination':
-        return t('detail.editUrination');
-      case 'fluid':
-        return t('detail.editFluid');
-      case 'leak':
-        return t('detail.editLeak');
+      case "urination":
+        return t("detail.editUrination");
+      case "fluid":
+        return t("detail.editFluid");
+      case "leak":
+        return t("detail.editLeak");
     }
   };
 
@@ -147,35 +147,35 @@ export default function EntryDetailScreen() {
       notes: notes.trim() || undefined,
     };
 
-    if (entry.type === 'urination') {
+    if (entry.type === "urination") {
       updates.volume = volume;
       updates.urgency = urgency;
       updates.hadLeak = hadLeak;
       updates.hadPain = hadPain;
-    } else if (entry.type === 'fluid') {
+    } else if (entry.type === "fluid") {
       updates.drinkType = drinkType;
       updates.amount = parseInt(amount, 10);
-    } else if (entry.type === 'leak') {
+    } else if (entry.type === "leak") {
       updates.severity = severity;
       updates.urgency = urgency;
     }
 
     updateEntry(id!, updates);
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     router.back();
   };
 
   const handleDelete = () => {
-    Alert.alert(t('common.delete'), t('detail.deleteConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
+    Alert.alert(t("common.delete"), t("detail.deleteConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: t('common.delete'),
-        style: 'destructive',
+        text: t("common.delete"),
+        style: "destructive",
         onPress: () => {
           deleteEntry(id!);
-          if (Platform.OS !== 'web') {
+          if (Platform.OS !== "web") {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           }
           router.back();
@@ -185,54 +185,55 @@ export default function EntryDetailScreen() {
   };
 
   const handleSeveritySelect = (value: LeakSeverity) => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setSeverity(value);
   };
 
   const formatChangeValue = (key: string, value: unknown): string => {
-    if (key === 'timestamp' && typeof value === 'string') {
+    if (key === "timestamp" && typeof value === "string") {
       return dateFormatters.time.format(parseISO(value));
     }
-    if (typeof value === 'boolean') {
-      return value ? t('common.yes') : t('common.no');
+    if (typeof value === "boolean") {
+      return value ? t("common.yes") : t("common.no");
     }
-    if (key === 'volume') {
+    if (key === "volume") {
       return t(
-        `urination.volume${(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}`
+        `urination.volume${
+          (value as string).charAt(0).toUpperCase() + (value as string).slice(1)
+        }`,
       );
     }
-    if (key === 'urgency') {
+    if (key === "urgency") {
       return t(`urgency.${value}`);
     }
-    if (key === 'drinkType') {
+    if (key === "drinkType") {
       return t(`fluid.${value}`);
     }
-    if (key === 'severity') {
+    if (key === "severity") {
       return t(`leak.${value}`);
     }
-    if (key === 'amount') {
+    if (key === "amount") {
       return `${value}ml`;
     }
-    return String(value ?? '');
+    return String(value ?? "");
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
     >
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: Platform.OS === 'ios' ? 24 : 16 },
-        ]}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        scrollEnabled={true}
+        bounces={true}
       >
         {/* Header */}
         <View style={styles.headerRow}>
@@ -254,29 +255,29 @@ export default function EntryDetailScreen() {
         <TimePicker value={timestamp} onChange={setTimestamp} />
 
         {/* Type-specific form */}
-        {entry.type === 'urination' ? (
+        {entry.type === "urination" ? (
           <>
             <View style={styles.section}>
-              <SectionTitle>{t('urination.volume')}</SectionTitle>
+              <SectionTitle>{t("urination.volume")}</SectionTitle>
               <VolumePicker value={volume} onChange={setVolume} />
             </View>
 
             <View style={styles.section}>
-              <SectionTitle>{t('urination.urgency')}</SectionTitle>
+              <SectionTitle>{t("urination.urgency")}</SectionTitle>
               <UrgencyScale value={urgency} onChange={setUrgency} />
             </View>
 
             <View style={styles.section}>
-              <SectionTitle>{t('common.options')}</SectionTitle>
+              <SectionTitle>{t("common.options")}</SectionTitle>
               <FormCard>
                 <ToggleRow
-                  label={t('urination.hadLeak')}
+                  label={t("urination.hadLeak")}
                   value={hadLeak}
                   onValueChange={setHadLeak}
                 />
                 <View style={styles.separator} />
                 <ToggleRow
-                  label={t('urination.hadPain')}
+                  label={t("urination.hadPain")}
                   value={hadPain}
                   onValueChange={setHadPain}
                 />
@@ -285,15 +286,15 @@ export default function EntryDetailScreen() {
           </>
         ) : null}
 
-        {entry.type === 'fluid' ? (
+        {entry.type === "fluid" ? (
           <>
             <View style={styles.section}>
-              <SectionTitle>{t('fluid.drinkType')}</SectionTitle>
+              <SectionTitle>{t("fluid.drinkType")}</SectionTitle>
               <DrinkTypePicker value={drinkType} onChange={setDrinkType} />
             </View>
 
             <View style={styles.section}>
-              <SectionTitle>{t('fluid.amount')}</SectionTitle>
+              <SectionTitle>{t("fluid.amount")}</SectionTitle>
               <AmountPicker
                 value={amount}
                 onChange={setAmount}
@@ -304,10 +305,10 @@ export default function EntryDetailScreen() {
           </>
         ) : null}
 
-        {entry.type === 'leak' ? (
+        {entry.type === "leak" ? (
           <>
             <View style={styles.section}>
-              <SectionTitle>{t('leak.severity')}</SectionTitle>
+              <SectionTitle>{t("leak.severity")}</SectionTitle>
               <View style={styles.severityOptions}>
                 {severityOptions.map((option) => {
                   const isSelected = severity === option.value;
@@ -334,7 +335,7 @@ export default function EntryDetailScreen() {
                         <MaterialCommunityIcons
                           name={option.icon as any}
                           size={24}
-                          color={isSelected ? '#FFFFFF' : colors.error}
+                          color={isSelected ? "#FFFFFF" : colors.error}
                         />
                       </View>
                       <Text
@@ -352,7 +353,7 @@ export default function EntryDetailScreen() {
             </View>
 
             <View style={styles.section}>
-              <SectionTitle>{t('leak.urgency')}</SectionTitle>
+              <SectionTitle>{t("leak.urgency")}</SectionTitle>
               <UrgencyScale value={urgency} onChange={setUrgency} />
             </View>
           </>
@@ -365,11 +366,11 @@ export default function EntryDetailScreen() {
             notesLayoutY.current = e.nativeEvent.layout.y;
           }}
         >
-          <SectionTitle>{t('urination.notes')}</SectionTitle>
+          <SectionTitle>{t("urination.notes")}</SectionTitle>
           <Input
             value={notes}
             onChangeText={setNotes}
-            placeholder={t('common.notesPlaceholder')}
+            placeholder={t("common.notesPlaceholder")}
             multiline
             numberOfLines={3}
             style={styles.notesInput}
@@ -392,11 +393,11 @@ export default function EntryDetailScreen() {
                   color={colors.primary.DEFAULT}
                 />
                 <Text style={styles.historyTitle}>
-                  {t('detail.editHistory')} ({entry.editHistory.length})
+                  {t("detail.editHistory")} ({entry.editHistory.length})
                 </Text>
               </View>
               <MaterialCommunityIcons
-                name={showEditHistory ? 'chevron-up' : 'chevron-down'}
+                name={showEditHistory ? "chevron-up" : "chevron-down"}
                 size={20}
                 color="#9CA3AF"
               />
@@ -410,14 +411,14 @@ export default function EntryDetailScreen() {
                   .map((edit, index) => (
                     <View key={index} style={styles.historyItem}>
                       <Text style={styles.historyDate}>
-                        {t('detail.edited')}:{' '}
-                        {dateFormatters.long.format(parseISO(edit.editedAt))}{' '}
+                        {t("detail.edited")}:{" "}
+                        {dateFormatters.long.format(parseISO(edit.editedAt))}{" "}
                         {dateFormatters.time.format(parseISO(edit.editedAt))}
                       </Text>
                       {Object.entries(edit.changes).map(([key, change]) => (
                         <Text key={key} style={styles.historyChangeText}>
-                          <Text style={styles.historyChangeKey}>{key}</Text>:{' '}
-                          {formatChangeValue(key, change.from)} →{' '}
+                          <Text style={styles.historyChangeKey}>{key}</Text>:{" "}
+                          {formatChangeValue(key, change.from)} →{" "}
                           {formatChangeValue(key, change.to)}
                         </Text>
                       ))}
@@ -430,7 +431,7 @@ export default function EntryDetailScreen() {
       </ScrollView>
 
       {/* Sticky Update Button */}
-      {Platform.OS === 'ios' ? (
+      {Platform.OS === "ios" ? (
         <BlurView intensity={80} tint="light" style={styles.footerBlur}>
           <View
             style={[
@@ -439,16 +440,19 @@ export default function EntryDetailScreen() {
             ]}
           >
             <Button onPress={handleUpdate} size="lg" style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>{t('detail.update')}</Text>
+              <Text style={styles.saveButtonText}>{t("detail.update")}</Text>
             </Button>
           </View>
         </BlurView>
       ) : (
         <View
-          style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}
+          style={[
+            styles.footer,
+            { paddingBottom: Math.max(insets.bottom, 16) },
+          ]}
         >
           <Button onPress={handleUpdate} size="lg" style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>{t('detail.update')}</Text>
+            <Text style={styles.saveButtonText}>{t("detail.update")}</Text>
           </Button>
         </View>
       )}
@@ -459,20 +463,21 @@ export default function EntryDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
+    paddingTop: 24,
     paddingHorizontal: 16,
     paddingBottom: 160,
     gap: 20,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   deleteButton: {
     padding: 8,
@@ -483,46 +488,46 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
     marginHorizontal: 16,
   },
   severityOptions: {
     gap: 12,
   },
   severityOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     padding: 16,
     borderRadius: 16,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   severityOptionSelected: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderWidth: 1,
     borderColor: colors.error,
   },
   severityOptionUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+    backgroundColor: "rgba(0, 109, 119, 0.08)",
   },
   severityIconContainer: {
     width: 48,
     height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 14,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   severityIconSelected: {
     backgroundColor: colors.error,
   },
   severityIconUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.15)',
+    backgroundColor: "rgba(0, 109, 119, 0.15)",
   },
   severityLabel: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   severityLabelSelected: {
     color: colors.error,
@@ -531,24 +536,24 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
   historyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   },
   historyHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   historyTitle: {
     fontSize: 15,
-    fontWeight: '500',
-    color: '#374151',
+    fontWeight: "500",
+    color: "#374151",
   },
   historyContent: {
     paddingHorizontal: 16,
@@ -557,52 +562,52 @@ const styles = StyleSheet.create({
   historyItem: {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.05)',
+    borderBottomColor: "rgba(0, 0, 0, 0.05)",
   },
   historyDate: {
     fontSize: 13,
-    color: '#6B7280',
+    color: "#6B7280",
     marginBottom: 8,
   },
   historyChangeText: {
     fontSize: 14,
-    color: '#374151',
+    color: "#374151",
   },
   historyChangeKey: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F9FAFB',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F9FAFB",
     gap: 16,
   },
   loadingText: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   footer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
     paddingHorizontal: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: "#E5E7EB",
   },
   footerBlur: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    borderTopColor: "rgba(0, 0, 0, 0.1)",
   },
   footerContent: {
     paddingHorizontal: 16,
     paddingTop: 12,
   },
   saveButton: {
-    width: '100%',
+    width: "100%",
   },
   saveButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
     fontSize: 17,
   },
 });

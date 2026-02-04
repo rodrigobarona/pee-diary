@@ -194,7 +194,12 @@
     "autoBackup": "Auto-backup enabled",
     "autoBackupDescription": "Your data is automatically backed up to Google Drive",
     "openAddMenuOnLaunch": "Open Add Menu on Launch",
-    "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app"
+    "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "dataDelete": "Privacy Choices",
+    "dataDeleteDescription": "Request data deletion"
   },
   "urgency": {
     "1": "None",
@@ -241,6 +246,8 @@
     "jsonDesc": "Developer",
     "pdf": "PDF",
     "pdfDesc": "Easy to read",
+    "xlsx": "Excel",
+    "xlsxDesc": "Spreadsheet analysis",
     "preview": "Preview",
     "entriesCount": "{{count}} entries ready",
     "noEntries": "No entries in selected range",

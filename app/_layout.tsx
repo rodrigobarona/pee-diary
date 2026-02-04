@@ -1,19 +1,19 @@
 import "../global.css";
 
-import * as React from "react";
-import { useEffect, useRef } from "react";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Platform, LogBox, type ColorSchemeName } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { StatusBar } from "expo-status-bar";
+import * as React from "react";
+import { useEffect, useRef } from "react";
+import { LogBox, Platform, type ColorSchemeName } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -70,31 +70,25 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         <Stack.Screen
           name="add/urination"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
           name="add/fluid"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
           name="add/leak"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
@@ -121,11 +115,9 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         <Stack.Screen
           name="entry/[id]"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
