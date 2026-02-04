@@ -85,3 +85,15 @@ export type CreateLeakEntry = Omit<LeakEntry, 'id' | 'timestamp' | 'type' | 'cre
 export type UpdateUrinationEntry = Partial<Omit<UrinationEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;
 export type UpdateFluidEntry = Partial<Omit<FluidEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;
 export type UpdateLeakEntry = Partial<Omit<LeakEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;
+
+// Daily Goals
+export interface DailyGoals {
+  fluidTarget: number;  // Default: 2000ml
+  voidTarget: number;   // Default: 7 (6-8 range)
+}
+
+// Streak tracking
+export interface StreakInfo {
+  currentStreak: number;
+  lastActiveDate: string | null;  // ISO date string (YYYY-MM-DD)
+}

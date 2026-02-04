@@ -50,10 +50,33 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
+          name="add-menu"
+          options={{
+            presentation: Platform.OS === 'web' ? 'card' : 'formSheet',
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === 'ios' ? [0.6] : undefined,
+            sheetGrabberVisible: Platform.OS === 'ios',
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen
+          name="goals"
+          options={{
+            presentation: Platform.OS === 'web' ? 'card' : 'formSheet',
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === 'ios' ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === 'ios',
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen
           name="entry"
           options={{
-            presentation: Platform.OS === 'web' ? 'card' : 'modal',
+            presentation: Platform.OS === 'web' ? 'card' : 'formSheet',
             headerShown: false, // Handled by entry/_layout.tsx
+            sheetAllowedDetents: Platform.OS === 'ios' ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === 'ios',
+            sheetCornerRadius: 24,
           }}
         />
       </Stack>

@@ -19,16 +19,64 @@
     "history": "Historial",
     "settings": "Ajustes"
   },
+  "greeting": {
+    "morning": "¡Buenos días!",
+    "afternoon": "¡Buenas tardes!",
+    "evening": "¡Buenas noches!"
+  },
   "home": {
     "title": "Hoy",
     "timeline": "Cronología",
     "noEntries": "Sin registros hoy",
-    "addFirst": "Toca + para añadir tu primer registro",
+    "addFirst": "Toca el botón + de abajo para añadir tu primer registro",
+    "tapToEditGoals": "Toca para editar objetivos",
+    "editGoals": "Editar objetivos diarios",
+    "todayActivity": "Actividad de hoy",
+    "viewInHistory": "Ver en historial",
+    "addNew": "Añadir nuevo",
+    "noLeaks": "Ninguna",
     "summary": {
       "voids": "Micciones",
       "fluids": "Líquidos",
       "leaks": "Pérdidas"
     }
+  },
+  "goals": {
+    "title": "Objetivos diarios",
+    "description": "Establece tus metas diarias para seguir tu progreso. Basadas en recomendaciones médicas.",
+    "fluidTarget": "Ingesta de líquidos",
+    "fluidDescription": "Meta diaria de líquidos",
+    "voidTarget": "Visitas al baño",
+    "voidDescription": "Visitas esperadas por día",
+    "perDay": "por día",
+    "voids": "micciones",
+    "medicalInfo": "Las guías médicas sugieren 2000ml de líquidos y 6-8 visitas al baño por día. Ajusta según las indicaciones de tu médico."
+  },
+  "streak": {
+    "day": "día",
+    "days": "días",
+    "start": "¡Comienza tu racha hoy!",
+    "started": "¡Has comenzado!",
+    "keepGoing": "¡Sigue así!",
+    "good": "¡Buena racha!",
+    "great": "¡Gran progreso!",
+    "amazing": "¡Dedicación increíble!"
+  },
+  "timePeriod": {
+    "morning": "Mañana",
+    "afternoon": "Tarde",
+    "evening": "Noche",
+    "noEntries": "Sin registros"
+  },
+  "add": {
+    "title": "Añadir registro",
+    "subtitle": "¿Qué deseas registrar?",
+    "urination": "Micción",
+    "urinationDesc": "Registrar visita al baño",
+    "fluid": "Ingesta de líquidos",
+    "fluidDesc": "Registrar lo que bebiste",
+    "leak": "Pérdida/Accidente",
+    "leakDesc": "Registrar cualquier incidente"
   },
   "entry": {
     "urination": "Micción",
@@ -77,6 +125,7 @@
     "noEntries": "Sin registros para este día",
     "list": "Lista",
     "calendar": "Calendario",
+    "all": "Todo",
     "voids": "micciones",
     "leaks": "pérdidas",
     "avgUrgency": "urgencia promedio",
@@ -98,7 +147,10 @@
     "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros?",
     "about": "Acerca de",
     "version": "Versión",
-    "privacy": "Política de privacidad"
+    "privacy": "Política de privacidad",
+    "dailyGoals": "Objetivos diarios",
+    "editGoals": "Editar objetivos",
+    "goalsDescription": "Establece tus metas diarias"
   },
   "urgency": {
     "1": "Ninguna",

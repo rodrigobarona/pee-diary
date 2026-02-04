@@ -12,6 +12,8 @@ import type {
   UpdateFluidEntry,
   UpdateLeakEntry,
   EditRecord,
+  DailyGoals,
+  StreakInfo,
 } from './types';
 
 // Detect system language on first launch
@@ -45,9 +47,74 @@ const createId = (): string => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+// Default daily goals based on medical standards
+const DEFAULT_GOALS: DailyGoals = {
+  fluidTarget: 2000, // ml
+  voidTarget: 7,     // 6-8 voids per day is normal
+};
+
+// Helper to get today's date as YYYY-MM-DD
+const getTodayDateString = (): string => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+// Helper to calculate streak from entries
+const calculateStreak = (entries: DiaryEntry[], lastActiveDate: string | null): StreakInfo => {
+  if (entries.length === 0) {
+    return { currentStreak: 0, lastActiveDate: null };
+  }
+
+  const today = getTodayDateString();
+  
+  // Get unique dates that have entries
+  const datesWithEntries = new Set<string>();
+  entries.forEach((entry) => {
+    const date = entry.timestamp.split('T')[0];
+    datesWithEntries.add(date);
+  });
+
+  // Sort dates descending
+  const sortedDates = Array.from(datesWithEntries).sort((a, b) => b.localeCompare(a));
+  
+  // Check if today or yesterday has entries
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+  
+  const hasEntryToday = datesWithEntries.has(today);
+  const hasEntryYesterday = datesWithEntries.has(yesterdayStr);
+  
+  // If no entry today or yesterday, streak is broken
+  if (!hasEntryToday && !hasEntryYesterday) {
+    return { currentStreak: 0, lastActiveDate: sortedDates[0] ?? null };
+  }
+
+  // Count consecutive days
+  let streak = 0;
+  let checkDate = new Date(hasEntryToday ? today : yesterdayStr);
+  
+  while (true) {
+    const dateStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+    if (datesWithEntries.has(dateStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return { 
+    currentStreak: streak, 
+    lastActiveDate: hasEntryToday ? today : yesterdayStr 
+  };
+};
+
 interface DiaryState {
   entries: DiaryEntry[];
   language: 'en' | 'es' | 'pt';
+  goals: DailyGoals;
+  streak: StreakInfo;
 
   // Actions
   addUrinationEntry: (entry: CreateUrinationEntry) => void;
@@ -58,6 +125,8 @@ interface DiaryState {
   clearAllEntries: () => void;
   setLanguage: (language: 'en' | 'es' | 'pt') => void;
   getEntryById: (id: string) => DiaryEntry | undefined;
+  updateGoals: (goals: Partial<DailyGoals>) => void;
+  refreshStreak: () => void;
 }
 
 export const useDiaryStore = create<DiaryState>()(
@@ -65,11 +134,13 @@ export const useDiaryStore = create<DiaryState>()(
     (set, get) => ({
       entries: [],
       language: getInitialLanguage(),
+      goals: DEFAULT_GOALS,
+      streak: { currentStreak: 0, lastActiveDate: null },
 
       addUrinationEntry: (entry) => {
         const now = new Date().toISOString();
-        set((state) => ({
-          entries: [
+        set((state) => {
+          const newEntries = [
             ...state.entries,
             {
               ...entry,
@@ -78,14 +149,18 @@ export const useDiaryStore = create<DiaryState>()(
               createdAt: now,
               type: 'urination' as const,
             },
-          ],
-        }));
+          ];
+          return {
+            entries: newEntries,
+            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+          };
+        });
       },
 
       addFluidEntry: (entry) => {
         const now = new Date().toISOString();
-        set((state) => ({
-          entries: [
+        set((state) => {
+          const newEntries = [
             ...state.entries,
             {
               ...entry,
@@ -94,14 +169,18 @@ export const useDiaryStore = create<DiaryState>()(
               createdAt: now,
               type: 'fluid' as const,
             },
-          ],
-        }));
+          ];
+          return {
+            entries: newEntries,
+            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+          };
+        });
       },
 
       addLeakEntry: (entry) => {
         const now = new Date().toISOString();
-        set((state) => ({
-          entries: [
+        set((state) => {
+          const newEntries = [
             ...state.entries,
             {
               ...entry,
@@ -110,8 +189,12 @@ export const useDiaryStore = create<DiaryState>()(
               createdAt: now,
               type: 'leak' as const,
             },
-          ],
-        }));
+          ];
+          return {
+            entries: newEntries,
+            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+          };
+        });
       },
 
       updateEntry: (id, updates) =>
@@ -154,6 +237,17 @@ export const useDiaryStore = create<DiaryState>()(
       setLanguage: (language) => set({ language }),
 
       getEntryById: (id) => get().entries.find((e) => e.id === id),
+
+      updateGoals: (goals) =>
+        set((state) => ({
+          goals: { ...state.goals, ...goals },
+        })),
+
+      refreshStreak: () => {
+        const state = get();
+        const newStreak = calculateStreak(state.entries, state.streak.lastActiveDate);
+        set({ streak: newStreak });
+      },
     }),
     {
       name: 'pee-diary-storage',

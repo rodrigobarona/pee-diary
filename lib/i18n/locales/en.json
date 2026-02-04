@@ -19,16 +19,64 @@
     "history": "History",
     "settings": "Settings"
   },
+  "greeting": {
+    "morning": "Good morning!",
+    "afternoon": "Good afternoon!",
+    "evening": "Good evening!"
+  },
   "home": {
     "title": "Today",
     "timeline": "Timeline",
     "noEntries": "No entries yet today",
-    "addFirst": "Tap + to add your first entry",
+    "addFirst": "Tap the + button below to add your first entry",
+    "tapToEditGoals": "Tap to edit goals",
+    "editGoals": "Edit daily goals",
+    "todayActivity": "Today's Activity",
+    "viewInHistory": "View in History",
+    "addNew": "Add New Entry",
+    "noLeaks": "None",
     "summary": {
       "voids": "Voids",
       "fluids": "Fluids",
       "leaks": "Leaks"
     }
+  },
+  "goals": {
+    "title": "Daily Goals",
+    "description": "Set your daily targets to track your progress. These are based on medical recommendations.",
+    "fluidTarget": "Fluid Intake",
+    "fluidDescription": "Daily fluid intake target",
+    "voidTarget": "Bathroom Visits",
+    "voidDescription": "Expected visits per day",
+    "perDay": "per day",
+    "voids": "voids",
+    "medicalInfo": "Medical guidelines suggest 2000ml of fluids and 6-8 bathroom visits per day. Adjust based on your doctor's advice."
+  },
+  "streak": {
+    "day": "day",
+    "days": "days",
+    "start": "Start your streak today!",
+    "started": "You've started!",
+    "keepGoing": "Keep it going!",
+    "good": "Good streak!",
+    "great": "Great progress!",
+    "amazing": "Amazing dedication!"
+  },
+  "timePeriod": {
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "noEntries": "No entries yet"
+  },
+  "add": {
+    "title": "Add Entry",
+    "subtitle": "What would you like to log?",
+    "urination": "Urination",
+    "urinationDesc": "Log a bathroom visit",
+    "fluid": "Fluid Intake",
+    "fluidDesc": "Track what you drank",
+    "leak": "Leak/Accident",
+    "leakDesc": "Record any incidents"
   },
   "entry": {
     "urination": "Urination",
@@ -77,6 +125,7 @@
     "yesterday": "Yesterday",
     "list": "List",
     "calendar": "Calendar",
+    "all": "All",
     "voids": "voids",
     "leaks": "leaks",
     "avgUrgency": "avg urgency",
@@ -98,7 +147,10 @@
     "clearDataConfirm": "Are you sure you want to delete all your diary entries?",
     "about": "About",
     "version": "Version",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "dailyGoals": "Daily Goals",
+    "editGoals": "Edit Daily Goals",
+    "goalsDescription": "Set your daily targets"
   },
   "urgency": {
     "1": "None",

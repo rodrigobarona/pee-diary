@@ -2,6 +2,7 @@ import * as React from 'react';
 import { View, ScrollView, Pressable, Alert, Platform, Modal, StyleSheet } from 'react-native';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { format } from 'date-fns';
@@ -94,9 +95,20 @@ const languageOptions: { value: SupportedLocale; label: string }[] = [
 
 export default function SettingsScreen() {
   const { t, locale, setLocale } = useI18n();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ openGoals?: string }>();
   const entries = useDiaryStore((state) => state.entries);
+  const goals = useDiaryStore((state) => state.goals);
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
   const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
+
+  // Open goals screen if navigated with openGoals param
+  React.useEffect(() => {
+    if (params.openGoals === 'true') {
+      router.setParams({ openGoals: undefined });
+      router.push('/goals');
+    }
+  }, [params.openGoals, router]);
 
   const handleLanguageChange = React.useCallback(
     (newLanguage: SupportedLocale) => {
@@ -108,6 +120,10 @@ export default function SettingsScreen() {
     },
     [setLocale]
   );
+
+  const handleOpenGoals = React.useCallback(() => {
+    router.push('/goals');
+  }, [router]);
 
   const handleExport = React.useCallback(async () => {
     if (Platform.OS !== 'web') {
@@ -281,6 +297,22 @@ export default function SettingsScreen() {
         </Pressable>
       </Modal>
 
+      {/* Daily Goals Section */}
+      <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2">
+        {t('goals.title')}
+      </Text>
+      <View
+        className="bg-surface rounded-xl px-4"
+        style={{ borderCurve: 'continuous' }}
+      >
+        <SettingRow
+          icon="target"
+          label={t('settings.editGoals')}
+          description={`${goals.fluidTarget}ml • ${goals.voidTarget} ${t('goals.voids')}`}
+          onPress={handleOpenGoals}
+        />
+      </View>
+
       {/* General Section */}
       <Text className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2">
         General
@@ -352,17 +384,18 @@ export default function SettingsScreen() {
   );
 }
 
+// Language picker modal styles (centered)
 const modalStyles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: 20,
   },
   content: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 24,
     width: '100%',
     maxWidth: 320,
@@ -376,3 +409,4 @@ const modalStyles = StyleSheet.create({
     borderBottomColor: '#E2E8F0',
   },
 });
+

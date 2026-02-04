@@ -1,10 +1,43 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import * as Haptics from 'expo-haptics';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { AddTabButton } from '@/components/add-tab-button';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
+
+function SettingsHeaderButton() {
+  const router = useRouter();
+
+  const handlePress = React.useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push('/(tabs)/settings');
+  }, [router]);
+
+  return (
+    <Pressable onPress={handlePress} style={styles.headerButton}>
+      <MaterialCommunityIcons name="cog-outline" size={24} color={colors.textMuted} />
+    </Pressable>
+  );
+}
+
+function BackHeaderButton() {
+  const router = useRouter();
+
+  const handlePress = React.useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  }, [router]);
+
+  return (
+    <Pressable onPress={handlePress} style={styles.headerButtonLeft}>
+      <MaterialCommunityIcons name="chevron-left" size={28} color={colors.primary.DEFAULT} />
+    </Pressable>
+  );
+}
 
 export default function TabLayout() {
   const { t, locale } = useI18n();
@@ -26,8 +59,11 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
+          height: 85,
+          paddingBottom: 20,
         },
         tabBarButton: HapticTab,
+        headerRight: () => <SettingsHeaderButton />,
       }}
     >
       <Tabs.Screen
@@ -40,6 +76,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="add"
+        options={{
+          title: '',
+          tabBarButton: (props) => <AddTabButton {...props} />,
+        }}
+        listeners={{
+          tabPress: (e) => {
+            // Prevent default navigation - the button handles the action
+            e.preventDefault();
+          },
+        }}
+      />
+      <Tabs.Screen
         name="history"
         options={{
           title: t('tabs.history'),
@@ -48,15 +97,27 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* Settings hidden from tab bar - accessed via header icon */}
       <Tabs.Screen
         name="settings"
         options={{
+          href: null, // Hide from tab bar
           title: t('tabs.settings'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cog" size={size || 24} color={color} />
-          ),
+          headerRight: () => null, // No settings button on settings page
+          headerLeft: () => <BackHeaderButton />,
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  headerButton: {
+    marginRight: 16,
+    padding: 4,
+  },
+  headerButtonLeft: {
+    marginLeft: 8,
+    padding: 4,
+  },
+});

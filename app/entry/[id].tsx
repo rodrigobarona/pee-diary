@@ -406,7 +406,7 @@ export default function EntryDetailScreen() {
         <ScrollView
           ref={scrollViewRef}
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, gap: 24, paddingBottom: 160 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -494,14 +494,14 @@ export default function EntryDetailScreen() {
         {/* Sticky Update Button */}
         {Platform.OS === 'ios' ? (
           <BlurView intensity={80} tint="light" style={styles.footerBlur}>
-            <View style={[styles.footerContent, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+            <View style={[styles.footerContent, { paddingBottom: Math.max(insets.bottom, 24) }]}>
               <Button onPress={handleUpdate} size="lg" style={{ width: '100%' }}>
                 <Text>{t('detail.update')}</Text>
               </Button>
             </View>
           </BlurView>
         ) : (
-          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 24) }]}>
             <Button onPress={handleUpdate} size="lg" style={{ width: '100%' }}>
               <Text>{t('detail.update')}</Text>
             </Button>
@@ -515,8 +515,8 @@ export default function EntryDetailScreen() {
 const styles = StyleSheet.create({
   footer: {
     backgroundColor: '#F9FAFB',
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 20,
+    paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
   },
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
   footerContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 20,
+    paddingTop: 16,
   },
 });
