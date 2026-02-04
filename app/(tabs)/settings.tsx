@@ -131,12 +131,26 @@ export default function SettingsScreen() {
     }
 
     if (entries.length === 0) {
-      Alert.alert('No Data', 'There are no entries to export.');
+      Alert.alert(t('settings.export'), t('settings.noDataToExport'));
+      return;
+    }
+
+    if (!documentDirectory) {
+      Alert.alert(t('common.error'), t('settings.exportError'));
       return;
     }
 
     try {
-      // Create CSV content
+      // Create CSV content with proper escaping
+      const escapeCSV = (value: string | number | undefined | null): string => {
+        if (value === undefined || value === null) return '';
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+
       const headers = [
         'ID',
         'Type',
@@ -153,23 +167,23 @@ export default function SettingsScreen() {
 
       const rows = entries.map((entry) => {
         const base = [
-          entry.id,
-          entry.type,
-          entry.timestamp,
+          escapeCSV(entry.id),
+          escapeCSV(entry.type),
+          escapeCSV(entry.timestamp),
         ];
 
         switch (entry.type) {
           case 'urination':
             return [
               ...base,
-              entry.volume,
-              entry.urgency,
+              escapeCSV(entry.volume),
+              escapeCSV(entry.urgency),
               entry.hadLeak ? 'Yes' : 'No',
               entry.hadPain ? 'Yes' : 'No',
               '',
               '',
               '',
-              entry.notes || '',
+              escapeCSV(entry.notes),
             ].join(',');
           case 'fluid':
             return [
@@ -178,22 +192,22 @@ export default function SettingsScreen() {
               '',
               '',
               '',
-              entry.drinkType,
-              entry.amount,
+              escapeCSV(entry.drinkType),
+              escapeCSV(entry.amount),
               '',
-              entry.notes || '',
+              escapeCSV(entry.notes),
             ].join(',');
           case 'leak':
             return [
               ...base,
               '',
-              entry.urgency,
+              escapeCSV(entry.urgency),
               '',
               '',
               '',
               '',
-              entry.severity,
-              entry.notes || '',
+              escapeCSV(entry.severity),
+              escapeCSV(entry.notes),
             ].join(',');
           default:
             return base.join(',');
@@ -207,15 +221,17 @@ export default function SettingsScreen() {
       await writeAsStringAsync(filePath, csv);
       await shareAsync(filePath, {
         mimeType: 'text/csv',
-        dialogTitle: 'Export Diary',
+        UTI: 'public.comma-separated-values-text',
       });
 
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch (error) {
       console.error('Export error:', error);
-      Alert.alert('Error', 'Failed to export data.');
+      Alert.alert(t('common.error'), t('settings.exportError'));
     }
-  }, [entries]);
+  }, [entries, t]);
 
   const handleClearData = React.useCallback(() => {
     if (Platform.OS !== 'web') {

@@ -9,9 +9,36 @@ interface DailyStatsBarProps {
   voids: number;
   fluids: number;
   leaks: number;
+  compact?: boolean;
 }
 
-export function DailyStatsBar({ voids, fluids, leaks }: DailyStatsBarProps) {
+export function DailyStatsBar({ voids, fluids, leaks, compact = false }: DailyStatsBarProps) {
+  if (compact) {
+    return (
+      <View style={styles.compactContainer}>
+        {/* Voids */}
+        <View style={styles.compactStat}>
+          <MaterialCommunityIcons name="toilet" size={11} color={colors.primary.DEFAULT} />
+          <Text style={styles.compactValue}>{voids}</Text>
+        </View>
+
+        {/* Fluids */}
+        <View style={styles.compactStat}>
+          <MaterialCommunityIcons name="cup-water" size={11} color={colors.secondary.DEFAULT} />
+          <Text style={styles.compactValue}>{fluids}</Text>
+        </View>
+
+        {/* Leaks - only if > 0 */}
+        {leaks > 0 && (
+          <View style={styles.compactStat}>
+            <MaterialCommunityIcons name="water-alert" size={11} color={colors.error} />
+            <Text style={[styles.compactValue, { color: colors.error }]}>{leaks}</Text>
+          </View>
+        )}
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Voids */}
@@ -74,5 +101,21 @@ const styles = StyleSheet.create({
     height: 12,
     backgroundColor: '#E5E7EB',
     marginHorizontal: 10,
+  },
+  // Compact styles
+  compactContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  compactStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  compactValue: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#6B7280',
   },
 });

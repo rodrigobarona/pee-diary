@@ -25,7 +25,7 @@ import {
   VolumePicker,
   TimePicker,
 } from '@/components/diary';
-import { useDiaryStore } from '@/lib/store';
+import { useDiaryStore, useStoreHydrated } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
 import { dateFormatters } from '@/lib/i18n';
 import { colors } from '@/lib/theme/colors';
@@ -70,6 +70,7 @@ export default function EntryDetailScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const isHydrated = useStoreHydrated();
   
   const entry = useDiaryStore((state) => state.entries.find((e) => e.id === id));
   const updateEntry = useDiaryStore((state) => state.updateEntry);
@@ -110,6 +111,30 @@ export default function EntryDetailScreen() {
   // Common state
   const [notes, setNotes] = React.useState(entry?.notes ?? '');
   const [showEditHistory, setShowEditHistory] = React.useState(false);
+  const [isLoaded, setIsLoaded] = React.useState(!!entry);
+
+  // Sync form state when entry loads (handles async store hydration)
+  React.useEffect(() => {
+    if (entry && !isLoaded) {
+      setTimestamp(parseISO(entry.timestamp));
+      setNotes(entry.notes ?? '');
+      
+      if (entry.type === 'urination') {
+        setVolume(entry.volume);
+        setUrgency(entry.urgency);
+        setHadLeak(entry.hadLeak);
+        setHadPain(entry.hadPain);
+      } else if (entry.type === 'fluid') {
+        setDrinkType(entry.drinkType);
+        setAmount(entry.amount.toString());
+      } else if (entry.type === 'leak') {
+        setSeverity(entry.severity);
+        setUrgency(entry.urgency);
+      }
+      
+      setIsLoaded(true);
+    }
+  }, [entry, isLoaded]);
 
   // Scroll ref for keyboard
   const scrollViewRef = React.useRef<ScrollView>(null);
@@ -124,10 +149,24 @@ export default function EntryDetailScreen() {
     }, 100);
   }, []);
 
+  // Show loading state while store hydrates
+  if (!isHydrated) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+      </View>
+    );
+  }
+
+  // Show error if entry not found after hydration
   if (!entry) {
     return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <Text className="text-muted-foreground">{t('common.error')}</Text>
+      <View style={styles.loadingContainer}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color="#D1D5DB" />
+        <Text style={styles.errorText}>{t('detail.notFound')}</Text>
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>{t('common.back')}</Text>
+        </Pressable>
       </View>
     );
   }
@@ -513,6 +552,34 @@ export default function EntryDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F9FAFB',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#9CA3AF',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  backButton: {
+    marginTop: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#006D77',
+    borderRadius: 20,
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
   footer: {
     backgroundColor: '#F9FAFB',
     paddingHorizontal: 20,

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Pressable, ScrollView, StyleSheet, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
@@ -36,6 +37,8 @@ const chips: ChipConfig[] = [
 
 export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
   const { t } = useI18n();
+  const [showRightFade, setShowRightFade] = React.useState(true);
+  const [showLeftFade, setShowLeftFade] = React.useState(false);
 
   const handleSelect = React.useCallback((filter: FilterType) => {
     if (Platform.OS !== 'web') {
@@ -44,12 +47,23 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
     onSelect(filter);
   }, [onSelect]);
 
+  const handleScroll = React.useCallback((event: any) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const isAtStart = contentOffset.x <= 5;
+    const isAtEnd = contentOffset.x + layoutMeasurement.width >= contentSize.width - 5;
+    
+    setShowLeftFade(!isAtStart);
+    setShowRightFade(!isAtEnd);
+  }, []);
+
   return (
     <View style={styles.wrapper}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.container}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         {chips.map((chip) => {
           const isSelected = selected === chip.id;
@@ -90,30 +104,52 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
           );
         })}
       </ScrollView>
+
+      {/* Left fade indicator */}
+      {showLeftFade && (
+        <LinearGradient
+          colors={['#F9FAFB', 'rgba(249,250,251,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.fadeLeft}
+          pointerEvents="none"
+        />
+      )}
+
+      {/* Right fade indicator */}
+      {showRightFade && (
+        <LinearGradient
+          colors={['rgba(249,250,251,0)', '#F9FAFB']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.fadeRight}
+          pointerEvents="none"
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    height: 44,
+    height: 48,
+    position: 'relative',
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     gap: 8,
-    height: 44,
+    height: 48,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     backgroundColor: '#F3F4F6',
     borderRadius: 20,
-    height: 32,
   },
   chipText: {
     fontSize: 13,
@@ -131,5 +167,19 @@ const styles = StyleSheet.create({
   },
   countTextSelected: {
     color: 'rgba(255,255,255,0.8)',
+  },
+  fadeLeft: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 24,
+  },
+  fadeRight: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 24,
   },
 });

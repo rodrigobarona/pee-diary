@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
@@ -9,51 +8,40 @@ import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
 import { useDiaryStore } from '@/lib/store';
-import type { DailyGoals } from '@/lib/store/types';
 
 export default function GoalsScreen() {
-  const router = useRouter();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const goals = useDiaryStore((state) => state.goals);
   const updateGoals = useDiaryStore((state) => state.updateGoals);
-  const [editingGoals, setEditingGoals] = React.useState<DailyGoals>(goals);
 
-  // Sync editing goals when store goals change
-  React.useEffect(() => {
-    setEditingGoals(goals);
-  }, [goals]);
-
-  const handleSaveGoals = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const adjustFluidGoal = (delta: number) => {
+    const newValue = Math.max(500, Math.min(5000, goals.fluidTarget + delta));
+    if (newValue !== goals.fluidTarget) {
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      updateGoals({ fluidTarget: newValue });
     }
-    updateGoals(editingGoals);
-    router.back();
-  }, [editingGoals, updateGoals, router]);
+  };
 
-  const adjustFluidGoal = React.useCallback((delta: number) => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const adjustVoidGoal = (delta: number) => {
+    const newValue = Math.max(3, Math.min(15, goals.voidTarget + delta));
+    if (newValue !== goals.voidTarget) {
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      updateGoals({ voidTarget: newValue });
     }
-    setEditingGoals((prev) => ({
-      ...prev,
-      fluidTarget: Math.max(500, Math.min(5000, prev.fluidTarget + delta)),
-    }));
-  }, []);
+  };
 
-  const adjustVoidGoal = React.useCallback((delta: number) => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    setEditingGoals((prev) => ({
-      ...prev,
-      voidTarget: Math.max(3, Math.min(15, prev.voidTarget + delta)),
-    }));
-  }, []);
+  const isFluidMin = goals.fluidTarget <= 500;
+  const isFluidMax = goals.fluidTarget >= 5000;
+  const isVoidMin = goals.voidTarget <= 3;
+  const isVoidMax = goals.voidTarget >= 15;
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) + 16 }]}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) }]}>
       {/* Title */}
       <Text style={styles.title}>{t('goals.title')}</Text>
       <Text style={styles.subtitle}>{t('goals.description')}</Text>
@@ -69,29 +57,27 @@ export default function GoalsScreen() {
             <Text style={styles.goalDesc}>{t('goals.fluidDescription')}</Text>
           </View>
         </View>
-        <View style={styles.adjusterRow}>
-          <Pressable
+        <View style={styles.stepperRow}>
+          <TouchableOpacity
             onPress={() => adjustFluidGoal(-250)}
-            style={({ pressed }) => [
-              styles.adjusterButton,
-              pressed && styles.adjusterButtonPressed,
-            ]}
+            disabled={isFluidMin}
+            activeOpacity={0.7}
+            style={[styles.stepperButtonSecondary, isFluidMin && styles.stepperButtonDisabled]}
           >
-            <MaterialCommunityIcons name="minus" size={24} color={colors.primary.DEFAULT} />
-          </Pressable>
+            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
           <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>{editingGoals.fluidTarget}</Text>
+            <Text style={styles.valueText}>{goals.fluidTarget}</Text>
             <Text style={styles.unitText}>ml</Text>
           </View>
-          <Pressable
+          <TouchableOpacity
             onPress={() => adjustFluidGoal(250)}
-            style={({ pressed }) => [
-              styles.adjusterButton,
-              pressed && styles.adjusterButtonPressed,
-            ]}
+            disabled={isFluidMax}
+            activeOpacity={0.7}
+            style={[styles.stepperButtonSecondary, isFluidMax && styles.stepperButtonDisabled]}
           >
-            <MaterialCommunityIcons name="plus" size={24} color={colors.primary.DEFAULT} />
-          </Pressable>
+            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -106,48 +92,35 @@ export default function GoalsScreen() {
             <Text style={styles.goalDesc}>{t('goals.voidDescription')}</Text>
           </View>
         </View>
-        <View style={styles.adjusterRow}>
-          <Pressable
+        <View style={styles.stepperRow}>
+          <TouchableOpacity
             onPress={() => adjustVoidGoal(-1)}
-            style={({ pressed }) => [
-              styles.adjusterButton,
-              pressed && styles.adjusterButtonPressed,
-            ]}
+            disabled={isVoidMin}
+            activeOpacity={0.7}
+            style={[styles.stepperButtonPrimary, isVoidMin && styles.stepperButtonDisabled]}
           >
-            <MaterialCommunityIcons name="minus" size={24} color={colors.primary.DEFAULT} />
-          </Pressable>
+            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
           <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>{editingGoals.voidTarget}</Text>
+            <Text style={styles.valueText}>{goals.voidTarget}</Text>
             <Text style={styles.unitText}>{t('goals.perDay')}</Text>
           </View>
-          <Pressable
+          <TouchableOpacity
             onPress={() => adjustVoidGoal(1)}
-            style={({ pressed }) => [
-              styles.adjusterButton,
-              pressed && styles.adjusterButtonPressed,
-            ]}
+            disabled={isVoidMax}
+            activeOpacity={0.7}
+            style={[styles.stepperButtonPrimary, isVoidMax && styles.stepperButtonDisabled]}
           >
-            <MaterialCommunityIcons name="plus" size={24} color={colors.primary.DEFAULT} />
-          </Pressable>
+            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
       </View>
 
       {/* Medical info */}
       <View style={styles.infoBox}>
-        <MaterialCommunityIcons name="information-outline" size={18} color="#6B7280" />
+        <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
         <Text style={styles.infoText}>{t('goals.medicalInfo')}</Text>
       </View>
-
-      {/* Save button */}
-      <Pressable
-        onPress={handleSaveGoals}
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-      >
-        <Text style={styles.saveButtonText}>{t('common.save')}</Text>
-      </Pressable>
     </View>
   );
 }
@@ -157,37 +130,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
     paddingHorizontal: 20,
-    paddingTop: 20,
-    gap: 16,
+    paddingTop: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     color: '#111827',
     textAlign: 'center',
-    marginBottom: 0,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#6B7280',
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 8,
+    lineHeight: 20,
+    marginTop: 4,
+    marginBottom: 20,
   },
   goalCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
   },
   goalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   iconContainer: {
     width: 48,
@@ -206,38 +179,45 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
   goalDesc: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6B7280',
     marginTop: 2,
   },
-  adjusterRow: {
+  stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 20,
   },
-  adjusterButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#F3F4F6',
+  stepperButtonPrimary: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: colors.primary.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
-  adjusterButtonPressed: {
-    backgroundColor: '#E5E7EB',
-    transform: [{ scale: 0.95 }],
+  stepperButtonSecondary: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: colors.secondary.DEFAULT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepperButtonDisabled: {
+    opacity: 0.3,
   },
   valueContainer: {
     alignItems: 'center',
-    minWidth: 80,
+    justifyContent: 'center',
+    minWidth: 100,
   },
   valueText: {
     fontSize: 32,
     fontWeight: '700',
     color: '#111827',
+    lineHeight: 40,
   },
   unitText: {
     fontSize: 14,
@@ -247,30 +227,16 @@ const styles = StyleSheet.create({
   infoBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
     backgroundColor: '#F0F9FF',
     padding: 14,
     borderRadius: 12,
+    marginTop: 4,
   },
   infoText: {
     fontSize: 13,
     color: '#4B5563',
     flex: 1,
     lineHeight: 18,
-  },
-  saveButton: {
-    backgroundColor: colors.primary.DEFAULT,
-    paddingVertical: 18,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  saveButtonPressed: {
-    opacity: 0.9,
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '600',
+    marginLeft: 10,
   },
 });

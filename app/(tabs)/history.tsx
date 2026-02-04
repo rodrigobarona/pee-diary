@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { View, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
 import {
   format,
   parseISO,
   isToday,
   isYesterday,
+  isSameDay,
+  eachDayOfInterval,
+  subDays,
 } from 'date-fns';
 import { useShallow } from 'zustand/shallow';
 import { useRouter } from 'expo-router';
@@ -15,6 +18,8 @@ import {
   CalendarHeader,
   FilterChips,
   TimelineEntry,
+  TimePeriodHeader,
+  getTimePeriod,
   DailyStatsBar,
 } from '@/components/diary';
 import type { DateEntryInfo } from '@/components/diary/calendar-header';
@@ -22,11 +27,20 @@ import { useDiaryStore } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
 import type { DiaryEntry } from '@/lib/store/types';
 import type { FilterType } from '@/components/diary/filter-chips';
+import { colors } from '@/lib/theme/colors';
+
+type TimePeriod = 'morning' | 'afternoon' | 'evening' | 'night';
+
+interface PeriodGroup {
+  period: TimePeriod;
+  entries: DiaryEntry[];
+}
 
 interface DayGroup {
   date: Date;
   dateKey: string;
-  entries: DiaryEntry[];
+  hasEntries: boolean;
+  periods: PeriodGroup[];
   summary: {
     voids: number;
     fluids: number;
@@ -37,6 +51,8 @@ interface DayGroup {
 export default function HistoryScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const dayGroupRefs = React.useRef<Map<string, number>>(new Map());
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [filter, setFilter] = React.useState<FilterType>('all');
   const entries = useDiaryStore(useShallow((state) => state.entries));
@@ -48,6 +64,20 @@ export default function HistoryScreen() {
     },
     [router]
   );
+
+  // Handle date selection from calendar - scroll to that date
+  const handleDateSelect = React.useCallback((date: Date) => {
+    setSelectedDate(date);
+    
+    // Small delay to ensure layout is calculated
+    setTimeout(() => {
+      const dateKey = format(date, 'yyyy-MM-dd');
+      const yPosition = dayGroupRefs.current.get(dateKey);
+      if (yPosition !== undefined) {
+        scrollViewRef.current?.scrollTo({ y: yPosition, animated: true });
+      }
+    }, 100);
+  }, []);
 
   // Format date with relative labels
   const formatDateHeader = React.useCallback(
@@ -95,27 +125,64 @@ export default function HistoryScreen() {
     leak: entries.filter((e) => e.type === 'leak').length,
   }), [entries]);
 
-  // Group filtered entries by day
+  // Build continuous timeline with all days (with and without entries)
+  // Order: oldest at top, newest at bottom (scroll down = go to future/today)
   const dayGroups = React.useMemo((): DayGroup[] => {
-    const groups = new Map<string, DiaryEntry[]>();
+    // Get date range: from oldest entry to today (or last 7 days if no entries)
+    const today = new Date();
+    let startDate = subDays(today, 7);
+    
+    if (entries.length > 0) {
+      const oldestEntry = entries.reduce((oldest, entry) => {
+        const entryDate = parseISO(entry.timestamp);
+        return entryDate < oldest ? entryDate : oldest;
+      }, today);
+      startDate = oldestEntry < startDate ? oldestEntry : startDate;
+    }
 
-    // Group entries by date
+    // Generate all days in range
+    const allDays = eachDayOfInterval({ start: startDate, end: today });
+    
+    // Group filtered entries by date
+    const entriesByDateKey = new Map<string, DiaryEntry[]>();
     filteredEntries.forEach((entry) => {
       const dateKey = format(parseISO(entry.timestamp), 'yyyy-MM-dd');
-      if (!groups.has(dateKey)) {
-        groups.set(dateKey, []);
+      if (!entriesByDateKey.has(dateKey)) {
+        entriesByDateKey.set(dateKey, []);
       }
-      groups.get(dateKey)!.push(entry);
+      entriesByDateKey.get(dateKey)!.push(entry);
     });
 
-    // Convert to array and sort by date (most recent first)
-    return Array.from(groups.entries())
-      .map(([dateKey, dayEntries]) => {
-        const date = parseISO(dateKey);
+    // Build day groups for each day
+    return allDays
+      .map((date) => {
+        const dateKey = format(date, 'yyyy-MM-dd');
+        const dayEntries = entriesByDateKey.get(dateKey) || [];
+        const hasEntries = dayEntries.length > 0;
+        
+        // Sort entries by time (earliest first - ascending)
         const sortedEntries = dayEntries.sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
+
+        // Group by time period
+        const periodMap = new Map<TimePeriod, DiaryEntry[]>();
+        sortedEntries.forEach((entry) => {
+          const period = getTimePeriod(entry.timestamp);
+          if (!periodMap.has(period)) {
+            periodMap.set(period, []);
+          }
+          periodMap.get(period)!.push(entry);
+        });
+
+        // Order periods: morning, afternoon, evening, night (ascending time)
+        const periodOrder: TimePeriod[] = ['morning', 'afternoon', 'evening', 'night'];
+        const periods: PeriodGroup[] = periodOrder
+          .filter(p => periodMap.has(p))
+          .map(period => ({
+            period,
+            entries: periodMap.get(period)!,
+          }));
 
         // Calculate summary from ALL entries for the day (not filtered)
         const allDayEntries = entries.filter(
@@ -130,19 +197,46 @@ export default function HistoryScreen() {
         return {
           date,
           dateKey,
-          entries: sortedEntries,
+          hasEntries,
+          periods,
           summary: { voids, fluids, leaks },
         };
       })
-      .sort((a, b) => b.date.getTime() - a.date.getTime());
+      .sort((a, b) => a.date.getTime() - b.date.getTime()); // Oldest first (past at top)
   }, [filteredEntries, entries]);
+
+  // Handle add entry for empty day
+  const handleAddEntry = React.useCallback(() => {
+    router.push('/add-menu');
+  }, [router]);
+
+  // Check if we have any entries at all
+  const hasAnyEntries = entries.length > 0;
+
+  // Auto-scroll to today on mount
+  React.useEffect(() => {
+    if (hasAnyEntries) {
+      // Small delay to ensure layout is ready
+      const timer = setTimeout(() => {
+        const todayKey = format(new Date(), 'yyyy-MM-dd');
+        const yPosition = dayGroupRefs.current.get(todayKey);
+        if (yPosition !== undefined) {
+          scrollViewRef.current?.scrollTo({ y: yPosition, animated: false });
+        } else {
+          // If today not found, scroll to end (most recent)
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAnyEntries]);
 
   return (
     <View style={styles.container}>
-      {/* Collapsible Calendar Header */}
+      {/* Calendar Header */}
       <CalendarHeader
         selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
+        onSelectDate={handleDateSelect}
         entriesByDate={entriesByDate}
       />
 
@@ -155,12 +249,13 @@ export default function HistoryScreen() {
 
       {/* Timeline List */}
       <ScrollView
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {dayGroups.length === 0 ? (
-          /* Empty State */
+        {!hasAnyEntries ? (
+          /* Global Empty State - No entries at all */
           <View style={styles.emptyState}>
             <MaterialCommunityIcons
               name="clipboard-text-outline"
@@ -173,41 +268,85 @@ export default function HistoryScreen() {
             <Text style={styles.emptySubtitle}>
               {t('history.startTracking')}
             </Text>
+            <Pressable onPress={handleAddEntry} style={styles.addButton}>
+              <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
+              <Text style={styles.addButtonText}>{t('add.title')}</Text>
+            </Pressable>
           </View>
         ) : (
-          /* Day Groups with Timeline */
-          dayGroups.map((group) => (
-            <View key={group.dateKey} style={styles.dayGroup}>
-              {/* Day Header */}
-              <View style={styles.dayHeader}>
-                <Text style={styles.dayTitle}>
-                  {formatDateHeader(group.date)}
-                </Text>
-                <Text style={styles.dayDate}>
-                  {format(group.date, 'MMM d')}
-                </Text>
-              </View>
+          /* Continuous Timeline */
+          <View style={styles.timeline}>
+            {dayGroups.map((group) => {
+              const isSelected = isSameDay(group.date, selectedDate);
+              
+              return (
+                <View 
+                  key={group.dateKey}
+                  style={[styles.dayGroup, isSelected && styles.dayGroupSelected]}
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    dayGroupRefs.current.set(group.dateKey, y);
+                  }}
+                >
+                  {/* Day Header - All on one line */}
+                  <View style={styles.dayHeader}>
+                    <Text style={[styles.dayTitle, isSelected ? styles.dayTitleSelected : undefined]}>
+                      {formatDateHeader(group.date)}
+                    </Text>
+                    <Text style={styles.dayDot}>·</Text>
+                    <Text style={styles.dayDate}>
+                      {format(group.date, 'MMM d')}
+                    </Text>
+                    {group.hasEntries ? (
+                      <>
+                        <View style={styles.daySpacer} />
+                        <DailyStatsBar
+                          voids={group.summary.voids}
+                          fluids={group.summary.fluids}
+                          leaks={group.summary.leaks}
+                          compact
+                        />
+                      </>
+                    ) : null}
+                  </View>
 
-              {/* Daily Stats Bar */}
-              <DailyStatsBar
-                voids={group.summary.voids}
-                fluids={group.summary.fluids}
-                leaks={group.summary.leaks}
-              />
+                  {/* Day Content */}
+                  {group.hasEntries ? (
+                    /* Time Period Groups */
+                    group.periods.map((periodGroup) => (
+                      <View key={periodGroup.period}>
+                        {/* Period Header */}
+                        <TimePeriodHeader 
+                          period={periodGroup.period} 
+                          count={periodGroup.entries.length} 
+                        />
 
-              {/* Timeline Entries */}
-              <View style={styles.entriesList}>
-                {group.entries.map((entry, index) => (
-                  <TimelineEntry
-                    key={entry.id}
-                    entry={entry}
-                    isLast={index === group.entries.length - 1}
-                    onPress={() => handleEntryPress(entry.id)}
-                  />
-                ))}
-              </View>
-            </View>
-          ))
+                        {/* Entries in this period */}
+                        <View style={styles.entriesList}>
+                          {periodGroup.entries.map((entry, entryIndex) => (
+                            <TimelineEntry
+                              key={entry.id}
+                              entry={entry}
+                              isFirst={entryIndex === 0}
+                              isLast={entryIndex === periodGroup.entries.length - 1}
+                              onPress={() => handleEntryPress(entry.id)}
+                            />
+                          ))}
+                        </View>
+                      </View>
+                    ))
+                  ) : (
+                    /* Empty Day - Compact indicator */
+                    <View style={styles.emptyDay}>
+                      <View style={styles.emptyDayLine} />
+                      <Text style={styles.emptyDayText}>{t('history.noDataForDay')}</Text>
+                      <View style={styles.emptyDayLine} />
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+          </View>
         )}
       </ScrollView>
     </View>
@@ -243,27 +382,80 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.primary.DEFAULT,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+    marginTop: 24,
+  },
+  addButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  // Timeline
+  timeline: {
+    paddingTop: 8,
+  },
   // Day group
   dayGroup: {
-    marginBottom: 16,
+    marginBottom: 4,
+  },
+  dayGroupSelected: {
+    backgroundColor: 'rgba(0, 109, 119, 0.03)',
+    borderRadius: 12,
+    marginHorizontal: 8,
+    paddingBottom: 8,
   },
   dayHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 12,
+    paddingBottom: 6,
   },
   dayTitle: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#111827',
   },
+  dayTitleSelected: {
+    color: colors.primary.DEFAULT,
+  },
+  dayDot: {
+    fontSize: 14,
+    color: '#D1D5DB',
+    marginHorizontal: 6,
+  },
   dayDate: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: 13,
+    color: '#6B7280',
+  },
+  daySpacer: {
+    flex: 1,
   },
   entriesList: {
-    paddingLeft: 16,
+    paddingHorizontal: 8,
+  },
+  // Empty day
+  emptyDay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 12,
+  },
+  emptyDayLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+  },
+  emptyDayText: {
+    fontSize: 12,
+    color: '#D1D5DB',
   },
 });

@@ -65,7 +65,8 @@
   "timePeriod": {
     "morning": "Mañana",
     "afternoon": "Tarde",
-    "evening": "Noche",
+    "evening": "Atardecer",
+    "night": "Noche",
     "noEntries": "Sin registros"
   },
   "add": {
@@ -131,6 +132,7 @@
     "avgUrgency": "urgencia promedio",
     "noEntriesYet": "Sin registros aún",
     "startTracking": "Comienza a registrar para ver tu historial",
+    "noDataForDay": "Sin registros para este día",
     "weekly": "Semanal",
     "monthly": "Mensual"
   },
@@ -142,6 +144,8 @@
     "portuguese": "Portugués",
     "export": "Exportar datos",
     "exportDescription": "Exportar tu diario como CSV",
+    "noDataToExport": "No hay registros para exportar.",
+    "exportError": "Error al exportar los datos. Inténtalo de nuevo.",
     "clearData": "Borrar todos los datos",
     "clearDataDescription": "Esta acción no se puede deshacer",
     "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros?",
@@ -165,6 +169,7 @@
     "time": "Hora"
   },
   "detail": {
+    "editEntry": "Editar Registro",
     "editUrination": "Editar Micción",
     "editFluid": "Editar Líquido",
     "editLeak": "Editar Pérdida",
@@ -175,6 +180,7 @@
     "changedFrom": "de",
     "changedTo": "a",
     "deleteConfirm": "¿Estás seguro de que quieres eliminar este registro?",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "notFound": "Registro no encontrado"
   }
 }

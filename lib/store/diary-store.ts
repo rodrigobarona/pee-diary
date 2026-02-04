@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -255,6 +256,28 @@ export const useDiaryStore = create<DiaryState>()(
     }
   )
 );
+
+// Hydration state check
+export const useStoreHydrated = () => {
+  const [hydrated, setHydrated] = React.useState(false);
+  
+  React.useEffect(() => {
+    const unsubFinishHydration = useDiaryStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    
+    // Check if already hydrated
+    if (useDiaryStore.persist.hasHydrated()) {
+      setHydrated(true);
+    }
+    
+    return () => {
+      unsubFinishHydration();
+    };
+  }, []);
+  
+  return hydrated;
+};
 
 // Note: Complex selectors that return new objects/arrays on each call
 // should NOT be used directly with useDiaryStore() as they cause infinite loops.

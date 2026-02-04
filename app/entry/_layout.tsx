@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { useI18n } from '@/lib/i18n/context';
 
 export default function EntryLayout() {
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
 
   return (
     <Stack
@@ -14,12 +14,19 @@ export default function EntryLayout() {
         headerTitleStyle: { fontWeight: '600', fontSize: 17 },
         headerTintColor: '#006D77',
         headerTitleAlign: 'center',
-        headerBackTitleVisible: false,
-        // Ensure proper header layout for modal
+        contentStyle: { backgroundColor: '#F9FAFB' },
         ...(Platform.OS === 'ios' && {
           headerShadowVisible: false,
+          headerBackTitle: '',
         }),
       }}
-    />
+    >
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: t('detail.editEntry'),
+        }}
+      />
+    </Stack>
   );
 }
