@@ -109,9 +109,20 @@
   },
   "time": {
     "when": "When",
-    "now": "Now",
-    "1hAgo": "1h ago",
-    "2hAgo": "2h ago",
-    "3hAgo": "3h ago"
+    "date": "Date",
+    "time": "Time"
+  },
+  "detail": {
+    "editUrination": "Edit Urination",
+    "editFluid": "Edit Fluid",
+    "editLeak": "Edit Leak",
+    "editHistory": "Edit History",
+    "edited": "Edited",
+    "created": "Created",
+    "noEdits": "No edits yet",
+    "changedFrom": "from",
+    "changedTo": "to",
+    "deleteConfirm": "Are you sure you want to delete this entry?",
+    "update": "Update"
   }
 }

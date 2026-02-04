@@ -106,5 +106,23 @@
     "3": "Moderada",
     "4": "Forte",
     "5": "Urgente"
+  },
+  "time": {
+    "when": "Quando",
+    "date": "Data",
+    "time": "Hora"
+  },
+  "detail": {
+    "editUrination": "Editar Micção",
+    "editFluid": "Editar Líquido",
+    "editLeak": "Editar Perda",
+    "editHistory": "Histórico de edições",
+    "edited": "Editado",
+    "created": "Criado",
+    "noEdits": "Sem edições",
+    "changedFrom": "de",
+    "changedTo": "para",
+    "deleteConfirm": "Tem certeza de que deseja excluir este registro?",
+    "update": "Atualizar"
   }
 }

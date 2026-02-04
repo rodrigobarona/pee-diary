@@ -1,10 +1,21 @@
 import { z } from 'zod';
 
+// Edit history record schema
+export const editRecordSchema = z.object({
+  editedAt: z.string().datetime(),
+  changes: z.record(z.string(), z.object({
+    from: z.unknown(),
+    to: z.unknown(),
+  })),
+});
+
 // Zod Schemas for validation
 export const baseEntrySchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   timestamp: z.string().datetime(),
+  createdAt: z.string().datetime().optional(),
   notes: z.string().optional(),
+  editHistory: z.array(editRecordSchema).optional(),
 });
 
 export const urinationEntrySchema = baseEntrySchema.extend({
@@ -46,6 +57,7 @@ export const diaryEntrySchema = z.discriminatedUnion('type', [
 ]);
 
 // TypeScript Types
+export type EditRecord = z.infer<typeof editRecordSchema>;
 export type BaseEntry = z.infer<typeof baseEntrySchema>;
 export type UrinationEntry = z.infer<typeof urinationEntrySchema>;
 export type FluidEntry = z.infer<typeof fluidEntrySchema>;
@@ -59,12 +71,17 @@ export type DrinkType = FluidEntry['drinkType'];
 export type LeakSeverity = LeakEntry['severity'];
 
 // Helper types for creating entries (timestamp is optional - defaults to now)
-export type CreateUrinationEntry = Omit<UrinationEntry, 'id' | 'timestamp' | 'type'> & {
+export type CreateUrinationEntry = Omit<UrinationEntry, 'id' | 'timestamp' | 'type' | 'createdAt' | 'editHistory'> & {
   timestamp?: string;
 };
-export type CreateFluidEntry = Omit<FluidEntry, 'id' | 'timestamp' | 'type'> & {
+export type CreateFluidEntry = Omit<FluidEntry, 'id' | 'timestamp' | 'type' | 'createdAt' | 'editHistory'> & {
   timestamp?: string;
 };
-export type CreateLeakEntry = Omit<LeakEntry, 'id' | 'timestamp' | 'type'> & {
+export type CreateLeakEntry = Omit<LeakEntry, 'id' | 'timestamp' | 'type' | 'createdAt' | 'editHistory'> & {
   timestamp?: string;
 };
+
+// Helper types for updating entries
+export type UpdateUrinationEntry = Partial<Omit<UrinationEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;
+export type UpdateFluidEntry = Partial<Omit<FluidEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;
+export type UpdateLeakEntry = Partial<Omit<LeakEntry, 'id' | 'type' | 'createdAt' | 'editHistory'>>;

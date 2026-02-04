@@ -10,6 +10,7 @@ import {
   isYesterday,
 } from 'date-fns';
 import { useShallow } from 'zustand/shallow';
+import { useRouter } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
@@ -35,9 +36,18 @@ interface DayGroup {
 
 export default function HistoryScreen() {
   const { t } = useI18n();
+  const router = useRouter();
   const [viewMode, setViewMode] = React.useState<ViewMode>('list');
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const entries = useDiaryStore(useShallow((state) => state.entries));
+
+  // Navigation handler for entry press
+  const handleEntryPress = React.useCallback(
+    (id: string) => {
+      router.push(`/entry/${id}`);
+    },
+    [router]
+  );
 
   // Format date with relative labels
   const formatDateHeader = React.useCallback(
@@ -288,7 +298,11 @@ export default function HistoryScreen() {
                   {/* Day Entries */}
                   <View className="gap-2 mt-3">
                     {group.entries.map((entry) => (
-                      <EntryCard key={entry.id} entry={entry} />
+                      <EntryCard
+                        key={entry.id}
+                        entry={entry}
+                        onPress={() => handleEntryPress(entry.id)}
+                      />
                     ))}
                   </View>
                 </View>
@@ -348,7 +362,11 @@ export default function HistoryScreen() {
               ) : (
                 <View className="gap-2">
                   {selectedDateEntries.map((entry) => (
-                    <EntryCard key={entry.id} entry={entry} />
+                    <EntryCard
+                      key={entry.id}
+                      entry={entry}
+                      onPress={() => handleEntryPress(entry.id)}
+                    />
                   ))}
                 </View>
               )}

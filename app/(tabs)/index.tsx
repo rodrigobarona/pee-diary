@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { startOfDay, endOfDay, isWithinInterval, parseISO } from 'date-fns';
 import { useShallow } from 'zustand/shallow';
+import { useRouter } from 'expo-router';
 
 import { Text } from '@/components/ui/text';
 import { EntryCard, SummaryCard, FABMenu } from '@/components/diary';
@@ -10,11 +11,6 @@ import { useDiaryStore } from '@/lib/store';
 import { useI18n } from '@/lib/i18n/context';
 import { formatDateHeader } from '@/lib/utils/date';
 import type { DiaryEntry } from '@/lib/store/types';
-
-// Hoisted renderItem function - per list-performance-callbacks rule
-const renderItem = ({ item }: { item: DiaryEntry }) => (
-  <EntryCard entry={item} />
-);
 
 // Hoisted keyExtractor - per list-performance-callbacks rule
 const keyExtractor = (item: DiaryEntry) => item.id;
@@ -66,9 +62,26 @@ const isEntryFromToday = (entry: DiaryEntry) => {
 
 export default function HomeScreen() {
   const { t } = useI18n();
+  const router = useRouter();
   
   // Get all entries and compute today's entries in useMemo
   const allEntries = useDiaryStore(useShallow((state) => state.entries));
+
+  // Navigation handler for entry press
+  const handleEntryPress = React.useCallback(
+    (id: string) => {
+      router.push(`/entry/${id}`);
+    },
+    [router]
+  );
+
+  // Render item with navigation - uses useCallback per list-performance-callbacks rule
+  const renderItem = React.useCallback(
+    ({ item }: { item: DiaryEntry }) => (
+      <EntryCard entry={item} onPress={() => handleEntryPress(item.id)} />
+    ),
+    [handleEntryPress]
+  );
 
   // Filter and sort entries for today
   const sortedEntries = React.useMemo(() => {

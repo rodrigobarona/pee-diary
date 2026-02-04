@@ -19,7 +19,9 @@ import { I18nProvider, useI18n } from '@/lib/i18n/context';
 LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // Ignore errors - splash screen may not be available in all contexts
+});
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -47,6 +49,13 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             headerShown: Platform.OS === 'web', // Header shown only on web, native uses sheet grabber
           }}
         />
+        <Stack.Screen
+          name="entry"
+          options={{
+            presentation: Platform.OS === 'web' ? 'card' : 'modal',
+            headerShown: false, // Handled by entry/_layout.tsx
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -69,7 +78,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(() => {
+        // Ignore errors - splash screen may not be available in all contexts (e.g., modals)
+      });
     }
   }, [fontsLoaded]);
 

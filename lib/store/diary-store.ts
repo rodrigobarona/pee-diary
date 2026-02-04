@@ -8,6 +8,10 @@ import type {
   CreateUrinationEntry,
   CreateFluidEntry,
   CreateLeakEntry,
+  UpdateUrinationEntry,
+  UpdateFluidEntry,
+  UpdateLeakEntry,
+  EditRecord,
 } from './types';
 
 // Detect system language on first launch
@@ -49,12 +53,11 @@ interface DiaryState {
   addUrinationEntry: (entry: CreateUrinationEntry) => void;
   addFluidEntry: (entry: CreateFluidEntry) => void;
   addLeakEntry: (entry: CreateLeakEntry) => void;
+  updateEntry: (id: string, updates: UpdateUrinationEntry | UpdateFluidEntry | UpdateLeakEntry) => void;
   deleteEntry: (id: string) => void;
   clearAllEntries: () => void;
   setLanguage: (language: 'en' | 'es' | 'pt') => void;
-
-  // Selectors - granular subscriptions for list items
-  // Using functions instead of getters for Zustand selector pattern
+  getEntryById: (id: string) => DiaryEntry | undefined;
 }
 
 export const useDiaryStore = create<DiaryState>()(
@@ -63,43 +66,82 @@ export const useDiaryStore = create<DiaryState>()(
       entries: [],
       language: getInitialLanguage(),
 
-      addUrinationEntry: (entry) =>
+      addUrinationEntry: (entry) => {
+        const now = new Date().toISOString();
         set((state) => ({
           entries: [
             ...state.entries,
             {
               ...entry,
               id: createId(),
-              timestamp: entry.timestamp ?? new Date().toISOString(),
+              timestamp: entry.timestamp ?? now,
+              createdAt: now,
               type: 'urination' as const,
             },
           ],
-        })),
+        }));
+      },
 
-      addFluidEntry: (entry) =>
+      addFluidEntry: (entry) => {
+        const now = new Date().toISOString();
         set((state) => ({
           entries: [
             ...state.entries,
             {
               ...entry,
               id: createId(),
-              timestamp: entry.timestamp ?? new Date().toISOString(),
+              timestamp: entry.timestamp ?? now,
+              createdAt: now,
               type: 'fluid' as const,
             },
           ],
-        })),
+        }));
+      },
 
-      addLeakEntry: (entry) =>
+      addLeakEntry: (entry) => {
+        const now = new Date().toISOString();
         set((state) => ({
           entries: [
             ...state.entries,
             {
               ...entry,
               id: createId(),
-              timestamp: entry.timestamp ?? new Date().toISOString(),
+              timestamp: entry.timestamp ?? now,
+              createdAt: now,
               type: 'leak' as const,
             },
           ],
+        }));
+      },
+
+      updateEntry: (id, updates) =>
+        set((state) => ({
+          entries: state.entries.map((entry) => {
+            if (entry.id !== id) return entry;
+
+            // Track changes for edit history
+            const changes: Record<string, { from: unknown; to: unknown }> = {};
+            for (const [key, newValue] of Object.entries(updates)) {
+              const oldValue = (entry as Record<string, unknown>)[key];
+              if (oldValue !== newValue) {
+                changes[key] = { from: oldValue, to: newValue };
+              }
+            }
+
+            // Only add edit record if there were actual changes
+            if (Object.keys(changes).length === 0) return entry;
+
+            const editRecord: EditRecord = {
+              editedAt: new Date().toISOString(),
+              changes,
+            };
+
+            return {
+              ...entry,
+              ...updates,
+              editHistory: [...(entry.editHistory ?? []), editRecord],
+            };
+          }),
         })),
 
       deleteEntry: (id) =>
@@ -110,6 +152,8 @@ export const useDiaryStore = create<DiaryState>()(
       clearAllEntries: () => set({ entries: [] }),
 
       setLanguage: (language) => set({ language }),
+
+      getEntryById: (id) => get().entries.find((e) => e.id === id),
     }),
     {
       name: 'pee-diary-storage',
