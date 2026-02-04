@@ -82,11 +82,19 @@
     "amazing": "¡Dedicación increíble!"
   },
   "timePeriod": {
+    "earlyMorning": "Madrugada",
     "morning": "Mañana",
     "afternoon": "Tarde",
     "evening": "Atardecer",
     "night": "Noche",
-    "noEntries": "Sin registros"
+    "noEntries": "Sin registros",
+    "range": {
+      "earlyMorning": "00:00 - 05:00",
+      "morning": "05:00 - 12:00",
+      "afternoon": "12:00 - 17:00",
+      "evening": "17:00 - 21:00",
+      "night": "21:00 - 00:00"
+    }
   },
   "add": {
     "title": "Añadir registro",
@@ -163,6 +171,7 @@
   "settings": {
     "title": "Ajustes",
     "language": "Idioma",
+    "languageSubtitle": "Elige tu idioma preferido",
     "english": "Inglés",
     "spanish": "Español",
     "portuguese": "Portugués",

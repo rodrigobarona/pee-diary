@@ -52,7 +52,6 @@ Puedes exportar todos tus datos del diario en cualquier momento en múltiples fo
    - **PDF** — Informe formateado, ideal para compartir con tu médico
    - **CSV** — Formato de hoja de cálculo, compatible con Excel/Google Sheets
    - **JSON** — Formato técnico, para respaldo o portabilidad de datos
-   - **Excel** — Formato nativo .xlsx para Microsoft Excel
 5. Selecciona el rango de fechas que quieres exportar
 6. Toca **Exportar**
 7. Elige dónde enviar el archivo (email, almacenamiento en la nube, etc.)

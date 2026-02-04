@@ -29,7 +29,7 @@ Apple requires developers to disclose:
 | Diary entries (urination, fluid, leak) | Local (AsyncStorage) | Only via user-initiated export/share |
 | Goals & settings                       | Local (AsyncStorage) | Only via user-initiated export/share |
 | iCloud backup (iOS only)               | Apple iCloud KVS     | Yes, when user enables backup        |
-| Export (PDF/CSV/JSON/Excel)            | Generated locally    | Shared via OS share sheet            |
+| Export (PDF/CSV/JSON)                  | Generated locally    | Shared via OS share sheet            |
 
 ---
 
@@ -135,7 +135,7 @@ Apple's definition excludes user-initiated actions from "collection":
 
 > "Data that is sent off the device only at the user's explicit direction, and only when the data is sent to a third party chosen by the user, does not need to be disclosed."
 
-Therefore, the PDF/CSV/JSON/Excel export feature does **not** require disclosure as "collection" because:
+Therefore, the PDF/CSV/JSON export feature does **not** require disclosure as "collection" because:
 
 1. It is user-initiated (user taps export)
 2. User chooses the destination (via OS share sheet)

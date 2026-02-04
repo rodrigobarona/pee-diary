@@ -66,7 +66,7 @@ ANÁLISES E PROGRESSO
 • Padrões por momento do dia (manhã, tarde, noite)
 
 EXPORTAÇÃO E COMPARTILHAMENTO
-• Exporte seus dados como PDF, CSV, JSON ou Excel para compartilhar com seu médico
+• Exporte seus dados como PDF, CSV ou JSON para compartilhar com seu médico
 • Relatórios PDF elegantes que resumem suas entradas por período
 • Compartilhe diretamente por e-mail, mensagens ou armazenamento na nuvem
 
@@ -105,7 +105,7 @@ Bem-vindo ao Eleva Diary! Comece a acompanhar sua saúde da bexiga hoje.
 • Registre micções, ingestão de líquidos e eventos de perdas
 • Defina metas diárias personalizadas
 • Visualize análises com gráficos semanais e mensais
-• Exporte relatórios como PDF, CSV, JSON ou Excel
+• Exporte relatórios como PDF, CSV ou JSON
 • Backup opcional no iCloud para usuários iOS
 • Disponível em inglês, espanhol e português
 ```

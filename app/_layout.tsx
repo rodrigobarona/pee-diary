@@ -50,7 +50,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
       if (shouldOpen) {
         // Small delay to ensure navigation is ready
         setTimeout(() => {
-          router.push("/add-menu");
+          router.push("/(formSheets)/add-menu");
         }, 100);
       }
     }
@@ -68,7 +68,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="add/urination"
+          name="(modals)/add/urination"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
@@ -76,7 +76,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="add/fluid"
+          name="(modals)/add/fluid"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
@@ -84,7 +84,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="add/leak"
+          name="(modals)/add/leak"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
@@ -92,7 +92,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="add-menu"
+          name="(formSheets)/add-menu"
           options={{
             presentation: Platform.OS === "web" ? "card" : "formSheet",
             headerShown: false,
@@ -102,7 +102,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="goals"
+          name="(formSheets)/goals"
           options={{
             presentation: Platform.OS === "web" ? "card" : "formSheet",
             headerShown: false,
@@ -113,7 +113,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="entry/[id]"
+          name="(modals)/entry/[id]"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
@@ -121,12 +121,22 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
         <Stack.Screen
-          name="export"
+          name="(formSheets)/export"
           options={{
             presentation: Platform.OS === "web" ? "card" : "formSheet",
             headerShown: false,
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            sheetGrabberVisible: Platform.OS === "ios",
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen
+          name="(formSheets)/language"
+          options={{
+            presentation: Platform.OS === "web" ? "card" : "formSheet",
+            headerShown: false,
+            sheetAllowedDetents: Platform.OS === "ios" ? [0.5] : undefined,
             sheetGrabberVisible: Platform.OS === "ios",
             sheetCornerRadius: 24,
           }}

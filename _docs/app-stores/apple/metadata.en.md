@@ -66,7 +66,7 @@ INSIGHTS & PROGRESS
 • Time-of-day patterns (morning, afternoon, evening, night)
 
 EASY EXPORT & SHARING
-• Export your data as PDF, CSV, JSON, or Excel for sharing with your doctor
+• Export your data as PDF, CSV, or JSON for sharing with your doctor
 • Beautiful PDF reports summarizing your entries by date range
 • Share directly via email, messaging, or cloud storage
 
@@ -107,7 +107,7 @@ Welcome to Eleva Diary! Start tracking your bladder health today.
 • Log urination, fluid intake, and leak events
 • Set personalized daily goals
 • View insights with weekly and monthly charts
-• Export reports as PDF, CSV, JSON, or Excel
+• Export reports as PDF, CSV, or JSON
 • Optional iCloud backup for iOS users
 • Available in English, Spanish, and Portuguese
 ```

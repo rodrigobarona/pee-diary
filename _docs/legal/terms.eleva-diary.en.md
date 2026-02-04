@@ -27,7 +27,7 @@ Eleva Diary is a personal health logging application that allows users to:
 - Record urination events, fluid intake, and leak episodes
 - Set and track daily health goals
 - View insights and patterns through charts and statistics
-- Export health data in various formats (PDF, CSV, JSON, Excel)
+- Export health data in various formats (PDF, CSV, JSON)
 - Optionally back up data to iCloud (iOS only)
 
 The App is designed as a personal diary tool to help users track bladder health patterns and share information with healthcare providers.

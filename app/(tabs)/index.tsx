@@ -1,34 +1,42 @@
-import * as React from 'react';
-import { View, ScrollView, StyleSheet, Pressable, ActionSheetIOS, Platform, Alert } from 'react-native';
-import { 
-  startOfDay, 
-  endOfDay, 
-  isWithinInterval, 
-  parseISO, 
-  getHours, 
-  format,
-  subDays,
-  eachDayOfInterval,
-} from 'date-fns';
-import { useShallow } from 'zustand/shallow';
-import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
-import { Text } from '@/components/ui/text';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
+  eachDayOfInterval,
+  endOfDay,
+  format,
+  getHours,
+  isWithinInterval,
+  parseISO,
+  startOfDay,
+  subDays,
+} from "date-fns";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import * as React from "react";
+import {
+  ActionSheetIOS,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useShallow } from "zustand/shallow";
+
+import {
+  InsightCard,
+  MonthlyChart,
   ProgressBar,
   StreakBadge,
   TimeGroupSummary,
   WeeklyChart,
-  MonthlyChart,
-  InsightCard,
-} from '@/components/diary';
-import { useDiaryStore } from '@/lib/store';
-import { useI18n } from '@/lib/i18n/context';
-import { formatDateHeader } from '@/lib/utils/date';
-import { colors } from '@/lib/theme/colors';
-import type { DiaryEntry } from '@/lib/store/types';
+} from "@/components/diary";
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { useDiaryStore } from "@/lib/store";
+import type { DiaryEntry } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
+import { formatDateHeader } from "@/lib/utils/date";
 
 // Helper to check if entry is from today
 const isEntryFromToday = (entry: DiaryEntry) => {
@@ -42,21 +50,23 @@ const isEntryFromToday = (entry: DiaryEntry) => {
 // Get greeting based on time of day
 const getGreeting = (t: (key: string) => string): string => {
   const hour = getHours(new Date());
-  if (hour >= 5 && hour < 12) return t('greeting.morning');
-  if (hour >= 12 && hour < 18) return t('greeting.afternoon');
-  return t('greeting.evening');
+  if (hour >= 5 && hour < 12) return t("greeting.morning");
+  if (hour >= 12 && hour < 18) return t("greeting.afternoon");
+  return t("greeting.evening");
 };
 
 export default function HomeScreen() {
   const { t } = useI18n();
   const router = useRouter();
-  
+
   // Refs for scroll handling
   const scrollViewRef = React.useRef<ScrollView>(null);
   const insightsSectionY = React.useRef<number>(0);
-  
+
   // Insights period toggle
-  const [insightsPeriod, setInsightsPeriod] = React.useState<'week' | 'month'>('week');
+  const [insightsPeriod, setInsightsPeriod] = React.useState<"week" | "month">(
+    "week"
+  );
 
   // Get all entries and goals
   const allEntries = useDiaryStore(useShallow((state) => state.entries));
@@ -76,17 +86,19 @@ export default function HomeScreen() {
 
   // Compute summary from filtered entries
   const summary = React.useMemo(() => {
-    const voids = todayEntries.filter((e) => e.type === 'urination').length;
+    const voids = todayEntries.filter((e) => e.type === "urination").length;
     const fluids = todayEntries
-      .filter((e) => e.type === 'fluid')
-      .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
-    const leaks = todayEntries.filter((e) => e.type === 'leak').length;
+      .filter((e) => e.type === "fluid")
+      .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
+    const leaks = todayEntries.filter((e) => e.type === "leak").length;
     return { voids, fluids, leaks };
   }, [todayEntries]);
 
   // Calculate progress
-  const fluidProgress = goals.fluidTarget > 0 ? summary.fluids / goals.fluidTarget : 0;
-  const voidProgress = goals.voidTarget > 0 ? summary.voids / goals.voidTarget : 0;
+  const fluidProgress =
+    goals.fluidTarget > 0 ? summary.fluids / goals.fluidTarget : 0;
+  const voidProgress =
+    goals.voidTarget > 0 ? summary.voids / goals.voidTarget : 0;
 
   const today = new Date();
   const dateLabel = formatDateHeader(today);
@@ -102,16 +114,19 @@ export default function HomeScreen() {
     return days.map((day) => {
       const dayStart = startOfDay(day);
       const dayEnd = endOfDay(day);
-      
+
       const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), { start: dayStart, end: dayEnd })
+        isWithinInterval(parseISO(entry.timestamp), {
+          start: dayStart,
+          end: dayEnd,
+        })
       );
 
-      const voids = dayEntries.filter((e) => e.type === 'urination').length;
+      const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
-        .filter((e) => e.type === 'fluid')
-        .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
-      const leaks = dayEntries.filter((e) => e.type === 'leak').length;
+        .filter((e) => e.type === "fluid")
+        .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
+      const leaks = dayEntries.filter((e) => e.type === "leak").length;
 
       return { date: day, voids, fluids, leaks };
     });
@@ -121,44 +136,62 @@ export default function HomeScreen() {
   const weeklyStats = React.useMemo(() => {
     // This week (last 7 days)
     const thisWeekDays = weeklyData;
-    const daysWithEntries = thisWeekDays.filter(d => d.voids > 0 || d.fluids > 0);
-    
+    const daysWithEntries = thisWeekDays.filter(
+      (d) => d.voids > 0 || d.fluids > 0
+    );
+
     // Last week (7-14 days ago)
     const lastWeekStart = subDays(today, 13);
     const lastWeekEnd = subDays(today, 7);
-    const lastWeekDays = eachDayOfInterval({ start: lastWeekStart, end: lastWeekEnd });
-    
+    const lastWeekDays = eachDayOfInterval({
+      start: lastWeekStart,
+      end: lastWeekEnd,
+    });
+
     const lastWeekData = lastWeekDays.map((day) => {
       const dayStart = startOfDay(day);
       const dayEnd = endOfDay(day);
-      
+
       const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), { start: dayStart, end: dayEnd })
+        isWithinInterval(parseISO(entry.timestamp), {
+          start: dayStart,
+          end: dayEnd,
+        })
       );
 
-      const voids = dayEntries.filter((e) => e.type === 'urination').length;
+      const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
-        .filter((e) => e.type === 'fluid')
-        .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
+        .filter((e) => e.type === "fluid")
+        .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
 
       return { voids, fluids };
     });
 
     // Calculate averages
-    const thisWeekAvgVoids = daysWithEntries.length > 0
-      ? thisWeekDays.reduce((sum, d) => sum + d.voids, 0) / daysWithEntries.length
-      : 0;
-    const thisWeekAvgFluids = daysWithEntries.length > 0
-      ? thisWeekDays.reduce((sum, d) => sum + d.fluids, 0) / daysWithEntries.length
-      : 0;
+    const thisWeekAvgVoids =
+      daysWithEntries.length > 0
+        ? thisWeekDays.reduce((sum, d) => sum + d.voids, 0) /
+          daysWithEntries.length
+        : 0;
+    const thisWeekAvgFluids =
+      daysWithEntries.length > 0
+        ? thisWeekDays.reduce((sum, d) => sum + d.fluids, 0) /
+          daysWithEntries.length
+        : 0;
 
-    const lastWeekDaysWithEntries = lastWeekData.filter(d => d.voids > 0 || d.fluids > 0);
-    const lastWeekAvgVoids = lastWeekDaysWithEntries.length > 0
-      ? lastWeekData.reduce((sum, d) => sum + d.voids, 0) / lastWeekDaysWithEntries.length
-      : 0;
-    const lastWeekAvgFluids = lastWeekDaysWithEntries.length > 0
-      ? lastWeekData.reduce((sum, d) => sum + d.fluids, 0) / lastWeekDaysWithEntries.length
-      : 0;
+    const lastWeekDaysWithEntries = lastWeekData.filter(
+      (d) => d.voids > 0 || d.fluids > 0
+    );
+    const lastWeekAvgVoids =
+      lastWeekDaysWithEntries.length > 0
+        ? lastWeekData.reduce((sum, d) => sum + d.voids, 0) /
+          lastWeekDaysWithEntries.length
+        : 0;
+    const lastWeekAvgFluids =
+      lastWeekDaysWithEntries.length > 0
+        ? lastWeekData.reduce((sum, d) => sum + d.fluids, 0) /
+          lastWeekDaysWithEntries.length
+        : 0;
 
     // Calculate goal achievement (days that met both goals)
     const goalsMet = thisWeekDays.filter((d) => {
@@ -168,15 +201,25 @@ export default function HomeScreen() {
     }).length;
 
     // Trends
-    const voidTrend: 'up' | 'down' | 'stable' = 
-      thisWeekAvgVoids > lastWeekAvgVoids ? 'up' : 
-      thisWeekAvgVoids < lastWeekAvgVoids ? 'down' : 'stable';
-    const fluidTrend: 'up' | 'down' | 'stable' = 
-      thisWeekAvgFluids > lastWeekAvgFluids ? 'up' : 
-      thisWeekAvgFluids < lastWeekAvgFluids ? 'down' : 'stable';
+    const voidTrend: "up" | "down" | "stable" =
+      thisWeekAvgVoids > lastWeekAvgVoids
+        ? "up"
+        : thisWeekAvgVoids < lastWeekAvgVoids
+        ? "down"
+        : "stable";
+    const fluidTrend: "up" | "down" | "stable" =
+      thisWeekAvgFluids > lastWeekAvgFluids
+        ? "up"
+        : thisWeekAvgFluids < lastWeekAvgFluids
+        ? "down"
+        : "stable";
 
-    const voidDiff = Math.abs(Math.round((thisWeekAvgVoids - lastWeekAvgVoids) * 10) / 10);
-    const fluidDiff = Math.abs(Math.round(thisWeekAvgFluids - lastWeekAvgFluids));
+    const voidDiff = Math.abs(
+      Math.round((thisWeekAvgVoids - lastWeekAvgVoids) * 10) / 10
+    );
+    const fluidDiff = Math.abs(
+      Math.round(thisWeekAvgFluids - lastWeekAvgFluids)
+    );
 
     return {
       avgVoids: Math.round(thisWeekAvgVoids * 10) / 10,
@@ -200,16 +243,19 @@ export default function HomeScreen() {
     return days.map((day) => {
       const dayStart = startOfDay(day);
       const dayEnd = endOfDay(day);
-      
+
       const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), { start: dayStart, end: dayEnd })
+        isWithinInterval(parseISO(entry.timestamp), {
+          start: dayStart,
+          end: dayEnd,
+        })
       );
 
-      const voids = dayEntries.filter((e) => e.type === 'urination').length;
+      const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
-        .filter((e) => e.type === 'fluid')
-        .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
-      const leaks = dayEntries.filter((e) => e.type === 'leak').length;
+        .filter((e) => e.type === "fluid")
+        .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
+      const leaks = dayEntries.filter((e) => e.type === "leak").length;
 
       return { date: day, voids, fluids, leaks };
     });
@@ -218,44 +264,62 @@ export default function HomeScreen() {
   // Compute monthly stats for insight cards
   const monthlyStats = React.useMemo(() => {
     const thisMonthDays = monthlyData;
-    const daysWithEntries = thisMonthDays.filter(d => d.voids > 0 || d.fluids > 0);
-    
+    const daysWithEntries = thisMonthDays.filter(
+      (d) => d.voids > 0 || d.fluids > 0
+    );
+
     // Previous month (30-60 days ago)
     const lastMonthStart = subDays(today, 59);
     const lastMonthEnd = subDays(today, 30);
-    const lastMonthDays = eachDayOfInterval({ start: lastMonthStart, end: lastMonthEnd });
-    
+    const lastMonthDays = eachDayOfInterval({
+      start: lastMonthStart,
+      end: lastMonthEnd,
+    });
+
     const lastMonthData = lastMonthDays.map((day) => {
       const dayStart = startOfDay(day);
       const dayEnd = endOfDay(day);
-      
+
       const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), { start: dayStart, end: dayEnd })
+        isWithinInterval(parseISO(entry.timestamp), {
+          start: dayStart,
+          end: dayEnd,
+        })
       );
 
-      const voids = dayEntries.filter((e) => e.type === 'urination').length;
+      const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
-        .filter((e) => e.type === 'fluid')
-        .reduce((sum, e) => sum + (e.type === 'fluid' ? e.amount : 0), 0);
+        .filter((e) => e.type === "fluid")
+        .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
 
       return { voids, fluids };
     });
 
     // Calculate averages
-    const thisMonthAvgVoids = daysWithEntries.length > 0
-      ? thisMonthDays.reduce((sum, d) => sum + d.voids, 0) / daysWithEntries.length
-      : 0;
-    const thisMonthAvgFluids = daysWithEntries.length > 0
-      ? thisMonthDays.reduce((sum, d) => sum + d.fluids, 0) / daysWithEntries.length
-      : 0;
+    const thisMonthAvgVoids =
+      daysWithEntries.length > 0
+        ? thisMonthDays.reduce((sum, d) => sum + d.voids, 0) /
+          daysWithEntries.length
+        : 0;
+    const thisMonthAvgFluids =
+      daysWithEntries.length > 0
+        ? thisMonthDays.reduce((sum, d) => sum + d.fluids, 0) /
+          daysWithEntries.length
+        : 0;
 
-    const lastMonthDaysWithEntries = lastMonthData.filter(d => d.voids > 0 || d.fluids > 0);
-    const lastMonthAvgVoids = lastMonthDaysWithEntries.length > 0
-      ? lastMonthData.reduce((sum, d) => sum + d.voids, 0) / lastMonthDaysWithEntries.length
-      : 0;
-    const lastMonthAvgFluids = lastMonthDaysWithEntries.length > 0
-      ? lastMonthData.reduce((sum, d) => sum + d.fluids, 0) / lastMonthDaysWithEntries.length
-      : 0;
+    const lastMonthDaysWithEntries = lastMonthData.filter(
+      (d) => d.voids > 0 || d.fluids > 0
+    );
+    const lastMonthAvgVoids =
+      lastMonthDaysWithEntries.length > 0
+        ? lastMonthData.reduce((sum, d) => sum + d.voids, 0) /
+          lastMonthDaysWithEntries.length
+        : 0;
+    const lastMonthAvgFluids =
+      lastMonthDaysWithEntries.length > 0
+        ? lastMonthData.reduce((sum, d) => sum + d.fluids, 0) /
+          lastMonthDaysWithEntries.length
+        : 0;
 
     // Calculate goal achievement
     const goalsMet = thisMonthDays.filter((d) => {
@@ -265,15 +329,25 @@ export default function HomeScreen() {
     }).length;
 
     // Trends
-    const voidTrend: 'up' | 'down' | 'stable' = 
-      thisMonthAvgVoids > lastMonthAvgVoids ? 'up' : 
-      thisMonthAvgVoids < lastMonthAvgVoids ? 'down' : 'stable';
-    const fluidTrend: 'up' | 'down' | 'stable' = 
-      thisMonthAvgFluids > lastMonthAvgFluids ? 'up' : 
-      thisMonthAvgFluids < lastMonthAvgFluids ? 'down' : 'stable';
+    const voidTrend: "up" | "down" | "stable" =
+      thisMonthAvgVoids > lastMonthAvgVoids
+        ? "up"
+        : thisMonthAvgVoids < lastMonthAvgVoids
+        ? "down"
+        : "stable";
+    const fluidTrend: "up" | "down" | "stable" =
+      thisMonthAvgFluids > lastMonthAvgFluids
+        ? "up"
+        : thisMonthAvgFluids < lastMonthAvgFluids
+        ? "down"
+        : "stable";
 
-    const voidDiff = Math.abs(Math.round((thisMonthAvgVoids - lastMonthAvgVoids) * 10) / 10);
-    const fluidDiff = Math.abs(Math.round(thisMonthAvgFluids - lastMonthAvgFluids));
+    const voidDiff = Math.abs(
+      Math.round((thisMonthAvgVoids - lastMonthAvgVoids) * 10) / 10
+    );
+    const fluidDiff = Math.abs(
+      Math.round(thisMonthAvgFluids - lastMonthAvgFluids)
+    );
 
     return {
       avgVoids: Math.round(thisMonthAvgVoids * 10) / 10,
@@ -288,77 +362,82 @@ export default function HomeScreen() {
   }, [monthlyData, allEntries, today, goals]);
 
   // Get current period stats based on toggle
-  const currentStats = insightsPeriod === 'week' ? weeklyStats : monthlyStats;
+  const currentStats = insightsPeriod === "week" ? weeklyStats : monthlyStats;
 
   // Handle stat card press - show action sheet with options
-  const handleStatPress = React.useCallback((type: 'urination' | 'fluid' | 'leak') => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+  const handleStatPress = React.useCallback(
+    (type: "urination" | "fluid" | "leak") => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
 
-    const todayStr = format(today, 'yyyy-MM-dd');
-    
-    const options = [
-      t('home.viewInHistory'),
-      t('home.addNew'),
-      t('common.cancel'),
-    ];
+      const todayStr = format(today, "yyyy-MM-dd");
 
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex: 2,
-          title: t(`entry.${type}`),
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) {
-            // View in history - navigate to history with today's date AND filter
-            router.push(`/(tabs)/history?date=${todayStr}&filter=${type}`);
-          } else if (buttonIndex === 1) {
-            // Add new entry
-            router.push(`/add/${type}`);
-          }
-        }
-      );
-    } else {
-      // Android/Web - use Alert as action sheet
-      Alert.alert(
-        t(`entry.${type}`),
-        '',
-        [
+      const options = [
+        t("home.viewInHistory"),
+        t("home.addNew"),
+        t("common.cancel"),
+      ];
+
+      if (Platform.OS === "ios") {
+        ActionSheetIOS.showActionSheetWithOptions(
           {
-            text: t('home.viewInHistory'),
-            onPress: () => router.push(`/(tabs)/history?date=${todayStr}&filter=${type}`),
+            options,
+            cancelButtonIndex: 2,
+            title: t(`entry.${type}`),
+          },
+          (buttonIndex) => {
+            if (buttonIndex === 0) {
+              // View in history - navigate to history with today's date AND filter
+              router.push(`/(tabs)/history?date=${todayStr}&filter=${type}`);
+            } else if (buttonIndex === 1) {
+              // Add new entry
+              router.push(`/(modals)/add/${type}`);
+            }
+          }
+        );
+      } else {
+        // Android/Web - use Alert as action sheet
+        Alert.alert(t(`entry.${type}`), "", [
+          {
+            text: t("home.viewInHistory"),
+            onPress: () =>
+              router.push(`/(tabs)/history?date=${todayStr}&filter=${type}`),
           },
           {
-            text: t('home.addNew'),
+            text: t("home.addNew"),
             onPress: () => router.push(`/add/${type}`),
           },
-          { text: t('common.cancel'), style: 'cancel' },
-        ]
-      );
-    }
-  }, [router, t, today]);
+          { text: t("common.cancel"), style: "cancel" },
+        ]);
+      }
+    },
+    [router, t, today]
+  );
 
   // Navigate to settings and open goals modal
   const handleEditGoals = React.useCallback(() => {
-    router.push('/(tabs)/settings?openGoals=true');
+    router.push("/(tabs)/settings?openGoals=true");
   }, [router]);
 
   // Navigate to export screen
   const handleExportData = React.useCallback(() => {
-    router.push('/export');
+    router.push("/(formSheets)/export");
   }, [router]);
 
   // Handle time period press - navigate to history with period filter
-  const handlePeriodPress = React.useCallback((period: 'morning' | 'afternoon' | 'evening' | 'night') => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    const todayStr = format(today, 'yyyy-MM-dd');
-    router.push(`/(tabs)/history?date=${todayStr}&period=${period}`);
-  }, [router, today]);
+  const handlePeriodPress = React.useCallback(
+    (
+      period: "earlyMorning" | "morning" | "afternoon" | "evening" | "night"
+    ) => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      const todayStr = format(today, "yyyy-MM-dd");
+      router.push(`/(tabs)/history?date=${todayStr}&period=${period}`);
+    },
+    [router, today]
+  );
 
   // Handle streak badge press - scroll to insights section
   const handleStreakPress = React.useCallback(() => {
@@ -369,10 +448,13 @@ export default function HomeScreen() {
   }, []);
 
   // Handle day press in weekly chart
-  const handleDayPress = React.useCallback((date: Date) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    router.push(`/(tabs)/history?date=${dateStr}`);
-  }, [router]);
+  const handleDayPress = React.useCallback(
+    (date: Date) => {
+      const dateStr = format(date, "yyyy-MM-dd");
+      router.push(`/(tabs)/history?date=${dateStr}`);
+    },
+    [router]
+  );
 
   return (
     <View style={styles.container}>
@@ -386,16 +468,19 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerText}>
             <Text style={styles.greeting}>{greeting}</Text>
-            <Text 
-              style={styles.date} 
-              numberOfLines={1} 
-              adjustsFontSizeToFit 
+            <Text
+              style={styles.date}
+              numberOfLines={1}
+              adjustsFontSizeToFit
               minimumFontScale={0.8}
             >
               {dateLabel}
             </Text>
           </View>
-          <StreakBadge streak={streak.currentStreak} onPress={handleStreakPress} />
+          <StreakBadge
+            streak={streak.currentStreak}
+            onPress={handleStreakPress}
+          />
         </View>
 
         {/* Progress Section */}
@@ -406,10 +491,10 @@ export default function HomeScreen() {
             value={summary.fluids}
             target={goals.fluidTarget}
             unit="ml"
-            label={t('home.summary.fluids')}
+            label={t("home.summary.fluids")}
             icon="cup-water"
             color={colors.secondary.DEFAULT}
-            onPress={() => handleStatPress('fluid')}
+            onPress={() => handleStatPress("fluid")}
           />
 
           {/* Voids Progress */}
@@ -417,10 +502,10 @@ export default function HomeScreen() {
             progress={voidProgress}
             value={summary.voids}
             target={goals.voidTarget}
-            label={t('home.summary.voids')}
+            label={t("home.summary.voids")}
             icon="toilet"
             color={colors.primary.DEFAULT}
-            onPress={() => handleStatPress('urination')}
+            onPress={() => handleStatPress("urination")}
           />
 
           {/* Leaks - no target, goal is 0 */}
@@ -428,29 +513,36 @@ export default function HomeScreen() {
             progress={summary.leaks > 0 ? 1 : 0}
             value={summary.leaks}
             target={0}
-            label={t('home.summary.leaks')}
+            label={t("home.summary.leaks")}
             icon="water-alert"
-            color={summary.leaks > 0 ? colors.error : '#10B981'}
-            backgroundColor={summary.leaks > 0 ? '#FEE2E2' : '#D1FAE5'}
-            onPress={() => handleStatPress('leak')}
-            successLabel={t('home.noLeaks')}
+            color={summary.leaks > 0 ? colors.error : "#10B981"}
+            backgroundColor={summary.leaks > 0 ? "#FEE2E2" : "#D1FAE5"}
+            onPress={() => handleStatPress("leak")}
+            successLabel={t("home.noLeaks")}
           />
 
           {/* Edit Goals Link */}
           <Pressable onPress={handleEditGoals} style={styles.editGoalsLink}>
-            <MaterialCommunityIcons name="cog-outline" size={14} color="#9CA3AF" />
-            <Text style={styles.editGoalsText}>{t('home.editGoals')}</Text>
+            <MaterialCommunityIcons
+              name="cog-outline"
+              size={14}
+              color="#9CA3AF"
+            />
+            <Text style={styles.editGoalsText}>{t("home.editGoals")}</Text>
           </Pressable>
         </View>
 
         {/* Time Period Summary */}
         <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>{t('home.todayActivity')}</Text>
-          <TimeGroupSummary entries={todayEntries} onPeriodPress={handlePeriodPress} />
+          <Text style={styles.sectionTitle}>{t("home.todayActivity")}</Text>
+          <TimeGroupSummary
+            entries={todayEntries}
+            onPeriodPress={handlePeriodPress}
+          />
         </View>
 
         {/* Insights Section */}
-        <View 
+        <View
           style={styles.insightsSection}
           onLayout={(e) => {
             insightsSectionY.current = e.nativeEvent.layout.y;
@@ -458,73 +550,77 @@ export default function HomeScreen() {
         >
           {/* Header with period toggle */}
           <View style={styles.insightsHeader}>
-            <Text style={styles.insightsTitle}>{t('insights.title')}</Text>
+            <Text style={styles.insightsTitle}>{t("insights.title")}</Text>
             <View style={styles.periodToggle}>
               <Pressable
                 onPress={() => {
-                  if (Platform.OS !== 'web') {
+                  if (Platform.OS !== "web") {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }
-                  setInsightsPeriod('week');
+                  setInsightsPeriod("week");
                 }}
                 style={[
                   styles.periodButton,
-                  insightsPeriod === 'week' && styles.periodButtonActive,
+                  insightsPeriod === "week" && styles.periodButtonActive,
                 ]}
               >
-                <Text style={[
-                  styles.periodButtonText,
-                  insightsPeriod === 'week' && styles.periodButtonTextActive,
-                ]}>
-                  {t('insights.week')}
+                <Text
+                  style={[
+                    styles.periodButtonText,
+                    insightsPeriod === "week" && styles.periodButtonTextActive,
+                  ]}
+                >
+                  {t("insights.week")}
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => {
-                  if (Platform.OS !== 'web') {
+                  if (Platform.OS !== "web") {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }
-                  setInsightsPeriod('month');
+                  setInsightsPeriod("month");
                 }}
                 style={[
                   styles.periodButton,
-                  insightsPeriod === 'month' && styles.periodButtonActive,
+                  insightsPeriod === "month" && styles.periodButtonActive,
                 ]}
               >
-                <Text style={[
-                  styles.periodButtonText,
-                  insightsPeriod === 'month' && styles.periodButtonTextActive,
-                ]}>
-                  {t('insights.month')}
+                <Text
+                  style={[
+                    styles.periodButtonText,
+                    insightsPeriod === "month" && styles.periodButtonTextActive,
+                  ]}
+                >
+                  {t("insights.month")}
                 </Text>
               </Pressable>
             </View>
           </View>
-          
+
           {/* Chart - only show weekly as monthly would be too crowded */}
-          {insightsPeriod === 'week' && (
-            <WeeklyChart 
-              data={weeklyData} 
+          {insightsPeriod === "week" && (
+            <WeeklyChart
+              data={weeklyData}
               onDayPress={handleDayPress}
               voidTarget={goals.voidTarget}
               fluidTarget={goals.fluidTarget}
             />
           )}
-          
+
           {/* Monthly Chart - 4 weeks */}
-          {insightsPeriod === 'month' && (
-            <MonthlyChart 
-              data={monthlyData} 
+          {insightsPeriod === "month" && (
+            <MonthlyChart
+              data={monthlyData}
               onWeekPress={handleDayPress}
               voidTarget={goals.voidTarget}
               fluidTarget={goals.fluidTarget}
             />
           )}
-          
+
           {/* Insight Cards */}
           <View style={styles.insightCardsRow}>
             <InsightCard
-              title={t('insights.avgFluids')}
+              title={t("insights.avgFluids")}
               value={`${currentStats.avgFluids}ml`}
               trend={currentStats.fluidTrend}
               trendValue={currentStats.fluidDiff}
@@ -532,7 +628,7 @@ export default function HomeScreen() {
               color={colors.secondary.DEFAULT}
             />
             <InsightCard
-              title={t('insights.avgVoids')}
+              title={t("insights.avgVoids")}
               value={`${currentStats.avgVoids}`}
               trend={currentStats.voidTrend}
               trendValue={currentStats.voidDiff}
@@ -540,7 +636,7 @@ export default function HomeScreen() {
               color={colors.primary.DEFAULT}
             />
             <InsightCard
-              title={t('insights.goalsMet')}
+              title={t("insights.goalsMet")}
               value={`${currentStats.goalsMet}/${currentStats.totalDays}`}
               icon="trophy-outline"
               color="#F59E0B"
@@ -550,15 +646,15 @@ export default function HomeScreen() {
           {/* Export Data Link */}
           <Pressable onPress={handleExportData} style={styles.exportDataLink}>
             <MaterialCommunityIcons name="download" size={14} color="#9CA3AF" />
-            <Text style={styles.exportDataText}>{t('home.exportData')}</Text>
+            <Text style={styles.exportDataText}>{t("home.exportData")}</Text>
           </Pressable>
         </View>
 
         {/* Empty state hint */}
         {todayEntries.length === 0 && (
           <View style={styles.emptyHint}>
-            <Text style={styles.emptyHintText}>{t('home.noEntries')}</Text>
-            <Text style={styles.emptyHintSubtext}>{t('home.addFirst')}</Text>
+            <Text style={styles.emptyHintText}>{t("home.noEntries")}</Text>
+            <Text style={styles.emptyHintSubtext}>{t("home.addFirst")}</Text>
           </View>
         )}
       </ScrollView>
@@ -569,7 +665,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   scrollView: {
     flex: 1,
@@ -580,9 +676,9 @@ const styles = StyleSheet.create({
   },
   // Header
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 20,
   },
   headerText: {
@@ -590,13 +686,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: "700",
+    color: "#111827",
     marginBottom: 4,
   },
   date: {
     fontSize: 15,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   // Progress section
   progressSection: {
@@ -604,15 +700,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   editGoalsLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingVertical: 8,
   },
   editGoalsText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   // Activity section
   activitySection: {
@@ -620,8 +716,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
     marginBottom: 12,
   },
   // Insights section
@@ -629,19 +725,19 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   insightsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   insightsTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   periodToggle: {
-    flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
+    flexDirection: "row",
+    backgroundColor: "#F3F4F6",
     borderRadius: 8,
     padding: 2,
   },
@@ -651,47 +747,47 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   periodButtonActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   periodButtonText: {
     fontSize: 12,
-    fontWeight: '500',
-    color: '#6B7280',
+    fontWeight: "500",
+    color: "#6B7280",
   },
   periodButtonTextActive: {
-    color: '#111827',
+    color: "#111827",
   },
   insightCardsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
     marginTop: 12,
   },
   exportDataLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingVertical: 12,
     marginTop: 4,
   },
   exportDataText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   // Empty state
   emptyHint: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 32,
   },
   emptyHintText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#6B7280',
+    fontWeight: "600",
+    color: "#6B7280",
     marginBottom: 4,
   },
   emptyHintSubtext: {
     fontSize: 14,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    color: "#9CA3AF",
+    textAlign: "center",
   },
 });

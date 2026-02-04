@@ -52,7 +52,6 @@ Você pode exportar todos os seus dados do diário a qualquer momento em múltip
    - **PDF** — Relatório formatado, ideal para compartilhar com seu médico
    - **CSV** — Formato de planilha, compatível com Excel/Google Sheets
    - **JSON** — Formato técnico, para backup ou portabilidade de dados
-   - **Excel** — Formato nativo .xlsx para Microsoft Excel
 5. Selecione o período que deseja exportar
 6. Toque em **Exportar**
 7. Escolha para onde enviar o arquivo (email, armazenamento na nuvem, etc.)

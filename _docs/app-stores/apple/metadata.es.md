@@ -66,7 +66,7 @@ ANÁLISIS Y PROGRESO
 • Patrones por momento del día (mañana, tarde, noche)
 
 EXPORTACIÓN Y COMPARTIR
-• Exporta tus datos como PDF, CSV, JSON o Excel para compartir con tu médico
+• Exporta tus datos como PDF, CSV o JSON para compartir con tu médico
 • Informes PDF atractivos que resumen tus entradas por rango de fechas
 • Comparte directamente por correo, mensajería o almacenamiento en la nube
 
@@ -105,7 +105,7 @@ Parte de Eleva Care — empoderándote para tomar control de tu viaje de salud.
 • Registra micciones, ingesta de líquidos y eventos de pérdidas
 • Establece metas diarias personalizadas
 • Visualiza análisis con gráficos semanales y mensuales
-• Exporta informes como PDF, CSV, JSON o Excel
+• Exporta informes como PDF, CSV o JSON
 • Copia de seguridad opcional en iCloud para usuarios de iOS
 • Disponible en inglés, español y portugués
 ```

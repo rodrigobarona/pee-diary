@@ -32,7 +32,7 @@ A medical disclaimer is displayed in the app description and will be visible in 
 
 - **Local storage only**: All diary entries are stored on-device
 - **Optional iCloud backup**: Users can choose to back up data to iCloud (iOS only); this uses Apple's iCloud Key-Value Store
-- **User-controlled export**: Users can export data as PDF, CSV, JSON, or Excel via the OS share sheet
+- **User-controlled export**: Users can export data as PDF, CSV, or JSON via the OS share sheet
 - **No analytics**: No third-party analytics or tracking SDKs are included
 - **No ads**: The app is ad-free
 

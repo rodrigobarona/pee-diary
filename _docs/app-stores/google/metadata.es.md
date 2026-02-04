@@ -47,7 +47,7 @@ Eleva Diary es un diario de vejiga privado y fácil de usar, diseñado para ayud
 
 ▶ EXPORTACIÓN Y COMPARTIR
 
-• Exporta tus datos como PDF, CSV, JSON o Excel para compartir con tu médico
+• Exporta tus datos como PDF, CSV o JSON para compartir con tu médico
 • Informes PDF atractivos que resumen tus entradas por rango de fechas
 • Comparte directamente por correo, mensajería o almacenamiento en la nube
 

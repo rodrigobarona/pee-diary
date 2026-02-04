@@ -104,11 +104,14 @@ function SettingRow({
   return content;
 }
 
-const languageOptions: { value: SupportedLocale; label: string }[] = [
-  { value: "en", label: "English" },
-  { value: "es", label: "Español" },
-  { value: "pt", label: "Português" },
-];
+const languageDisplay: Record<
+  SupportedLocale,
+  { nativeLabel: string; flag: string }
+> = {
+  en: { nativeLabel: "English", flag: "🇬🇧" },
+  es: { nativeLabel: "Español", flag: "🇪🇸" },
+  pt: { nativeLabel: "Português", flag: "🇵🇹" },
+};
 
 const LEGAL_URLS = {
   privacy: "https://diary.eleva.care/privacy",
@@ -124,13 +127,12 @@ export default function SettingsScreen() {
   const entries = useDiaryStore(useShallow((state) => state.entries));
   const goals = useDiaryStore((state) => state.goals);
   const openAddMenuOnLaunch = useDiaryStore(
-    (state) => state.openAddMenuOnLaunch,
+    (state) => state.openAddMenuOnLaunch
   );
   const setOpenAddMenuOnLaunch = useDiaryStore(
-    (state) => state.setOpenAddMenuOnLaunch,
+    (state) => state.setOpenAddMenuOnLaunch
   );
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
-  const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
@@ -145,20 +147,16 @@ export default function SettingsScreen() {
   React.useEffect(() => {
     if (params.openGoals === "true") {
       router.setParams({ openGoals: undefined });
-      router.push("/goals");
+      router.push("/(formSheets)/goals");
     }
   }, [params.openGoals, router]);
 
-  const handleLanguageChange = React.useCallback(
-    (newLanguage: SupportedLocale) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      setLocale(newLanguage);
-      setShowLanguagePicker(false);
-    },
-    [setLocale],
-  );
+  const handleOpenLanguage = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push("/(formSheets)/language");
+  }, [router]);
 
   const handleToggleOpenAddMenu = React.useCallback(
     (value: boolean) => {
@@ -167,11 +165,11 @@ export default function SettingsScreen() {
       }
       setOpenAddMenuOnLaunch(value);
     },
-    [setOpenAddMenuOnLaunch],
+    [setOpenAddMenuOnLaunch]
   );
 
   const handleOpenGoals = React.useCallback(() => {
-    router.push("/goals");
+    router.push("/(formSheets)/goals");
   }, [router]);
 
   const handleExport = React.useCallback(() => {
@@ -193,7 +191,7 @@ export default function SettingsScreen() {
     }
 
     // Navigate to export screen
-    router.push("/export");
+    router.push("/(formSheets)/export");
   }, [isHydrated, t, router]);
 
   const handleOpenLink = React.useCallback((url: string) => {
@@ -213,7 +211,7 @@ export default function SettingsScreen() {
       Alert.prompt(
         t("settings.clearData"),
         `${t("settings.clearDataConfirm")}\n\n${t(
-          "settings.clearDataTypeConfirm",
+          "settings.clearDataTypeConfirm"
         )}`,
         [
           {
@@ -227,13 +225,13 @@ export default function SettingsScreen() {
               if (value?.toUpperCase() === confirmWord.toUpperCase()) {
                 clearAllEntries();
                 Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success,
+                  Haptics.NotificationFeedbackType.Success
                 );
               } else {
                 // Show error if wrong word entered
                 Alert.alert(
                   t("common.error"),
-                  t("settings.clearDataTypeConfirm"),
+                  t("settings.clearDataTypeConfirm")
                 );
               }
             },
@@ -241,7 +239,7 @@ export default function SettingsScreen() {
         ],
         "plain-text",
         "",
-        "default",
+        "default"
       );
     } else {
       // Use custom modal for Android
@@ -313,19 +311,19 @@ export default function SettingsScreen() {
             if (result.success) {
               if (Platform.OS !== "web") {
                 Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success,
+                  Haptics.NotificationFeedbackType.Success
                 );
               }
               Alert.alert(
                 t("settings.restoreFromCloud"),
                 t("settings.restoreSuccess", {
                   count: result.entriesCount ?? 0,
-                }),
+                })
               );
             } else {
               Alert.alert(
                 t("common.error"),
-                result.error ?? t("settings.restoreError"),
+                result.error ?? t("settings.restoreError")
               );
             }
           } catch {
@@ -338,8 +336,8 @@ export default function SettingsScreen() {
     ]);
   }, [isSyncing, t]);
 
-  const currentLanguageLabel =
-    languageOptions.find((l) => l.value === locale)?.label || "English";
+  const currentLanguage = languageDisplay[locale];
+  const currentLanguageLabel = `${currentLanguage.flag} ${currentLanguage.nativeLabel}`;
 
   return (
     <ScrollView
@@ -347,48 +345,6 @@ export default function SettingsScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.scrollContent}
     >
-      {/* Language Picker Modal */}
-      <Modal
-        visible={showLanguagePicker}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowLanguagePicker(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowLanguagePicker(false)}
-        >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t("settings.language")}</Text>
-            {languageOptions.map((option) => (
-              <Pressable
-                key={option.value}
-                onPress={() => handleLanguageChange(option.value)}
-                style={styles.modalOption}
-              >
-                <Text
-                  style={[
-                    styles.modalOptionText,
-                    locale === option.value
-                      ? styles.modalOptionTextSelected
-                      : undefined,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-                {locale === option.value ? (
-                  <MaterialCommunityIcons
-                    name="check"
-                    size={20}
-                    color={colors.primary.DEFAULT}
-                  />
-                ) : null}
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
-
       {/* Delete Confirmation Modal (Android/Web only - iOS uses native Alert.prompt) */}
       {Platform.OS !== "ios" && (
         <Modal
@@ -464,7 +420,7 @@ export default function SettingsScreen() {
           icon="target"
           label={t("settings.editGoals")}
           description={`${goals.fluidTarget}ml • ${goals.voidTarget} ${t(
-            "goals.voids",
+            "goals.voids"
           )}`}
           onPress={handleOpenGoals}
         />
@@ -478,7 +434,7 @@ export default function SettingsScreen() {
         <SettingRow
           icon="translate"
           label={t("settings.language")}
-          onPress={() => setShowLanguagePicker(true)}
+          onPress={handleOpenLanguage}
           value={currentLanguageLabel}
         />
         <View style={styles.separator} />
@@ -699,44 +655,6 @@ const styles = StyleSheet.create({
   statsText: {
     fontSize: 13,
     color: "#9CA3AF",
-  },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    borderCurve: "continuous",
-    padding: 24,
-    width: "100%",
-    maxWidth: 320,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#111827",
-    marginBottom: 16,
-  },
-  modalOption: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
-  },
-  modalOptionText: {
-    fontSize: 16,
-    color: "#374151",
-  },
-  modalOptionTextSelected: {
-    color: colors.primary.DEFAULT,
-    fontWeight: "600",
   },
   // Delete confirmation modal styles (Material Design style for Android)
   deleteModalOverlay: {

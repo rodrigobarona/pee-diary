@@ -82,11 +82,19 @@
     "amazing": "Amazing dedication!"
   },
   "timePeriod": {
+    "earlyMorning": "Early Hours",
     "morning": "Morning",
     "afternoon": "Afternoon",
     "evening": "Evening",
     "night": "Night",
-    "noEntries": "No entries yet"
+    "noEntries": "No entries yet",
+    "range": {
+      "earlyMorning": "12am - 5am",
+      "morning": "5am - 12pm",
+      "afternoon": "12pm - 5pm",
+      "evening": "5pm - 9pm",
+      "night": "9pm - 12am"
+    }
   },
   "add": {
     "title": "Add Entry",
@@ -163,6 +171,7 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
+    "languageSubtitle": "Choose your preferred language",
     "english": "English",
     "spanish": "Spanish",
     "portuguese": "Portuguese",

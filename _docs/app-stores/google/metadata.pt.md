@@ -47,7 +47,7 @@ Eleva Diary é um diário de bexiga privado e fácil de usar, projetado para aju
 
 ▶ EXPORTAÇÃO E COMPARTILHAMENTO
 
-• Exporte seus dados como PDF, CSV, JSON ou Excel para compartilhar com seu médico
+• Exporte seus dados como PDF, CSV ou JSON para compartilhar com seu médico
 • Relatórios PDF elegantes que resumem suas entradas por período
 • Compartilhe diretamente por e-mail, mensagens ou armazenamento na nuvem
 

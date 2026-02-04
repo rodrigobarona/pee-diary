@@ -28,7 +28,7 @@ Google Play requires developers to disclose:
 | --------------------------- | -------------------- | ------------------- |
 | Diary entries               | Local (AsyncStorage) | ❌ No               |
 | Goals & settings            | Local (AsyncStorage) | ❌ No               |
-| Export (PDF/CSV/JSON/Excel) | Generated locally    | User-initiated only |
+| Export (PDF/CSV/JSON)       | Generated locally    | User-initiated only |
 | Language preference         | Local                | ❌ No               |
 
 **Note:** The Android version of Eleva Diary does **not** include cloud backup functionality. iCloud backup is iOS-only.

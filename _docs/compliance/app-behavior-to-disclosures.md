@@ -28,7 +28,6 @@ This document maps Eleva Diary's actual app behavior to the required disclosures
 | PDF export   | Formatted report with summary | User-controlled (share sheet) | Yes             |
 | CSV export   | Spreadsheet-compatible format | User-controlled (share sheet) | Yes             |
 | JSON export  | Technical/backup format       | User-controlled (share sheet) | Yes             |
-| Excel export | Native .xlsx format           | User-controlled (share sheet) | Yes             |
 
 ### Platform-Specific Features
 
@@ -101,7 +100,7 @@ Per Apple's guidance, data sent off-device only:
 
 ...does not need to be disclosed as "collection."
 
-Our PDF/CSV/JSON/Excel exports meet both criteria → **Not disclosed**
+Our PDF/CSV/JSON exports meet both criteria → **Not disclosed**
 
 ---
 
@@ -251,7 +250,6 @@ When app features change, update this document and review all disclosure implica
 | Date     | Change                | Disclosure Impact     |
 | -------- | --------------------- | --------------------- |
 | Feb 2026 | Initial documentation | —                     |
-| (Future) | Excel export added    | None (user-initiated) |
 | (Future) | [Feature]             | [Impact assessment]   |
 
 ---

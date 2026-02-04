@@ -23,7 +23,7 @@ NEW FEATURES:
 • Track your logging streak
 
 EXPORT & BACKUP:
-• Export reports as PDF, CSV, JSON, or Excel
+• Export reports as PDF, CSV, or JSON
 • Optional iCloud backup for iOS (keep your data safe)
 
 LANGUAGES:
@@ -46,7 +46,7 @@ NUEVAS FUNCIONES:
 • Sigue tu racha de registros
 
 EXPORTACIÓN Y RESPALDO:
-• Exporta informes como PDF, CSV, JSON o Excel
+• Exporta informes como PDF, CSV o JSON
 • Copia de seguridad opcional en iCloud para iOS (mantén tus datos seguros)
 
 IDIOMAS:
@@ -69,7 +69,7 @@ NOVOS RECURSOS:
 • Acompanhe sua sequência de registros
 
 EXPORTAÇÃO E BACKUP:
-• Exporte relatórios como PDF, CSV, JSON ou Excel
+• Exporte relatórios como PDF, CSV ou JSON
 • Backup opcional no iCloud para iOS (mantenha seus dados seguros)
 
 IDIOMAS:

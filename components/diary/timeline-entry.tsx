@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { format, parseISO, getHours } from 'date-fns';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { format, getHours, parseISO } from "date-fns";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
-import { Text } from '@/components/ui/text';
-import { colors } from '@/lib/theme/colors';
-import { useI18n } from '@/lib/i18n/context';
-import type { DiaryEntry } from '@/lib/store/types';
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import type { DiaryEntry } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 
 interface TimelineEntryProps {
   entry: DiaryEntry;
@@ -19,37 +19,37 @@ interface TimelineEntryProps {
 
 const entryConfig = {
   urination: {
-    icon: 'toilet' as const,
+    icon: "toilet" as const,
     color: colors.primary.DEFAULT,
-    labelKey: 'entry.urination',
+    labelKey: "entry.urination",
   },
   fluid: {
-    icon: 'cup-water' as const,
+    icon: "cup-water" as const,
     color: colors.secondary.DEFAULT,
-    labelKey: 'entry.fluid',
+    labelKey: "entry.fluid",
   },
   leak: {
-    icon: 'water-alert' as const,
+    icon: "water-alert" as const,
     color: colors.error,
-    labelKey: 'entry.leak',
+    labelKey: "entry.leak",
   },
 };
 
-export function TimelineEntry({ 
-  entry, 
-  isLast = false, 
+export function TimelineEntry({
+  entry,
+  isLast = false,
   isFirst = false,
   showTime = true,
-  onPress 
+  onPress,
 }: TimelineEntryProps) {
   const { t, locale } = useI18n();
   const config = entryConfig[entry.type];
   // Use 12-hour format for English, 24-hour for Spanish/Portuguese
-  const timeFormat = locale === 'en' ? 'h:mm a' : 'HH:mm';
+  const timeFormat = locale === "en" ? "h:mm a" : "HH:mm";
   const time = format(parseISO(entry.timestamp), timeFormat);
 
   const handlePress = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     onPress?.();
@@ -58,25 +58,31 @@ export function TimelineEntry({
   // Get compact details based on type
   const getCompactDetails = () => {
     switch (entry.type) {
-      case 'urination':
+      case "urination":
         return (
           <>
             <Text style={styles.detailText}>
-              {t(`urination.volume${entry.volume.charAt(0).toUpperCase() + entry.volume.slice(1)}`)}
+              {t(
+                `urination.volume${
+                  entry.volume.charAt(0).toUpperCase() + entry.volume.slice(1)
+                }`
+              )}
             </Text>
             <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>
-              Lv {entry.urgency}
-            </Text>
+            <Text style={styles.detailText}>Lv {entry.urgency}</Text>
             {entry.hadLeak && (
               <>
                 <Text style={styles.detailSeparator}>·</Text>
-                <MaterialCommunityIcons name="water-alert" size={12} color={colors.error} />
+                <MaterialCommunityIcons
+                  name="water-alert"
+                  size={12}
+                  color={colors.error}
+                />
               </>
             )}
           </>
         );
-      case 'fluid':
+      case "fluid":
         return (
           <>
             <Text style={styles.detailText}>
@@ -86,16 +92,12 @@ export function TimelineEntry({
             <Text style={styles.detailHighlight}>{entry.amount}ml</Text>
           </>
         );
-      case 'leak':
+      case "leak":
         return (
           <>
-            <Text style={styles.detailText}>
-              {t(`leak.${entry.severity}`)}
-            </Text>
+            <Text style={styles.detailText}>{t(`leak.${entry.severity}`)}</Text>
             <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>
-              Lv {entry.urgency}
-            </Text>
+            <Text style={styles.detailText}>Lv {entry.urgency}</Text>
           </>
         );
       default:
@@ -108,45 +110,64 @@ export function TimelineEntry({
       {/* Left side: Time + Track */}
       <View style={styles.leftColumn}>
         {/* Top connector line (invisible placeholder when first) */}
-        <View style={[styles.trackLineTop, isFirst && styles.trackLineHidden]} />
-        
+        <View
+          style={[styles.trackLineTop, isFirst && styles.trackLineHidden]}
+        />
+
         {/* Time + Dot row (aligned horizontally) */}
         <View style={styles.timeAndDot}>
           <View style={styles.timeColumn}>
             {showTime && <Text style={styles.timeText}>{time}</Text>}
           </View>
           <View style={[styles.trackDot, { backgroundColor: config.color }]}>
-            <View style={[styles.trackDotInner, { backgroundColor: config.color }]} />
+            <View
+              style={[styles.trackDotInner, { backgroundColor: config.color }]}
+            />
           </View>
         </View>
-        
+
         {/* Bottom connector line (invisible placeholder when last) */}
-        <View style={[styles.trackLineBottom, isLast && styles.trackLineHidden]} />
+        <View
+          style={[styles.trackLineBottom, isLast && styles.trackLineHidden]}
+        />
       </View>
 
       {/* Content */}
       <Pressable onPress={handlePress} style={styles.content}>
         <View style={styles.contentInner}>
           {/* Icon */}
-          <View style={[styles.iconBadge, { backgroundColor: `${config.color}12` }]}>
-            <MaterialCommunityIcons name={config.icon} size={16} color={config.color} />
+          <View
+            style={[styles.iconBadge, { backgroundColor: `${config.color}12` }]}
+          >
+            <MaterialCommunityIcons
+              name={config.icon}
+              size={16}
+              color={config.color}
+            />
           </View>
-          
+
           {/* Details */}
           <View style={styles.details}>
             <Text style={styles.typeLabel}>{t(config.labelKey)}</Text>
-            <View style={styles.detailsRow}>
-              {getCompactDetails()}
-            </View>
+            <View style={styles.detailsRow}>{getCompactDetails()}</View>
           </View>
 
           {/* Edited indicator - subtle pencil icon */}
           {entry.editHistory && entry.editHistory.length > 0 ? (
-            <MaterialCommunityIcons name="pencil-outline" size={12} color="#D1D5DB" style={styles.editedIcon} />
+            <MaterialCommunityIcons
+              name="pencil-outline"
+              size={12}
+              color="#D1D5DB"
+              style={styles.editedIcon}
+            />
           ) : null}
 
           {/* Arrow */}
-          <MaterialCommunityIcons name="chevron-right" size={18} color="#D1D5DB" />
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={18}
+            color="#D1D5DB"
+          />
         </View>
 
         {/* Notes */}
@@ -162,15 +183,31 @@ export function TimelineEntry({
 
 // Time period header component
 interface TimePeriodHeaderProps {
-  period: 'morning' | 'afternoon' | 'evening' | 'night';
+  period: "morning" | "afternoon" | "evening" | "night";
   count: number;
 }
 
 const periodConfig = {
-  morning: { icon: 'weather-sunny' as const, color: '#F59E0B', labelKey: 'timePeriod.morning' },
-  afternoon: { icon: 'white-balance-sunny' as const, color: '#F97316', labelKey: 'timePeriod.afternoon' },
-  evening: { icon: 'weather-sunset' as const, color: '#8B5CF6', labelKey: 'timePeriod.evening' },
-  night: { icon: 'weather-night' as const, color: '#6366F1', labelKey: 'timePeriod.night' },
+  morning: {
+    icon: "weather-sunny" as const,
+    color: "#F59E0B",
+    labelKey: "timePeriod.morning",
+  },
+  afternoon: {
+    icon: "white-balance-sunny" as const,
+    color: "#F97316",
+    labelKey: "timePeriod.afternoon",
+  },
+  evening: {
+    icon: "weather-sunset" as const,
+    color: "#8B5CF6",
+    labelKey: "timePeriod.evening",
+  },
+  night: {
+    icon: "weather-night" as const,
+    color: "#6366F1",
+    labelKey: "timePeriod.night",
+  },
 };
 
 export function TimePeriodHeader({ period, count }: TimePeriodHeaderProps) {
@@ -180,7 +217,11 @@ export function TimePeriodHeader({ period, count }: TimePeriodHeaderProps) {
   return (
     <View style={periodStyles.container}>
       <View style={periodStyles.iconContainer}>
-        <MaterialCommunityIcons name={config.icon} size={14} color={config.color} />
+        <MaterialCommunityIcons
+          name={config.icon}
+          size={14}
+          color={config.color}
+        />
       </View>
       <Text style={periodStyles.label}>{t(config.labelKey)}</Text>
       <View style={periodStyles.badge}>
@@ -192,57 +233,60 @@ export function TimePeriodHeader({ period, count }: TimePeriodHeaderProps) {
 }
 
 // Helper to determine time period
-export function getTimePeriod(timestamp: string): 'morning' | 'afternoon' | 'evening' | 'night' {
+export function getTimePeriod(
+  timestamp: string
+): "earlyMorning" | "morning" | "afternoon" | "evening" | "night" {
   const hour = getHours(parseISO(timestamp));
-  if (hour >= 5 && hour < 12) return 'morning';
-  if (hour >= 12 && hour < 17) return 'afternoon';
-  if (hour >= 17 && hour < 21) return 'evening';
-  return 'night';
+  if (hour >= 0 && hour < 5) return "earlyMorning"; // 00:00 - 05:00
+  if (hour >= 5 && hour < 12) return "morning"; // 05:00 - 12:00
+  if (hour >= 12 && hour < 17) return "afternoon"; // 12:00 - 17:00
+  if (hour >= 17 && hour < 21) return "evening"; // 17:00 - 21:00
+  return "night"; // 21:00 - 23:59
 }
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     minHeight: 56,
     paddingBottom: 8,
   },
   // Left column containing time + track
   leftColumn: {
     width: 90,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   // Time and dot aligned horizontally
   timeAndDot: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   // Time column - wide enough for "12:30 AM"
   timeColumn: {
     width: 70,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     paddingRight: 8,
   },
   timeText: {
     fontSize: 12,
-    fontWeight: '500',
-    color: '#6B7280',
-    fontVariant: ['tabular-nums'],
-    textAlign: 'right',
+    fontWeight: "500",
+    color: "#6B7280",
+    fontVariant: ["tabular-nums"],
+    textAlign: "right",
   },
   // Track elements
   trackLineTop: {
     width: 2,
     height: 12,
-    backgroundColor: '#E5E7EB',
-    alignSelf: 'flex-end',
+    backgroundColor: "#E5E7EB",
+    alignSelf: "flex-end",
     marginRight: 4,
   },
   trackDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   trackDotInner: {
     width: 5,
@@ -254,25 +298,25 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 12,
     width: 2,
-    backgroundColor: '#E5E7EB',
-    alignSelf: 'flex-end',
+    backgroundColor: "#E5E7EB",
+    alignSelf: "flex-end",
     marginRight: 4,
   },
   trackLineHidden: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   // Content
   content: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     marginLeft: 8,
     marginRight: 12,
     padding: 12,
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.06)' }
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.06)" }
       : {
-          shadowColor: '#000',
+          shadowColor: "#000",
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.06,
           shadowRadius: 3,
@@ -280,15 +324,15 @@ const styles = StyleSheet.create({
         }),
   },
   contentInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconBadge: {
     width: 32,
     height: 32,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   details: {
     flex: 1,
@@ -296,45 +340,45 @@ const styles = StyleSheet.create({
   },
   typeLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   editedIcon: {
     marginRight: 4,
   },
   detailsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 2,
   },
   detailText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   detailHighlight: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   detailSeparator: {
     fontSize: 12,
-    color: '#D1D5DB',
+    color: "#D1D5DB",
     marginHorizontal: 4,
   },
   notes: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: "#F3F4F6",
   },
 });
 
 const periodStyles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 8,
@@ -343,18 +387,18 @@ const periodStyles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#6B7280',
+    fontWeight: "600",
+    color: "#6B7280",
     marginLeft: 8,
   },
   badge: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
@@ -362,13 +406,13 @@ const periodStyles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#9CA3AF',
+    fontWeight: "600",
+    color: "#9CA3AF",
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     marginLeft: 12,
   },
 });

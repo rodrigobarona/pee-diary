@@ -27,7 +27,7 @@ O Eleva Diary é um aplicativo de registro de saúde pessoal que permite aos usu
 - Registrar eventos de micção, ingestão de líquidos e episódios de perdas
 - Definir e acompanhar metas diárias de saúde
 - Ver análises e padrões através de gráficos e estatísticas
-- Exportar dados de saúde em vários formatos (PDF, CSV, JSON, Excel)
+- Exportar dados de saúde em vários formatos (PDF, CSV, JSON)
 - Opcionalmente fazer backup de dados no iCloud (apenas iOS)
 
 O Aplicativo é projetado como uma ferramenta de diário pessoal para ajudar os usuários a acompanhar os padrões de saúde da bexiga e compartilhar informações com profissionais de saúde.

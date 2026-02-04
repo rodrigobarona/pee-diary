@@ -52,7 +52,6 @@ You can export all your diary data at any time in multiple formats:
    - **PDF** — Formatted report, ideal for sharing with your doctor
    - **CSV** — Spreadsheet format, compatible with Excel/Google Sheets
    - **JSON** — Technical format, for backup or data portability
-   - **Excel** — Native .xlsx format for Microsoft Excel
 5. Select the date range you want to export
 6. Tap **Export**
 7. Choose where to send the file (email, cloud storage, etc.)

@@ -47,7 +47,7 @@ Eleva Diary is a private, easy-to-use bladder diary designed to help you track y
 
 ▶ EASY EXPORT & SHARING
 
-• Export your data as PDF, CSV, JSON, or Excel for sharing with your doctor
+• Export your data as PDF, CSV, or JSON for sharing with your doctor
 • Beautiful PDF reports summarizing your entries by date range
 • Share directly via email, messaging, or cloud storage
 

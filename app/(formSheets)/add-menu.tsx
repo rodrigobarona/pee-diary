@@ -90,21 +90,21 @@ export default function AddMenuScreen() {
       label: t("add.urination"),
       description: t("add.urinationDesc"),
       color: colors.primary.DEFAULT,
-      route: "/add/urination",
+      route: "/(modals)/add/urination",
     },
     {
       icon: "cup-water" as const,
       label: t("add.fluid"),
       description: t("add.fluidDesc"),
       color: colors.secondary.DEFAULT,
-      route: "/add/fluid",
+      route: "/(modals)/add/fluid",
     },
     {
       icon: "water-alert" as const,
       label: t("add.leak"),
       description: t("add.leakDesc"),
       color: colors.error,
-      route: "/add/leak",
+      route: "/(modals)/add/leak",
     },
   ];
 

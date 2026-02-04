@@ -93,7 +93,7 @@ Para información sobre cómo Apple maneja los datos de iCloud, consulta la [Pol
 
 ## 4. Exportación de Datos
 
-Eleva Diary te permite exportar tus datos en múltiples formatos (PDF, CSV, JSON, Excel):
+Eleva Diary te permite exportar tus datos en múltiples formatos (PDF, CSV, JSON):
 
 - Las exportaciones se generan **localmente en tu dispositivo**
 - Los archivos exportados se comparten mediante la función nativa de compartir de tu dispositivo
@@ -182,7 +182,7 @@ Dependiendo de tu jurisdicción, puedes tener derechos sobre tus datos personale
 | Acceso        | Ver tus datos en el Historial y Ajustes de la app     |
 | Rectificación | Editar cualquier entrada tocándola                    |
 | Supresión     | Usar Borrar Datos en Ajustes                          |
-| Portabilidad  | Exportar tus datos como CSV, JSON o Excel             |
+| Portabilidad  | Exportar tus datos como CSV o JSON                    |
 | Oposición     | No aplicable (no hay procesamiento por nuestra parte) |
 
 ---
