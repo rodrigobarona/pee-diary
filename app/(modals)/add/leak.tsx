@@ -24,7 +24,11 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
-import type { LeakSeverity, UrgencyLevel } from "@/lib/store/types";
+import type {
+  LeakActivity,
+  LeakSeverity,
+  UrgencyLevel,
+} from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
 
 const severityOptions: {
@@ -53,6 +57,21 @@ const severityOptions: {
   },
 ];
 
+const activityOptions: {
+  value: LeakActivity;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+}[] = [
+  { value: "coughing", icon: "emoticon-sick-outline" },
+  { value: "sneezing", icon: "emoticon-sick-outline" },
+  { value: "laughing", icon: "emoticon-happy-outline" },
+  { value: "exercise", icon: "run" },
+  { value: "lifting", icon: "weight-lifter" },
+  { value: "standing", icon: "human-handsup" },
+  { value: "walking", icon: "walk" },
+  { value: "sleeping", icon: "sleep" },
+  { value: "other", icon: "dots-horizontal" },
+];
+
 // Offset to scroll input into view above keyboard
 const SCROLL_OFFSET = 120;
 
@@ -69,6 +88,9 @@ export default function LeakScreen() {
   const [timestamp, setTimestamp] = React.useState(() => new Date());
   const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
+  const [activity, setActivity] = React.useState<LeakActivity | undefined>(
+    undefined
+  );
   const [notes, setNotes] = React.useState("");
 
   // Scroll to notes when focused
@@ -85,6 +107,7 @@ export default function LeakScreen() {
     addLeakEntry({
       severity,
       urgency,
+      activity,
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
@@ -92,13 +115,21 @@ export default function LeakScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     router.back();
-  }, [addLeakEntry, severity, urgency, notes, timestamp, router]);
+  }, [addLeakEntry, severity, urgency, activity, notes, timestamp, router]);
 
   const handleSeveritySelect = React.useCallback((value: LeakSeverity) => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setSeverity(value);
+  }, []);
+
+  const handleActivitySelect = React.useCallback((value: LeakActivity) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    // Toggle off if already selected
+    setActivity((prev) => (prev === value ? undefined : value));
   }, []);
 
   return (
@@ -181,6 +212,41 @@ export default function LeakScreen() {
         <View style={styles.section}>
           <SectionTitle>{t("leak.urgency")}</SectionTitle>
           <UrgencyScale value={urgency} onChange={setUrgency} />
+        </View>
+
+        {/* Activity */}
+        <View style={styles.section}>
+          <SectionTitle>{t("leak.activity")}</SectionTitle>
+          <View style={styles.activityGrid}>
+            {activityOptions.map((option) => {
+              const isSelected = activity === option.value;
+              return (
+                <AnimatedPressable
+                  key={option.value}
+                  onPress={() => handleActivitySelect(option.value)}
+                  haptic={false}
+                  style={[
+                    styles.activityChip,
+                    isSelected && styles.activityChipSelected,
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={option.icon}
+                    size={18}
+                    color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
+                  />
+                  <Text
+                    style={[
+                      styles.activityChipText,
+                      isSelected && styles.activityChipTextSelected,
+                    ]}
+                  >
+                    {t(`leak.activities.${option.value}`)}
+                  </Text>
+                </AnimatedPressable>
+              );
+            })}
+          </View>
         </View>
 
         {/* Notes */}
@@ -304,6 +370,34 @@ const styles = StyleSheet.create({
   },
   notesInput: {
     minHeight: 100,
+  },
+  activityGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  activityChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: "rgba(0, 109, 119, 0.08)",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  activityChipSelected: {
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.DEFAULT,
+  },
+  activityChipText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.primary.DEFAULT,
+  },
+  activityChipTextSelected: {
+    color: "#FFFFFF",
   },
   footer: {
     backgroundColor: "#F9FAFB",

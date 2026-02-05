@@ -341,8 +341,7 @@ export default function HistoryScreen() {
                   </Pressable>
 
                   {/* Entries in this period (collapsible) */}
-                  {isExpanded && (
-                    <View style={styles.entriesList}>
+                  {isExpanded ? <View style={styles.entriesList}>
                       {periodGroup.entries.map((entry, entryIndex) => (
                         <TimelineEntry
                           key={entry.id}
@@ -352,8 +351,7 @@ export default function HistoryScreen() {
                           onPress={() => handleEntryPress(entry.id)}
                         />
                       ))}
-                    </View>
-                  )}
+                    </View> : null}
                 </View>
               );
             })}

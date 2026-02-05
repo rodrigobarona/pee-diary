@@ -23,10 +23,18 @@ import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import {
+  exportBackupFile,
+  importBackupFile,
   isCloudAvailable,
   restoreFromCloud,
   syncToCloud,
 } from "@/lib/utils/backup";
+import {
+  cancelAllReminders,
+  initializeNotifications,
+  requestNotificationPermission,
+  scheduleReminders,
+} from "@/lib/utils/notifications";
 
 interface SettingRowProps {
   icon: string;
@@ -120,7 +128,7 @@ const LEGAL_URLS = {
 };
 
 export default function SettingsScreen() {
-  const { t, locale, setLocale } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const params = useLocalSearchParams<{ openGoals?: string }>();
   const isHydrated = useStoreHydrated();
@@ -133,10 +141,19 @@ export default function SettingsScreen() {
     (state) => state.setOpenAddMenuOnLaunch
   );
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
+  const reminderSettings = useDiaryStore((state) => state.reminderSettings);
+  const updateReminderSettings = useDiaryStore(
+    (state) => state.updateReminderSettings
+  );
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
   const cloudAvailable = isCloudAvailable();
+
+  // Initialize notifications on mount
+  React.useEffect(() => {
+    initializeNotifications();
+  }, []);
 
   // Get the confirmation word for the current locale
   const confirmWord = t("settings.clearDataConfirmWord");
@@ -166,6 +183,98 @@ export default function SettingsScreen() {
       setOpenAddMenuOnLaunch(value);
     },
     [setOpenAddMenuOnLaunch]
+  );
+
+  // Handle toggling reminders
+  const handleToggleReminders = React.useCallback(
+    async (value: boolean) => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+
+      if (value) {
+        // Request permission first
+        const hasPermission = await requestNotificationPermission();
+        if (!hasPermission) {
+          Alert.alert(
+            t("settings.permissionRequired"),
+            t("settings.permissionRequiredDescription"),
+            [
+              { text: t("common.cancel"), style: "cancel" },
+              {
+                text: t("settings.title"),
+                onPress: () => Linking.openSettings(),
+              },
+            ]
+          );
+          return;
+        }
+      }
+
+      const newSettings = { ...reminderSettings, enabled: value };
+      updateReminderSettings(newSettings);
+
+      // Schedule or cancel reminders
+      if (value) {
+        await scheduleReminders(newSettings, {
+          title: t("settings.reminderNotificationTitle"),
+          body: t("settings.reminderNotificationBody"),
+        });
+      } else {
+        await cancelAllReminders();
+      }
+    },
+    [reminderSettings, updateReminderSettings, t]
+  );
+
+  // Handle changing reminder interval
+  const handleChangeInterval = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    const intervals = [2, 3, 4, 6];
+    const options = intervals.map((h) =>
+      t("settings.everyXHours", { count: h })
+    );
+    options.push(t("common.cancel"));
+
+    Alert.alert(t("settings.reminderInterval"), "", [
+      ...intervals.map((hours, index) => ({
+        text: options[index],
+        onPress: async () => {
+          const newSettings = { ...reminderSettings, intervalHours: hours };
+          updateReminderSettings(newSettings);
+          if (reminderSettings.enabled) {
+            await scheduleReminders(newSettings, {
+              title: t("settings.reminderNotificationTitle"),
+              body: t("settings.reminderNotificationBody"),
+            });
+          }
+        },
+      })),
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+  }, [reminderSettings, updateReminderSettings, t]);
+
+  // Handle toggling quiet hours
+  const handleToggleQuietHours = React.useCallback(
+    async (value: boolean) => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+
+      const newSettings = { ...reminderSettings, quietHoursEnabled: value };
+      updateReminderSettings(newSettings);
+
+      if (reminderSettings.enabled) {
+        await scheduleReminders(newSettings, {
+          title: t("settings.reminderNotificationTitle"),
+          body: t("settings.reminderNotificationBody"),
+        });
+      }
+    },
+    [reminderSettings, updateReminderSettings, t]
   );
 
   const handleOpenGoals = React.useCallback(() => {
@@ -336,6 +445,77 @@ export default function SettingsScreen() {
     ]);
   }, [isSyncing, t]);
 
+  // Handle local file backup export
+  const handleExportBackup = React.useCallback(async () => {
+    if (isSyncing) return;
+
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    setIsSyncing(true);
+    try {
+      const result = await exportBackupFile();
+      if (!result.success) {
+        Alert.alert(
+          t("common.error"),
+          result.error ?? t("settings.exportBackupError")
+        );
+      }
+    } catch {
+      Alert.alert(t("common.error"), t("settings.exportBackupError"));
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [isSyncing, t]);
+
+  // Handle local file backup import
+  const handleImportBackup = React.useCallback(async () => {
+    if (isSyncing) return;
+
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    Alert.alert(t("settings.importBackup"), t("settings.importBackupConfirm"), [
+      {
+        text: t("common.cancel"),
+        style: "cancel",
+      },
+      {
+        text: t("settings.restore"),
+        onPress: async () => {
+          setIsSyncing(true);
+          try {
+            const result = await importBackupFile();
+            if (result.success) {
+              if (Platform.OS !== "web") {
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                );
+              }
+              Alert.alert(
+                t("settings.importBackup"),
+                t("settings.importBackupSuccess", {
+                  count: result.entriesCount ?? 0,
+                })
+              );
+            } else if (result.error !== "File selection cancelled") {
+              Alert.alert(
+                t("common.error"),
+                result.error ?? t("settings.importBackupError")
+              );
+            }
+          } catch {
+            Alert.alert(t("common.error"), t("settings.importBackupError"));
+          } finally {
+            setIsSyncing(false);
+          }
+        },
+      },
+    ]);
+  }, [isSyncing, t]);
+
   const currentLanguage = languageDisplay[locale];
   const currentLanguageLabel = `${currentLanguage.flag} ${currentLanguage.nativeLabel}`;
 
@@ -453,6 +633,57 @@ export default function SettingsScreen() {
         </SettingRow>
       </View>
 
+      {/* Reminders Section */}
+      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
+        {t("settings.reminders")}
+      </Text>
+      <View style={styles.card}>
+        <SettingRow
+          icon="bell"
+          label={t("settings.remindersEnabled")}
+          description={t("settings.remindersEnabledDescription")}
+        >
+          <Switch
+            value={reminderSettings.enabled}
+            onValueChange={handleToggleReminders}
+            trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
+            thumbColor="#FFFFFF"
+            ios_backgroundColor="#E2E8F0"
+          />
+        </SettingRow>
+        {reminderSettings.enabled ? (
+          <>
+            <View style={styles.separator} />
+            <SettingRow
+              icon="clock-outline"
+              label={t("settings.reminderInterval")}
+              value={t("settings.everyXHours", {
+                count: reminderSettings.intervalHours,
+              })}
+              onPress={handleChangeInterval}
+            />
+            <View style={styles.separator} />
+            <SettingRow
+              icon="moon-waning-crescent"
+              label={t("settings.quietHoursEnabled")}
+              description={
+                reminderSettings.quietHoursEnabled
+                  ? `${reminderSettings.quietHoursStart} - ${reminderSettings.quietHoursEnd}`
+                  : t("settings.quietHoursEnabledDescription")
+              }
+            >
+              <Switch
+                value={reminderSettings.quietHoursEnabled}
+                onValueChange={handleToggleQuietHours}
+                trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
+                thumbColor="#FFFFFF"
+                ios_backgroundColor="#E2E8F0"
+              />
+            </SettingRow>
+          </>
+        ) : null}
+      </View>
+
       {/* Data Section */}
       <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>Data</Text>
       <View style={styles.card}>
@@ -472,7 +703,7 @@ export default function SettingsScreen() {
         />
       </View>
 
-      {/* Cloud Sync Section */}
+      {/* Cloud Sync Section - iOS only */}
       {Platform.OS === "ios" ? (
         <>
           <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
@@ -505,20 +736,31 @@ export default function SettingsScreen() {
             />
           </View>
         </>
-      ) : (
-        <>
-          <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-            {t("settings.cloudSync")}
-          </Text>
-          <View style={styles.card}>
-            <SettingRow
-              icon="cloud-check"
-              label={t("settings.autoBackup")}
-              description={t("settings.autoBackupDescription")}
-            />
-          </View>
-        </>
-      )}
+      ) : null}
+
+      {/* Local Backup Section - for Android (primary) and iOS (fallback) */}
+      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
+        {t("settings.localBackup")}
+      </Text>
+      <View style={styles.card}>
+        <SettingRow
+          icon="file-export"
+          label={t("settings.exportBackup")}
+          description={t("settings.exportBackupDescription")}
+          onPress={handleExportBackup}
+        >
+          {isSyncing ? (
+            <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+          ) : null}
+        </SettingRow>
+        <View style={styles.separator} />
+        <SettingRow
+          icon="file-import"
+          label={t("settings.importBackup")}
+          description={t("settings.importBackupDescription")}
+          onPress={handleImportBackup}
+        />
+      </View>
 
       {/* About Section */}
       <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>

@@ -53,7 +53,21 @@
     "thisWeek": "Esta Semana",
     "week": "Semana",
     "month": "Mês",
-    "last30Days": "Resumo dos últimos 30 dias"
+    "last30Days": "Resumo dos últimos 30 dias",
+    "nightVoids": "Micções Noturnas",
+    "nightVoidsAvg": "média/noite",
+    "dayVsNight": "Dia vs Noite",
+    "day": "Dia",
+    "night": "Noite",
+    "fluidBalance": "Balanço de Líquidos",
+    "fluidIntake": "Ingestão",
+    "urinationOutput": "Saída",
+    "outputRatio": "Rácio de saída",
+    "intake": "Ingestão",
+    "output": "Saída",
+    "ratioNormal": "Intervalo normal",
+    "ratioLow": "Saída baixa",
+    "ratioHigh": "Saída alta"
   },
   "goals": {
     "title": "Objetivos diários",
@@ -121,6 +135,8 @@
     "volumeSmall": "Pequeno",
     "volumeMedium": "Médio",
     "volumeLarge": "Grande",
+    "volumePrecise": "Inserir quantidade exata (ml)",
+    "volumePrecisePlaceholder": "ex., 250",
     "urgency": "Nível de urgência",
     "hadLeak": "Houve alguma perda?",
     "hadPain": "Sentiu dor ou desconforto?",
@@ -147,6 +163,19 @@
     "moderate": "Moderado",
     "full": "Completo",
     "urgency": "Nível de urgência",
+    "activity": "Atividade (opcional)",
+    "activityDescription": "O que estava a fazer?",
+    "activities": {
+      "coughing": "Tossindo",
+      "sneezing": "Espirrando",
+      "laughing": "Rindo",
+      "exercise": "A fazer exercício",
+      "lifting": "A levantar peso",
+      "standing": "A levantar-se",
+      "walking": "A caminhar",
+      "sleeping": "A dormir",
+      "other": "Outro"
+    },
     "notes": "Notas"
   },
   "history": {
@@ -205,13 +234,38 @@
     "restoreError": "Falha ao restaurar. Tente novamente.",
     "autoBackup": "Cópia de segurança automática ativada",
     "autoBackupDescription": "Os dados são guardados automaticamente no Google Drive",
+    "localBackup": "Cópia Local",
+    "exportBackup": "Exportar Cópia de Segurança",
+    "exportBackupDescription": "Guardar uma cópia dos dados num ficheiro",
+    "importBackup": "Importar Cópia de Segurança",
+    "importBackupDescription": "Restaurar dados de um ficheiro de cópia",
+    "exportBackupSuccess": "Ficheiro de cópia pronto para guardar",
+    "importBackupSuccess": "Restaurados {{count}} registos da cópia",
+    "importBackupConfirm": "Isto substituirá os dados atuais pela cópia. Continuar?",
+    "importBackupError": "Erro ao importar a cópia. O ficheiro pode ser inválido.",
+    "exportBackupError": "Erro ao criar o ficheiro de cópia.",
     "openAddMenuOnLaunch": "Abrir menu ao iniciar",
     "openAddMenuOnLaunchDescription": "Mostrar o menu de adicionar ao abrir a aplicação",
     "legal": "Legal",
     "privacyPolicy": "Política de Privacidade",
     "terms": "Termos de Serviço",
     "dataDelete": "Opções de Privacidade",
-    "dataDeleteDescription": "Solicitar exclusão de dados"
+    "dataDeleteDescription": "Solicitar exclusão de dados",
+    "reminders": "Lembretes",
+    "remindersEnabled": "Ativar Lembretes",
+    "remindersEnabledDescription": "Receba notificações para registar as suas entradas",
+    "reminderInterval": "Intervalo de Lembrete",
+    "reminderIntervalDescription": "Com que frequência lembrar",
+    "everyXHours": "A cada {{count}} horas",
+    "quietHours": "Horas de Silêncio",
+    "quietHoursEnabled": "Ativar Horas de Silêncio",
+    "quietHoursEnabledDescription": "Sem lembretes durante este período",
+    "quietHoursStart": "De",
+    "quietHoursEnd": "Até",
+    "reminderNotificationTitle": "Hora de registar!",
+    "reminderNotificationBody": "Não se esqueça de registar os seus líquidos e idas à casa de banho.",
+    "permissionRequired": "Permissão Necessária",
+    "permissionRequiredDescription": "Por favor ative as notificações nas definições do dispositivo para receber lembretes."
   },
   "urgency": {
     "1": "Nenhuma",
@@ -265,6 +319,33 @@
     "exporting": "A exportar...",
     "success": "Dados exportados com sucesso",
     "error": "Falha ao exportar os dados"
+  },
+  "error": {
+    "title": "Algo correu mal",
+    "description": "Encontrámos um erro inesperado. Por favor, tente novamente.",
+    "tryAgain": "Tentar Novamente",
+    "showDetails": "Mostrar Detalhes",
+    "hideDetails": "Ocultar Detalhes"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao Eleva Diary",
+      "subtitle": "O seu companheiro de saúde da bexiga",
+      "description": "Registe os seus hábitos urinários, ingestão de líquidos e obtenha informações para melhorar a saúde da bexiga."
+    },
+    "track": {
+      "title": "Registe Tudo",
+      "subtitle": "Registo simples e rápido",
+      "description": "Registe micções, ingestão de líquidos e perdas em poucos toques. Crie hábitos saudáveis com o acompanhamento de sequências."
+    },
+    "insights": {
+      "title": "Obtenha Estatísticas",
+      "subtitle": "Compreenda os seus padrões",
+      "description": "Visualize gráficos e análises para partilhar com o seu profissional de saúde. Exporte relatórios como PDF, CSV ou JSON."
+    },
+    "getStarted": "Começar",
+    "next": "Seguinte",
+    "skip": "Saltar"
   },
   "pdf": {
     "title": "Diário Miccional",

@@ -80,7 +80,7 @@ function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
 
       {/* Radio indicator */}
       <View style={[styles.radio, isSelected && styles.radioSelected]}>
-        {isSelected && <View style={styles.radioInner} />}
+        {isSelected ? <View style={styles.radioInner} /> : null}
       </View>
     </AnimatedPressable>
   );

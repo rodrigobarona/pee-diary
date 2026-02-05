@@ -138,26 +138,22 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
       </ScrollView>
 
       {/* Left fade indicator */}
-      {showLeftFade && (
-        <LinearGradient
+      {showLeftFade ? <LinearGradient
           colors={["#F9FAFB", "rgba(249,250,251,0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.fadeLeft}
           pointerEvents="none"
-        />
-      )}
+        /> : null}
 
       {/* Right fade indicator */}
-      {showRightFade && (
-        <LinearGradient
+      {showRightFade ? <LinearGradient
           colors={["rgba(249,250,251,0)", "#F9FAFB"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.fadeRight}
           pointerEvents="none"
-        />
-      )}
+        /> : null}
     </View>
   );
 }

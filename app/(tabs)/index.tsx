@@ -24,11 +24,13 @@ import {
 import { useShallow } from "zustand/shallow";
 
 import {
+  FluidBalanceChart,
   InsightCard,
   MonthlyChart,
   ProgressBar,
   StreakBadge,
   TimeGroupSummary,
+  VOLUME_ESTIMATES,
   WeeklyChart,
 } from "@/components/diary";
 import { Text } from "@/components/ui/text";
@@ -45,6 +47,14 @@ const isEntryFromToday = (entry: DiaryEntry) => {
     start: startOfDay(today),
     end: endOfDay(today),
   });
+};
+
+// Helper to check if an entry is during nighttime hours (9pm-5am)
+// This is medically relevant for nocturia tracking
+const isNighttimeEntry = (entry: DiaryEntry): boolean => {
+  const hour = getHours(parseISO(entry.timestamp));
+  // Nighttime: 9pm (21:00) to 5am
+  return hour >= 21 || hour < 5;
 };
 
 // Get greeting based on time of day
@@ -132,6 +142,44 @@ export default function HomeScreen() {
     });
   }, [allEntries, today]);
 
+  // Compute fluid balance data (last 7 days)
+  const fluidBalanceData = React.useMemo(() => {
+    const days = eachDayOfInterval({
+      start: subDays(today, 6),
+      end: today,
+    });
+
+    return days.map((day) => {
+      const dayStart = startOfDay(day);
+      const dayEnd = endOfDay(day);
+
+      const dayEntries = allEntries.filter((entry) =>
+        isWithinInterval(parseISO(entry.timestamp), {
+          start: dayStart,
+          end: dayEnd,
+        })
+      );
+
+      // Fluid intake
+      const fluidIntake = dayEntries
+        .filter((e) => e.type === "fluid")
+        .reduce((sum, e) => sum + (e.type === "fluid" ? e.amount : 0), 0);
+
+      // Urination output (use precise volumeMl if available, otherwise estimate)
+      const urinationOutput = dayEntries
+        .filter((e) => e.type === "urination")
+        .reduce((sum, e) => {
+          if (e.type === "urination") {
+            // Use precise measurement if available, otherwise estimate from volume size
+            return sum + (e.volumeMl ?? VOLUME_ESTIMATES[e.volume]);
+          }
+          return sum;
+        }, 0);
+
+      return { date: day, fluidIntake, urinationOutput };
+    });
+  }, [allEntries, today]);
+
   // Compute weekly stats for insight cards
   const weeklyStats = React.useMemo(() => {
     // This week (last 7 days)
@@ -200,6 +248,21 @@ export default function HomeScreen() {
       return voidsMet && fluidsMet;
     }).length;
 
+    // Calculate nighttime voids (nocturia) for the week
+    const weekStart = startOfDay(subDays(today, 6));
+    const weekEnd = endOfDay(today);
+    const weekEntries = allEntries.filter((entry) =>
+      isWithinInterval(parseISO(entry.timestamp), {
+        start: weekStart,
+        end: weekEnd,
+      })
+    );
+    const nightVoidsTotal = weekEntries.filter(
+      (e) => e.type === "urination" && isNighttimeEntry(e)
+    ).length;
+    const avgNightVoids =
+      daysWithEntries.length > 0 ? nightVoidsTotal / daysWithEntries.length : 0;
+
     // Trends
     const voidTrend: "up" | "down" | "stable" =
       thisWeekAvgVoids > lastWeekAvgVoids
@@ -230,6 +293,8 @@ export default function HomeScreen() {
       fluidTrend,
       voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
       fluidDiff: fluidDiff > 0 ? `${fluidDiff}ml` : undefined,
+      nightVoidsTotal,
+      avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
   }, [weeklyData, allEntries, today, goals]);
 
@@ -328,6 +393,21 @@ export default function HomeScreen() {
       return voidsMet && fluidsMet;
     }).length;
 
+    // Calculate nighttime voids (nocturia) for the month
+    const monthStart = startOfDay(subDays(today, 29));
+    const monthEnd = endOfDay(today);
+    const monthEntries = allEntries.filter((entry) =>
+      isWithinInterval(parseISO(entry.timestamp), {
+        start: monthStart,
+        end: monthEnd,
+      })
+    );
+    const nightVoidsTotal = monthEntries.filter(
+      (e) => e.type === "urination" && isNighttimeEntry(e)
+    ).length;
+    const avgNightVoids =
+      daysWithEntries.length > 0 ? nightVoidsTotal / daysWithEntries.length : 0;
+
     // Trends
     const voidTrend: "up" | "down" | "stable" =
       thisMonthAvgVoids > lastMonthAvgVoids
@@ -358,6 +438,8 @@ export default function HomeScreen() {
       fluidTrend,
       voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
       fluidDiff: fluidDiff > 0 ? `${fluidDiff}ml` : undefined,
+      nightVoidsTotal,
+      avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
   }, [monthlyData, allEntries, today, goals]);
 
@@ -617,7 +699,7 @@ export default function HomeScreen() {
             />
           )}
 
-          {/* Insight Cards */}
+          {/* Insight Cards - Row 1 */}
           <View style={styles.insightCardsRow}>
             <InsightCard
               title={t("insights.avgFluids")}
@@ -642,6 +724,32 @@ export default function HomeScreen() {
               color="#F59E0B"
             />
           </View>
+
+          {/* Insight Cards - Row 2: Nocturia */}
+          <View style={styles.insightCardsRow}>
+            <InsightCard
+              title={t("insights.nightVoids")}
+              value={`${currentStats.nightVoidsTotal}`}
+              subtitle={`${currentStats.avgNightVoids} ${t(
+                "insights.nightVoidsAvg"
+              )}`}
+              icon="weather-night"
+              color="#6366F1"
+            />
+          </View>
+
+          {/* Fluid Balance Chart - only show in week view for clarity */}
+          {insightsPeriod === "week" ? (
+            <View style={styles.fluidBalanceSection}>
+              <Text style={styles.fluidBalanceTitle}>
+                {t("insights.fluidBalance")}
+              </Text>
+              <FluidBalanceChart
+                data={fluidBalanceData}
+                onDayPress={handleDayPress}
+              />
+            </View>
+          ) : null}
 
           {/* Export Data Link */}
           <Pressable onPress={handleExportData} style={styles.exportDataLink}>
@@ -761,6 +869,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginTop: 12,
+  },
+  fluidBalanceSection: {
+    marginTop: 20,
+  },
+  fluidBalanceTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 12,
   },
   exportDataLink: {
     flexDirection: "row",

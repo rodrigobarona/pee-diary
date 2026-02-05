@@ -11,8 +11,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
 import { TimePicker, UrgencyScale, VolumePicker } from "@/components/diary";
 import {
+  AnimatedPressable,
   FormCard,
   ScreenHeader,
   SectionTitle,
@@ -24,6 +27,7 @@ import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { UrgencyLevel, VolumeSize } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 
 // Offset to scroll input into view above keyboard
 const SCROLL_OFFSET = 120;
@@ -41,6 +45,8 @@ export default function UrinationScreen() {
   // Form state
   const [timestamp, setTimestamp] = React.useState(() => new Date());
   const [volume, setVolume] = React.useState<VolumeSize>("medium");
+  const [volumeMl, setVolumeMl] = React.useState<string>("");
+  const [showPreciseVolume, setShowPreciseVolume] = React.useState(false);
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
   const [hadLeak, setHadLeak] = React.useState(false);
   const [hadPain, setHadPain] = React.useState(false);
@@ -57,8 +63,11 @@ export default function UrinationScreen() {
   }, []);
 
   const handleSave = React.useCallback(() => {
+    const parsedVolumeMl = volumeMl ? parseInt(volumeMl, 10) : undefined;
     addUrinationEntry({
       volume,
+      volumeMl:
+        parsedVolumeMl && !isNaN(parsedVolumeMl) ? parsedVolumeMl : undefined,
       urgency,
       hadLeak,
       hadPain,
@@ -72,6 +81,7 @@ export default function UrinationScreen() {
   }, [
     addUrinationEntry,
     volume,
+    volumeMl,
     urgency,
     hadLeak,
     hadPain,
@@ -79,6 +89,16 @@ export default function UrinationScreen() {
     timestamp,
     router,
   ]);
+
+  const handleTogglePreciseVolume = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setShowPreciseVolume((prev) => !prev);
+    if (showPreciseVolume) {
+      setVolumeMl(""); // Clear when hiding
+    }
+  }, [showPreciseVolume]);
 
   return (
     <KeyboardAvoidingView
@@ -108,6 +128,40 @@ export default function UrinationScreen() {
         <View style={styles.section}>
           <SectionTitle>{t("urination.volume")}</SectionTitle>
           <VolumePicker value={volume} onChange={setVolume} />
+
+          {/* Toggle for precise volume input */}
+          <AnimatedPressable
+            onPress={handleTogglePreciseVolume}
+            haptic={false}
+            style={styles.preciseVolumeToggle}
+          >
+            <MaterialCommunityIcons
+              name={showPreciseVolume ? "chevron-up" : "chevron-down"}
+              size={18}
+              color={colors.primary.DEFAULT}
+            />
+            <Text style={styles.preciseVolumeToggleText}>
+              {t("urination.volumePrecise")}
+            </Text>
+          </AnimatedPressable>
+
+          {/* Precise volume input */}
+          {showPreciseVolume ? (
+            <FormCard>
+              <Input
+                value={volumeMl}
+                onChangeText={(text) => {
+                  // Only allow numbers
+                  const numericValue = text.replace(/[^0-9]/g, "");
+                  setVolumeMl(numericValue);
+                }}
+                placeholder={t("urination.volumePrecisePlaceholder")}
+                keyboardType="number-pad"
+                className="bg-transparent border-0 px-4 py-3"
+                returnKeyType="done"
+              />
+            </FormCard>
+          ) : null}
         </View>
 
         {/* Urgency */}
@@ -204,6 +258,18 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 12,
+  },
+  preciseVolumeToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    paddingVertical: 8,
+  },
+  preciseVolumeToggleText: {
+    fontSize: 14,
+    color: colors.primary.DEFAULT,
+    fontWeight: "500",
   },
   separator: {
     height: 1,

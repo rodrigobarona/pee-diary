@@ -53,7 +53,21 @@
     "thisWeek": "Esta Semana",
     "week": "Semana",
     "month": "Mes",
-    "last30Days": "Resumen de los últimos 30 días"
+    "last30Days": "Resumen de los últimos 30 días",
+    "nightVoids": "Micciones Nocturnas",
+    "nightVoidsAvg": "media/noche",
+    "dayVsNight": "Día vs Noche",
+    "day": "Día",
+    "night": "Noche",
+    "fluidBalance": "Balance de Líquidos",
+    "fluidIntake": "Ingesta",
+    "urinationOutput": "Salida",
+    "outputRatio": "Ratio de salida",
+    "intake": "Ingesta",
+    "output": "Salida",
+    "ratioNormal": "Rango normal",
+    "ratioLow": "Salida baja",
+    "ratioHigh": "Salida alta"
   },
   "goals": {
     "title": "Objetivos diarios",
@@ -121,6 +135,8 @@
     "volumeSmall": "Pequeño",
     "volumeMedium": "Mediano",
     "volumeLarge": "Grande",
+    "volumePrecise": "Ingresar cantidad exacta (ml)",
+    "volumePrecisePlaceholder": "ej., 250",
     "urgency": "Nivel de urgencia",
     "hadLeak": "¿Hubo alguna pérdida?",
     "hadPain": "¿Experimentaste dolor o molestia?",
@@ -147,6 +163,19 @@
     "moderate": "Moderado",
     "full": "Completo",
     "urgency": "Nivel de urgencia",
+    "activity": "Actividad (opcional)",
+    "activityDescription": "¿Qué estabas haciendo?",
+    "activities": {
+      "coughing": "Tosiendo",
+      "sneezing": "Estornudando",
+      "laughing": "Riendo",
+      "exercise": "Haciendo ejercicio",
+      "lifting": "Levantando peso",
+      "standing": "Poniéndose de pie",
+      "walking": "Caminando",
+      "sleeping": "Durmiendo",
+      "other": "Otro"
+    },
     "notes": "Notas"
   },
   "history": {
@@ -205,13 +234,38 @@
     "restoreError": "Error al restaurar. Inténtalo de nuevo.",
     "autoBackup": "Copia de seguridad automática",
     "autoBackupDescription": "Tus datos se guardan automáticamente en Google Drive",
+    "localBackup": "Copia Local",
+    "exportBackup": "Exportar Copia de Seguridad",
+    "exportBackupDescription": "Guardar una copia de tus datos en un archivo",
+    "importBackup": "Importar Copia de Seguridad",
+    "importBackupDescription": "Restaurar datos desde un archivo de copia",
+    "exportBackupSuccess": "Archivo de copia listo para guardar",
+    "importBackupSuccess": "Se restauraron {{count}} registros de la copia",
+    "importBackupConfirm": "Esto reemplazará tus datos actuales con la copia. ¿Continuar?",
+    "importBackupError": "Error al importar la copia. El archivo puede ser inválido.",
+    "exportBackupError": "Error al crear el archivo de copia.",
     "openAddMenuOnLaunch": "Abrir menú al iniciar",
     "openAddMenuOnLaunchDescription": "Mostrar el menú de añadir al abrir la aplicación",
     "legal": "Legal",
     "privacyPolicy": "Política de Privacidad",
     "terms": "Términos de Servicio",
     "dataDelete": "Opciones de Privacidad",
-    "dataDeleteDescription": "Solicitar eliminación de datos"
+    "dataDeleteDescription": "Solicitar eliminación de datos",
+    "reminders": "Recordatorios",
+    "remindersEnabled": "Activar Recordatorios",
+    "remindersEnabledDescription": "Recibe notificaciones para registrar tus entradas",
+    "reminderInterval": "Intervalo de Recordatorio",
+    "reminderIntervalDescription": "Con qué frecuencia recordarte",
+    "everyXHours": "Cada {{count}} horas",
+    "quietHours": "Horas de Silencio",
+    "quietHoursEnabled": "Activar Horas de Silencio",
+    "quietHoursEnabledDescription": "Sin recordatorios durante este tiempo",
+    "quietHoursStart": "Desde",
+    "quietHoursEnd": "Hasta",
+    "reminderNotificationTitle": "¡Hora de registrar!",
+    "reminderNotificationBody": "No olvides registrar tus líquidos y visitas al baño.",
+    "permissionRequired": "Permiso Requerido",
+    "permissionRequiredDescription": "Por favor activa las notificaciones en los ajustes de tu dispositivo para recibir recordatorios."
   },
   "urgency": {
     "1": "Ninguna",
@@ -265,6 +319,33 @@
     "exporting": "Exportando...",
     "success": "Datos exportados correctamente",
     "error": "Error al exportar los datos"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Encontramos un error inesperado. Por favor, inténtalo de nuevo.",
+    "tryAgain": "Reintentar",
+    "showDetails": "Mostrar Detalles",
+    "hideDetails": "Ocultar Detalles"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Eleva Diary",
+      "subtitle": "Tu compañero de salud vesical",
+      "description": "Registra tus hábitos urinarios, ingesta de líquidos y obtén información para mejorar tu salud vesical."
+    },
+    "track": {
+      "title": "Registra Todo",
+      "subtitle": "Registro simple y rápido",
+      "description": "Registra micciones, ingesta de líquidos y pérdidas en pocos toques. Crea hábitos saludables con el seguimiento de rachas."
+    },
+    "insights": {
+      "title": "Obtén Estadísticas",
+      "subtitle": "Comprende tus patrones",
+      "description": "Visualiza gráficos y análisis para compartir con tu profesional de salud. Exporta informes como PDF, CSV o JSON."
+    },
+    "getStarted": "Comenzar",
+    "next": "Siguiente",
+    "skip": "Omitir"
   },
   "pdf": {
     "title": "Diario Miccional",

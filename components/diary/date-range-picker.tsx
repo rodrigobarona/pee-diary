@@ -186,27 +186,23 @@ export function DateRangePicker({
       </View>
 
       {/* Android Date Picker Dialogs */}
-      {showStartPicker && (
-        <DateTimePicker
+      {showStartPicker ? <DateTimePicker
           value={safeStartDate}
           mode="date"
           display="default"
           onChange={handleStartDateChange}
           minimumDate={minDate}
           maximumDate={safeEndDate}
-        />
-      )}
+        /> : null}
 
-      {showEndPicker && (
-        <DateTimePicker
+      {showEndPicker ? <DateTimePicker
           value={safeEndDate}
           mode="date"
           display="default"
           onChange={handleEndDateChange}
           minimumDate={safeStartDate}
           maximumDate={safeMaxDate}
-        />
-      )}
+        /> : null}
     </View>
   );
 }

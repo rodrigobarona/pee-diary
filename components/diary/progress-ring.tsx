@@ -95,28 +95,24 @@ export function ProgressRing({
       
       {/* Center content */}
       <View style={styles.centerContent}>
-        {icon && (
-          <MaterialCommunityIcons
+        {icon ? <MaterialCommunityIcons
             name={icon}
             size={size * 0.18}
             color={iconColor ?? color}
             style={styles.icon}
-          />
-        )}
+          /> : null}
         <View style={styles.valueContainer}>
           <Text style={[styles.value, { fontSize: size * 0.17 }]}>
             {value}
-            {unit && <Text style={[styles.unit, { fontSize: size * 0.09 }]}>{unit}</Text>}
+            {unit ? <Text style={[styles.unit, { fontSize: size * 0.09 }]}>{unit}</Text> : null}
           </Text>
           <Text style={[styles.target, { fontSize: size * 0.08 }]}>
             / {target}{unit}
           </Text>
         </View>
-        {label && (
-          <Text style={[styles.label, { fontSize: size * 0.075 }]} numberOfLines={1}>
+        {label ? <Text style={[styles.label, { fontSize: size * 0.075 }]} numberOfLines={1}>
             {label}
-          </Text>
-        )}
+          </Text> : null}
       </View>
     </View>
   );

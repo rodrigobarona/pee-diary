@@ -1,13 +1,14 @@
-import * as React from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
-import * as Haptics from "expo-haptics";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 
 interface InsightCardProps {
   title: string;
   value: string;
+  subtitle?: string;
   trend?: "up" | "down" | "stable";
   trendValue?: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -18,6 +19,7 @@ interface InsightCardProps {
 export function InsightCard({
   title,
   value,
+  subtitle,
   trend,
   trendValue,
   icon,
@@ -70,7 +72,7 @@ export function InsightCard({
         {title}
       </Text>
 
-      {/* Trend indicator - always show container for consistent height */}
+      {/* Trend indicator or subtitle - always show container for consistent height */}
       <View style={styles.trendContainer}>
         {trend && trendValue ? (
           <>
@@ -83,6 +85,8 @@ export function InsightCard({
               {trendValue}
             </Text>
           </>
+        ) : subtitle ? (
+          <Text style={styles.subtitle}>{subtitle}</Text>
         ) : (
           <Text style={styles.trendPlaceholder}> </Text>
         )}
@@ -206,6 +210,11 @@ const styles = StyleSheet.create({
   trendPlaceholder: {
     fontSize: 10,
     color: "transparent",
+  },
+  subtitle: {
+    fontSize: 10,
+    color: "#6B7280",
+    textAlign: "center",
   },
 });
 

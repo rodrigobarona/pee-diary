@@ -16,6 +16,7 @@ import { LogBox, Platform, type ColorSchemeName } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
+import { ErrorBoundary } from "@/components/error-boundary";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
@@ -40,13 +41,22 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const isHydrated = useStoreHydrated();
   const hasCheckedLaunchRef = useRef(false);
 
-  // Auto-open add menu on app launch if preference is enabled
-  // Only runs once when store hydrates, not when preference changes
+  // Handle initial routing based on onboarding status
+  // Also auto-open add menu on app launch if preference is enabled
   useEffect(() => {
     if (isHydrated && !hasCheckedLaunchRef.current) {
       hasCheckedLaunchRef.current = true;
+
+      // Check if onboarding needs to be shown
+      const state = useDiaryStore.getState();
+      if (!state.hasCompletedOnboarding) {
+        // Navigate to onboarding
+        router.replace("/(onboarding)");
+        return;
+      }
+
       // Read preference directly from store to avoid reacting to changes
-      const shouldOpen = useDiaryStore.getState().openAddMenuOnLaunch;
+      const shouldOpen = state.openAddMenuOnLaunch;
       if (shouldOpen) {
         // Small delay to ensure navigation is ready
         setTimeout(() => {
@@ -66,6 +76,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           },
         }}
       >
+        <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="(modals)/add/urination"
@@ -176,9 +187,11 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <I18nProvider>
-        <InnerLayout colorScheme={colorScheme} />
-      </I18nProvider>
+      <ErrorBoundary>
+        <I18nProvider>
+          <InnerLayout colorScheme={colorScheme} />
+        </I18nProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

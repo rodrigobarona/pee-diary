@@ -53,7 +53,21 @@
     "thisWeek": "This Week",
     "week": "Week",
     "month": "Month",
-    "last30Days": "Last 30 days summary"
+    "last30Days": "Last 30 days summary",
+    "nightVoids": "Night Voids",
+    "nightVoidsAvg": "avg/night",
+    "dayVsNight": "Day vs Night",
+    "day": "Day",
+    "night": "Night",
+    "fluidBalance": "Fluid Balance",
+    "fluidIntake": "Fluid Intake",
+    "urinationOutput": "Output",
+    "outputRatio": "Output Ratio",
+    "intake": "Intake",
+    "output": "Output",
+    "ratioNormal": "Normal range",
+    "ratioLow": "Low output",
+    "ratioHigh": "High output"
   },
   "goals": {
     "title": "Daily Goals",
@@ -121,6 +135,8 @@
     "volumeSmall": "Small",
     "volumeMedium": "Medium",
     "volumeLarge": "Large",
+    "volumePrecise": "Enter exact amount (ml)",
+    "volumePrecisePlaceholder": "e.g., 250",
     "urgency": "Urgency Level",
     "hadLeak": "Had any leakage?",
     "hadPain": "Experienced pain or discomfort?",
@@ -147,6 +163,19 @@
     "moderate": "Moderate",
     "full": "Full",
     "urgency": "Urgency Level",
+    "activity": "Activity (optional)",
+    "activityDescription": "What were you doing?",
+    "activities": {
+      "coughing": "Coughing",
+      "sneezing": "Sneezing",
+      "laughing": "Laughing",
+      "exercise": "Exercising",
+      "lifting": "Lifting",
+      "standing": "Standing up",
+      "walking": "Walking",
+      "sleeping": "Sleeping",
+      "other": "Other"
+    },
     "notes": "Notes"
   },
   "history": {
@@ -205,13 +234,38 @@
     "restoreError": "Failed to restore. Please try again.",
     "autoBackup": "Auto-backup enabled",
     "autoBackupDescription": "Your data is automatically backed up to Google Drive",
+    "localBackup": "Local Backup",
+    "exportBackup": "Export Backup File",
+    "exportBackupDescription": "Save a copy of your data to a file",
+    "importBackup": "Import Backup File",
+    "importBackupDescription": "Restore data from a backup file",
+    "exportBackupSuccess": "Backup file ready to save",
+    "importBackupSuccess": "Restored {{count}} entries from backup",
+    "importBackupConfirm": "This will replace your current data with the backup. Continue?",
+    "importBackupError": "Failed to import backup. The file may be invalid.",
+    "exportBackupError": "Failed to create backup file.",
     "openAddMenuOnLaunch": "Open Add Menu on Launch",
     "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service",
     "dataDelete": "Privacy Choices",
-    "dataDeleteDescription": "Request data deletion"
+    "dataDeleteDescription": "Request data deletion",
+    "reminders": "Reminders",
+    "remindersEnabled": "Enable Reminders",
+    "remindersEnabledDescription": "Get notified to log your entries",
+    "reminderInterval": "Reminder Interval",
+    "reminderIntervalDescription": "How often to remind you",
+    "everyXHours": "Every {{count}} hours",
+    "quietHours": "Quiet Hours",
+    "quietHoursEnabled": "Enable Quiet Hours",
+    "quietHoursEnabledDescription": "No reminders during this time",
+    "quietHoursStart": "From",
+    "quietHoursEnd": "To",
+    "reminderNotificationTitle": "Time to log!",
+    "reminderNotificationBody": "Don't forget to track your fluids and bathroom visits.",
+    "permissionRequired": "Permission Required",
+    "permissionRequiredDescription": "Please enable notifications in your device settings to receive reminders."
   },
   "urgency": {
     "1": "None",
@@ -265,6 +319,33 @@
     "exporting": "Exporting...",
     "success": "Data exported successfully",
     "error": "Failed to export data"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We encountered an unexpected error. Please try again.",
+    "tryAgain": "Try Again",
+    "showDetails": "Show Details",
+    "hideDetails": "Hide Details"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Eleva Diary",
+      "subtitle": "Your personal bladder health companion",
+      "description": "Track your bathroom habits, fluid intake, and get insights to improve your bladder health."
+    },
+    "track": {
+      "title": "Track Everything",
+      "subtitle": "Simple and quick logging",
+      "description": "Log urination, fluid intake, and any leaks in just a few taps. Build healthy habits with streak tracking."
+    },
+    "insights": {
+      "title": "Get Insights",
+      "subtitle": "Understand your patterns",
+      "description": "View charts and analytics to share with your healthcare provider. Export reports as PDF, CSV, or JSON."
+    },
+    "getStarted": "Get Started",
+    "next": "Next",
+    "skip": "Skip"
   },
   "pdf": {
     "title": "Bladder Diary",

@@ -85,7 +85,7 @@ export function TimePicker({
   if (Platform.OS === "web") {
     return (
       <View style={styles.container}>
-        {showLabel && <Text style={styles.label}>{t("time.when")}</Text>}
+        {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
         <View style={styles.chipsContainer}>
           <Pressable style={styles.chip}>
             <MaterialCommunityIcons
@@ -145,7 +145,7 @@ export function TimePicker({
   if (Platform.OS === "ios") {
     return (
       <View style={styles.container}>
-        {showLabel && <Text style={styles.label}>{t("time.when")}</Text>}
+        {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
         <View style={styles.chipsContainer}>
           <DateTimePicker
             value={safeValue}
@@ -172,7 +172,7 @@ export function TimePicker({
   // Android: Custom chips that trigger native dialog
   return (
     <View style={styles.container}>
-      {showLabel && <Text style={styles.label}>{t("time.when")}</Text>}
+      {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
       <View style={styles.chipsContainer}>
         {/* Date Chip */}
         <Pressable style={styles.chip} onPress={() => setShowDatePicker(true)}>
@@ -196,25 +196,21 @@ export function TimePicker({
       </View>
 
       {/* Android Date Picker Dialog */}
-      {showDatePicker && (
-        <DateTimePicker
+      {showDatePicker ? <DateTimePicker
           value={safeValue}
           mode="date"
           display="default"
           onChange={handleDateChange}
           maximumDate={new Date()}
-        />
-      )}
+        /> : null}
 
       {/* Android Time Picker Dialog */}
-      {showTimePicker && (
-        <DateTimePicker
+      {showTimePicker ? <DateTimePicker
           value={safeValue}
           mode="time"
           display="default"
           onChange={handleTimeChange}
-        />
-      )}
+        /> : null}
     </View>
   );
 }

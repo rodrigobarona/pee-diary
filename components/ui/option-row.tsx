@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet , Platform } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
 
 import { Text } from './text';
 import { AnimatedPressable } from './animated-pressable';

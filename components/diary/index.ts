@@ -7,6 +7,7 @@ export * from "./drink-type-picker";
 export * from "./entry-card";
 export * from "./fab-menu";
 export * from "./filter-chips";
+export * from "./fluid-balance-chart";
 export * from "./insight-card";
 export * from "./monthly-chart";
 export * from "./progress-bar";

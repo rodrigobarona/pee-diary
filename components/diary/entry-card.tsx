@@ -103,11 +103,9 @@ export const EntryCard = React.memo(function EntryCard({
         </View>
         <View className="items-end gap-1">
           <Text className="text-sm text-muted-foreground">{time}</Text>
-          {entry.editHistory && entry.editHistory.length > 0 && (
-            <Text className="text-xs text-muted-foreground/60">
+          {entry.editHistory && entry.editHistory.length > 0 ? <Text className="text-xs text-muted-foreground/60">
               {t('detail.edited')}
-            </Text>
-          )}
+            </Text> : null}
         </View>
         <MaterialCommunityIcons
           name="chevron-right"

@@ -123,16 +123,14 @@ export function WeeklyChart({
             return (
               <G key={day.date.toISOString()}>
                 {/* Today highlight */}
-                {isToday && (
-                  <Rect
+                {isToday ? <Rect
                     x={groupX + 2}
                     y={0}
                     width={barGroupWidth - 4}
                     height={CHART_HEIGHT + LABEL_HEIGHT}
                     fill="#E0FBFC"
                     rx={6}
-                  />
-                )}
+                  /> : null}
 
                 {/* Void bar (primary color) */}
                 <AnimatedBar

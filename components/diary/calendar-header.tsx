@@ -347,8 +347,7 @@ export function CalendarHeader({
       <View style={styles.weekIndicator} />
 
       {/* Native Date Picker for iOS */}
-      {Platform.OS === 'ios' && showDatePicker && (
-        <Modal
+      {Platform.OS === 'ios' && showDatePicker ? <Modal
           visible={showDatePicker}
           animationType="fade"
           transparent
@@ -369,22 +368,18 @@ export function CalendarHeader({
               />
             </View>
           </Pressable>
-        </Modal>
-      )}
+        </Modal> : null}
 
       {/* Native Date Picker for Android */}
-      {Platform.OS === 'android' && showDatePicker && (
-        <DateTimePicker
+      {Platform.OS === 'android' && showDatePicker ? <DateTimePicker
           value={pickerDate}
           mode="date"
           display="default"
           onChange={handleDatePickerChange}
-        />
-      )}
+        /> : null}
 
       {/* Web fallback - custom modal */}
-      {Platform.OS === 'web' && showDatePicker && (
-        <Modal
+      {Platform.OS === 'web' && showDatePicker ? <Modal
           visible={showDatePicker}
           animationType="fade"
           transparent
@@ -440,8 +435,7 @@ export function CalendarHeader({
               </View>
             </View>
           </Pressable>
-        </Modal>
-      )}
+        </Modal> : null}
     </View>
   );
 }

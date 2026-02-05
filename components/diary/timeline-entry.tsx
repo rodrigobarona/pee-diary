@@ -70,16 +70,14 @@ export function TimelineEntry({
             </Text>
             <Text style={styles.detailSeparator}>·</Text>
             <Text style={styles.detailText}>Lv {entry.urgency}</Text>
-            {entry.hadLeak && (
-              <>
+            {entry.hadLeak ? <>
                 <Text style={styles.detailSeparator}>·</Text>
                 <MaterialCommunityIcons
                   name="water-alert"
                   size={12}
                   color={colors.error}
                 />
-              </>
-            )}
+              </> : null}
           </>
         );
       case "fluid":
@@ -117,7 +115,7 @@ export function TimelineEntry({
         {/* Time + Dot row (aligned horizontally) */}
         <View style={styles.timeAndDot}>
           <View style={styles.timeColumn}>
-            {showTime && <Text style={styles.timeText}>{time}</Text>}
+            {showTime ? <Text style={styles.timeText}>{time}</Text> : null}
           </View>
           <View style={[styles.trackDot, { backgroundColor: config.color }]}>
             <View

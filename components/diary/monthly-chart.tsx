@@ -151,16 +151,14 @@ export function MonthlyChart({
             return (
               <G key={week.weekStart.toISOString()}>
                 {/* Current week highlight */}
-                {isCurrentWeek && (
-                  <Rect
+                {isCurrentWeek ? <Rect
                     x={groupX + 4}
                     y={0}
                     width={barGroupWidth - 8}
                     height={CHART_HEIGHT + LABEL_HEIGHT}
                     fill="#E0FBFC"
                     rx={8}
-                  />
-                )}
+                  /> : null}
                 
                 {/* Void bar (primary color) */}
                 <AnimatedBar

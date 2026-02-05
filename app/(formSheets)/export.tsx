@@ -105,7 +105,7 @@ function OptionRow({
         {label}
       </Text>
       <View style={[styles.radioOuter, isSelected && styles.radioOuterActive]}>
-        {isSelected && <View style={styles.radioInner} />}
+        {isSelected ? <View style={styles.radioInner} /> : null}
       </View>
     </AnimatedPressable>
   );
