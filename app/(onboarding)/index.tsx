@@ -2,7 +2,13 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
-import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  Text as RNText,
+  StyleSheet,
+  View,
+} from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -118,7 +124,7 @@ function PageDot({
   return <Animated.View style={[styles.dot, animatedStyle]} />;
 }
 
-// Icon cluster component
+// Simple icon cluster (no animation to avoid crashes)
 function IconCluster({
   icons,
   accentColor,
@@ -145,7 +151,7 @@ function IconCluster({
           <MaterialCommunityIcons
             name={icon.name}
             size={icon.size}
-            color={idx === 0 ? accentColor : `${accentColor}60`}
+            color={idx === 0 ? accentColor : `${accentColor}80`}
           />
         </View>
       ))}
@@ -297,7 +303,7 @@ export default function OnboardingScreen() {
               onPress={handleSkip}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Text style={styles.skipText}>{t("onboarding.skip")}</Text>
+              <RNText style={styles.skipText}>{t("onboarding.skip")}</RNText>
             </Pressable>
           ) : (
             <View style={styles.skipPlaceholder} />
@@ -326,7 +332,7 @@ export default function OnboardingScreen() {
         ))}
       </Animated.ScrollView>
 
-      {/* Bottom section - FIXED HEIGHT, absolutely positioned */}
+      {/* Bottom section - FIXED HEIGHT */}
       <View style={[styles.bottomSection, { paddingBottom: bottomPadding }]}>
         {/* Pagination dots - fixed position */}
         <View style={styles.pagination}>
@@ -335,23 +341,33 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* CTA Button */}
+        {/* CTA Button - plain object style (not function) */}
         <Pressable
           onPress={handleNext}
-          style={({ pressed }) => [
-            styles.button,
-            pressed ? styles.buttonPressed : null,
-          ]}
+          style={{
+            height: 56,
+            backgroundColor: "#006D77",
+            borderRadius: 14,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <Text style={styles.buttonText}>
+          <RNText
+            style={{
+              fontSize: 17,
+              fontWeight: "600",
+              color: "#FFFFFF",
+            }}
+          >
             {isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
-          </Text>
+          </RNText>
           {!isLastPage ? (
             <MaterialCommunityIcons
               name="arrow-right"
               size={20}
-              color={COLORS.white}
-              style={styles.buttonIcon}
+              color="#FFFFFF"
+              style={{ marginLeft: 8 }}
             />
           ) : null}
         </Pressable>
@@ -470,30 +486,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: COLORS.primary,
-  },
-  button: {
-    height: 56,
-    backgroundColor: COLORS.primary,
-    borderRadius: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  buttonPressed: {
-    opacity: 0.92,
-    transform: [{ scale: 0.98 }],
-  },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: COLORS.white,
-  },
-  buttonIcon: {
-    marginLeft: 8,
   },
 });
