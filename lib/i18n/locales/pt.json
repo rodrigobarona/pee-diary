@@ -246,6 +246,8 @@
     "exportBackupError": "Erro ao criar o ficheiro de cópia.",
     "openAddMenuOnLaunch": "Abrir menu ao iniciar",
     "openAddMenuOnLaunchDescription": "Mostrar o menu de adicionar ao abrir a aplicação",
+    "viewTutorial": "Ver Tutorial",
+    "viewTutorialDescription": "Repetir a introdução da aplicação",
     "legal": "Legal",
     "privacyPolicy": "Política de Privacidade",
     "terms": "Termos de Serviço",

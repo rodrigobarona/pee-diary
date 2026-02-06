@@ -141,6 +141,7 @@ export default function SettingsScreen() {
     (state) => state.setOpenAddMenuOnLaunch
   );
   const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
+  const resetOnboarding = useDiaryStore((state) => state.resetOnboarding);
   const reminderSettings = useDiaryStore((state) => state.reminderSettings);
   const updateReminderSettings = useDiaryStore(
     (state) => state.updateReminderSettings
@@ -184,6 +185,14 @@ export default function SettingsScreen() {
     },
     [setOpenAddMenuOnLaunch]
   );
+
+  const handleViewTutorial = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    resetOnboarding();
+    router.replace("/(onboarding)");
+  }, [resetOnboarding, router]);
 
   // Handle toggling reminders
   const handleToggleReminders = React.useCallback(
@@ -631,6 +640,13 @@ export default function SettingsScreen() {
             ios_backgroundColor="#E2E8F0"
           />
         </SettingRow>
+        <View style={styles.separator} />
+        <SettingRow
+          icon="school"
+          label={t("settings.viewTutorial")}
+          description={t("settings.viewTutorialDescription")}
+          onPress={handleViewTutorial}
+        />
       </View>
 
       {/* Reminders Section */}

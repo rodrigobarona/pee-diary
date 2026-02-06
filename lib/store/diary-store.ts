@@ -162,6 +162,7 @@ interface DiaryState {
   refreshStreak: () => void;
   setOpenAddMenuOnLaunch: (enabled: boolean) => void;
   completeOnboarding: () => void;
+  resetOnboarding: () => void;
   updateReminderSettings: (settings: Partial<ReminderSettings>) => void;
 }
 
@@ -360,6 +361,8 @@ export const useDiaryStore = create<DiaryState>()(
         set({ openAddMenuOnLaunch: enabled }),
 
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+
+      resetOnboarding: () => set({ hasCompletedOnboarding: false }),
 
       updateReminderSettings: (settings) =>
         set((state) => ({

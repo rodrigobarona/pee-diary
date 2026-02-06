@@ -246,6 +246,8 @@
     "exportBackupError": "Failed to create backup file.",
     "openAddMenuOnLaunch": "Open Add Menu on Launch",
     "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app",
+    "viewTutorial": "View Tutorial",
+    "viewTutorialDescription": "Replay the onboarding walkthrough",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service",
