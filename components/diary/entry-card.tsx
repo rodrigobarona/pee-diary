@@ -28,8 +28,8 @@ const entryConfig = {
   },
   leak: {
     icon: 'water-alert' as const,
-    color: colors.error,
-    bgColor: 'bg-destructive/10',
+    color: colors.primary.light, // Design brief: Soft teal, no red for leaks
+    bgColor: 'bg-primary/10', // Use primary tint instead of destructive
     labelKey: 'entry.leak',
   },
 };

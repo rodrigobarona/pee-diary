@@ -1,10 +1,17 @@
-import * as React from 'react';
-import { View, Pressable, Platform, StyleSheet, Text as RNText } from 'react-native';
-import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Text } from '@/components/ui/text';
-import { useI18n } from '@/lib/i18n/context';
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import * as React from "react";
+import {
+  Platform,
+  Pressable,
+  Text as RNText,
+  StyleSheet,
+  View,
+} from "react-native";
 
 export function FABMenu() {
   const { t } = useI18n();
@@ -12,7 +19,7 @@ export function FABMenu() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleToggle = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setIsOpen((prev) => !prev);
@@ -20,19 +27,19 @@ export function FABMenu() {
 
   const handleSelect = React.useCallback(
     (action: string) => {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
       setIsOpen(false);
       switch (action) {
-        case 'urination':
-          router.push('/add/urination');
+        case "urination":
+          router.push("/add/urination");
           break;
-        case 'fluid':
-          router.push('/add/fluid');
+        case "fluid":
+          router.push("/add/fluid");
           break;
-        case 'leak':
-          router.push('/add/leak');
+        case "leak":
+          router.push("/add/leak");
           break;
       }
     },
@@ -41,24 +48,33 @@ export function FABMenu() {
 
   // Use text fallback on web if icons don't render
   const renderIcon = (name: string, size: number, color: string) => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       // Use unicode symbols as fallback
       const iconMap: Record<string, string> = {
-        'plus': '+',
-        'close': '×',
-        'toilet': '🚽',
-        'cup-water': '💧',
-        'water-alert': '⚠️',
+        plus: "+",
+        close: "×",
+        toilet: "🚽",
+        "cup-water": "💧",
+        "water-alert": "⚠️",
       };
-      if (name === 'plus' || name === 'close') {
+      if (name === "plus" || name === "close") {
         return (
-          <Text style={{ fontSize: size, color, fontWeight: 'bold', lineHeight: size }}>
+          <Text
+            style={{
+              fontSize: size,
+              color,
+              fontWeight: "bold",
+              lineHeight: size,
+            }}
+          >
             {iconMap[name]}
           </Text>
         );
       }
     }
-    return <MaterialCommunityIcons name={name as any} size={size} color={color} />;
+    return (
+      <MaterialCommunityIcons name={name as any} size={size} color={color} />
+    );
   };
 
   return (
@@ -67,38 +83,38 @@ export function FABMenu() {
       {isOpen ? (
         <View style={styles.menuContainer}>
           <Pressable
-            onPress={() => handleSelect('urination')}
+            onPress={() => handleSelect("urination")}
             style={styles.menuItem}
           >
-            <View style={[styles.menuIcon, { backgroundColor: '#83C5BE' }]}>
-              {renderIcon('toilet', 20, '#006D77')}
+            <View style={[styles.menuIcon, { backgroundColor: "#83C5BE" }]}>
+              {renderIcon("toilet", 20, "#006D77")}
             </View>
             <Text className="text-sm font-medium text-foreground">
-              {t('entry.addUrination')}
+              {t("entry.addUrination")}
             </Text>
           </Pressable>
 
           <Pressable
-            onPress={() => handleSelect('fluid')}
+            onPress={() => handleSelect("fluid")}
             style={styles.menuItem}
           >
-            <View style={[styles.menuIcon, { backgroundColor: '#FFDDD2' }]}>
-              {renderIcon('cup-water', 20, '#E29578')}
+            <View style={[styles.menuIcon, { backgroundColor: "#FFDDD2" }]}>
+              {renderIcon("cup-water", 20, "#E29578")}
             </View>
             <Text className="text-sm font-medium text-foreground">
-              {t('entry.addFluid')}
+              {t("entry.addFluid")}
             </Text>
           </Pressable>
 
           <Pressable
-            onPress={() => handleSelect('leak')}
+            onPress={() => handleSelect("leak")}
             style={styles.menuItem}
           >
-            <View style={[styles.menuIcon, { backgroundColor: '#FEE2E2' }]}>
-              {renderIcon('water-alert', 20, '#EF4444')}
+            <View style={[styles.menuIcon, { backgroundColor: colors.accent }]}>
+              {renderIcon("water-alert", 20, colors.primary.light)}
             </View>
             <Text className="text-sm font-medium text-foreground">
-              {t('entry.addLeak')}
+              {t("entry.addLeak")}
             </Text>
           </Pressable>
         </View>
@@ -107,15 +123,12 @@ export function FABMenu() {
       {/* FAB Button */}
       <Pressable
         onPress={handleToggle}
-        style={({ pressed }) => [
-          styles.fab,
-          pressed && styles.fabPressed,
-        ]}
+        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
         accessibilityRole="button"
         accessibilityLabel="Add new entry"
         accessibilityHint="Opens menu to add urination, fluid intake, or leak entry"
       >
-        <RNText style={styles.fabIconText}>{isOpen ? '×' : '+'}</RNText>
+        <RNText style={styles.fabIconText}>{isOpen ? "×" : "+"}</RNText>
       </Pressable>
     </View>
   );
@@ -123,27 +136,28 @@ export function FABMenu() {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 24,
     right: 24,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     zIndex: 100,
   },
   fab: {
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: '#006D77',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)' }
+    borderRadius: 28, // Circular element - ok to use full radius
+    backgroundColor: "#006D77",
+    alignItems: "center",
+    justifyContent: "center",
+    // Design brief: Subtle shadows only
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)" }
       : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 6,
+          elevation: 3,
         }),
   },
   fabPressed: {
@@ -152,30 +166,32 @@ const styles = StyleSheet.create({
   },
   fabIconText: {
     fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: '300',
+    color: "#FFFFFF",
+    fontWeight: "300",
     lineHeight: 32,
-    textAlign: 'center',
+    textAlign: "center",
   },
   menuContainer: {
     marginBottom: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     paddingVertical: 8,
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)' }
+    // Design brief: Subtle shadows only
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0px 1px 4px rgba(0, 0, 0, 0.06)" }
       : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-          elevation: 4,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+          elevation: 2,
         }),
     minWidth: 200,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 16,
     gap: 12,
@@ -184,7 +200,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

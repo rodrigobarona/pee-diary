@@ -103,7 +103,7 @@ export default function AddMenuScreen() {
       icon: "water-alert" as const,
       label: t("add.leak"),
       description: t("add.leakDesc"),
-      color: colors.error,
+      color: colors.primary.light, // Design brief: No red for leaks - use soft teal
       route: "/(modals)/add/leak",
     },
   ];
@@ -167,19 +167,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
     marginBottom: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 3,
     elevation: 2,
   },
   optionIconContainer: {
     width: 56,
     height: 56,
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     alignItems: "center",
     justifyContent: "center",
   },

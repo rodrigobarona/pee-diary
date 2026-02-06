@@ -13,6 +13,7 @@ import {
 import Animated, {
   Extrapolation,
   interpolate,
+  SharedValue,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -96,7 +97,7 @@ function PageDot({
   scrollX,
 }: {
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
@@ -154,19 +155,19 @@ function CTAButton({
       style={{
         height: 56,
         backgroundColor: "#006D77",
-        borderRadius: 14,
+        borderRadius: 12, // Design brief: 8-12px max
         borderCurve: "continuous",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         gap: 8,
-        // iOS shadow
+        // iOS shadow - subtle per design brief
         shadowColor: "#006D77",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: isPressed ? 0.15 : 0.3,
-        shadowRadius: isPressed ? 4 : 8,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isPressed ? 0.08 : 0.12,
+        shadowRadius: isPressed ? 4 : 6,
         // Android elevation
-        elevation: isPressed ? 2 : 6,
+        elevation: isPressed ? 2 : 4,
         // Pressed state
         opacity: isPressed ? 0.9 : 1,
         transform: [{ scale: isPressed ? 0.98 : 1 }],
@@ -232,7 +233,7 @@ function OnboardingPageContent({
 }: {
   page: OnboardingPage;
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   const { t } = useI18n();
 

@@ -1,7 +1,7 @@
-import * as React from "react";
-import { View, Pressable, StyleSheet, Platform } from "react-native";
-import * as Haptics from "expo-haptics";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
@@ -74,7 +74,7 @@ export function DrinkTypePicker({ value, onChange }: DrinkTypePickerProps) {
       }
       onChange(type);
     },
-    [onChange],
+    [onChange]
   );
 
   return (
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     minWidth: 100,
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     padding: 12,
     alignItems: "center",
     gap: 8,
@@ -143,9 +143,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    borderCurve: 'continuous',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontSize: 13,

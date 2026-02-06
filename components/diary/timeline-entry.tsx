@@ -30,7 +30,7 @@ const entryConfig = {
   },
   leak: {
     icon: "water-alert" as const,
-    color: colors.error,
+    color: colors.primary.light, // Design brief: No red for leaks - use soft teal
     labelKey: "entry.leak",
   },
 };
@@ -70,14 +70,16 @@ export function TimelineEntry({
             </Text>
             <Text style={styles.detailSeparator}>·</Text>
             <Text style={styles.detailText}>Lv {entry.urgency}</Text>
-            {entry.hadLeak ? <>
+            {entry.hadLeak ? (
+              <>
                 <Text style={styles.detailSeparator}>·</Text>
                 <MaterialCommunityIcons
                   name="water-alert"
                   size={12}
-                  color={colors.error}
+                  color={colors.primary.light} // Design brief: Soft teal, no red for leaks
                 />
-              </> : null}
+              </>
+            ) : null}
           </>
         );
       case "fluid":
@@ -105,29 +107,20 @@ export function TimelineEntry({
 
   return (
     <View style={styles.row}>
-      {/* Left side: Time + Track */}
-      <View style={styles.leftColumn}>
-        {/* Top connector line (invisible placeholder when first) */}
-        <View
-          style={[styles.trackLineTop, isFirst && styles.trackLineHidden]}
-        />
+      {/* Time column - fixed width for "11:33 PM" */}
+      <View style={styles.timeColumn}>
+        {showTime ? <Text style={styles.timeText}>{time}</Text> : null}
+      </View>
 
-        {/* Time + Dot row (aligned horizontally) */}
-        <View style={styles.timeAndDot}>
-          <View style={styles.timeColumn}>
-            {showTime ? <Text style={styles.timeText}>{time}</Text> : null}
-          </View>
-          <View style={[styles.trackDot, { backgroundColor: config.color }]}>
-            <View
-              style={[styles.trackDotInner, { backgroundColor: config.color }]}
-            />
-          </View>
+      {/* Track column - vertical line with dot */}
+      <View style={styles.trackColumn}>
+        <View style={[styles.trackLine, isFirst && styles.trackLineHidden]} />
+        <View style={[styles.trackDot, { borderColor: config.color }]}>
+          <View
+            style={[styles.trackDotInner, { backgroundColor: config.color }]}
+          />
         </View>
-
-        {/* Bottom connector line (invisible placeholder when last) */}
-        <View
-          style={[styles.trackLineBottom, isLast && styles.trackLineHidden]}
-        />
+        <View style={[styles.trackLine, isLast && styles.trackLineHidden]} />
       </View>
 
       {/* Content */}
@@ -185,25 +178,26 @@ interface TimePeriodHeaderProps {
   count: number;
 }
 
+// Design brief: Muted time of day colors - avoid bright saturated colors
 const periodConfig = {
   morning: {
     icon: "weather-sunny" as const,
-    color: "#F59E0B",
+    color: "#D4A373", // Warm sand - muted
     labelKey: "timePeriod.morning",
   },
   afternoon: {
     icon: "white-balance-sunny" as const,
-    color: "#F97316",
+    color: "#C9A87C", // Muted gold
     labelKey: "timePeriod.afternoon",
   },
   evening: {
     icon: "weather-sunset" as const,
-    color: "#8B5CF6",
+    color: "#A78BBA", // Soft purple
     labelKey: "timePeriod.evening",
   },
   night: {
     icon: "weather-night" as const,
-    color: "#6366F1",
+    color: "#8B9DC3", // Muted indigo
     labelKey: "timePeriod.night",
   },
 };
@@ -245,24 +239,15 @@ export function getTimePeriod(
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    minHeight: 56,
-    paddingBottom: 8,
+    alignItems: "stretch", // All columns stretch to same height
+    minHeight: 64,
   },
-  // Left column containing time + track
-  leftColumn: {
-    width: 90,
-    alignItems: "flex-end",
-  },
-  // Time and dot aligned horizontally
-  timeAndDot: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  // Time column - wide enough for "12:30 AM"
+  // Time column - fixed width, vertically centered with dot
   timeColumn: {
-    width: 70,
+    width: 65, // Enough for "11:33 PM"
+    justifyContent: "center",
     alignItems: "flex-end",
-    paddingRight: 8,
+    paddingRight: 10,
   },
   timeText: {
     fontSize: 12,
@@ -271,37 +256,32 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
     textAlign: "right",
   },
-  // Track elements
-  trackLineTop: {
+  // Track column - vertical line with dot
+  trackColumn: {
+    width: 20,
+    alignItems: "center",
+  },
+  trackLine: {
+    flex: 1,
     width: 2,
-    height: 12,
     backgroundColor: "#E5E7EB",
-    alignSelf: "flex-end",
-    marginRight: 4,
+  },
+  trackLineHidden: {
+    backgroundColor: "transparent",
   },
   trackDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
   trackDotInner: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    opacity: 0.4,
-  },
-  trackLineBottom: {
-    flex: 1,
-    minHeight: 12,
-    width: 2,
-    backgroundColor: "#E5E7EB",
-    alignSelf: "flex-end",
-    marginRight: 4,
-  },
-  trackLineHidden: {
-    backgroundColor: "transparent",
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
   // Content
   content: {
@@ -309,7 +289,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     marginLeft: 8,
-    marginRight: 12,
+    marginRight: 16,
+    marginVertical: 4,
     padding: 12,
     ...(Platform.OS === "web"
       ? { boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.06)" }

@@ -1,16 +1,18 @@
-import * as React from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withDelay,
-} from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+
+// Soft teal color for consistent, neutral styling
+const STREAK_COLOR = "#83C5BE";
 
 interface StreakBadgeProps {
   streak: number;
@@ -24,35 +26,25 @@ export function StreakBadge({
   onPress,
 }: StreakBadgeProps) {
   const { t } = useI18n();
-  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
   const prevStreak = React.useRef(streak);
 
-  // Animate when streak increases
+  // Gentle fade animation when streak increases
   React.useEffect(() => {
     if (streak > prevStreak.current) {
-      scale.value = withSequence(
-        withSpring(1.2, { damping: 10, stiffness: 300 }),
-        withDelay(100, withSpring(1, { damping: 15, stiffness: 200 })),
-      );
+      opacity.value = withTiming(0.7, { duration: 150, easing: Easing.ease });
+      opacity.value = withTiming(1, { duration: 150, easing: Easing.ease });
     }
     prevStreak.current = streak;
-  }, [streak, scale]);
+  }, [streak, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
   }));
 
   if (streak === 0) {
     return null;
   }
-
-  // Color based on streak length
-  const getFireColor = () => {
-    if (streak >= 30) return "#EF4444"; // Red for 30+ days
-    if (streak >= 14) return "#F97316"; // Orange for 14+ days
-    if (streak >= 7) return "#F59E0B"; // Amber for 7+ days
-    return "#FBBF24"; // Yellow for < 7 days
-  };
 
   const handlePress = () => {
     if (Platform.OS !== "web") {
@@ -63,7 +55,11 @@ export function StreakBadge({
 
   const content = (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <MaterialCommunityIcons name="fire" size={20} color={getFireColor()} />
+      <MaterialCommunityIcons
+        name="calendar-check"
+        size={20}
+        color={STREAK_COLOR}
+      />
       <Text style={styles.streakNumber}>{streak}</Text>
       {showLabel ? (
         <Text style={styles.label}>
@@ -88,20 +84,11 @@ interface StreakDisplayProps {
 export function StreakDisplay({ streak }: StreakDisplayProps) {
   const { t } = useI18n();
 
-  const getFireColor = () => {
-    if (streak >= 30) return "#EF4444";
-    if (streak >= 14) return "#F97316";
-    if (streak >= 7) return "#F59E0B";
-    return "#FBBF24";
-  };
-
+  // Neutral message showing count without achievement language
   const getMessage = () => {
-    if (streak >= 30) return t("streak.amazing");
-    if (streak >= 14) return t("streak.great");
-    if (streak >= 7) return t("streak.good");
-    if (streak >= 3) return t("streak.keepGoing");
     if (streak === 0) return t("streak.start");
-    return t("streak.started");
+    // Neutral: "X days of entries" instead of achievement messages
+    return t("streak.daysOfEntries", { count: streak });
   };
 
   return (
@@ -110,9 +97,9 @@ export function StreakDisplay({ streak }: StreakDisplayProps) {
         {streak > 0 ? (
           <>
             <MaterialCommunityIcons
-              name="fire"
+              name="calendar-check"
               size={32}
-              color={getFireColor()}
+              color={STREAK_COLOR}
             />
             <Text style={styles.displayNumber}>{streak}</Text>
             <Text style={styles.displayLabel}>
@@ -120,7 +107,11 @@ export function StreakDisplay({ streak }: StreakDisplayProps) {
             </Text>
           </>
         ) : (
-          <MaterialCommunityIcons name="fire-off" size={32} color="#9CA3AF" />
+          <MaterialCommunityIcons
+            name="calendar-blank-outline"
+            size={32}
+            color="#9CA3AF"
+          />
         )}
       </View>
       <Text style={styles.message}>{getMessage()}</Text>
@@ -133,19 +124,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#FEF3C7",
+    backgroundColor: "#E0F2F1", // Soft teal-based background
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 8, // Design brief: 8-12px - using 8 for pill-like badge
   },
   streakNumber: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#92400E",
+    color: "#004D54", // Dark teal for text
   },
   label: {
     fontSize: 12,
-    color: "#92400E",
+    color: "#004D54", // Dark teal for text
     fontWeight: "500",
   },
   // Display styles

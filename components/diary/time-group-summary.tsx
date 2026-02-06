@@ -155,9 +155,9 @@ export function TimeGroupSummary({
                     <MaterialCommunityIcons
                       name="water-alert"
                       size={16}
-                      color={colors.error}
+                      color={colors.primary.light} // Design brief: Soft teal, no red for leaks
                     />
-                    <Text style={[styles.entryCount, { color: colors.error }]}>
+                    <Text style={[styles.entryCount, { color: colors.primary.light }]}>
                       ×{summary.leaks}
                     </Text>
                   </View>
@@ -249,9 +249,9 @@ export function SinglePeriodCard({
               <MaterialCommunityIcons
                 name="water-alert"
                 size={18}
-                color={colors.error}
+                color={colors.primary.light} // Design brief: Soft teal, no red for leaks
               />
-              <Text style={[styles.singleCardValue, { color: colors.error }]}>
+              <Text style={[styles.singleCardValue, { color: colors.primary.light }]}>
                 {summary.leaks}
               </Text>
             </View>
@@ -267,7 +267,8 @@ export function SinglePeriodCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     overflow: "hidden",
   },
   periodCard: {

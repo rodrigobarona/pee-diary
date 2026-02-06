@@ -1,15 +1,22 @@
-import * as React from 'react';
-import { View, TouchableOpacity, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as Haptics from 'expo-haptics';
-import { useShallow } from 'zustand/shallow';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useShallow } from "zustand/shallow";
 
-import { Text } from '@/components/ui/text';
-import { colors } from '@/lib/theme/colors';
-import { useI18n } from '@/lib/i18n/context';
-import { useDiaryStore } from '@/lib/store';
-import { formatDate, formatTime } from '@/lib/utils/date';
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { useDiaryStore } from "@/lib/store";
+import { colors } from "@/lib/theme/colors";
+import { formatDate, formatTime } from "@/lib/utils/date";
 
 export default function GoalsScreen() {
   const { t } = useI18n();
@@ -20,7 +27,7 @@ export default function GoalsScreen() {
   const [historyExpanded, setHistoryExpanded] = React.useState(false);
 
   const toggleHistory = () => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setHistoryExpanded(!historyExpanded);
@@ -29,7 +36,7 @@ export default function GoalsScreen() {
   const adjustFluidGoal = (delta: number) => {
     const newValue = Math.max(500, Math.min(5000, goals.fluidTarget + delta));
     if (newValue !== goals.fluidTarget) {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       updateGoals({ fluidTarget: newValue });
@@ -39,7 +46,7 @@ export default function GoalsScreen() {
   const adjustVoidGoal = (delta: number) => {
     const newValue = Math.max(3, Math.min(15, goals.voidTarget + delta));
     if (newValue !== goals.voidTarget) {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       updateGoals({ voidTarget: newValue });
@@ -52,30 +59,92 @@ export default function GoalsScreen() {
   const isVoidMax = goals.voidTarget >= 15;
 
   // Reverse history to show most recent first
-  const sortedHistory = React.useMemo(() => 
-    [...goalHistory].reverse(),
+  const sortedHistory = React.useMemo(
+    () => [...goalHistory].reverse(),
     [goalHistory]
   );
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.scrollView}
-      contentContainerStyle={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) }]}
+      contentContainerStyle={[
+        styles.container,
+        { paddingBottom: Math.max(insets.bottom, 20) },
+      ]}
       showsVerticalScrollIndicator={false}
     >
       {/* Title */}
-      <Text style={styles.title}>{t('goals.title')}</Text>
-      <Text style={styles.subtitle}>{t('goals.description')}</Text>
+      <Text style={styles.title}>{t("goals.title")}</Text>
+      <Text style={styles.subtitle}>{t("goals.description")}</Text>
 
-      {/* Fluid Goal Card */}
+      {/* Void Goal Card - Primary */}
       <View style={styles.goalCard}>
         <View style={styles.goalHeader}>
-          <View style={[styles.iconContainer, { backgroundColor: `${colors.secondary.DEFAULT}15` }]}>
-            <MaterialCommunityIcons name="cup-water" size={24} color={colors.secondary.DEFAULT} />
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${colors.primary.DEFAULT}15` },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="toilet"
+              size={24}
+              color={colors.primary.DEFAULT}
+            />
           </View>
           <View style={styles.labelContainer}>
-            <Text style={styles.goalLabel}>{t('goals.fluidTarget')}</Text>
-            <Text style={styles.goalDesc}>{t('goals.fluidDescription')}</Text>
+            <Text style={styles.goalLabel}>{t("goals.voidTarget")}</Text>
+            <Text style={styles.goalDesc}>{t("goals.voidDescription")}</Text>
+          </View>
+        </View>
+        <View style={styles.stepperRow}>
+          <TouchableOpacity
+            onPress={() => adjustVoidGoal(-1)}
+            disabled={isVoidMin}
+            activeOpacity={0.7}
+            style={[
+              styles.stepperButtonPrimary,
+              isVoidMin && styles.stepperButtonDisabled,
+            ]}
+          >
+            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
+          <View style={styles.valueContainer}>
+            <Text style={styles.valueText}>{goals.voidTarget}</Text>
+            <Text style={styles.unitText}>{t("goals.perDay")}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => adjustVoidGoal(1)}
+            disabled={isVoidMax}
+            activeOpacity={0.7}
+            style={[
+              styles.stepperButtonPrimary,
+              isVoidMax && styles.stepperButtonDisabled,
+            ]}
+          >
+            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Fluid Goal Card - Secondary */}
+      <View style={styles.goalCard}>
+        <View style={styles.goalHeader}>
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${colors.secondary.DEFAULT}15` },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="cup-water"
+              size={24}
+              color={colors.secondary.DEFAULT}
+            />
+          </View>
+          <View style={styles.labelContainer}>
+            <Text style={styles.goalLabel}>{t("goals.fluidTarget")}</Text>
+            <Text style={styles.goalDesc}>{t("goals.fluidDescription")}</Text>
           </View>
         </View>
         <View style={styles.stepperRow}>
@@ -83,7 +152,10 @@ export default function GoalsScreen() {
             onPress={() => adjustFluidGoal(-250)}
             disabled={isFluidMin}
             activeOpacity={0.7}
-            style={[styles.stepperButtonSecondary, isFluidMin && styles.stepperButtonDisabled]}
+            style={[
+              styles.stepperButtonSecondary,
+              isFluidMin && styles.stepperButtonDisabled,
+            ]}
           >
             <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
           </TouchableOpacity>
@@ -95,42 +167,10 @@ export default function GoalsScreen() {
             onPress={() => adjustFluidGoal(250)}
             disabled={isFluidMax}
             activeOpacity={0.7}
-            style={[styles.stepperButtonSecondary, isFluidMax && styles.stepperButtonDisabled]}
-          >
-            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Void Goal Card */}
-      <View style={styles.goalCard}>
-        <View style={styles.goalHeader}>
-          <View style={[styles.iconContainer, { backgroundColor: `${colors.primary.DEFAULT}15` }]}>
-            <MaterialCommunityIcons name="toilet" size={24} color={colors.primary.DEFAULT} />
-          </View>
-          <View style={styles.labelContainer}>
-            <Text style={styles.goalLabel}>{t('goals.voidTarget')}</Text>
-            <Text style={styles.goalDesc}>{t('goals.voidDescription')}</Text>
-          </View>
-        </View>
-        <View style={styles.stepperRow}>
-          <TouchableOpacity
-            onPress={() => adjustVoidGoal(-1)}
-            disabled={isVoidMin}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonPrimary, isVoidMin && styles.stepperButtonDisabled]}
-          >
-            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>{goals.voidTarget}</Text>
-            <Text style={styles.unitText}>{t('goals.perDay')}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => adjustVoidGoal(1)}
-            disabled={isVoidMax}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonPrimary, isVoidMax && styles.stepperButtonDisabled]}
+            style={[
+              styles.stepperButtonSecondary,
+              isFluidMax && styles.stepperButtonDisabled,
+            ]}
           >
             <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
           </TouchableOpacity>
@@ -139,8 +179,12 @@ export default function GoalsScreen() {
 
       {/* Medical info */}
       <View style={styles.infoBox}>
-        <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
-        <Text style={styles.infoText}>{t('goals.medicalInfo')}</Text>
+        <MaterialCommunityIcons
+          name="information-outline"
+          size={16}
+          color="#6B7280"
+        />
+        <Text style={styles.infoText}>{t("goals.medicalInfo")}</Text>
       </View>
 
       {/* Goal History Section */}
@@ -148,42 +192,58 @@ export default function GoalsScreen() {
         <Pressable onPress={toggleHistory} style={styles.historyHeader}>
           <View style={styles.historyTitleRow}>
             <MaterialCommunityIcons name="history" size={18} color="#6B7280" />
-            <Text style={styles.historyTitle}>{t('goals.history')}</Text>
+            <Text style={styles.historyTitle}>{t("goals.history")}</Text>
           </View>
-          <MaterialCommunityIcons 
-            name={historyExpanded ? 'chevron-up' : 'chevron-down'} 
-            size={20} 
-            color="#9CA3AF" 
+          <MaterialCommunityIcons
+            name={historyExpanded ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#9CA3AF"
           />
         </Pressable>
 
         {historyExpanded ? (
           <View style={styles.historyContent}>
             {sortedHistory.length === 0 ? (
-              <Text style={styles.historyEmpty}>{t('goals.historyEmpty')}</Text>
+              <Text style={styles.historyEmpty}>{t("goals.historyEmpty")}</Text>
             ) : (
               sortedHistory.map((record, index) => (
-                <View key={record.changedAt} style={[
-                  styles.historyItem,
-                  index < sortedHistory.length - 1 ? styles.historyItemBorder : undefined,
-                ]}>
+                <View
+                  key={record.changedAt}
+                  style={[
+                    styles.historyItem,
+                    index < sortedHistory.length - 1
+                      ? styles.historyItemBorder
+                      : undefined,
+                  ]}
+                >
                   <Text style={styles.historyDate}>
-                    {formatDate(record.changedAt, 'medium')} • {formatTime(record.changedAt)}
+                    {formatDate(record.changedAt, "medium")} •{" "}
+                    {formatTime(record.changedAt)}
                   </Text>
                   <View style={styles.historyChanges}>
-                    {record.changes.fluidTarget ? (
+                    {record.changes.voidTarget ? (
                       <View style={styles.historyChange}>
-                        <MaterialCommunityIcons name="cup-water" size={14} color={colors.secondary.DEFAULT} />
+                        <MaterialCommunityIcons
+                          name="toilet"
+                          size={14}
+                          color={colors.primary.DEFAULT}
+                        />
                         <Text style={styles.historyChangeText}>
-                          {t('goals.fluids')}: {record.changes.fluidTarget.from}ml → {record.changes.fluidTarget.to}ml
+                          {t("goals.visits")}: {record.changes.voidTarget.from}{" "}
+                          → {record.changes.voidTarget.to}
                         </Text>
                       </View>
                     ) : null}
-                    {record.changes.voidTarget ? (
+                    {record.changes.fluidTarget ? (
                       <View style={styles.historyChange}>
-                        <MaterialCommunityIcons name="toilet" size={14} color={colors.primary.DEFAULT} />
+                        <MaterialCommunityIcons
+                          name="cup-water"
+                          size={14}
+                          color={colors.secondary.DEFAULT}
+                        />
                         <Text style={styles.historyChangeText}>
-                          {t('goals.visits')}: {record.changes.voidTarget.from} → {record.changes.voidTarget.to}
+                          {t("goals.fluids")}: {record.changes.fluidTarget.from}
+                          ml → {record.changes.fluidTarget.to}ml
                         </Text>
                       </View>
                     ) : null}
@@ -201,7 +261,7 @@ export default function GoalsScreen() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   container: {
     paddingHorizontal: 20,
@@ -209,40 +269,41 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
+    fontWeight: "700",
+    color: "#111827",
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
+    color: "#6B7280",
+    textAlign: "center",
     lineHeight: 20,
     marginTop: 4,
     marginBottom: 20,
   },
   goalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
     elevation: 2,
   },
   goalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   iconContainer: {
     width: 48,
     height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 12, // Design brief: 8-12px max
+    alignItems: "center",
+    justifyContent: "center",
   },
   labelContainer: {
     marginLeft: 14,
@@ -250,66 +311,66 @@ const styles = StyleSheet.create({
   },
   goalLabel: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   goalDesc: {
     fontSize: 13,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   stepperRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 20,
   },
   stepperButtonPrimary: {
     width: 56,
     height: 56,
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
     backgroundColor: colors.primary.DEFAULT,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   stepperButtonSecondary: {
     width: 56,
     height: 56,
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
     backgroundColor: colors.secondary.DEFAULT,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   stepperButtonDisabled: {
     opacity: 0.3,
   },
   valueContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minWidth: 100,
   },
   valueText: {
     fontSize: 32,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: "700",
+    color: "#111827",
     lineHeight: 40,
   },
   unitText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 2,
   },
   infoBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#F0F9FF',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "#F0F9FF",
     padding: 14,
     borderRadius: 12,
     marginTop: 4,
   },
   infoText: {
     fontSize: 13,
-    color: '#4B5563',
+    color: "#4B5563",
     flex: 1,
     lineHeight: 18,
     marginLeft: 10,
@@ -319,26 +380,26 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   historyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
   },
   historyTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   historyTitle: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#6B7280',
+    fontWeight: "600",
+    color: "#6B7280",
   },
   historyContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
@@ -346,8 +407,8 @@ const styles = StyleSheet.create({
   },
   historyEmpty: {
     fontSize: 14,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    color: "#9CA3AF",
+    textAlign: "center",
     paddingVertical: 8,
   },
   historyItem: {
@@ -355,23 +416,23 @@ const styles = StyleSheet.create({
   },
   historyItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: "#F3F4F6",
   },
   historyDate: {
     fontSize: 13,
-    color: '#6B7280',
+    color: "#6B7280",
     marginBottom: 8,
   },
   historyChanges: {
     gap: 6,
   },
   historyChange: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   historyChangeText: {
     fontSize: 14,
-    color: '#374151',
+    color: "#374151",
   },
 });

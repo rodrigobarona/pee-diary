@@ -202,7 +202,7 @@ export default function EntryDetailScreen() {
       return t(
         `urination.volume${
           (value as string).charAt(0).toUpperCase() + (value as string).slice(1)
-        }`,
+        }`
       );
     }
     if (key === "urgency") {
@@ -335,7 +335,7 @@ export default function EntryDetailScreen() {
                         <MaterialCommunityIcons
                           name={option.icon as any}
                           size={24}
-                          color={isSelected ? "#FFFFFF" : colors.error}
+                          color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
                         />
                       </View>
                       <Text
@@ -502,13 +502,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
   },
   severityOptionSelected: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    backgroundColor: colors.accent, // Design brief: Use accent instead of red
     borderWidth: 1,
-    borderColor: colors.error,
+    borderColor: colors.primary.light,
   },
   severityOptionUnselected: {
     backgroundColor: "rgba(0, 109, 119, 0.08)",
@@ -518,11 +518,11 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
   },
   severityIconSelected: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.primary.light, // Design brief: Soft teal instead of red
   },
   severityIconUnselected: {
     backgroundColor: "rgba(0, 109, 119, 0.15)",
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
     color: "#374151",
   },
   severityLabelSelected: {
-    color: colors.error,
+    color: colors.primary.dark, // Design brief: Dark teal for selected text
   },
   notesInput: {
     minHeight: 100,
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
   },
   historyHeaderLeft: {

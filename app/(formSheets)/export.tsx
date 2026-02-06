@@ -15,7 +15,6 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -161,10 +160,8 @@ export default function ExportScreen() {
       setActivePreset(preset);
 
       if (preset === "custom") {
-        customRangeHeight.value = withSpring(140, {
-          damping: 18,
-          stiffness: 120,
-        });
+        // Design brief: No spring animations - use gentle timing instead
+        customRangeHeight.value = withTiming(140, { duration: 300 });
       } else {
         customRangeHeight.value = withTiming(0, { duration: 200 });
         const range = getDateRangePreset(preset, entries);
@@ -172,7 +169,7 @@ export default function ExportScreen() {
         setEndDate(range.end);
       }
     },
-    [entries, customRangeHeight],
+    [entries, customRangeHeight]
   );
 
   // Handle format selection
@@ -220,7 +217,7 @@ export default function ExportScreen() {
         large: t("pdf.volumes.large"),
       },
     }),
-    [t],
+    [t]
   );
 
   // Handle export
@@ -242,7 +239,7 @@ export default function ExportScreen() {
         selectedFormat,
         { start: startDate, end: endDate },
         pdfTranslations,
-        locale,
+        locale
       );
 
       if (result.success) {
@@ -258,7 +255,15 @@ export default function ExportScreen() {
     } finally {
       setIsExporting(false);
     }
-  }, [filteredEntries, selectedFormat, startDate, endDate, t, pdfTranslations, locale]);
+  }, [
+    filteredEntries,
+    selectedFormat,
+    startDate,
+    endDate,
+    t,
+    pdfTranslations,
+    locale,
+  ]);
 
   // Animated style for custom range
   const customRangeStyle = useAnimatedStyle(() => ({
@@ -310,7 +315,7 @@ export default function ExportScreen() {
   // Date range text
   const dateRangeText = `${format(startDate, "MMM d")} - ${format(
     endDate,
-    "MMM d, yyyy",
+    "MMM d, yyyy"
   )}`;
 
   return (
@@ -453,19 +458,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#6B7280",
-    textTransform: "uppercase",
+    // Design brief: No all-caps - removed textTransform: "uppercase"
     letterSpacing: 0.5,
     marginBottom: 10,
     marginLeft: 4,
   },
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     marginBottom: 16,
+    // Design brief: Subtle shadows only
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 3,
     elevation: 2,
   },
   optionRow: {
@@ -539,7 +546,8 @@ const styles = StyleSheet.create({
   },
   exportButton: {
     backgroundColor: colors.primary.DEFAULT,
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
     flexDirection: "row",
     alignItems: "center",

@@ -1,39 +1,43 @@
-import * as React from 'react';
-import { View, Pressable, StyleSheet, Platform, Modal, Dimensions } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  addWeeks,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  isSameWeek,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+  subWeeks,
+} from "date-fns";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import {
+  Dimensions,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
+  Easing,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  withSpring,
-  runOnJS,
-  Easing,
-  FadeIn,
-  FadeOut,
-} from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  format,
-  isSameDay,
-  isToday,
-  addWeeks,
-  subWeeks,
-  startOfWeek,
-  endOfWeek,
-  isSameMonth,
-  isSameWeek,
-} from 'date-fns';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+} from "react-native-reanimated";
 
-import { Text } from '@/components/ui/text';
-import { colors } from '@/lib/theme/colors';
-import { useI18n } from '@/lib/i18n/context';
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_WIDTH = Dimensions.get("window").width;
 const SWIPE_THRESHOLD = 50;
 const WEEK_WIDTH = SCREEN_WIDTH - 16;
 
@@ -57,18 +61,19 @@ export function CalendarHeader({
 }: CalendarHeaderProps) {
   const { t } = useI18n();
   const [showDatePicker, setShowDatePicker] = React.useState(false);
-  const [currentWeekStart, setCurrentWeekStart] = React.useState(() => 
+  const [currentWeekStart, setCurrentWeekStart] = React.useState(() =>
     startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
   // Use selectedDate directly for picker, ensuring it's always valid
-  const pickerDate = selectedDate instanceof Date && !isNaN(selectedDate.getTime()) 
-    ? selectedDate 
-    : new Date();
-  
+  const pickerDate =
+    selectedDate instanceof Date && !isNaN(selectedDate.getTime())
+      ? selectedDate
+      : new Date();
+
   const translateX = useSharedValue(0);
   const today = new Date();
   const todayWeekStart = startOfWeek(today, { weekStartsOn: 1 });
-  
+
   // Track previous selectedDate to detect external changes
   const prevSelectedDateRef = React.useRef(selectedDate);
 
@@ -78,9 +83,13 @@ export function CalendarHeader({
     // Only sync if selectedDate actually changed (external navigation)
     if (prevSelectedDateRef.current.getTime() !== selectedDate.getTime()) {
       const newWeekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
-      
+
       // Only update week view if the new date is in a different week than previous
-      if (!isSameWeek(selectedDate, prevSelectedDateRef.current, { weekStartsOn: 1 })) {
+      if (
+        !isSameWeek(selectedDate, prevSelectedDateRef.current, {
+          weekStartsOn: 1,
+        })
+      ) {
         setCurrentWeekStart(newWeekStart);
       }
       prevSelectedDateRef.current = selectedDate;
@@ -88,7 +97,9 @@ export function CalendarHeader({
   }, [selectedDate]);
 
   // Check if we're viewing the current week
-  const isCurrentWeek = isSameWeek(currentWeekStart, todayWeekStart, { weekStartsOn: 1 });
+  const isCurrentWeek = isSameWeek(currentWeekStart, todayWeekStart, {
+    weekStartsOn: 1,
+  });
 
   // Week days for the current week strip
   const weekDays = React.useMemo(() => {
@@ -105,44 +116,51 @@ export function CalendarHeader({
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [selectedDate]);
 
-  const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
 
-  const animateWeekChange = React.useCallback((direction: 'left' | 'right', callback: () => void) => {
-    const toValue = direction === 'left' ? -WEEK_WIDTH : WEEK_WIDTH;
-    
-    translateX.value = withTiming(toValue, { 
-      duration: 200, 
-      easing: Easing.out(Easing.cubic) 
-    }, () => {
-      translateX.value = -toValue;
-      runOnJS(callback)();
-      translateX.value = withTiming(0, { 
-        duration: 200, 
-        easing: Easing.out(Easing.cubic) 
-      });
-    });
-  }, [translateX]);
+  const animateWeekChange = React.useCallback(
+    (direction: "left" | "right", callback: () => void) => {
+      const toValue = direction === "left" ? -WEEK_WIDTH : WEEK_WIDTH;
+
+      translateX.value = withTiming(
+        toValue,
+        {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        },
+        () => {
+          translateX.value = -toValue;
+          runOnJS(callback)();
+          translateX.value = withTiming(0, {
+            duration: 200,
+            easing: Easing.out(Easing.cubic),
+          });
+        }
+      );
+    },
+    [translateX]
+  );
 
   const goToPreviousWeek = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    animateWeekChange('right', () => {
+    animateWeekChange("right", () => {
       setCurrentWeekStart((prev) => subWeeks(prev, 1));
     });
   }, [animateWeekChange]);
 
   const goToNextWeek = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    animateWeekChange('left', () => {
+    animateWeekChange("left", () => {
       setCurrentWeekStart((prev) => addWeeks(prev, 1));
     });
   }, [animateWeekChange]);
 
   const goToToday = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     const todayDate = new Date();
@@ -152,7 +170,7 @@ export function CalendarHeader({
 
   const handleSelectDate = React.useCallback(
     (date: Date) => {
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       onSelectDate(date);
@@ -162,23 +180,26 @@ export function CalendarHeader({
   );
 
   const openDatePicker = React.useCallback(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setShowDatePicker(true);
   }, []);
 
-  const handleDatePickerChange = React.useCallback((event: any, date?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    if (date && event.type !== 'dismissed') {
-      handleSelectDate(date);
-      if (Platform.OS === 'ios') {
+  const handleDatePickerChange = React.useCallback(
+    (event: any, date?: Date) => {
+      if (Platform.OS === "android") {
         setShowDatePicker(false);
       }
-    }
-  }, [handleSelectDate]);
+      if (date && event.type !== "dismissed") {
+        handleSelectDate(date);
+        if (Platform.OS === "ios") {
+          setShowDatePicker(false);
+        }
+      }
+    },
+    [handleSelectDate]
+  );
 
   // Swipe gesture for week navigation
   const panGesture = Gesture.Pan()
@@ -189,17 +210,23 @@ export function CalendarHeader({
     })
     .onEnd((event) => {
       // Check both displacement and velocity for better swipe detection (quick flicks)
-      const shouldGoToPrevious = (event.translationX > SWIPE_THRESHOLD) || 
+      const shouldGoToPrevious =
+        event.translationX > SWIPE_THRESHOLD ||
         (event.translationX > 20 && event.velocityX > 500);
-      const shouldGoToNext = (event.translationX < -SWIPE_THRESHOLD) || 
+      const shouldGoToNext =
+        event.translationX < -SWIPE_THRESHOLD ||
         (event.translationX < -20 && event.velocityX < -500);
-      
+
       if (shouldGoToPrevious) {
         runOnJS(goToPreviousWeek)();
       } else if (shouldGoToNext) {
         runOnJS(goToNextWeek)();
       } else {
-        translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
+        // Design brief: No spring animations - use gentle timing instead
+        translateX.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        });
       }
     });
 
@@ -215,17 +242,32 @@ export function CalendarHeader({
     const dots: React.ReactNode[] = [];
     if (info.hasUrination) {
       dots.push(
-        <View key="u" style={[styles.categoryDot, { backgroundColor: colors.primary.DEFAULT }]} />
+        <View
+          key="u"
+          style={[
+            styles.categoryDot,
+            { backgroundColor: colors.primary.DEFAULT },
+          ]}
+        />
       );
     }
     if (info.hasFluid) {
       dots.push(
-        <View key="f" style={[styles.categoryDot, { backgroundColor: colors.secondary.DEFAULT }]} />
+        <View
+          key="f"
+          style={[
+            styles.categoryDot,
+            { backgroundColor: colors.secondary.DEFAULT },
+          ]}
+        />
       );
     }
     if (info.hasLeak) {
       dots.push(
-        <View key="l" style={[styles.categoryDot, { backgroundColor: colors.error }]} />
+        <View
+          key="l"
+          style={[styles.categoryDot, { backgroundColor: colors.primary.light }]}
+        />
       );
     }
 
@@ -240,51 +282,55 @@ export function CalendarHeader({
   }, [weekDays]);
 
   // Check if week spans two months and get month label for each day
-  const getMonthLabel = React.useCallback((day: Date, index: number, days: Date[]): string | null => {
-    // Show month label on the first day of a new month (when day is 1)
-    if (day.getDate() === 1 && index > 0) {
-      return format(day, 'MMM');
-    }
-    return null;
-  }, []);
+  const getMonthLabel = React.useCallback(
+    (day: Date, index: number, days: Date[]): string | null => {
+      // Show month label on the first day of a new month (when day is 1)
+      if (day.getDate() === 1 && index > 0) {
+        return format(day, "MMM");
+      }
+      return null;
+    },
+    []
+  );
 
   // Check if a day is in a different month than the first day of the week
-  const isDifferentMonth = React.useCallback((day: Date): boolean => {
-    return !isSameMonth(day, weekDays[0]);
-  }, [weekDays]);
+  const isDifferentMonth = React.useCallback(
+    (day: Date): boolean => {
+      return !isSameMonth(day, weekDays[0]);
+    },
+    [weekDays]
+  );
 
   return (
     <View style={styles.container}>
       {/* Header with Calendar Icon, Month, and Today button */}
       <View style={styles.header}>
-        <Pressable 
-          onPress={openDatePicker} 
+        <Pressable
+          onPress={openDatePicker}
           style={styles.monthSelector}
           hitSlop={8}
         >
-          <MaterialCommunityIcons 
-            name="calendar-month-outline" 
-            size={20} 
-            color={colors.primary.DEFAULT} 
+          <MaterialCommunityIcons
+            name="calendar-month-outline"
+            size={20}
+            color={colors.primary.DEFAULT}
           />
-          <Text style={styles.monthTitle}>
-            {displayMonth}
-          </Text>
-          <MaterialCommunityIcons 
-            name="chevron-down" 
-            size={18} 
-            color="#9CA3AF" 
+          <Text style={styles.monthTitle}>{displayMonth}</Text>
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={18}
+            color="#9CA3AF"
           />
         </Pressable>
 
         {/* Today button - always rendered but with opacity */}
-        <Pressable 
-          onPress={goToToday} 
-          style={[styles.todayButton, { opacity: isCurrentWeek ? 0 : 1 }]} 
+        <Pressable
+          onPress={goToToday}
+          style={[styles.todayButton, { opacity: isCurrentWeek ? 0 : 1 }]}
           hitSlop={8}
           disabled={isCurrentWeek}
         >
-          <Text style={styles.todayText}>{t('history.today')}</Text>
+          <Text style={styles.todayText}>{t("history.today")}</Text>
         </Pressable>
       </View>
 
@@ -302,7 +348,7 @@ export function CalendarHeader({
         <GestureDetector gesture={panGesture}>
           <Animated.View style={[styles.weekRow, animatedWeekStyle]}>
             {weekDays.map((day, index) => {
-              const dateKey = format(day, 'yyyy-MM-dd');
+              const dateKey = format(day, "yyyy-MM-dd");
               const isSelected = isSameDay(day, selectedDate);
               const isTodayDate = isToday(day);
               const monthLabel = getMonthLabel(day, index, weekDays);
@@ -320,19 +366,28 @@ export function CalendarHeader({
                   ) : (
                     <View style={styles.monthLabelPlaceholder} />
                   )}
-                  
-                  <View style={[
-                    styles.dayNumberContainer,
-                    isSelected && styles.dayNumberContainerSelected,
-                    isTodayDate && !isSelected && styles.dayNumberContainerToday,
-                  ]}>
-                    <Text style={[
-                      styles.dayNumber,
-                      isNewMonth && !isSelected && !isTodayDate && styles.dayNumberNewMonth,
-                      isSelected && styles.dayNumberSelected,
-                      isTodayDate && !isSelected && styles.dayNumberToday,
-                    ]}>
-                      {format(day, 'd')}
+
+                  <View
+                    style={[
+                      styles.dayNumberContainer,
+                      isSelected && styles.dayNumberContainerSelected,
+                      isTodayDate &&
+                        !isSelected &&
+                        styles.dayNumberContainerToday,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.dayNumber,
+                        isNewMonth &&
+                          !isSelected &&
+                          !isTodayDate &&
+                          styles.dayNumberNewMonth,
+                        isSelected && styles.dayNumberSelected,
+                        isTodayDate && !isSelected && styles.dayNumberToday,
+                      ]}
+                    >
+                      {format(day, "d")}
                     </Text>
                   </View>
                   {renderCategoryDots(dateKey)}
@@ -347,14 +402,15 @@ export function CalendarHeader({
       <View style={styles.weekIndicator} />
 
       {/* Native Date Picker for iOS */}
-      {Platform.OS === 'ios' && showDatePicker ? <Modal
+      {Platform.OS === "ios" && showDatePicker ? (
+        <Modal
           visible={showDatePicker}
           animationType="fade"
           transparent
           onRequestClose={() => setShowDatePicker(false)}
         >
-          <Pressable 
-            style={styles.modalOverlay} 
+          <Pressable
+            style={styles.modalOverlay}
             onPress={() => setShowDatePicker(false)}
           >
             <View style={styles.datePickerCard}>
@@ -368,30 +424,34 @@ export function CalendarHeader({
               />
             </View>
           </Pressable>
-        </Modal> : null}
+        </Modal>
+      ) : null}
 
       {/* Native Date Picker for Android */}
-      {Platform.OS === 'android' && showDatePicker ? <DateTimePicker
+      {Platform.OS === "android" && showDatePicker ? (
+        <DateTimePicker
           value={pickerDate}
           mode="date"
           display="default"
           onChange={handleDatePickerChange}
-        /> : null}
+        />
+      ) : null}
 
       {/* Web fallback - custom modal */}
-      {Platform.OS === 'web' && showDatePicker ? <Modal
+      {Platform.OS === "web" && showDatePicker ? (
+        <Modal
           visible={showDatePicker}
           animationType="fade"
           transparent
           onRequestClose={() => setShowDatePicker(false)}
         >
-          <Pressable 
-            style={styles.modalOverlay} 
+          <Pressable
+            style={styles.modalOverlay}
             onPress={() => setShowDatePicker(false)}
           >
             <View style={styles.monthPickerCard}>
               <Text style={styles.pickerMonthTitle}>
-                {format(selectedDate, 'MMMM yyyy')}
+                {format(selectedDate, "MMMM yyyy")}
               </Text>
 
               <View style={styles.pickerDayLabels}>
@@ -404,7 +464,7 @@ export function CalendarHeader({
 
               <View style={styles.pickerGrid}>
                 {monthDays.map((day) => {
-                  const dateKey = format(day, 'yyyy-MM-dd');
+                  const dateKey = format(day, "yyyy-MM-dd");
                   const isCurrentMonth = isSameMonth(day, selectedDate);
                   const isSelected = isSameDay(day, selectedDate);
                   const isTodayDate = isToday(day);
@@ -421,13 +481,17 @@ export function CalendarHeader({
                         isSelected && styles.pickerDaySelected,
                       ]}
                     >
-                      <Text style={[
-                        styles.pickerDayText,
-                        !isCurrentMonth && styles.pickerDayTextOutside,
-                        isSelected && styles.pickerDayTextSelected,
-                        isTodayDate && !isSelected && styles.pickerDayTextToday,
-                      ]}>
-                        {format(day, 'd')}
+                      <Text
+                        style={[
+                          styles.pickerDayText,
+                          !isCurrentMonth && styles.pickerDayTextOutside,
+                          isSelected && styles.pickerDayTextSelected,
+                          isTodayDate &&
+                            !isSelected &&
+                            styles.pickerDayTextToday,
+                        ]}
+                      >
+                        {format(day, "d")}
                       </Text>
                     </Pressable>
                   );
@@ -435,33 +499,34 @@ export function CalendarHeader({
               </View>
             </View>
           </Pressable>
-        </Modal> : null}
+        </Modal>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     paddingTop: 8,
   },
   // Header
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     marginBottom: 12,
   },
   monthSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   monthTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   todayButton: {
     paddingHorizontal: 8,
@@ -469,40 +534,40 @@ const styles = StyleSheet.create({
   },
   todayText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.primary.DEFAULT,
   },
   // Day labels row
   dayLabelsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: 8,
   },
   dayLabelCell: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   dayLabel: {
     fontSize: 11,
-    fontWeight: '500',
-    color: '#9CA3AF',
+    fontWeight: "500",
+    color: "#9CA3AF",
   },
   // Week row
   gestureContainer: {
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   weekRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: 8,
     paddingTop: 6,
     paddingBottom: 8,
   },
   dayCell: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   monthLabel: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary.DEFAULT,
     marginBottom: 2,
     height: 12,
@@ -513,9 +578,9 @@ const styles = StyleSheet.create({
   dayNumberContainer: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 16, // Circular element - ok to use full radius
+    alignItems: "center",
+    justifyContent: "center",
   },
   dayNumberContainerSelected: {
     backgroundColor: colors.primary.DEFAULT,
@@ -526,23 +591,23 @@ const styles = StyleSheet.create({
   },
   dayNumber: {
     fontSize: 15,
-    fontWeight: '500',
-    color: '#111827',
+    fontWeight: "500",
+    color: "#111827",
   },
   dayNumberNewMonth: {
     color: colors.primary.DEFAULT,
   },
   dayNumberSelected: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   dayNumberToday: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Category dots
   dotsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 2,
     marginTop: 4,
     height: 4,
@@ -560,30 +625,32 @@ const styles = StyleSheet.create({
   weekIndicator: {
     height: 3,
     width: 40,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     borderRadius: 1.5,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 8,
   },
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   datePickerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)' }
+    // Design brief: Subtle shadows only
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)" }
       : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.15,
-          shadowRadius: 24,
-          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 6,
+          elevation: 3,
         }),
   },
   datePicker: {
@@ -591,67 +658,69 @@ const styles = StyleSheet.create({
     width: 320,
   },
   monthPickerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
     width: SCREEN_WIDTH - 48,
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)' }
+    // Design brief: Subtle shadows only
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)" }
       : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.15,
-          shadowRadius: 24,
-          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 6,
+          elevation: 3,
         }),
   },
   pickerMonthTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#111827",
+    textAlign: "center",
     marginBottom: 16,
   },
   pickerDayLabels: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 8,
   },
   pickerDayLabelCell: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   pickerDayLabel: {
     fontSize: 11,
-    fontWeight: '500',
-    color: '#9CA3AF',
+    fontWeight: "500",
+    color: "#9CA3AF",
   },
   pickerGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   pickerDay: {
-    width: '14.28%',
+    width: "14.28%",
     aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   pickerDaySelected: {
     backgroundColor: colors.primary.DEFAULT,
-    borderRadius: 16,
+    borderRadius: 16, // Circular element for selected day
   },
   pickerDayText: {
     fontSize: 14,
-    color: '#111827',
+    color: "#111827",
   },
   pickerDayTextOutside: {
-    color: '#D1D5DB',
+    color: "#D1D5DB",
   },
   pickerDayTextSelected: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   pickerDayTextToday: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

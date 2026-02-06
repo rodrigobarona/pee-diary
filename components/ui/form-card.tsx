@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import * as React from "react";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 interface FormCardProps {
   children: React.ReactNode;
@@ -16,11 +16,11 @@ export function FormCard({ children, style }: FormCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderCurve: 'continuous',
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     marginBottom: 16,
-    // Modern shadow syntax (Rule 9.2)
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+    // Modern shadow syntax - subtle per design brief
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
   },
 });

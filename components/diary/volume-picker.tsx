@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
-import { Text } from '@/components/ui/text';
-import { AnimatedPressable } from '@/components/ui/animated-pressable';
-import { colors } from '@/lib/theme/colors';
-import { useI18n } from '@/lib/i18n/context';
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
 
-type VolumeSize = 'small' | 'medium' | 'large';
+type VolumeSize = "small" | "medium" | "large";
 
 interface VolumePickerProps {
   value: VolumeSize;
@@ -21,22 +21,22 @@ const volumeConfig: Record<
   { labelKey: string; icon: string; size: number; description: string }
 > = {
   small: {
-    labelKey: 'urination.volumeSmall',
-    icon: 'water-outline',
+    labelKey: "urination.volumeSmall",
+    icon: "water-outline",
     size: 24,
-    description: '< 100ml',
+    description: "< 100ml",
   },
   medium: {
-    labelKey: 'urination.volumeMedium',
-    icon: 'water',
+    labelKey: "urination.volumeMedium",
+    icon: "water",
     size: 32,
-    description: '100-300ml',
+    description: "100-300ml",
   },
   large: {
-    labelKey: 'urination.volumeLarge',
-    icon: 'water',
+    labelKey: "urination.volumeLarge",
+    icon: "water",
     size: 40,
-    description: '> 300ml',
+    description: "> 300ml",
   },
 };
 
@@ -46,7 +46,7 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
   const handlePress = React.useCallback(
     (size: VolumeSize) => {
       if (disabled) return;
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       onChange(size);
@@ -56,7 +56,7 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
 
   return (
     <View style={styles.container}>
-      {(['small', 'medium', 'large'] as VolumeSize[]).map((size) => {
+      {(["small", "medium", "large"] as VolumeSize[]).map((size) => {
         const config = volumeConfig[size];
         const isSelected = value === size;
 
@@ -75,7 +75,7 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
             <MaterialCommunityIcons
               name={config.icon as any}
               size={config.size}
-              color={isSelected ? '#FFFFFF' : colors.primary.DEFAULT}
+              color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
             />
             <Text
               style={[
@@ -102,16 +102,16 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 12,
   },
   option: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    borderCurve: 'continuous',
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     paddingVertical: 16,
     gap: 8,
   },
@@ -119,24 +119,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
   },
   optionUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+    backgroundColor: "rgba(0, 109, 119, 0.08)",
   },
   optionDisabled: {
     opacity: 0.5,
   },
   label: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   labelSelected: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   description: {
     fontSize: 12,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   descriptionSelected: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: "rgba(255, 255, 255, 0.7)",
   },
 });

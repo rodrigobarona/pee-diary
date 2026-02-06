@@ -339,7 +339,7 @@ export default function SettingsScreen() {
           {
             text: t("common.delete"),
             style: "destructive",
-            onPress: (value) => {
+            onPress: (value: string | undefined) => {
               if (value?.toUpperCase() === confirmWord.toUpperCase()) {
                 clearAllEntries();
                 Haptics.notificationAsync(
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#6B7280",
-    textTransform: "uppercase",
+    // Design brief: No all-caps - removed textTransform: "uppercase"
     letterSpacing: 0.5,
     marginBottom: 8,
     marginLeft: 4,
@@ -856,7 +856,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
     paddingHorizontal: 16,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
@@ -924,17 +924,18 @@ const styles = StyleSheet.create({
   },
   deleteModalContent: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 28,
+    borderRadius: 16, // Design brief: 8-12px for cards, 16 for modals
+    borderCurve: "continuous",
     paddingTop: 24,
     paddingHorizontal: 24,
     paddingBottom: 8,
     width: "100%",
     maxWidth: 320,
-    elevation: 24,
+    elevation: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
   deleteModalTitle: {
     fontSize: 24,
@@ -980,7 +981,7 @@ const styles = StyleSheet.create({
   deleteModalTextButton: {
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 20,
+    borderRadius: 8, // Design brief: 8px for small buttons
   },
   deleteModalCancelText: {
     fontSize: 14,

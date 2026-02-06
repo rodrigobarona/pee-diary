@@ -21,6 +21,16 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { initSentry, Sentry, setSentryAppContext } from "@/lib/sentry";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@/lib/theme";
 
 // Initialize Sentry as early as possible
 initSentry();
@@ -121,7 +131,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             headerShown: false,
             sheetAllowedDetents: Platform.OS === "ios" ? [0.6] : undefined,
             sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            sheetCornerRadius: 16, // Design brief: softer corners for modals
           }}
         />
         <Stack.Screen
@@ -132,7 +142,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
             sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            sheetCornerRadius: 16,
           }}
         />
         <Stack.Screen
@@ -151,7 +161,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
             sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            sheetCornerRadius: 16,
           }}
         />
         <Stack.Screen
@@ -161,7 +171,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
             headerShown: false,
             sheetAllowedDetents: Platform.OS === "ios" ? [0.5] : undefined,
             sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
+            sheetCornerRadius: 16,
           }}
         />
       </Stack>
@@ -173,9 +183,19 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
 function RootLayout() {
   const colorScheme = useColorScheme();
 
-  // Explicitly load MaterialCommunityIcons font to ensure icons render
+  // Load custom fonts: Inter (primary), DM Sans (secondary), and icons
   const [fontsLoaded, fontError] = useFonts({
     ...MaterialCommunityIcons.font,
+    // Inter - Primary font for UI elements
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    // DM Sans - Secondary font for headers and prompts
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
   });
 
   useEffect(() => {

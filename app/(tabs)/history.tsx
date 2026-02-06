@@ -34,6 +34,7 @@ import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
+import { colors } from "@/lib/theme";
 
 // Enable LayoutAnimation on Android
 if (
@@ -69,6 +70,13 @@ export default function HistoryScreen() {
   const [expandedPeriods, setExpandedPeriods] = React.useState<Set<TimePeriod>>(
     new Set(["earlyMorning", "morning", "afternoon", "evening", "night"])
   );
+
+  // Reset expanded periods when selected date changes (all expanded by default)
+  React.useEffect(() => {
+    setExpandedPeriods(
+      new Set(["earlyMorning", "morning", "afternoon", "evening", "night"])
+    );
+  }, [selectedDate]);
 
   const entries = useDiaryStore(useShallow((state) => state.entries));
 
@@ -178,16 +186,19 @@ export default function HistoryScreen() {
     return dateMap;
   }, [entries]);
 
-  // Count entries by type for filter chips (all entries)
-  const filterCounts = React.useMemo(
-    () => ({
-      all: entries.length,
-      urination: entries.filter((e) => e.type === "urination").length,
-      fluid: entries.filter((e) => e.type === "fluid").length,
-      leak: entries.filter((e) => e.type === "leak").length,
-    }),
-    [entries]
-  );
+  // Count entries by type for filter chips (selected day only)
+  const filterCounts = React.useMemo(() => {
+    const dateKey = format(selectedDate, "yyyy-MM-dd");
+    const dayEntries = entries.filter(
+      (e) => format(parseISO(e.timestamp), "yyyy-MM-dd") === dateKey
+    );
+    return {
+      all: dayEntries.length,
+      urination: dayEntries.filter((e) => e.type === "urination").length,
+      fluid: dayEntries.filter((e) => e.type === "fluid").length,
+      leak: dayEntries.filter((e) => e.type === "leak").length,
+    };
+  }, [entries, selectedDate]);
 
   // Get entries for the selected date only
   const selectedDayData = React.useMemo(() => {
@@ -269,8 +280,13 @@ export default function HistoryScreen() {
       {/* Day Header */}
       <View style={styles.dayHeader}>
         <Text style={styles.dayTitle}>{formatDateHeader(selectedDate)}</Text>
-        <Text style={styles.dayDot}>·</Text>
-        <Text style={styles.dayDate}>{format(selectedDate, "MMM d")}</Text>
+        {/* Only show short date for Today/Yesterday since they don't include the actual date */}
+        {(isToday(selectedDate) || isYesterday(selectedDate)) && (
+          <>
+            <Text style={styles.dayDot}>·</Text>
+            <Text style={styles.dayDate}>{format(selectedDate, "MMM d")}</Text>
+          </>
+        )}
         {selectedDayData.hasAnyEntries ? (
           <>
             <View style={styles.daySpacer} />
@@ -295,18 +311,19 @@ export default function HistoryScreen() {
           >
             {selectedDayData.periods.map((periodGroup) => {
               const isExpanded = expandedPeriods.has(periodGroup.period);
+              // Design brief: Muted time-of-day colors (no bright saturated colors)
               const periodConfig = {
                 earlyMorning: {
                   icon: "weather-night" as const,
-                  color: "#6366F1",
+                  color: "#8B9DC3", // Muted indigo
                 },
-                morning: { icon: "weather-sunny" as const, color: "#F59E0B" },
+                morning: { icon: "weather-sunny" as const, color: "#D4A373" }, // Warm sand
                 afternoon: {
                   icon: "white-balance-sunny" as const,
-                  color: "#F97316",
+                  color: "#C9A87C", // Muted gold
                 },
-                evening: { icon: "weather-sunset" as const, color: "#8B5CF6" },
-                night: { icon: "weather-night" as const, color: "#6366F1" },
+                evening: { icon: "weather-sunset" as const, color: "#A78BBA" }, // Soft purple
+                night: { icon: "weather-night" as const, color: "#8B9DC3" }, // Muted indigo
               };
               const config = periodConfig[periodGroup.period];
 
@@ -341,7 +358,8 @@ export default function HistoryScreen() {
                   </Pressable>
 
                   {/* Entries in this period (collapsible) */}
-                  {isExpanded ? <View style={styles.entriesList}>
+                  {isExpanded ? (
+                    <View style={styles.entriesList}>
                       {periodGroup.entries.map((entry, entryIndex) => (
                         <TimelineEntry
                           key={entry.id}
@@ -351,20 +369,23 @@ export default function HistoryScreen() {
                           onPress={() => handleEntryPress(entry.id)}
                         />
                       ))}
-                    </View> : null}
+                    </View>
+                  ) : null}
                 </View>
               );
             })}
           </ScrollView>
         ) : (
-          /* Empty State - Full height centered */
+          /* Empty State - Full height centered with accent tint */
           <View style={styles.emptyState}>
             <View style={styles.emptyContent}>
-              <MaterialCommunityIcons
-                name="calendar-blank-outline"
-                size={64}
-                color="#D1D5DB"
-              />
+              <View style={styles.emptyIconContainer}>
+                <MaterialCommunityIcons
+                  name="calendar-blank-outline"
+                  size={48}
+                  color={colors.primary.light}
+                />
+              </View>
               <Text style={styles.emptyTitle}>{t("history.noDataForDay")}</Text>
               <Text style={styles.emptySubtitle}>
                 {isToday(selectedDate)
@@ -483,6 +504,14 @@ const styles = StyleSheet.create({
   },
   emptyContent: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyIconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.accent, // Design brief: Accent for empty states
     alignItems: "center",
     justifyContent: "center",
   },

@@ -161,7 +161,7 @@ export function WeeklyChart({
                     y={4}
                     width={6}
                     height={6}
-                    fill={colors.error}
+                    fill={colors.primary.light} // Design brief: Soft teal, no red for leaks
                     rx={3}
                   />
                 )}
@@ -223,7 +223,7 @@ export function WeeklyChart({
         {data.some((d) => d.leaks > 0) && (
           <View style={styles.legendItem}>
             <View
-              style={[styles.legendDot, { backgroundColor: colors.error }]}
+              style={[styles.legendDot, { backgroundColor: colors.primary.light }]}
             />
             <Text style={styles.legendText}>{t("home.summary.leaks")}</Text>
           </View>

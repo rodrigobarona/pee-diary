@@ -88,12 +88,8 @@
   "streak": {
     "day": "dia",
     "days": "dias",
-    "start": "Comece a sequência hoje!",
-    "started": "Começou!",
-    "keepGoing": "Continue assim!",
-    "good": "Boa sequência!",
-    "great": "Ótimo progresso!",
-    "amazing": "Dedicação incrível!"
+    "start": "Sem registos ainda",
+    "daysOfEntries": "{{count}} dias de registos"
   },
   "timePeriod": {
     "earlyMorning": "Madrugada",

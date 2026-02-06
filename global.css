@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 /* Eleva Care Brand Colors as CSS Variables */
+/* Design Brief: Light mode palette - calming, clinical, never alarming */
 :root {
   /* Primary - Deep Teal (calming, medical, trustworthy) */
   --color-primary: 0 109 119;
@@ -19,15 +20,42 @@
   /* Neutrals */
   --color-background: 249 250 251;
   --color-surface: 255 255 255;
-  --color-text: 51 51 51;
+  --color-text: 17 24 39;
   --color-text-muted: 107 114 128;
-  --color-border: 226 232 240;
+  --color-border: 229 231 235;
 
-  /* Status */
-  --color-success: 34 197 94;
-  --color-warning: 245 158 11;
-  --color-error: 239 68 68;
+  /* Status - Muted per design brief */
+  --color-success: 131 197 190;
+  --color-warning: 212 163 115;
+  --color-error: 201 123 99;
 
-  /* Radius */
-  --radius: 0.5rem;
+  /* Radius - Design brief: 8-12px max */
+  --radius: 0.625rem;
+}
+
+/* Dark Mode - Design Brief: Deep teal-based, never pure black */
+.dark {
+  /* Primary - Lighter for contrast */
+  --color-primary: 131 197 190;
+  --color-primary-light: 167 211 207;
+  --color-primary-dark: 0 109 119;
+
+  /* Secondary - Adjusted for dark mode */
+  --color-secondary: 226 149 120;
+  --color-secondary-light: 255 221 210;
+
+  /* Accent */
+  --color-accent: 0 77 84;
+
+  /* Neutrals - Deep teal-based background */
+  --color-background: 10 44 46;
+  --color-surface: 15 56 59;
+  --color-text: 236 237 238;
+  --color-text-muted: 155 161 166;
+  --color-border: 30 70 74;
+
+  /* Status - Same muted palette works in dark */
+  --color-success: 131 197 190;
+  --color-warning: 212 163 115;
+  --color-error: 201 123 99;
 }

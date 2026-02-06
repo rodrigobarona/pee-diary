@@ -186,7 +186,7 @@ export default function LeakScreen() {
                     <MaterialCommunityIcons
                       name={option.icon as any}
                       size={24}
-                      color={isSelected ? "#FFFFFF" : colors.error}
+                      color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
                     />
                   </View>
                   <View style={styles.severityTextContainer}>
@@ -327,13 +327,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
   },
   severityOptionSelected: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    backgroundColor: colors.accent, // Design brief: Use accent instead of red
     borderWidth: 1,
-    borderColor: colors.error,
+    borderColor: colors.primary.light,
   },
   severityOptionUnselected: {
     backgroundColor: "rgba(0, 109, 119, 0.08)",
@@ -343,11 +343,11 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
     borderCurve: "continuous",
   },
   severityIconSelected: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.primary.light, // Design brief: Soft teal instead of red
   },
   severityIconUnselected: {
     backgroundColor: "rgba(0, 109, 119, 0.15)",
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     color: "#374151",
   },
   severityLabelSelected: {
-    color: colors.error,
+    color: colors.primary.dark, // Design brief: Dark teal for selected text
   },
   severityDescription: {
     fontSize: 14,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     backgroundColor: "rgba(0, 109, 119, 0.08)",
-    borderRadius: 20,
+    borderRadius: 8, // Design brief: 8px for chips
     borderWidth: 1,
     borderColor: "transparent",
   },

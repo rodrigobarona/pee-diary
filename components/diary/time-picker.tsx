@@ -196,21 +196,25 @@ export function TimePicker({
       </View>
 
       {/* Android Date Picker Dialog */}
-      {showDatePicker ? <DateTimePicker
+      {showDatePicker ? (
+        <DateTimePicker
           value={safeValue}
           mode="date"
           display="default"
           onChange={handleDateChange}
           maximumDate={new Date()}
-        /> : null}
+        />
+      ) : null}
 
       {/* Android Time Picker Dialog */}
-      {showTimePicker ? <DateTimePicker
+      {showTimePicker ? (
+        <DateTimePicker
           value={safeValue}
           mode="time"
           display="default"
           onChange={handleTimeChange}
-        /> : null}
+        />
+      ) : null}
     </View>
   );
 }
@@ -240,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 14,
     paddingVertical: 10,
-    borderRadius: 20,
+    borderRadius: 8, // Design brief: 8-12px - using 8 for chip elements
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },

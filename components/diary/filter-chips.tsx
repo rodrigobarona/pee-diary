@@ -1,18 +1,18 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
-  View,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
-  Platform,
+  View,
 } from "react-native";
-import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { Text } from "@/components/ui/text";
-import { colors } from "@/lib/theme/colors";
 import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
 
 export type FilterType = "all" | "urination" | "fluid" | "leak";
 
@@ -57,7 +57,7 @@ const chips: ChipConfig[] = [
     id: "leak",
     labelKey: "entry.leak",
     icon: "water-alert",
-    color: colors.error,
+    color: colors.primary.light, // Design brief: No red for leaks - use soft teal
   },
 ];
 
@@ -73,7 +73,7 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
       }
       onSelect(filter);
     },
-    [onSelect],
+    [onSelect]
   );
 
   const handleScroll = React.useCallback((event: any) => {
@@ -138,22 +138,26 @@ export function FilterChips({ selected, onSelect, counts }: FilterChipsProps) {
       </ScrollView>
 
       {/* Left fade indicator */}
-      {showLeftFade ? <LinearGradient
+      {showLeftFade ? (
+        <LinearGradient
           colors={["#F9FAFB", "rgba(249,250,251,0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.fadeLeft}
           pointerEvents="none"
-        /> : null}
+        />
+      ) : null}
 
       {/* Right fade indicator */}
-      {showRightFade ? <LinearGradient
+      {showRightFade ? (
+        <LinearGradient
           colors={["rgba(249,250,251,0)", "#F9FAFB"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.fadeRight}
           pointerEvents="none"
-        /> : null}
+        />
+      ) : null}
     </View>
   );
 }
@@ -177,12 +181,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     backgroundColor: "#F3F4F6",
-    borderRadius: 16,
+    borderRadius: 8, // Design brief: 8-12px - using 8 for chip elements
   },
   chipText: {
     fontSize: 12,
     fontWeight: "500",
     color: "#6B7280",
+    lineHeight: 12, // Match icon size for proper vertical alignment
+    includeFontPadding: false, // Android: remove extra font padding
   },
   chipTextSelected: {
     color: "#FFFFFF",
@@ -192,6 +198,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#9CA3AF",
     marginLeft: 2,
+    lineHeight: 12, // Match alignment with other elements
+    includeFontPadding: false, // Android: remove extra font padding
   },
   countTextSelected: {
     color: "rgba(255,255,255,0.8)",

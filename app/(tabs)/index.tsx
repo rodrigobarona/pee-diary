@@ -565,9 +565,20 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Progress Section */}
+        {/* Progress Section - Order: Voids (primary), Fluids (secondary), Leaks (tertiary) */}
         <View style={styles.progressSection}>
-          {/* Fluid Progress */}
+          {/* Voids Progress - Primary tracking metric */}
+          <ProgressBar
+            progress={voidProgress}
+            value={summary.voids}
+            target={goals.voidTarget}
+            label={t("home.summary.voids")}
+            icon="toilet"
+            color={colors.primary.DEFAULT}
+            onPress={() => handleStatPress("urination")}
+          />
+
+          {/* Fluid Progress - Secondary tracking metric */}
           <ProgressBar
             progress={fluidProgress}
             value={summary.fluids}
@@ -579,26 +590,15 @@ export default function HomeScreen() {
             onPress={() => handleStatPress("fluid")}
           />
 
-          {/* Voids Progress */}
-          <ProgressBar
-            progress={voidProgress}
-            value={summary.voids}
-            target={goals.voidTarget}
-            label={t("home.summary.voids")}
-            icon="toilet"
-            color={colors.primary.DEFAULT}
-            onPress={() => handleStatPress("urination")}
-          />
-
-          {/* Leaks - no target, goal is 0 */}
+          {/* Leaks - Tertiary, no target, goal is 0 */}
           <ProgressBar
             progress={summary.leaks > 0 ? 1 : 0}
             value={summary.leaks}
             target={0}
             label={t("home.summary.leaks")}
             icon="water-alert"
-            color={summary.leaks > 0 ? colors.error : "#10B981"}
-            backgroundColor={summary.leaks > 0 ? "#FEE2E2" : "#D1FAE5"}
+            color={colors.primary.light} // Design brief: Soft teal - fluid-related, no judgment
+            backgroundColor={colors.accent} // Accent background for leak-related items
             onPress={() => handleStatPress("leak")}
             successLabel={t("home.noLeaks")}
           />
@@ -699,16 +699,8 @@ export default function HomeScreen() {
             />
           )}
 
-          {/* Insight Cards - Row 1 */}
+          {/* Insight Cards - Row 1: Order: Voids (primary), Fluids (secondary), Goals */}
           <View style={styles.insightCardsRow}>
-            <InsightCard
-              title={t("insights.avgFluids")}
-              value={`${currentStats.avgFluids}ml`}
-              trend={currentStats.fluidTrend}
-              trendValue={currentStats.fluidDiff}
-              icon="cup-water"
-              color={colors.secondary.DEFAULT}
-            />
             <InsightCard
               title={t("insights.avgVoids")}
               value={`${currentStats.avgVoids}`}
@@ -718,10 +710,18 @@ export default function HomeScreen() {
               color={colors.primary.DEFAULT}
             />
             <InsightCard
+              title={t("insights.avgFluids")}
+              value={`${currentStats.avgFluids}ml`}
+              trend={currentStats.fluidTrend}
+              trendValue={currentStats.fluidDiff}
+              icon="cup-water"
+              color={colors.secondary.DEFAULT}
+            />
+            <InsightCard
               title={t("insights.goalsMet")}
               value={`${currentStats.goalsMet}/${currentStats.totalDays}`}
-              icon="trophy-outline"
-              color="#F59E0B"
+              icon="check-circle-outline"
+              color={colors.primary.light} // Soft teal - neutral indicator
             />
           </View>
 
@@ -734,7 +734,7 @@ export default function HomeScreen() {
                 "insights.nightVoidsAvg"
               )}`}
               icon="weather-night"
-              color="#6366F1"
+              color="#8B9DC3" // Design brief: Muted indigo for night
             />
           </View>
 
@@ -891,10 +891,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#9CA3AF",
   },
-  // Empty state
+  // Empty state with accent background
   emptyHint: {
     alignItems: "center",
     paddingVertical: 32,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    backgroundColor: colors.accent, // Design brief: Accent for empty states
+    borderRadius: 12,
   },
   emptyHintText: {
     fontSize: 16,

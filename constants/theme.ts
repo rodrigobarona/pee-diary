@@ -3,7 +3,7 @@
  * Using NativeWind for styling - this file provides fallback colors for native navigation
  */
 
-import { colors } from '@/lib/theme/colors';
+import { colors } from "@/lib/theme/colors";
 
 export const Colors = {
   light: {
@@ -15,11 +15,11 @@ export const Colors = {
     tabIconSelected: colors.primary.DEFAULT,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: "#ECEDEE",
+    background: "#0A2C2E", // Deep teal-based, never pure black (per design brief)
     tint: colors.primary.light,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: colors.primary.light,
   },
 };

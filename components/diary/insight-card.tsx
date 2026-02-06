@@ -47,9 +47,9 @@ export function InsightCard({
   const getTrendColor = (): string => {
     switch (trend) {
       case "up":
-        return "#10B981"; // Green
+        return "#83C5BE"; // Soft teal - neutral indicator
       case "down":
-        return "#EF4444"; // Red
+        return "#9CA3AF"; // Muted gray - neutral indicator
       default:
         return "#D1D5DB"; // Light gray
     }
@@ -135,9 +135,9 @@ export function CompactInsight({
   const getTrendColor = (): string => {
     switch (trend) {
       case "up":
-        return "#10B981";
+        return "#83C5BE"; // Soft teal - neutral indicator
       case "down":
-        return "#EF4444";
+        return "#9CA3AF"; // Muted gray - neutral indicator
       default:
         return "#6B7280";
     }

@@ -1,13 +1,13 @@
-import * as React from "react";
-import { View, Pressable, StyleSheet, Platform } from "react-native";
-import * as Haptics from "expo-haptics";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
-import { Text } from "@/components/ui/text";
 import { Input } from "@/components/ui/input";
-import { colors } from "@/lib/theme/colors";
+import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import type { DrinkType } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 import { drinkTypes } from "./drink-type-picker";
 
 // Quick amounts
@@ -45,7 +45,7 @@ export function AmountPicker({
       }
       onChange(amount.toString());
     },
-    [onChange],
+    [onChange]
   );
 
   const adjustAmount = React.useCallback(
@@ -57,7 +57,7 @@ export function AmountPicker({
       const newAmount = Math.max(0, current + delta);
       onChange(newAmount.toString());
     },
-    [value, onChange],
+    [value, onChange]
   );
 
   return (
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 12, // Design brief: 8-12px max
     padding: 16,
     gap: 16,
     borderCurve: "continuous",
@@ -162,10 +162,10 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderCurve: 'continuous',
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderCurve: "continuous",
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
   },
   amountDisplay: {
     flex: 1,
@@ -176,9 +176,9 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    borderCurve: 'continuous',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   amountValue: {
     fontSize: 40,
@@ -200,11 +200,11 @@ const styles = StyleSheet.create({
   quickAmountPill: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
-    borderCurve: 'continuous',
-    backgroundColor: '#F3F4F6',
+    borderRadius: 8, // Design brief: 8-12px - using 8 for pill-like elements
+    borderCurve: "continuous",
+    backgroundColor: "#F3F4F6",
     minWidth: 60,
-    alignItems: 'center',
+    alignItems: "center",
   },
   quickAmountPillSelected: {
     backgroundColor: "#006D77",

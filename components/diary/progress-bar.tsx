@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { Text } from "@/components/ui/text";
+import { colors } from "@/lib/theme/colors";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as React from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  Easing,
-} from 'react-native-reanimated';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Text } from '@/components/ui/text';
-import { colors } from '@/lib/theme/colors';
+} from "react-native-reanimated";
 
 interface ProgressBarProps {
   progress: number; // 0-1
@@ -27,20 +27,20 @@ export function ProgressBar({
   progress,
   value,
   target,
-  unit = '',
+  unit = "",
   label,
   icon,
   color = colors.primary.DEFAULT,
-  backgroundColor = '#E5E7EB',
+  backgroundColor = "#E5E7EB",
   onPress,
-  successLabel = 'None',
+  successLabel = "None",
 }: ProgressBarProps) {
   // Clamp progress between 0 and 1
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
-  
+
   // Animated progress value
   const animatedProgress = useSharedValue(0);
-  
+
   // Animate when progress changes
   React.useEffect(() => {
     animatedProgress.value = withTiming(clampedProgress, {
@@ -48,7 +48,7 @@ export function ProgressBar({
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
   }, [clampedProgress, animatedProgress]);
-  
+
   // Animated style for the progress fill
   const animatedStyle = useAnimatedStyle(() => ({
     width: `${animatedProgress.value * 100}%`,
@@ -62,7 +62,9 @@ export function ProgressBar({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.labelRow}>
-          <View style={[styles.iconContainer, { backgroundColor: `${color}15` }]}>
+          <View
+            style={[styles.iconContainer, { backgroundColor: `${color}15` }]}
+          >
             <MaterialCommunityIcons name={icon} size={18} color={color} />
           </View>
           <Text style={styles.label}>{label}</Text>
@@ -78,21 +80,20 @@ export function ProgressBar({
           ) : (
             <>
               <Text style={[styles.value, { color }]}>{value}</Text>
-              <Text style={styles.target}>/{target}{unit}</Text>
+              <Text style={styles.target}>
+                /{target}
+                {unit}
+              </Text>
             </>
           )}
         </View>
       </View>
-      
+
       {/* Only show track for items with targets or leaks > 0 */}
       {(!isNoTargetMode || value > 0) && (
         <View style={[styles.track, { backgroundColor }]}>
           <Animated.View
-            style={[
-              styles.fill,
-              { backgroundColor: color },
-              animatedStyle,
-            ]}
+            style={[styles.fill, { backgroundColor: color }, animatedStyle]}
           />
         </View>
       )}
@@ -130,24 +131,27 @@ export function StatCard({
 }: StatCardProps) {
   const content = (
     <View style={[styles.statCard, alert && styles.statCardAlert]}>
-      <View style={[styles.statIconContainer, { backgroundColor: alert ? '#FEE2E2' : `${color}15` }]}>
+      <View
+        style={[
+          styles.statIconContainer,
+          { backgroundColor: alert ? "#FEE2E2" : `${color}15` },
+        ]}
+      >
         <MaterialCommunityIcons
           name={icon}
           size={22}
           color={alert ? colors.error : color}
         />
       </View>
-      <Text style={[styles.statValue, alert && { color: colors.error }]}>{value}</Text>
+      <Text style={[styles.statValue, alert && { color: colors.error }]}>
+        {value}
+      </Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 
   if (onPress) {
-    return (
-      <Pressable onPress={onPress}>
-        {content}
-      </Pressable>
-    );
+    return <Pressable onPress={onPress}>{content}</Pressable>;
   }
 
   return content;
@@ -155,96 +159,98 @@ export function StatCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
   },
   pressable: {},
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   labelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   iconContainer: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   valueRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    alignItems: "baseline",
   },
   value: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   target: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
   },
   successBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: "#D1FAE5",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
   },
   successText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#10B981',
+    fontWeight: "600",
+    color: "#10B981",
   },
   track: {
     height: 8,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   fill: {
-    height: '100%',
+    height: "100%",
     borderRadius: 4,
   },
   // Stat card styles
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
   },
   statCardAlert: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: "#FEF2F2",
   },
   statIconContainer: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   statValue: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: "700",
+    color: "#111827",
   },
   statLabel: {
     fontSize: 13,
-    color: '#6B7280',
-    fontWeight: '500',
+    color: "#6B7280",
+    fontWeight: "500",
   },
 });

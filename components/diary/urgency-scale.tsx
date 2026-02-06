@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from "expo-haptics";
+import * as React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
-import { Text } from '@/components/ui/text';
-import { AnimatedPressable } from '@/components/ui/animated-pressable';
-import { useI18n } from '@/lib/i18n/context';
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { urgencyColors as themeUrgencyColors } from "@/lib/theme/colors";
 
 type UrgencyLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -14,14 +15,8 @@ interface UrgencyScaleProps {
   disabled?: boolean;
 }
 
-// Urgency colors matching the original design
-const urgencyColors: Record<UrgencyLevel, string> = {
-  1: '#22C55E', // green-500
-  2: '#84CC16', // lime-500
-  3: '#EAB308', // yellow-500
-  4: '#F97316', // orange-500
-  5: '#EF4444', // red-500
-};
+// Design brief: Muted urgency colors - avoid red/green traffic light colors
+const urgencyColors: Record<UrgencyLevel, string> = themeUrgencyColors;
 
 export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
   const { t } = useI18n();
@@ -29,7 +24,7 @@ export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
   const handlePress = React.useCallback(
     (level: UrgencyLevel) => {
       if (disabled) return;
-      if (Platform.OS !== 'web') {
+      if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       onChange(level);
@@ -53,7 +48,7 @@ export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
                 {
                   backgroundColor: isSelected
                     ? urgencyColors[level]
-                    : 'rgba(0, 109, 119, 0.08)',
+                    : "rgba(0, 109, 119, 0.08)",
                 },
                 disabled ? styles.optionDisabled : undefined,
               ]}
@@ -80,16 +75,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   scaleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 8,
   },
   option: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    borderCurve: 'continuous',
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     paddingVertical: 16,
   },
   optionDisabled: {
@@ -97,15 +92,15 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#374151',
+    fontWeight: "700",
+    color: "#374151",
   },
   levelTextSelected: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   description: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
   },
 });

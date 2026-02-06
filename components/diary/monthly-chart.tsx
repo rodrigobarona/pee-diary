@@ -189,7 +189,7 @@ export function MonthlyChart({
                     y={4}
                     width={8}
                     height={8}
-                    fill={colors.error}
+                    fill={colors.primary.light} // Design brief: Soft teal, no red for leaks
                     rx={4}
                   />
                 )}

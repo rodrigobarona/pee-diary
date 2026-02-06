@@ -160,7 +160,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 14,
+    borderRadius: 12, // Design brief: 8-12px max
+    borderCurve: "continuous",
     paddingVertical: 12,
     paddingHorizontal: 14,
     shadowColor: "#000",

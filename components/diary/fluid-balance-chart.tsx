@@ -80,11 +80,11 @@ export function FluidBalanceChart({
   const ratio = totalIntake > 0 ? totalOutput / totalIntake : 0;
   const ratioPercent = Math.round(ratio * 100);
 
-  // Get ratio status color
+  // Get ratio status color - Design brief: Use muted colors, avoid alarming red/green
   const getRatioColor = () => {
-    if (ratio >= 0.7 && ratio <= 1.2) return "#10B981"; // Green - normal
-    if (ratio >= 0.5 && ratio <= 1.4) return "#F59E0B"; // Amber - slightly off
-    return colors.error; // Red - concerning
+    if (ratio >= 0.7 && ratio <= 1.2) return "#83C5BE"; // Soft teal - normal
+    if (ratio >= 0.5 && ratio <= 1.4) return "#D4A373"; // Warm sand - slightly off
+    return "#C97B63"; // Muted coral - concerning (not alarming red)
   };
 
   const handleDayPress = React.useCallback(
