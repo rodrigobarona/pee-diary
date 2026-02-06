@@ -1,4 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
@@ -124,6 +125,70 @@ function PageDot({
   return <Animated.View style={[styles.dot, animatedStyle]} />;
 }
 
+// CTA Button with haptics and pressed state
+function CTAButton({
+  onPress,
+  label,
+  showArrow,
+}: {
+  onPress: () => void;
+  label: string;
+  showArrow: boolean;
+}) {
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handlePressIn = useCallback(() => {
+    setIsPressed(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
+
+  const handlePressOut = useCallback(() => {
+    setIsPressed(false);
+  }, []);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={{
+        height: 56,
+        backgroundColor: "#006D77",
+        borderRadius: 14,
+        borderCurve: "continuous",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        // iOS shadow
+        shadowColor: "#006D77",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isPressed ? 0.15 : 0.3,
+        shadowRadius: isPressed ? 4 : 8,
+        // Android elevation
+        elevation: isPressed ? 2 : 6,
+        // Pressed state
+        opacity: isPressed ? 0.9 : 1,
+        transform: [{ scale: isPressed ? 0.98 : 1 }],
+      }}
+    >
+      <RNText
+        style={{
+          fontSize: 17,
+          fontWeight: "600",
+          color: "#FFFFFF",
+          letterSpacing: -0.2,
+        }}
+      >
+        {label}
+      </RNText>
+      {showArrow ? (
+        <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+      ) : null}
+    </Pressable>
+  );
+}
+
 // Simple icon cluster (no animation to avoid crashes)
 function IconCluster({
   icons,
@@ -159,7 +224,7 @@ function IconCluster({
   );
 }
 
-// Individual onboarding page
+// Individual onboarding page with staggered animations
 function OnboardingPageContent({
   page,
   index,
@@ -171,47 +236,140 @@ function OnboardingPageContent({
 }) {
   const { t } = useI18n();
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const inputRange = [
-      (index - 1) * SCREEN_WIDTH,
-      index * SCREEN_WIDTH,
-      (index + 1) * SCREEN_WIDTH,
-    ];
+  const inputRange = [
+    (index - 1) * SCREEN_WIDTH,
+    index * SCREEN_WIDTH,
+    (index + 1) * SCREEN_WIDTH,
+  ];
+
+  // Icon cluster animation - scale + opacity
+  const iconStyle = useAnimatedStyle(() => {
+    const scrollValue = scrollX?.value ?? 0;
+
+    const scale = interpolate(
+      scrollValue,
+      inputRange,
+      [0.8, 1, 0.8],
+      Extrapolation.CLAMP
+    );
 
     const opacity = interpolate(
-      scrollX.value,
+      scrollValue,
       inputRange,
       [0, 1, 0],
       Extrapolation.CLAMP
     );
 
     const translateY = interpolate(
-      scrollX.value,
+      scrollValue,
+      inputRange,
+      [20, 0, 20],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity,
+      transform: [{ scale }, { translateY }],
+    };
+  });
+
+  // Title animation - fade + slide (slight delay effect via different values)
+  const titleStyle = useAnimatedStyle(() => {
+    const scrollValue = scrollX?.value ?? 0;
+
+    const opacity = interpolate(
+      scrollValue,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
+
+    const translateY = interpolate(
+      scrollValue,
+      inputRange,
+      [25, 0, 25],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
+  });
+
+  // Subtitle animation - more offset for stagger effect
+  const subtitleStyle = useAnimatedStyle(() => {
+    const scrollValue = scrollX?.value ?? 0;
+
+    const opacity = interpolate(
+      scrollValue,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
+
+    const translateY = interpolate(
+      scrollValue,
       inputRange,
       [30, 0, 30],
       Extrapolation.CLAMP
     );
 
-    return { opacity, transform: [{ translateY }] };
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
+  });
+
+  // Description animation - most offset for cascade effect
+  const descriptionStyle = useAnimatedStyle(() => {
+    const scrollValue = scrollX?.value ?? 0;
+
+    const opacity = interpolate(
+      scrollValue,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
+
+    const translateY = interpolate(
+      scrollValue,
+      inputRange,
+      [35, 0, 35],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
   });
 
   return (
     <View style={styles.page}>
-      <Animated.View style={[styles.pageContent, animatedStyle]}>
-        {/* Icon cluster */}
-        <IconCluster icons={page.icons} accentColor={page.accentColor} />
+      <View style={styles.pageContent}>
+        {/* Icon cluster with scale animation */}
+        <Animated.View style={iconStyle}>
+          <IconCluster icons={page.icons} accentColor={page.accentColor} />
+        </Animated.View>
 
-        {/* Title */}
-        <Text style={styles.title}>{t(page.titleKey)}</Text>
+        {/* Title with fade + slide */}
+        <Animated.View style={titleStyle}>
+          <Text style={styles.title}>{t(page.titleKey)}</Text>
+        </Animated.View>
 
-        {/* Subtitle */}
-        <Text style={[styles.subtitle, { color: page.accentColor }]}>
-          {t(page.subtitleKey)}
-        </Text>
+        {/* Subtitle with staggered fade + slide */}
+        <Animated.View style={subtitleStyle}>
+          <Text style={[styles.subtitle, { color: page.accentColor }]}>
+            {t(page.subtitleKey)}
+          </Text>
+        </Animated.View>
 
-        {/* Description */}
-        <Text style={styles.description}>{t(page.descriptionKey)}</Text>
-      </Animated.View>
+        {/* Description with cascade fade + slide */}
+        <Animated.View style={descriptionStyle}>
+          <Text style={styles.description}>{t(page.descriptionKey)}</Text>
+        </Animated.View>
+      </View>
     </View>
   );
 }
@@ -341,36 +499,12 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* CTA Button - plain object style (not function) */}
-        <Pressable
+        {/* CTA Button - native-feeling with haptics */}
+        <CTAButton
           onPress={handleNext}
-          style={{
-            height: 56,
-            backgroundColor: "#006D77",
-            borderRadius: 14,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <RNText
-            style={{
-              fontSize: 17,
-              fontWeight: "600",
-              color: "#FFFFFF",
-            }}
-          >
-            {isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
-          </RNText>
-          {!isLastPage ? (
-            <MaterialCommunityIcons
-              name="arrow-right"
-              size={20}
-              color="#FFFFFF"
-              style={{ marginLeft: 8 }}
-            />
-          ) : null}
-        </Pressable>
+          label={isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
+          showArrow={!isLastPage}
+        />
       </View>
     </View>
   );
