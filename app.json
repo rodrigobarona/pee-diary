@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Pee Diary",
-    "slug": "pee-diary",
+    "name": "Eleva Diary",
+    "slug": "eleva-diary",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "peediary",
+    "scheme": "eleva-diary",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "care.eleva.peediary",
+      "bundleIdentifier": "care.eleva.eleva-diary",
       "infoPlist": {
         "CFBundleLocalizations": ["en", "es", "pt"]
       },
@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "care.eleva.peediary",
+      "package": "care.eleva.eleva-diary",
       "allowBackup": true
     },
     "web": {

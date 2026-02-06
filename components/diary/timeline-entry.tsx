@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { format, getHours, parseISO } from "date-fns";
+import { differenceInMinutes, format, getHours, parseISO } from "date-fns";
 import * as Haptics from "expo-haptics";
 import * as React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
@@ -11,9 +11,6 @@ import { colors } from "@/lib/theme/colors";
 
 interface TimelineEntryProps {
   entry: DiaryEntry;
-  isLast?: boolean;
-  isFirst?: boolean;
-  showTime?: boolean;
   onPress?: () => void;
 }
 
@@ -35,18 +32,13 @@ const entryConfig = {
   },
 };
 
-export function TimelineEntry({
-  entry,
-  isLast = false,
-  isFirst = false,
-  showTime = true,
-  onPress,
-}: TimelineEntryProps) {
+export function TimelineEntry({ entry, onPress }: TimelineEntryProps) {
   const { t, locale } = useI18n();
   const config = entryConfig[entry.type];
   // Use 12-hour format for English, 24-hour for Spanish/Portuguese
-  const timeFormat = locale === "en" ? "h:mm a" : "HH:mm";
-  const time = format(parseISO(entry.timestamp), timeFormat);
+  // Use compact format "h:mma" (no space) to ensure it fits on one line
+  const timeFormat = locale === "en" ? "h:mma" : "HH:mm";
+  const time = format(parseISO(entry.timestamp), timeFormat).toLowerCase(); // lowercase for cleaner look
 
   const handlePress = React.useCallback(() => {
     if (Platform.OS !== "web") {
@@ -106,71 +98,105 @@ export function TimelineEntry({
   };
 
   return (
-    <View style={styles.row}>
-      {/* Time column - fixed width for "11:33 PM" */}
-      <View style={styles.timeColumn}>
-        {showTime ? <Text style={styles.timeText}>{time}</Text> : null}
-      </View>
-
-      {/* Track column - vertical line with dot */}
-      <View style={styles.trackColumn}>
-        <View style={[styles.trackLine, isFirst && styles.trackLineHidden]} />
-        <View style={[styles.trackDot, { borderColor: config.color }]}>
-          <View
-            style={[styles.trackDotInner, { backgroundColor: config.color }]}
-          />
-        </View>
-        <View style={[styles.trackLine, isLast && styles.trackLineHidden]} />
-      </View>
+    <Pressable onPress={handlePress} style={styles.card}>
+      {/* Icon - large, no background */}
+      <MaterialCommunityIcons
+        name={config.icon}
+        size={28}
+        color={config.color}
+      />
 
       {/* Content */}
-      <Pressable onPress={handlePress} style={styles.content}>
-        <View style={styles.contentInner}>
-          {/* Icon */}
-          <View
-            style={[styles.iconBadge, { backgroundColor: `${config.color}12` }]}
-          >
-            <MaterialCommunityIcons
-              name={config.icon}
-              size={16}
-              color={config.color}
-            />
-          </View>
-
-          {/* Details */}
-          <View style={styles.details}>
-            <Text style={styles.typeLabel}>{t(config.labelKey)}</Text>
-            <View style={styles.detailsRow}>{getCompactDetails()}</View>
-          </View>
-
-          {/* Edited indicator - subtle pencil icon */}
+      <View style={styles.content}>
+        {/* Title and time on same row */}
+        <View style={styles.titleRow}>
+          <Text style={styles.typeLabel}>{t(config.labelKey)}</Text>
           {entry.editHistory && entry.editHistory.length > 0 ? (
             <MaterialCommunityIcons
               name="pencil-outline"
-              size={12}
+              size={10}
               color="#D1D5DB"
-              style={styles.editedIcon}
             />
           ) : null}
-
-          {/* Arrow */}
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={18}
-            color="#D1D5DB"
-          />
+          <Text style={styles.timeText}>{time}</Text>
         </View>
 
-        {/* Notes */}
-        {entry.notes ? (
-          <Text style={styles.notes} numberOfLines={1}>
-            💬 {entry.notes}
-          </Text>
-        ) : null}
-      </Pressable>
+        {/* Details row */}
+        <View style={styles.detailsRow}>
+          {getCompactDetails()}
+          {entry.notes ? (
+            <>
+              <Text style={styles.detailSeparator}>·</Text>
+              <MaterialCommunityIcons
+                name="comment-text-outline"
+                size={11}
+                color="#9CA3AF"
+              />
+            </>
+          ) : null}
+        </View>
+      </View>
+
+      {/* Chevron */}
+      <MaterialCommunityIcons name="chevron-right" size={18} color="#D1D5DB" />
+    </Pressable>
+  );
+}
+
+// Time interval between entries
+interface TimeIntervalProps {
+  previousTimestamp: string;
+  currentTimestamp: string;
+}
+
+function formatInterval(minutes: number): string {
+  if (minutes < 1) return "";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
+export function TimeInterval({
+  previousTimestamp,
+  currentTimestamp,
+}: TimeIntervalProps) {
+  const minutes = Math.abs(
+    differenceInMinutes(parseISO(currentTimestamp), parseISO(previousTimestamp))
+  );
+  const label = formatInterval(minutes);
+
+  if (!label) return null;
+
+  return (
+    <View style={intervalStyles.container}>
+      <View style={intervalStyles.line} />
+      <Text style={intervalStyles.label}>{label}</Text>
+      <View style={intervalStyles.line} />
     </View>
   );
 }
+
+const intervalStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 16,
+    paddingVertical: 4,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#F3F4F6",
+  },
+  label: {
+    fontSize: 10,
+    color: "#9CA3AF",
+    paddingHorizontal: 8,
+    fontVariant: ["tabular-nums"],
+  },
+});
 
 // Time period header component
 interface TimePeriodHeaderProps {
@@ -237,98 +263,50 @@ export function getTimePeriod(
 }
 
 const styles = StyleSheet.create({
-  row: {
+  // Compact card
+  card: {
     flexDirection: "row",
-    alignItems: "stretch", // All columns stretch to same height
-    minHeight: 64,
-  },
-  // Time column - fixed width, vertically centered with dot
-  timeColumn: {
-    width: 65, // Enough for "11:33 PM"
-    justifyContent: "center",
-    alignItems: "flex-end",
-    paddingRight: 10,
-  },
-  timeText: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#6B7280",
-    fontVariant: ["tabular-nums"],
-    textAlign: "right",
-  },
-  // Track column - vertical line with dot
-  trackColumn: {
-    width: 20,
     alignItems: "center",
-  },
-  trackLine: {
-    flex: 1,
-    width: 2,
-    backgroundColor: "#E5E7EB",
-  },
-  trackLineHidden: {
-    backgroundColor: "transparent",
-  },
-  trackDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 2,
     backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  trackDotInner: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-  },
-  // Content
-  content: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginLeft: 8,
-    marginRight: 16,
-    marginVertical: 4,
-    padding: 12,
+    borderRadius: 10,
+    marginHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    gap: 10,
     ...(Platform.OS === "web"
-      ? { boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.06)" }
+      ? { boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.04)" }
       : {
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
-          shadowRadius: 3,
+          shadowOpacity: 0.04,
+          shadowRadius: 2,
           elevation: 1,
         }),
   },
-  contentInner: {
+  // Content area
+  content: {
+    flex: 1,
+    gap: 2,
+  },
+  titleRow: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  iconBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  details: {
-    flex: 1,
-    marginLeft: 10,
+    gap: 4,
   },
   typeLabel: {
     fontSize: 14,
     fontWeight: "600",
     color: "#111827",
   },
-  editedIcon: {
-    marginRight: 4,
+  timeText: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    marginLeft: "auto",
+    fontVariant: ["tabular-nums"],
   },
   detailsRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 2,
   },
   detailText: {
     fontSize: 12,
@@ -337,20 +315,12 @@ const styles = StyleSheet.create({
   detailHighlight: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#111827",
+    color: "#374151",
   },
   detailSeparator: {
     fontSize: 12,
     color: "#D1D5DB",
     marginHorizontal: 4,
-  },
-  notes: {
-    fontSize: 11,
-    color: "#9CA3AF",
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
   },
 });
 

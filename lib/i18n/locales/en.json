@@ -263,7 +263,12 @@
     "reminderNotificationTitle": "Time to log!",
     "reminderNotificationBody": "Don't forget to track your fluids and bathroom visits.",
     "permissionRequired": "Permission Required",
-    "permissionRequiredDescription": "Please enable notifications in your device settings to receive reminders."
+    "permissionRequiredDescription": "Please enable notifications in your device settings to receive reminders.",
+    "preferences": "Preferences",
+    "preferencesDescription": "Language, reminders, behavior",
+    "dataAndStorage": "Data & Storage",
+    "dataAndStorageDescription": "Export, backup, sync",
+    "general": "General"
   },
   "urgency": {
     "1": "None",

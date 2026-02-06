@@ -25,6 +25,7 @@ import {
   CalendarHeader,
   DailyStatsBar,
   FilterChips,
+  TimeInterval,
   TimelineEntry,
   getTimePeriod,
 } from "@/components/diary";
@@ -361,13 +362,21 @@ export default function HistoryScreen() {
                   {isExpanded ? (
                     <View style={styles.entriesList}>
                       {periodGroup.entries.map((entry, entryIndex) => (
-                        <TimelineEntry
-                          key={entry.id}
-                          entry={entry}
-                          isFirst={entryIndex === 0}
-                          isLast={entryIndex === periodGroup.entries.length - 1}
-                          onPress={() => handleEntryPress(entry.id)}
-                        />
+                        <React.Fragment key={entry.id}>
+                          {/* Time interval from previous entry */}
+                          {entryIndex > 0 ? (
+                            <TimeInterval
+                              previousTimestamp={
+                                periodGroup.entries[entryIndex - 1].timestamp
+                              }
+                              currentTimestamp={entry.timestamp}
+                            />
+                          ) : null}
+                          <TimelineEntry
+                            entry={entry}
+                            onPress={() => handleEntryPress(entry.id)}
+                          />
+                        </React.Fragment>
                       ))}
                     </View>
                   ) : null}

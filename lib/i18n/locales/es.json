@@ -263,7 +263,12 @@
     "reminderNotificationTitle": "¡Hora de registrar!",
     "reminderNotificationBody": "No olvides registrar tus líquidos y visitas al baño.",
     "permissionRequired": "Permiso Requerido",
-    "permissionRequiredDescription": "Por favor activa las notificaciones en los ajustes de tu dispositivo para recibir recordatorios."
+    "permissionRequiredDescription": "Por favor activa las notificaciones en los ajustes de tu dispositivo para recibir recordatorios.",
+    "preferences": "Preferencias",
+    "preferencesDescription": "Idioma, recordatorios, comportamiento",
+    "dataAndStorage": "Datos y almacenamiento",
+    "dataAndStorageDescription": "Exportar, copia de seguridad, sincronización",
+    "general": "General"
   },
   "urgency": {
     "1": "Ninguna",

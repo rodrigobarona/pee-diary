@@ -1,16 +1,16 @@
-# Pee Diary
+# Eleva Diary
 
-A premium, privacy-first mobile application for tracking bladder health. Built for patients and healthcare providers, Pee Diary helps users log urination patterns, fluid intake, and leakage events to support medical diagnosis and bladder training programs.
+A premium, privacy-first mobile application for tracking bladder health. Built for patients and healthcare providers, Eleva Diary helps users log urination patterns, fluid intake, and leakage events to support medical diagnosis and bladder training programs.
 
 ## Why a Bladder Diary?
 
 Healthcare professionals often recommend keeping a bladder diary to diagnose and treat conditions such as:
 
-- **Overactive Bladder (OAB)** – Frequent urination and strong urges
-- **Urinary Incontinence** – Involuntary leakage events
-- **Nocturia** – Excessive nighttime urination
-- **Urinary Tract Infections (UTIs)** – Monitoring patterns for recurrence
-- **Pelvic Floor Disorders** – Supporting physical therapy programs
+- **Overactive Bladder (OAB)** -- Frequent urination and strong urges
+- **Urinary Incontinence** -- Involuntary leakage events
+- **Nocturia** -- Excessive nighttime urination
+- **Urinary Tract Infections (UTIs)** -- Monitoring patterns for recurrence
+- **Pelvic Floor Disorders** -- Supporting physical therapy programs
 
 A complete voiding diary provides physicians with essential data for accurate diagnosis and personalized treatment plans.
 
@@ -67,106 +67,139 @@ A complete voiding diary provides physicians with essential data for accurate di
 ### Multi-Language Support
 
 - English
-- Spanish (Español)
-- Portuguese (Português)
+- Spanish (Espanol)
+- Portuguese (Portugues)
 
 ## Tech Stack
 
-| Category                 | Technology                                     |
-| ------------------------ | ---------------------------------------------- |
-| **Framework**            | Expo SDK 54 with React Native 0.81             |
-| **Styling**              | NativeWind v4 (TailwindCSS for React Native)   |
-| **State Management**     | Zustand with AsyncStorage persistence          |
-| **Navigation**           | Expo Router with native tab navigation         |
-| **Animations**           | React Native Reanimated + Gesture Handler      |
-| **Lists**                | LegendList for high-performance virtualization |
-| **Menus**                | Zeego for native dropdown menus                |
-| **Validation**           | Zod schemas for type-safe data                 |
-| **Internationalization** | expo-localization + i18n-js                    |
-| **Cloud Backup**         | expo-icloud-storage (iOS)                      |
+| Category | Technology |
+| --- | --- |
+| **Framework** | Expo SDK 54 with React Native 0.81 |
+| **Styling** | NativeWind v4 (TailwindCSS for React Native) |
+| **State Management** | Zustand with AsyncStorage persistence |
+| **Navigation** | Expo Router with native Stack and Tab navigators |
+| **Animations** | React Native Reanimated + Gesture Handler |
+| **Lists** | LegendList for high-performance virtualization |
+| **Menus** | Zeego for native dropdown menus |
+| **Validation** | Zod schemas for type-safe data |
+| **Internationalization** | expo-localization + i18n-js |
+| **Cloud Backup** | expo-icloud-storage (iOS) |
+| **Error Tracking** | Sentry for React Native |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- Expo CLI (`npm install -g expo-cli`)
-- iOS Simulator (macOS) or Android Emulator
+- npm 9+
+- Xcode 16+ (for iOS)
+- Android Studio (for Android)
 
-### Installation
+For detailed installation instructions including CocoaPods, Android SDK, Java JDK, emulator setup, and running on physical devices, see the **[Development Setup Guide](_docs/development-setup.md)**.
+
+### Quick Start
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/pee-diary.git
+git clone https://github.com/AEGISdev/pee-diary.git
 cd pee-diary
 
 # Install dependencies
 npm install
 
-# Start the development server
+# Start the development server (Expo Go)
 npx expo start
 ```
 
-### Running the App
+### Building Native Apps
 
-- **iOS Simulator**: Press `i` in the terminal
-- **Android Emulator**: Press `a` in the terminal
-- **Physical Device**: Scan the QR code with Expo Go
+```bash
+# iOS -- builds native project, runs on Simulator
+npx expo run:ios
+
+# Android -- builds native project, runs on Emulator
+npx expo run:android
+
+# iOS on physical device
+npx expo run:ios --device
+
+# Android on physical device
+npx expo run:android --device
+```
+
+See the [Development Setup Guide](_docs/development-setup.md) for prerequisites and troubleshooting.
 
 ## Project Structure
 
 ```
-app/                        # Expo Router pages
-├── (tabs)/                 # Bottom tab navigation
-│   ├── index.tsx          # Home - Today's dashboard
-│   ├── history.tsx        # History - Calendar view
-│   ├── add.tsx            # Add button (FAB trigger)
-│   └── settings.tsx       # Settings - Preferences
-├── add/                    # Entry form modals
-│   ├── urination.tsx      # Log urination
-│   ├── fluid.tsx          # Log fluid intake
-│   └── leak.tsx           # Log leakage
-├── entry/
-│   └── [id].tsx           # Entry detail/edit view
-├── export.tsx             # Export screen
-└── goals.tsx              # Goals configuration
+app/                           # Expo Router pages
+├── (tabs)/                    # Bottom tab navigation
+│   ├── index.tsx              # Home -- Today's dashboard
+│   ├── history.tsx            # History -- Calendar view
+│   ├── add.tsx                # Add button (FAB trigger)
+│   └── settings/              # Settings -- Hierarchical navigation
+│       ├── _layout.tsx        # Native Stack navigator
+│       ├── index.tsx          # Main menu (Goals, Preferences, Data, About)
+│       ├── preferences.tsx    # Language, reminders, behavior
+│       ├── data.tsx           # Export, backup, sync
+│       └── about.tsx          # Version, credits, legal links
+├── (formSheets)/              # Modal form sheets
+│   ├── add-menu.tsx           # Entry type selector
+│   ├── goals.tsx              # Daily goals configuration
+│   ├── language.tsx           # Language selector
+│   └── export.tsx             # Export options
+├── (modals)/                  # Full modals
+│   ├── urination.tsx          # Log urination
+│   ├── fluid.tsx              # Log fluid intake
+│   └── leak.tsx               # Log leakage
+├── (onboarding)/              # First-run tutorial
+└── entry/
+    └── [id].tsx               # Entry detail/edit view
 
 components/
-├── ui/                     # Design system primitives
-│   ├── button.tsx
-│   ├── card.tsx
+├── ui/                        # Design system primitives
+│   ├── animated-pressable.tsx
 │   ├── text.tsx
 │   └── ...
-└── diary/                  # App-specific components
-    ├── calendar.tsx
-    ├── progress-bar.tsx
-    ├── weekly-chart.tsx
-    └── ...
+├── diary/                     # App-specific components
+│   ├── calendar.tsx
+│   ├── timeline-entry.tsx
+│   ├── progress-bar.tsx
+│   ├── weekly-chart.tsx
+│   └── ...
+└── settings/                  # Settings components
+    └── setting-row.tsx
 
 lib/
-├── i18n/                   # Internationalization
+├── i18n/                      # Internationalization
 │   ├── context.tsx
-│   └── locales/
-├── store/                  # Zustand state management
+│   └── locales/               # en.json, es.json, pt.json
+├── store/                     # Zustand state management
 │   ├── diary-store.ts
 │   └── types.ts
-├── theme/                  # Color tokens and utilities
-└── utils/                  # Helper functions
+├── theme/                     # Design tokens
+│   ├── colors.ts
+│   ├── typography.ts
+│   └── motion.ts
+└── utils/                     # Helper functions
     ├── backup.ts
     ├── export.ts
+    ├── notifications.ts
     └── date.ts
 ```
 
 ## Design System
 
-Based on the **Eleva Care** brand identity:
+Based on the **Eleva Care** brand identity. See the full [Design Brief](_docs/design_brief.md) for detailed guidelines.
 
-| Color             | Hex       | Purpose                                 |
-| ----------------- | --------- | --------------------------------------- |
-| **Deep Teal**     | `#006D77` | Primary - Calming, medical, trustworthy |
-| **Soft Coral**    | `#E29578` | Secondary - Warm, approachable          |
-| **Pale Lavender** | `#E0FBFC` | Accent - Fresh, clean                   |
-| **Error Red**     | `#EF4444` | Destructive actions, alerts             |
+| Color | Hex | Purpose |
+| --- | --- | --- |
+| **Deep Teal** | `#006D77` | Primary -- Calming, medical, trustworthy |
+| **Soft Coral** | `#E29578` | Secondary -- Warm, approachable |
+| **Pale Lavender** | `#DDDFF2` | Accent -- Fresh, clean |
+| **Fluid Blue** | `#5B9BD5` | Fluid intake entries |
+| **Void Teal** | `#006D77` | Urination entries (primary color) |
+| **Leak Amber** | `#D4A574` | Leakage entries (warm, non-alarming) |
 
 ### Design Principles
 
@@ -174,6 +207,7 @@ Based on the **Eleva Care** brand identity:
 - **Accessibility first**: WCAG AA compliance, large tap targets
 - **One-hand operation**: Optimized for quick, single-handed use
 - **Low cognitive load**: Minimal steps to complete any action
+- **Calm authority**: No alarming colors or judgmental messaging
 
 ## Performance Optimizations
 
@@ -183,8 +217,9 @@ Following React Native best practices for smooth 60fps interactions:
 - **Zustand selectors** for granular state subscriptions
 - **GestureDetector** for hardware-accelerated press animations
 - **Memoized components** and hoisted Intl formatters
-- **Native modals** and navigation transitions
+- **Native modals** and navigation transitions (no JS-based modals)
 - **Haptic feedback** for tactile confirmation
+- **React Compiler** enabled for automatic memoization
 
 ## Data Schema
 
@@ -221,9 +256,19 @@ All entries are validated with Zod schemas:
 }
 ```
 
+## Documentation
+
+| Document | Description |
+| --- | --- |
+| [Development Setup](_docs/development-setup.md) | Full environment setup, build instructions, troubleshooting |
+| [Design Brief](_docs/design_brief.md) | Brand guidelines, colors, typography, design principles |
+| [App Store Metadata](_docs/app-stores/) | Store listings, screenshots, review notes |
+| [Legal Documents](_docs/legal/) | Privacy policy, terms of service, data deletion |
+| [Compliance](_docs/compliance/) | App behavior to disclosure mappings |
+
 ## Medical Disclaimer
 
-Pee Diary is a **logging tool only** and does not provide medical advice, diagnosis, or treatment recommendations. Always consult a qualified healthcare provider for medical concerns. The data collected is intended to support conversations with your healthcare team.
+Eleva Diary is a **logging tool only** and does not provide medical advice, diagnosis, or treatment recommendations. Always consult a qualified healthcare provider for medical concerns. The data collected is intended to support conversations with your healthcare team.
 
 ## Contributing
 
@@ -235,11 +280,12 @@ Pee Diary is a **logging tool only** and does not provide medical advice, diagno
 
 ## License
 
-Private - Eleva Care
+Private -- Eleva Care
 
 ## Acknowledgments
 
-- [Expo](https://expo.dev) - Universal React applications
-- [NativeWind](https://nativewind.dev) - TailwindCSS for React Native
-- [Zustand](https://zustand-demo.pmnd.rs) - Lightweight state management
-- [date-fns](https://date-fns.org) - Modern date utility library
+- [Expo](https://expo.dev) -- Universal React applications
+- [NativeWind](https://nativewind.dev) -- TailwindCSS for React Native
+- [Zustand](https://zustand-demo.pmnd.rs) -- Lightweight state management
+- [date-fns](https://date-fns.org) -- Modern date utility library
+- [Sentry](https://sentry.io) -- Error tracking and monitoring

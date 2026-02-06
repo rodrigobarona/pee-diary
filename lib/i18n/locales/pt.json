@@ -263,7 +263,12 @@
     "reminderNotificationTitle": "Hora de registar!",
     "reminderNotificationBody": "Não se esqueça de registar os seus líquidos e idas à casa de banho.",
     "permissionRequired": "Permissão Necessária",
-    "permissionRequiredDescription": "Por favor ative as notificações nas definições do dispositivo para receber lembretes."
+    "permissionRequiredDescription": "Por favor ative as notificações nas definições do dispositivo para receber lembretes.",
+    "preferences": "Preferências",
+    "preferencesDescription": "Idioma, lembretes, comportamento",
+    "dataAndStorage": "Dados e armazenamento",
+    "dataAndStorageDescription": "Exportar, backup, sincronização",
+    "general": "Geral"
   },
   "urgency": {
     "1": "Nenhuma",

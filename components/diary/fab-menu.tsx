@@ -49,13 +49,10 @@ export function FABMenu() {
   // Use text fallback on web if icons don't render
   const renderIcon = (name: string, size: number, color: string) => {
     if (Platform.OS === "web") {
-      // Use unicode symbols as fallback
-      const iconMap: Record<string, string> = {
+      // Use simple symbols as fallback for plus/close only
+      const symbolMap: Record<string, string> = {
         plus: "+",
         close: "×",
-        toilet: "🚽",
-        "cup-water": "💧",
-        "water-alert": "⚠️",
       };
       if (name === "plus" || name === "close") {
         return (
@@ -67,7 +64,7 @@ export function FABMenu() {
               lineHeight: size,
             }}
           >
-            {iconMap[name]}
+            {symbolMap[name]}
           </Text>
         );
       }
