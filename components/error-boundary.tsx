@@ -1,4 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Sentry from "@sentry/react-native";
 import * as React from "react";
 import {
   Platform,
@@ -37,7 +38,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ errorInfo });
     this.props.onError?.(error, errorInfo);
 
-    // Log error for debugging (in production, send to crash reporting service)
+    // Report to Sentry
+    Sentry.captureException(error, {
+      extra: {
+        componentStack: errorInfo.componentStack,
+      },
+    });
+
+    // Also log in development
     if (__DEV__) {
       console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
@@ -65,12 +73,15 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 }
 
-interface DefaultErrorFallbackProps {
+export interface DefaultErrorFallbackProps {
   error: Error | null;
   onRetry?: () => void;
 }
 
-function DefaultErrorFallback({ error, onRetry }: DefaultErrorFallbackProps) {
+export function DefaultErrorFallback({
+  error,
+  onRetry,
+}: DefaultErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
 
   return (
@@ -174,7 +185,13 @@ export function ScreenErrorBoundary({
 }: ScreenErrorBoundaryProps) {
   const handleError = React.useCallback(
     (error: Error, errorInfo: React.ErrorInfo) => {
-      // In production, you could send this to a crash reporting service
+      // Report to Sentry with screen context
+      Sentry.withScope((scope) => {
+        scope.setTag("screen", screenName ?? "unknown");
+        scope.setExtra("componentStack", errorInfo.componentStack);
+        Sentry.captureException(error);
+      });
+
       if (__DEV__) {
         console.error(`Error in screen ${screenName}:`, error, errorInfo);
       }

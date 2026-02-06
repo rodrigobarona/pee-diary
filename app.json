@@ -65,7 +65,14 @@
         }
       ],
       "react-native-bottom-tabs",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "elevacare",
+          "project": "eleva-diary"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

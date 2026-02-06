@@ -1,93 +1,160 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import * as React from "react";
-import { useCallback, useState } from "react";
-import {
-  Dimensions,
-  Platform,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
+  Extrapolation,
   interpolate,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
-import { colors, spacing } from "@/lib/theme";
+import { spacing } from "@/lib/theme";
+
+// Hardcoded colors to ensure they work
+const COLORS = {
+  primary: "#006D77",
+  secondary: "#E29578",
+  text: "#333333",
+  textMuted: "#6B7280",
+  background: "#FAFBFC",
+  white: "#FFFFFF",
+};
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+
 interface OnboardingPage {
   key: string;
-  icon: string;
+  icons: { name: IconName; size: number; offset: { x: number; y: number } }[];
+  accentColor: string;
   titleKey: string;
   subtitleKey: string;
   descriptionKey: string;
-  color: string;
 }
 
 const PAGES: OnboardingPage[] = [
   {
     key: "welcome",
-    icon: "💧",
+    icons: [
+      { name: "water", size: 48, offset: { x: 0, y: 0 } },
+      { name: "heart-pulse", size: 24, offset: { x: 40, y: -30 } },
+      { name: "chart-line", size: 20, offset: { x: -45, y: 25 } },
+    ],
+    accentColor: COLORS.primary,
     titleKey: "onboarding.welcome.title",
     subtitleKey: "onboarding.welcome.subtitle",
     descriptionKey: "onboarding.welcome.description",
-    color: colors.primary,
   },
   {
     key: "track",
-    icon: "📝",
+    icons: [
+      { name: "notebook-edit-outline", size: 48, offset: { x: 0, y: 0 } },
+      { name: "water-outline", size: 22, offset: { x: 42, y: -25 } },
+      { name: "clock-outline", size: 20, offset: { x: -40, y: 30 } },
+    ],
+    accentColor: COLORS.secondary,
     titleKey: "onboarding.track.title",
     subtitleKey: "onboarding.track.subtitle",
     descriptionKey: "onboarding.track.description",
-    color: colors.secondary,
   },
   {
     key: "insights",
-    icon: "📊",
+    icons: [
+      { name: "chart-timeline-variant", size: 48, offset: { x: 0, y: 0 } },
+      { name: "file-document-outline", size: 22, offset: { x: 45, y: -20 } },
+      { name: "share-variant-outline", size: 20, offset: { x: -42, y: 28 } },
+    ],
+    accentColor: COLORS.primary,
     titleKey: "onboarding.insights.title",
     subtitleKey: "onboarding.insights.subtitle",
     descriptionKey: "onboarding.insights.description",
-    color: colors.primary,
   },
 ];
 
+// Fixed heights
+const HEADER_HEIGHT = 56;
+const BOTTOM_HEIGHT = 140;
+
+// Page indicator dot
 function PageDot({
   index,
-  currentIndex,
+  scrollX,
 }: {
   index: number;
-  currentIndex: number;
+  scrollX: Animated.SharedValue<number>;
 }) {
-  const isActive = index === currentIndex;
+  const animatedStyle = useAnimatedStyle(() => {
+    const inputRange = [
+      (index - 1) * SCREEN_WIDTH,
+      index * SCREEN_WIDTH,
+      (index + 1) * SCREEN_WIDTH,
+    ];
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    width: withSpring(isActive ? 24 : 8),
-    opacity: withSpring(isActive ? 1 : 0.4),
-  }));
+    const width = interpolate(
+      scrollX.value,
+      inputRange,
+      [8, 24, 8],
+      Extrapolation.CLAMP
+    );
 
+    const opacity = interpolate(
+      scrollX.value,
+      inputRange,
+      [0.3, 1, 0.3],
+      Extrapolation.CLAMP
+    );
+
+    return { width, opacity };
+  });
+
+  return <Animated.View style={[styles.dot, animatedStyle]} />;
+}
+
+// Icon cluster component
+function IconCluster({
+  icons,
+  accentColor,
+}: {
+  icons: OnboardingPage["icons"];
+  accentColor: string;
+}) {
   return (
-    <Animated.View
-      style={[
-        {
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: colors.primary,
-          marginHorizontal: 4,
-        },
-        animatedStyle,
-      ]}
-    />
+    <View style={styles.iconCluster}>
+      {icons.map((icon, idx) => (
+        <View
+          key={idx}
+          style={[
+            styles.iconWrapper,
+            {
+              transform: [
+                { translateX: icon.offset.x },
+                { translateY: icon.offset.y },
+              ],
+              zIndex: idx === 0 ? 10 : 5 - idx,
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name={icon.name}
+            size={icon.size}
+            color={idx === 0 ? accentColor : `${accentColor}60`}
+          />
+        </View>
+      ))}
+    </View>
   );
 }
 
-function OnboardingPageView({
+// Individual onboarding page
+function OnboardingPageContent({
   page,
   index,
   scrollX,
@@ -105,81 +172,39 @@ function OnboardingPageView({
       (index + 1) * SCREEN_WIDTH,
     ];
 
-    const scale = interpolate(scrollX.value, inputRange, [0.8, 1, 0.8]);
-    const opacity = interpolate(scrollX.value, inputRange, [0.5, 1, 0.5]);
+    const opacity = interpolate(
+      scrollX.value,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
 
-    return {
-      transform: [{ scale }],
-      opacity,
-    };
+    const translateY = interpolate(
+      scrollX.value,
+      inputRange,
+      [30, 0, 30],
+      Extrapolation.CLAMP
+    );
+
+    return { opacity, transform: [{ translateY }] };
   });
 
   return (
-    <View
-      style={{
-        width: SCREEN_WIDTH,
-        paddingHorizontal: spacing.xl,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Animated.View
-        style={[
-          {
-            alignItems: "center",
-          },
-          animatedStyle,
-        ]}
-      >
-        <View
-          style={{
-            width: 120,
-            height: 120,
-            borderRadius: 60,
-            backgroundColor: `${page.color}15`,
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: spacing.xl,
-          }}
-        >
-          <Text style={{ fontSize: 56 }}>{page.icon}</Text>
-        </View>
+    <View style={styles.page}>
+      <Animated.View style={[styles.pageContent, animatedStyle]}>
+        {/* Icon cluster */}
+        <IconCluster icons={page.icons} accentColor={page.accentColor} />
 
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: "700",
-            color: colors.text,
-            textAlign: "center",
-            marginBottom: spacing.sm,
-          }}
-        >
-          {t(page.titleKey)}
-        </Text>
+        {/* Title */}
+        <Text style={styles.title}>{t(page.titleKey)}</Text>
 
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: "600",
-            color: page.color,
-            textAlign: "center",
-            marginBottom: spacing.md,
-          }}
-        >
+        {/* Subtitle */}
+        <Text style={[styles.subtitle, { color: page.accentColor }]}>
           {t(page.subtitleKey)}
         </Text>
 
-        <Text
-          style={{
-            fontSize: 16,
-            color: colors.textMuted,
-            textAlign: "center",
-            lineHeight: 24,
-            paddingHorizontal: spacing.lg,
-          }}
-        >
-          {t(page.descriptionKey)}
-        </Text>
+        {/* Description */}
+        <Text style={styles.description}>{t(page.descriptionKey)}</Text>
       </Animated.View>
     </View>
   );
@@ -188,19 +213,26 @@ function OnboardingPageView({
 export default function OnboardingScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { completeOnboarding } = useDiaryStore();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollViewRef = React.useRef<ScrollView>(null);
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
   const scrollX = useSharedValue(0);
 
-  const handleScroll = useCallback(
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollX.value = event.contentOffset.x;
+    },
+  });
+
+  const handleMomentumEnd = useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
-      const x = event.nativeEvent.contentOffset.x;
-      scrollX.value = x;
-      const index = Math.round(x / SCREEN_WIDTH);
+      const index = Math.round(
+        event.nativeEvent.contentOffset.x / SCREEN_WIDTH
+      );
       setCurrentIndex(index);
     },
-    [scrollX]
+    []
   );
 
   const handleNext = useCallback(() => {
@@ -209,6 +241,7 @@ export default function OnboardingScreen() {
         x: (currentIndex + 1) * SCREEN_WIDTH,
         animated: true,
       });
+      setCurrentIndex(currentIndex + 1);
     } else {
       completeOnboarding();
       router.replace("/(tabs)");
@@ -220,106 +253,247 @@ export default function OnboardingScreen() {
     router.replace("/(tabs)");
   }, [completeOnboarding, router]);
 
+  const handleBack = useCallback(() => {
+    if (currentIndex > 0) {
+      scrollViewRef.current?.scrollTo({
+        x: (currentIndex - 1) * SCREEN_WIDTH,
+        animated: true,
+      });
+      setCurrentIndex(currentIndex - 1);
+    }
+  }, [currentIndex]);
+
   const isLastPage = currentIndex === PAGES.length - 1;
+  const topPadding = insets.top;
+  const bottomPadding = Math.max(insets.bottom, 20);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.background,
-      }}
-    >
-      {/* Skip button */}
-      {!isLastPage ? (
-        <Pressable
-          onPress={handleSkip}
-          style={{
-            position: "absolute",
-            top: Platform.OS === "ios" ? 60 : 40,
-            right: spacing.lg,
-            zIndex: 10,
-            padding: spacing.sm,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.textMuted,
-            }}
-          >
-            {t("onboarding.skip")}
-          </Text>
-        </Pressable>
-      ) : null}
+    <View style={styles.container}>
+      {/* Header - FIXED HEIGHT, always same size */}
+      <View style={[styles.header, { marginTop: topPadding }]}>
+        {/* Back button - always takes space even if invisible */}
+        <View style={styles.headerSide}>
+          {currentIndex > 0 ? (
+            <Pressable
+              onPress={handleBack}
+              style={styles.backButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <MaterialCommunityIcons
+                name="chevron-left"
+                size={24}
+                color={COLORS.text}
+              />
+            </Pressable>
+          ) : (
+            <View style={styles.backButtonPlaceholder} />
+          )}
+        </View>
 
-      {/* Pages */}
-      <ScrollView
+        {/* Skip button - always takes space even if invisible */}
+        <View style={styles.headerSide}>
+          {!isLastPage ? (
+            <Pressable
+              onPress={handleSkip}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Text style={styles.skipText}>{t("onboarding.skip")}</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.skipPlaceholder} />
+          )}
+        </View>
+      </View>
+
+      {/* Scrollable content */}
+      <Animated.ScrollView
         ref={scrollViewRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
+        onScroll={scrollHandler}
+        onMomentumScrollEnd={handleMomentumEnd}
         scrollEventThrottle={16}
-        contentContainerStyle={{
-          alignItems: "center",
-        }}
-        style={{
-          flex: 1,
-        }}
+        style={styles.scrollView}
       >
         {PAGES.map((page, index) => (
-          <OnboardingPageView
+          <OnboardingPageContent
             key={page.key}
             page={page}
             index={index}
             scrollX={scrollX}
           />
         ))}
-      </ScrollView>
+      </Animated.ScrollView>
 
-      {/* Bottom controls */}
-      <View
-        style={{
-          paddingHorizontal: spacing.xl,
-          paddingBottom: Platform.OS === "ios" ? 50 : 30,
-          gap: spacing.xl,
-        }}
-      >
-        {/* Page indicators */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+      {/* Bottom section - FIXED HEIGHT, absolutely positioned */}
+      <View style={[styles.bottomSection, { paddingBottom: bottomPadding }]}>
+        {/* Pagination dots - fixed position */}
+        <View style={styles.pagination}>
           {PAGES.map((_, index) => (
-            <PageDot key={index} index={index} currentIndex={currentIndex} />
+            <PageDot key={index} index={index} scrollX={scrollX} />
           ))}
         </View>
 
-        {/* Next/Get Started button */}
+        {/* CTA Button */}
         <Pressable
           onPress={handleNext}
-          style={{
-            backgroundColor: colors.primary,
-            paddingVertical: spacing.md,
-            paddingHorizontal: spacing.xl,
-            borderRadius: 12,
-            alignItems: "center",
-          }}
+          style={({ pressed }) => [
+            styles.button,
+            pressed ? styles.buttonPressed : null,
+          ]}
         >
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "600",
-              color: "#FFFFFF",
-            }}
-          >
+          <Text style={styles.buttonText}>
             {isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
           </Text>
+          {!isLastPage ? (
+            <MaterialCommunityIcons
+              name="arrow-right"
+              size={20}
+              color={COLORS.white}
+              style={styles.buttonIcon}
+            />
+          ) : null}
         </Pressable>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  // Header - fixed height
+  header: {
+    height: HEADER_HEIGHT,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.lg,
+  },
+  headerSide: {
+    width: 80,
+    height: HEADER_HEIGHT,
+    justifyContent: "center",
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.white,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  backButtonPlaceholder: {
+    width: 36,
+    height: 36,
+  },
+  skipText: {
+    fontSize: 16,
+    color: COLORS.textMuted,
+    fontWeight: "500",
+    textAlign: "right",
+  },
+  skipPlaceholder: {
+    width: 40,
+    height: 20,
+  },
+  // Scroll view
+  scrollView: {
+    flex: 1,
+  },
+  page: {
+    width: SCREEN_WIDTH,
+    paddingHorizontal: spacing.xl,
+    paddingTop: 20,
+  },
+  pageContent: {
+    alignItems: "center",
+    width: "100%",
+  },
+  iconCluster: {
+    width: 120,
+    height: 120,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 28,
+  },
+  iconWrapper: {
+    position: "absolute",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: COLORS.text,
+    textAlign: "center",
+    marginBottom: 6,
+    lineHeight: 34,
+  },
+  subtitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 14,
+    lineHeight: 22,
+  },
+  description: {
+    fontSize: 16,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    lineHeight: 24,
+    paddingHorizontal: spacing.md,
+    maxWidth: 300,
+  },
+  // Bottom section - fixed height
+  bottomSection: {
+    height: BOTTOM_HEIGHT,
+    paddingHorizontal: spacing.xl,
+    paddingTop: 16,
+    backgroundColor: COLORS.background,
+  },
+  pagination: {
+    height: 24,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
+  },
+  button: {
+    height: 56,
+    backgroundColor: COLORS.primary,
+    borderRadius: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  buttonPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonText: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: COLORS.white,
+  },
+  buttonIcon: {
+    marginLeft: 8,
+  },
+});
