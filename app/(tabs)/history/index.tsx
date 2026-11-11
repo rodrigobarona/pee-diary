@@ -1,15 +1,9 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import {
-  isToday,
-  isYesterday,
-} from "date-fns";
-import * as Haptics from "expo-haptics";
+import { isToday, isYesterday } from "date-fns";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import * as React from "react";
 import {
   LayoutAnimation,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   UIManager,
@@ -26,13 +20,24 @@ import {
 } from "@/components/diary";
 import type { DateEntryInfo } from "@/components/diary/calendar-header";
 import type { FilterType } from "@/components/diary/filter-chips";
+import { useDayCountsLabel } from "@/components/diary/daily-stats-bar";
 import { AddEntryFab } from "@/components/add-entry-fab";
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useTabScreenBottomSpace } from "@/hooks/use-tab-screen-bottom-space";
+import { a11yLabel, hiddenA11y } from "@/lib/a11y";
 import { useI18n } from "@/lib/i18n/context";
-import { dateFormatters } from "@/lib/i18n";
+import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
+import {
+  MIN_TOUCH_TARGET,
+  iconSize,
+  radius,
+  spacing,
+} from "@/lib/theme/styles";
 import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
 
 // Enable LayoutAnimation on Android
@@ -55,8 +60,18 @@ interface PeriodGroup {
   entries: DiaryEntry[];
 }
 
+// Time-of-day icons; neutral colours that meet 3:1, no meaning attached
+const periodConfig: Record<TimePeriod, { icon: IconName; color: string }> = {
+  earlyMorning: { icon: "weather-night", color: colors.indigo.accent },
+  morning: { icon: "weather-sunny", color: colors.amber.accent },
+  afternoon: { icon: "white-balance-sunny", color: colors.orange.accent },
+  evening: { icon: "weather-sunset", color: colors.violet.accent },
+  night: { icon: "weather-night", color: colors.indigo.accent },
+};
+
 export default function HistoryScreen() {
   const { t } = useI18n();
+  const countsLabel = useDayCountsLabel();
   const router = useRouter();
   const bottomSpace = useTabScreenBottomSpace();
   const params = useLocalSearchParams<{
@@ -73,11 +88,8 @@ export default function HistoryScreen() {
 
   const entries = useDiaryStore(useShallow((state) => state.entries));
 
-  // Toggle period expansion with animation
+  // Toggle period expansion with animation (a disclosure: no haptic)
   const togglePeriod = React.useCallback((period: TimePeriod) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedPeriods((prev) => {
       const newSet = new Set(prev);
@@ -146,16 +158,6 @@ export default function HistoryScreen() {
     setSelectedDate(date);
   }, []);
 
-  // Format date with relative labels
-  const formatDateHeader = React.useCallback(
-    (date: Date): string => {
-      if (isToday(date)) return t("history.today");
-      if (isYesterday(date)) return t("history.yesterday");
-      return dateFormatters.weekdayDayMonth.format(date);
-    },
-    [t]
-  );
-
   // Compute entries by date with category info (for calendar dots)
   const entriesByDate = React.useMemo(() => {
     const dateMap = new Map<string, DateEntryInfo>();
@@ -166,11 +168,23 @@ export default function HistoryScreen() {
         hasUrination: false,
         hasFluid: false,
         hasLeak: false,
+        voids: 0,
+        fluidMl: 0,
+        leaks: 0,
       };
 
-      if (entry.type === "urination") existing.hasUrination = true;
-      if (entry.type === "fluid") existing.hasFluid = true;
-      if (entry.type === "leak") existing.hasLeak = true;
+      if (entry.type === "urination") {
+        existing.hasUrination = true;
+        existing.voids += 1;
+      }
+      if (entry.type === "fluid") {
+        existing.hasFluid = true;
+        existing.fluidMl += entry.amount;
+      }
+      if (entry.type === "leak") {
+        existing.hasLeak = true;
+        existing.leaks += 1;
+      }
 
       dateMap.set(dateKey, existing);
     });
@@ -250,6 +264,23 @@ export default function HistoryScreen() {
     };
   }, [selectedDate, entries, filter]);
 
+  // The day, once: "Today", "Yesterday" or "Monday 9 November" (formatted
+  // on every render, so a change of language or clock shows at once)
+  const fullDate = dateFormatters.weekdayDayMonth.format(selectedDate);
+  const dayTitle = isToday(selectedDate)
+    ? t("history.today")
+    : isYesterday(selectedDate)
+      ? t("history.yesterday")
+      : fullDate;
+  const { summary } = selectedDayData;
+  const dayHeaderLabel = a11yLabel(
+    dayTitle,
+    dayTitle !== fullDate ? fullDate : null,
+    selectedDayData.hasAnyEntries
+      ? countsLabel(summary.voids, summary.fluids, summary.leaks)
+      : null
+  );
+
   return (
     <View style={styles.container}>
       {/* Calendar Header */}
@@ -266,21 +297,23 @@ export default function HistoryScreen() {
         counts={filterCounts}
       />
 
-      {/* Day Header */}
-      <View style={styles.dayHeader}>
-        <Text style={styles.dayTitle}>{formatDateHeader(selectedDate)}</Text>
-        <Text style={styles.dayDot}>·</Text>
-        <Text style={styles.dayDate}>{dateFormatters.dayMonth.format(selectedDate)}</Text>
+      {/* Day header: one heading that reads the date and the day's counts */}
+      <View
+        style={styles.dayHeader}
+        accessible
+        accessibilityRole="header"
+        accessibilityLabel={dayHeaderLabel}
+      >
+        <Text variant="headline" style={styles.dayTitle}>
+          {dayTitle}
+        </Text>
         {selectedDayData.hasAnyEntries ? (
-          <>
-            <View style={styles.daySpacer} />
-            <DailyStatsBar
-              voids={selectedDayData.summary.voids}
-              fluids={selectedDayData.summary.fluids}
-              leaks={selectedDayData.summary.leaks}
-              compact
-            />
-          </>
+          <DailyStatsBar
+            voids={summary.voids}
+            fluids={summary.fluids}
+            leaks={summary.leaks}
+            hideFromAccessibility
+          />
         ) : null}
       </View>
 
@@ -298,53 +331,60 @@ export default function HistoryScreen() {
           >
             {selectedDayData.periods.map((periodGroup) => {
               const isExpanded = expandedPeriods.has(periodGroup.period);
-              const periodConfig = {
-                earlyMorning: {
-                  icon: "weather-night" as const,
-                  color: "#6366F1",
-                },
-                morning: { icon: "weather-sunny" as const, color: "#F59E0B" },
-                afternoon: {
-                  icon: "white-balance-sunny" as const,
-                  color: "#F97316",
-                },
-                evening: { icon: "weather-sunset" as const, color: "#8B5CF6" },
-                night: { icon: "weather-night" as const, color: "#6366F1" },
-              };
               const config = periodConfig[periodGroup.period];
+              const periodName = t(`timePeriod.${periodGroup.period}`);
+              const count = periodGroup.entries.length;
 
               return (
                 <View key={periodGroup.period} style={styles.periodSection}>
-                  {/* Collapsible Period Header - Minimal */}
-                  <Pressable
+                  {/* Collapsible period header */}
+                  <AnimatedPressable
                     style={styles.periodHeader}
                     onPress={() => togglePeriod(periodGroup.period)}
+                    feedback="highlight"
+                    highlightColor={colors.highlight}
+                    accessibilityRole="button"
+                    accessibilityLabel={a11yLabel(
+                      periodName,
+                      t("a11y.history.entryCount", { count })
+                    )}
+                    accessibilityState={{ expanded: isExpanded }}
+                    testID={`history-period-${periodGroup.period}`}
                   >
                     <View style={styles.periodIconContainer}>
-                      <MaterialCommunityIcons
+                      <Icon
                         name={config.icon}
-                        size={14}
+                        size={iconSize.sm}
                         color={config.color}
                       />
                     </View>
-                    <Text style={styles.periodLabel}>
-                      {t(`timePeriod.${periodGroup.period}`)}
+                    <Text
+                      variant="subheadline"
+                      tone="secondary"
+                      style={styles.periodLabel}
+                    >
+                      {periodName}
                     </Text>
                     <View style={styles.periodBadge}>
-                      <Text style={styles.periodBadgeText}>
-                        {periodGroup.entries.length}
+                      <Text
+                        variant="caption1"
+                        tone="secondary"
+                        style={styles.periodBadgeText}
+                      >
+                        {numberFormatters.decimal.format(count)}
                       </Text>
                     </View>
                     <View style={styles.periodLine} />
-                    <MaterialCommunityIcons
+                    <Icon
                       name={isExpanded ? "chevron-up" : "chevron-down"}
-                      size={16}
-                      color="#D1D5DB"
+                      size={iconSize.md}
+                      color={colors.textSecondary}
                     />
-                  </Pressable>
+                  </AnimatedPressable>
 
                   {/* Entries in this period (collapsible) */}
-                  {isExpanded ? <View style={styles.entriesList}>
+                  {isExpanded ? (
+                    <View style={styles.entriesList}>
                       {periodGroup.entries.map((entry, entryIndex) => (
                         <TimelineEntry
                           key={entry.id}
@@ -355,7 +395,8 @@ export default function HistoryScreen() {
                           testID={`entry-${entry.id}`}
                         />
                       ))}
-                    </View> : null}
+                    </View>
+                  ) : null}
                 </View>
               );
             })}
@@ -363,30 +404,39 @@ export default function HistoryScreen() {
         ) : (
           /* Empty State - Full height centered */
           <View
-            style={[styles.emptyState, { paddingBottom: bottomSpace - 24 }]}
+            style={[styles.emptyState, { paddingBottom: bottomSpace - spacing.xl }]}
           >
             <View style={styles.emptyContent}>
-              <MaterialCommunityIcons
+              <Icon
                 name="calendar-blank-outline"
                 size={64}
-                color="#D1D5DB"
+                color={colors.textTertiary}
               />
-              <Text style={styles.emptyTitle}>{t("history.noDataForDay")}</Text>
-              <Text style={styles.emptySubtitle}>
+              <Text
+                variant="title3"
+                tone="secondary"
+                style={styles.emptyTitle}
+                accessibilityRole="header"
+              >
+                {t("history.noDataForDay")}
+              </Text>
+              <Text variant="subheadline" tone="secondary" style={styles.emptySubtitle}>
                 {isToday(selectedDate)
                   ? t("history.startTracking")
                   : t("history.noEntriesForDate")}
               </Text>
             </View>
 
-            {/* Handwriting arrow pointing to add button */}
-            <View style={styles.arrowHint}>
-              <Text style={styles.arrowText}>{t("history.tapToAdd")}</Text>
-              <MaterialCommunityIcons
+            {/* Handwriting arrow pointing to the add button (visual only:
+                the add button has its own name) */}
+            <View style={styles.arrowHint} {...hiddenA11y}>
+              <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
+                {t("history.tapToAdd")}
+              </Text>
+              <Icon
                 name="chevron-double-down"
-                size={28}
-                color="#9CA3AF"
-                style={styles.arrowIcon}
+                size={iconSize.xl}
+                color={colors.textSecondary}
               />
             </View>
           </View>
@@ -400,33 +450,21 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   dayHeader: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    justifyContent: "space-between",
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   dayTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#111827",
-  },
-  dayDot: {
-    fontSize: 16,
-    color: "#D1D5DB",
-    marginHorizontal: 8,
-  },
-  dayDate: {
-    fontSize: 14,
-    color: "#6B7280",
-  },
-  daySpacer: {
-    flex: 1,
+    flexShrink: 1,
   },
   contentContainer: {
     flex: 1,
@@ -435,57 +473,54 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 8,
+    paddingTop: spacing.sm,
   },
   entriesList: {
-    paddingHorizontal: 8,
+    paddingHorizontal: spacing.sm,
   },
-  // Accordion period styles (minimal)
+  // Collapsible time-of-day sections
   periodSection: {
-    marginTop: 8,
+    marginTop: spacing.xs,
   },
   periodHeader: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 8,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
   },
   periodIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#F3F4F6",
+    width: 28,
+    height: 28,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceMuted,
     alignItems: "center",
     justifyContent: "center",
   },
   periodLabel: {
-    fontSize: 13,
     fontWeight: "600",
-    color: "#6B7280",
+    flexShrink: 1,
   },
   periodBadge: {
-    backgroundColor: "#F3F4F6",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
+    backgroundColor: colors.surfaceMuted,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: radius.full,
   },
   periodBadgeText: {
-    fontSize: 11,
     fontWeight: "600",
-    color: "#9CA3AF",
+    fontVariant: ["tabular-nums"],
   },
   periodLine: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#E5E7EB",
-    marginLeft: 12,
-    marginRight: 8,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginHorizontal: spacing.sm,
   },
   // Empty state - full height with arrow at bottom
   emptyState: {
     flex: 1,
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing.xxl,
   },
   emptyContent: {
     flex: 1,
@@ -493,15 +528,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#6B7280",
-    marginTop: 16,
+    marginTop: spacing.lg,
+    textAlign: "center",
   },
   emptySubtitle: {
-    fontSize: 14,
-    color: "#9CA3AF",
-    marginTop: 4,
+    marginTop: spacing.xs,
     textAlign: "center",
   },
   // Handwriting arrow hint
@@ -509,15 +540,10 @@ const styles = StyleSheet.create({
   // floating action button at the bottom end (Android)
   arrowHint: {
     alignItems: Platform.OS === "android" ? "flex-end" : "center",
-    paddingBottom: 20,
+    paddingBottom: spacing.lg,
   },
   arrowText: {
-    fontSize: 14,
-    color: "#9CA3AF",
     fontStyle: "italic",
-    marginBottom: 2,
-  },
-  arrowIcon: {
-    opacity: 0.5,
+    marginBottom: spacing.xxs,
   },
 });

@@ -1,11 +1,13 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as React from 'react';
 import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
+import { Icon, type IconName } from './icon';
 import { Text } from './text';
+import { switchColors } from './toggle-row';
+import { a11yLabel, hiddenA11y } from '@/lib/a11y';
+import { haptics } from '@/lib/haptics';
 import { colors } from '@/lib/theme/colors';
-
-type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+import { iconSize, radius, ripple, spacing } from '@/lib/theme/styles';
 
 const IS_IOS = Platform.OS === 'ios';
 
@@ -26,7 +28,12 @@ export function SettingsSection({ title, children }: SettingsSectionProps) {
   return (
     <View style={styles.section}>
       {title ? (
-        <Text style={styles.sectionTitle} accessibilityRole="header">
+        <Text
+          variant={IS_IOS ? 'footnote' : 'subheadline'}
+          tone={IS_IOS ? 'secondary' : 'accent'}
+          style={styles.sectionTitle}
+          accessibilityRole="header"
+        >
           {title}
         </Text>
       ) : null}
@@ -75,10 +82,10 @@ export function SettingsRow({
 }: SettingsRowProps) {
   const isSwitch = onSwitchChange !== undefined;
   const tint = destructive
-    ? colors.error
+    ? colors.destructive
     : IS_IOS
       ? colors.primary.DEFAULT
-      : '#3F4948';
+      : colors.textSecondary;
 
   const content = (
     <>
@@ -92,59 +99,49 @@ export function SettingsRow({
             : undefined,
         ]}
       >
-        <MaterialCommunityIcons
-          name={icon}
-          size={IS_IOS ? 18 : 24}
-          color={tint}
-          accessible={false}
-          importantForAccessibility="no"
-        />
+        <Icon name={icon} size={IS_IOS ? 18 : iconSize.lg} color={tint} />
       </View>
       <View style={styles.textContainer}>
-        <Text
-          style={[styles.label, destructive ? styles.labelDestructive : undefined]}
-        >
+        <Text variant="body" tone={destructive ? 'destructive' : 'primary'}>
           {label}
         </Text>
         {description ? (
-          <Text style={styles.description}>{description}</Text>
+          <Text
+            variant={IS_IOS ? 'footnote' : 'subheadline'}
+            tone="secondary"
+            style={styles.description}
+          >
+            {description}
+          </Text>
         ) : null}
       </View>
-      {value ? <Text style={styles.value}>{value}</Text> : null}
+      {value ? (
+        <Text
+          variant={IS_IOS ? 'body' : 'subheadline'}
+          tone="secondary"
+          style={styles.value}
+        >
+          {value}
+        </Text>
+      ) : null}
       {trailing}
       {isSwitch ? (
         // The row handles the touch and the accessibility; the switch only
         // shows the state, so one tap anywhere toggles it once
-        <View
-          pointerEvents="none"
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-        >
+        <View pointerEvents="none" {...hiddenA11y}>
           <Switch
             value={switchValue}
-            trackColor={{ false: '#E2E8F0', true: colors.primary.DEFAULT }}
-            thumbColor="#FFFFFF"
-            ios_backgroundColor="#E2E8F0"
+            trackColor={switchColors.trackColor}
+            thumbColor={switchColors.thumbColor(switchValue)}
+            ios_backgroundColor={switchColors.iosBackgroundColor}
           />
         </View>
       ) : null}
       {accessory === 'external' ? (
-        <MaterialCommunityIcons
-          name="open-in-new"
-          size={18}
-          color="#6B7280"
-          accessible={false}
-          importantForAccessibility="no"
-        />
+        <Icon name="open-in-new" size={18} color={colors.textSecondary} />
       ) : null}
       {accessory === 'disclosure' && IS_IOS ? (
-        <MaterialCommunityIcons
-          name="chevron-right"
-          size={22}
-          color="#C4C4C7"
-          accessible={false}
-          importantForAccessibility="no"
-        />
+        <Icon name="chevron-right" size={22} color={colors.chevron} />
       ) : null}
     </>
   );
@@ -159,7 +156,7 @@ export function SettingsRow({
       <View
         style={rowStyle}
         accessible
-        accessibilityLabel={[label, value, description].filter(Boolean).join(', ')}
+        accessibilityLabel={a11yLabel(label, value, description)}
         testID={testID}
       >
         {content}
@@ -168,7 +165,10 @@ export function SettingsRow({
   }
 
   const handlePress = isSwitch
-    ? () => onSwitchChange(!switchValue)
+    ? () => {
+        haptics.toggle(!switchValue);
+        onSwitchChange(!switchValue);
+      }
     : onPress;
 
   return (
@@ -178,10 +178,10 @@ export function SettingsRow({
       accessibilityRole={
         isSwitch ? 'switch' : accessory === 'external' ? 'link' : 'button'
       }
-      accessibilityLabel={isSwitch ? label : [label, value].filter(Boolean).join(', ')}
+      accessibilityLabel={isSwitch ? label : a11yLabel(label, value)}
       accessibilityHint={description}
       accessibilityState={isSwitch ? { checked: switchValue } : undefined}
-      android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
+      android_ripple={ripple}
       style={({ pressed }) => [
         rowStyle,
         IS_IOS && pressed ? styles.rowPressedIOS : undefined,
@@ -192,35 +192,31 @@ export function SettingsRow({
   );
 }
 
+// iOS row inset: leading padding + icon tile + gap
+const IOS_TILE = 30;
+
 const styles = StyleSheet.create({
   section: Platform.select({
-    ios: { marginTop: 24 },
-    default: { marginTop: 16 },
+    ios: { marginTop: spacing.xl },
+    default: { marginTop: spacing.lg },
   }),
   sectionTitle: Platform.select({
     ios: {
-      fontSize: 13,
-      fontWeight: '400',
-      color: '#6B7280',
       textTransform: 'uppercase',
-      letterSpacing: 0.3,
-      marginBottom: 6,
-      marginStart: 16,
+      marginBottom: spacing.sm,
+      marginStart: spacing.lg,
     },
     default: {
       // Material 3 list subheader (title small, primary)
-      fontSize: 14,
       fontWeight: '500',
-      color: colors.primary.DEFAULT,
-      paddingHorizontal: 16,
-      paddingTop: 8,
-      paddingBottom: 8,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.sm,
     },
   }),
   group: Platform.select({
     ios: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 12,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
       borderCurve: 'continuous',
       overflow: 'hidden',
     },
@@ -229,26 +225,26 @@ const styles = StyleSheet.create({
   // Inset to the start of the text, as in iOS lists
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#C6C6C8',
-    marginStart: 16 + 30 + 12,
+    backgroundColor: '#C6C6C8', // iOS separator (decorative)
+    marginStart: spacing.lg + IOS_TILE + spacing.md,
   },
   row: Platform.select({
     ios: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 12,
+      gap: spacing.md,
       minHeight: 44,
-      paddingVertical: 10,
-      paddingHorizontal: 16,
+      paddingVertical: spacing.sm + 2,
+      paddingHorizontal: spacing.lg,
     },
     default: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 16,
+      gap: spacing.lg,
       minHeight: 56,
-      paddingVertical: 8,
-      paddingStart: 16,
-      paddingEnd: 24,
+      paddingVertical: spacing.sm,
+      paddingStart: spacing.lg,
+      paddingEnd: spacing.xl,
     },
   }),
   rowTwoLine: Platform.select({
@@ -256,7 +252,7 @@ const styles = StyleSheet.create({
     default: { minHeight: 72 },
   }),
   rowPressedIOS: {
-    backgroundColor: '#E5E5EA',
+    backgroundColor: colors.highlight,
   },
   iconContainer: {
     alignItems: 'center',
@@ -264,37 +260,27 @@ const styles = StyleSheet.create({
   },
   // iOS Settings-style icon tile
   iconTile: {
-    width: 30,
-    height: 30,
+    width: IOS_TILE,
+    height: IOS_TILE,
     borderRadius: 7,
     borderCurve: 'continuous',
-    backgroundColor: 'rgba(0, 109, 119, 0.1)',
+    backgroundColor: colors.primary.subtle,
   },
   iconTileDestructive: {
-    width: 30,
-    height: 30,
+    width: IOS_TILE,
+    height: IOS_TILE,
     borderRadius: 7,
     borderCurve: 'continuous',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: colors.category.leak.container,
   },
   textContainer: {
     flex: 1,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  labelDestructive: {
-    color: colors.error,
-  },
   description: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
   value: {
-    fontSize: 15,
-    color: '#6B7280',
+    flexShrink: 1,
+    textAlign: 'right',
   },
 });

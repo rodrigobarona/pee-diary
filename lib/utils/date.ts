@@ -1,5 +1,4 @@
-import { startOfWeek, endOfWeek } from 'date-fns';
-import { dateFormatters } from '@/lib/i18n';
+import { dateFormatters, getWeekStartsOn } from '@/lib/i18n';
 import { isDayKey, parseDayKey } from '@/lib/utils/day';
 
 // A "yyyy-MM-dd" day is read as local midnight, any other string as a moment
@@ -33,19 +32,8 @@ export const formatDateHeader = (date: Date) => {
 };
 
 /**
- * Get the start and end of the current week
+ * date-fns week options with the device's first day of the week (Monday in
+ * most of Europe, Sunday in the US), for startOfWeek, endOfWeek and
+ * isSameWeek.
  */
-export const getCurrentWeekRange = () => {
-  const now = new Date();
-  return {
-    start: startOfWeek(now, { weekStartsOn: 1 }), // Monday
-    end: endOfWeek(now, { weekStartsOn: 1 }),
-  };
-};
-
-/**
- * Format a date range for display
- */
-export const formatDateRange = (start: Date, end: Date) => {
-  return `${dateFormatters.dayMonth.format(start)} - ${dateFormatters.dayMonth.format(end)}`;
-};
+export const weekOptions = () => ({ weekStartsOn: getWeekStartsOn() });

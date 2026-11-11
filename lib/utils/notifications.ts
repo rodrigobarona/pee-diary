@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 import type { ReminderSettings } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
 import {
   getReminderTimes,
   reminderIdentifier,
@@ -64,7 +65,7 @@ export async function initializeNotifications(
       name: channelName,
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#006D77",
+      lightColor: colors.primary.DEFAULT,
     });
   }
 }

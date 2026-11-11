@@ -1,5 +1,3 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import {
@@ -8,15 +6,20 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
+import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
+import { iconSize, radius, ripple, spacing } from "@/lib/theme/styles";
+
+const IS_IOS = Platform.OS === "ios";
 
 /**
  * Shown at launch when the Terms of Use accepted on this device are not the
@@ -49,9 +52,7 @@ export default function TermsUpdateScreen() {
   }, [locale]);
 
   const handleAccept = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
+    haptics.success();
     acceptTerms();
     close();
   }, [acceptTerms, close]);
@@ -64,60 +65,70 @@ export default function TermsUpdateScreen() {
         {
           // Android shows this full screen, edge to edge: start below the
           // status bar (iOS presents it as a page sheet)
-          paddingTop: Platform.OS === "android" ? insets.top + 24 : 40,
-          paddingBottom: Math.max(insets.bottom, 20) + 8,
+          paddingTop: IS_IOS ? spacing.xxl + spacing.sm : insets.top + spacing.xl,
+          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.sm,
         },
       ]}
     >
       <View style={styles.iconContainer}>
-        <MaterialCommunityIcons
+        <Icon
           name="file-document-outline"
           size={32}
           color={colors.primary.DEFAULT}
         />
       </View>
 
-      <Text style={styles.title} accessibilityRole="header">
+      <Text variant="title2" style={styles.title} accessibilityRole="header">
         {hadAcceptedEarlierVersion
           ? t("termsUpdate.titleChanged")
           : t("termsUpdate.titleReview")}
       </Text>
-      <Text style={styles.body}>{t("termsUpdate.body")}</Text>
-      <Text style={styles.body}>{t("termsUpdate.keepUsing")}</Text>
+      <Text variant="body">{t("termsUpdate.body")}</Text>
+      <Text variant="body">{t("termsUpdate.keepUsing")}</Text>
 
       <Pressable
         onPress={handleRead}
         style={({ pressed }) => [
+          styles.button,
           styles.secondaryButton,
-          pressed && styles.pressed,
+          IS_IOS && pressed ? styles.pressedIOS : undefined,
         ]}
         accessibilityRole="link"
+        android_ripple={ripple}
       >
-        <MaterialCommunityIcons
-          name="open-in-new"
-          size={18}
-          color={colors.primary.DEFAULT}
-        />
-        <Text style={styles.secondaryButtonText}>{t("termsUpdate.read")}</Text>
+        <Icon name="open-in-new" size={iconSize.md} color={colors.primary.DEFAULT} />
+        <Text variant="button" tone="accent">
+          {t("termsUpdate.read")}
+        </Text>
       </Pressable>
 
       <Pressable
         onPress={handleAccept}
         style={({ pressed }) => [
+          styles.button,
           styles.primaryButton,
-          pressed && styles.pressed,
+          IS_IOS && pressed ? styles.pressedIOS : undefined,
         ]}
         accessibilityRole="button"
+        android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
       >
-        <Text style={styles.primaryButtonText}>{t("termsUpdate.accept")}</Text>
+        <Text variant="button" tone="onAccent">
+          {t("termsUpdate.accept")}
+        </Text>
       </Pressable>
 
       <Pressable
         onPress={close}
-        style={({ pressed }) => [styles.laterButton, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.button,
+          IS_IOS && pressed ? styles.pressedIOS : undefined,
+        ]}
         accessibilityRole="button"
+        android_ripple={ripple}
       >
-        <Text style={styles.laterButtonText}>{t("termsUpdate.later")}</Text>
+        <Text variant="button" tone="accent">
+          {t("termsUpdate.later")}
+        </Text>
       </Pressable>
     </ScrollView>
   );
@@ -129,72 +140,44 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    paddingHorizontal: 24,
-    gap: 16,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.lg,
   },
   iconContainer: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: `${colors.primary.DEFAULT}15`,
+    backgroundColor: colors.primary.subtle,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
   },
   title: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: "700",
-    color: colors.text,
     textAlign: "center",
   },
-  body: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.text,
-  },
-  secondaryButton: {
-    marginTop: 8,
-    minHeight: 52,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: colors.primary.DEFAULT,
-    backgroundColor: colors.surface,
+  // Buttons: iOS 12-point corners, Material 3 full radius; >= 48 tall
+  button: {
+    minHeight: IS_IOS ? 50 : 48,
+    borderRadius: IS_IOS ? radius.md : radius.full,
+    borderCurve: "continuous",
+    overflow: "hidden",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingHorizontal: 16,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.primary.DEFAULT,
+  secondaryButton: {
+    marginTop: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.primary.DEFAULT,
+    backgroundColor: colors.surface,
   },
   primaryButton: {
-    minHeight: 52,
-    borderRadius: 14,
     backgroundColor: colors.primary.DEFAULT,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
   },
-  primaryButtonText: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  laterButton: {
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  laterButtonText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: colors.textMuted,
-  },
-  pressed: {
-    opacity: 0.8,
+  pressedIOS: {
+    opacity: 0.6,
   },
 });

@@ -10,41 +10,49 @@
 @source "./hooks";
 @source "./lib";
 
-/* Eleva Care brand tokens. Keep in step with lib/theme/colors.ts. */
+/* Eleva Care colour tokens (light only). Keep in step with
+   lib/theme/colors.ts, which documents the contrast ratios: every text token
+   meets WCAG AA (4.5:1) on white, #F9FAFB and #F3F4F6. The type scale lives in
+   lib/theme/typography.ts (the Text component's variant prop), because it
+   differs per platform (iOS text styles, Material 3 type roles). */
 @theme {
-  /* Primary - Deep Teal (calming, medical, trustworthy) */
+  /* Primary - Deep Teal: 6.08:1 on white, white on teal 6.08:1 */
   --color-primary: #006d77;
-  --color-primary-light: #83c5be;
+  --color-primary-light: #83c5be; /* fills only */
   --color-primary-dark: #004d54;
+  --color-primary-container: #cde8ea;
+  --color-on-primary-container: #004d54;
 
-  /* Secondary - Soft Coral (warm, approachable) */
+  /* Secondary - Soft Coral: a fill colour only; coral text uses
+     secondary-text (6.19:1) */
   --color-secondary: #e29578;
   --color-secondary-light: #ffddd2;
+  --color-secondary-text: #9a4a2c;
 
-  /* Accent - Pale Lavender (fresh, clean) */
+  /* Accent - Pale Aqua (fills only) */
   --color-accent: #e0fbfc;
+  --color-accent-foreground: #004d54;
 
   /* Neutrals */
   --color-background: #f9fafb;
   --color-surface: #ffffff;
-  --color-foreground: #333333;
-  --color-muted: #6b7280;
-  --color-muted-foreground: #6b7280;
+  --color-foreground: #111827; /* 17.74:1 */
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: #4b5563; /* 7.56:1, 6.87:1 on muted */
+  --color-placeholder: #6b7280; /* 4.83:1 */
   --color-border: #e2e8f0;
+  --color-outline: #6f7979; /* control outlines, 4.48:1 */
 
-  /* Status */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-destructive: #ef4444;
+  /* Destructive (Material 3 error): 6.54:1, white on it 6.54:1 */
+  --color-destructive: #b3261e;
 
   /* Aliases used by the react-native-reusables components */
   --color-card: #ffffff;
-  --color-card-foreground: #333333;
+  --color-card-foreground: #111827;
   --color-popover: #ffffff;
-  --color-popover-foreground: #333333;
+  --color-popover-foreground: #111827;
   --color-input: #e2e8f0;
   --color-ring: #006d77;
-
 
   /* Not carried over from tailwind.config.js, on purpose:
      - radius: the old lg, md and sm (8, 6 and 4px) equal the Tailwind 4 defaults;

@@ -1,8 +1,6 @@
-import * as Haptics from "expo-haptics";
 import * as React from "react";
 import {
-  Platform,
-  Pressable,
+  type LayoutChangeEvent,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -24,10 +22,13 @@ import Svg, {
   Text as SvgText,
 } from "react-native-svg";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
-import { useI18n } from "@/lib/i18n/context";
 import { dateFormatters } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
+import { cardStyle, spacing } from "@/lib/theme/styles";
+import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -44,8 +45,7 @@ interface FluidBalanceChartProps {
 
 // Chart dimensions
 const CHART_HEIGHT = 120;
-const LABEL_HEIGHT = 24;
-const PADDING = 16;
+const PADDING = 8;
 
 // Volumes used to estimate output when no exact amount in ml was entered
 export const VOLUME_ESTIMATES = {
@@ -54,18 +54,31 @@ export const VOLUME_ESTIMATES = {
   large: 400,
 } as const;
 
+/**
+ * Fluid intake and estimated output for each of the last 7 days: neutral
+ * totals only, no ratio and no judgement.
+ */
 export function FluidBalanceChart({
   data,
   onDayPress,
 }: FluidBalanceChartProps) {
   const { t } = useI18n();
-  const { width: screenWidth } = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
+  const [containerWidth, setContainerWidth] = React.useState(0);
 
-  // Calculate responsive dimensions
-  const containerWidth = screenWidth - 72;
-  const dayCount = data.length;
-  const barGroupWidth = (containerWidth - PADDING * 2) / dayCount;
-  const barWidth = Math.min((barGroupWidth - 12) / 2, 18);
+  const labelFontSize =
+    (typography.caption1.fontSize ?? 12) *
+    Math.min(Math.max(fontScale, 1), CONTROL_MAX_FONT_SCALE);
+  const labelHeight = Math.ceil(labelFontSize * 1.4) + spacing.sm;
+
+  const handleLayout = React.useCallback((event: LayoutChangeEvent) => {
+    setContainerWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  // Responsive dimensions
+  const dayCount = data.length || 1;
+  const barGroupWidth = Math.max(containerWidth - PADDING * 2, 0) / dayCount;
+  const barWidth = Math.max(Math.min((barGroupWidth - 12) / 2, 18), 2);
   const barGap = 4;
 
   // Calculate max values for scaling
@@ -77,184 +90,238 @@ export function FluidBalanceChart({
   const totalIntake = data.reduce((sum, d) => sum + d.fluidIntake, 0);
   const totalOutput = data.reduce((sum, d) => sum + d.urinationOutput, 0);
 
-  const handleDayPress = React.useCallback(
-    (date: Date) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      onDayPress?.(date);
-    },
-    [onDayPress]
-  );
-
-  // Get day label
-  const getDayLabel = (date: Date): string => {
-    return dateFormatters.weekdayNarrow.format(date);
-  };
+  const dayLabel = (day: DayData) =>
+    t("a11y.today.chartDay", {
+      date: dateFormatters.weekdayDayMonth.format(day.date),
+      details: t("a11y.today.intakeOutput", {
+        intake: day.fluidIntake,
+        output: day.urinationOutput,
+      }),
+    });
 
   return (
     <View style={styles.container}>
-      {/* Summary Header */}
+      {/* Totals for the 7 days */}
       <View style={styles.summaryHeader}>
-        <View style={styles.summaryItem}>
+        <View
+          style={styles.summaryItem}
+          accessible
+          accessibilityLabel={`${t("insights.fluidIntake")}, ${t(
+            "a11y.today.millilitres",
+            { amount: totalIntake }
+          )}`}
+        >
           <View
             style={[
               styles.summaryDot,
               { backgroundColor: colors.secondary.DEFAULT },
             ]}
           />
-          <Text style={styles.summaryLabel}>{t("insights.fluidIntake")}</Text>
-          <Text style={styles.summaryValue}>{totalIntake}ml</Text>
+          <Text variant="footnote" tone="secondary" style={styles.centered}>
+            {t("insights.fluidIntake")}
+          </Text>
+          <Text variant="headline">{totalIntake} ml</Text>
         </View>
-        <View style={styles.summaryItem}>
+        <View
+          style={styles.summaryItem}
+          accessible
+          accessibilityLabel={`${t("insights.urinationOutput")}, ${t(
+            "a11y.today.millilitres",
+            { amount: totalOutput }
+          )}`}
+        >
           <View
             style={[
               styles.summaryDot,
               { backgroundColor: colors.primary.DEFAULT },
             ]}
           />
-          <Text style={styles.summaryLabel}>
+          <Text variant="footnote" tone="secondary" style={styles.centered}>
             {t("insights.urinationOutput")}
           </Text>
-          <Text style={styles.summaryValue}>{totalOutput}ml</Text>
+          <Text variant="headline">{totalOutput} ml</Text>
         </View>
       </View>
 
       {/* How output is estimated */}
-      <Text style={styles.estimateNote}>{t("insights.outputEstimateNote")}</Text>
+      <Text variant="footnote" tone="secondary" style={styles.estimateNote}>
+        {t("insights.outputEstimateNote")}
+      </Text>
 
       {/* Chart */}
-      <View style={styles.chartContainer}>
-        <Svg width={containerWidth} height={CHART_HEIGHT + LABEL_HEIGHT}>
-          <Defs>
-            <LinearGradient id="intakeGradient" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={colors.secondary.DEFAULT} />
-              <Stop offset="1" stopColor={colors.secondary.DEFAULT + "80"} />
-            </LinearGradient>
-            <LinearGradient id="outputGradient" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={colors.primary.DEFAULT} />
-              <Stop offset="1" stopColor={colors.primary.DEFAULT + "80"} />
-            </LinearGradient>
-          </Defs>
+      <View style={styles.chartContainer} onLayout={handleLayout}>
+        {containerWidth > 0 ? (
+          <>
+            <View
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel={t("a11y.today.fluidBalanceChart")}
+            >
+              <Svg width={containerWidth} height={CHART_HEIGHT + labelHeight}>
+                <Defs>
+                  <LinearGradient
+                    id="intakeGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <Stop offset="0" stopColor={colors.secondary.DEFAULT} />
+                    <Stop
+                      offset="1"
+                      stopColor={colors.secondary.DEFAULT}
+                      stopOpacity={0.5}
+                    />
+                  </LinearGradient>
+                  <LinearGradient
+                    id="outputGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <Stop offset="0" stopColor={colors.primary.DEFAULT} />
+                    <Stop
+                      offset="1"
+                      stopColor={colors.primary.DEFAULT}
+                      stopOpacity={0.5}
+                    />
+                  </LinearGradient>
+                </Defs>
 
-          {/* Grid line at bottom */}
-          <Line
-            x1={PADDING}
-            y1={CHART_HEIGHT}
-            x2={containerWidth - PADDING}
-            y2={CHART_HEIGHT}
-            stroke="#E5E7EB"
-            strokeWidth={1}
-          />
-
-          {/* Middle reference line (50% of max) */}
-          <Line
-            x1={PADDING}
-            y1={CHART_HEIGHT / 2}
-            x2={containerWidth - PADDING}
-            y2={CHART_HEIGHT / 2}
-            stroke="#F3F4F6"
-            strokeWidth={1}
-            strokeDasharray="4,4"
-          />
-
-          {/* Bars for each day */}
-          {data.map((day, index) => {
-            const groupX = PADDING + index * barGroupWidth;
-            const centerX = groupX + barGroupWidth / 2;
-
-            // Bar positions
-            const intakeBarX = centerX - barWidth - barGap / 2;
-            const outputBarX = centerX + barGap / 2;
-
-            // Intake bar height
-            const intakeHeight = Math.max(
-              (day.fluidIntake / maxValue) * (CHART_HEIGHT - 8),
-              day.fluidIntake > 0 ? 4 : 0
-            );
-            const intakeY = CHART_HEIGHT - intakeHeight;
-
-            // Output bar height
-            const outputHeight = Math.max(
-              (day.urinationOutput / maxValue) * (CHART_HEIGHT - 8),
-              day.urinationOutput > 0 ? 4 : 0
-            );
-            const outputY = CHART_HEIGHT - outputHeight;
-
-            const isToday = index === data.length - 1;
-
-            return (
-              <G key={day.date.toISOString()}>
-                {/* Today highlight */}
-                {isToday ? (
-                  <Rect
-                    x={groupX + 2}
-                    y={0}
-                    width={barGroupWidth - 4}
-                    height={CHART_HEIGHT + LABEL_HEIGHT}
-                    fill="#E0FBFC"
-                    rx={6}
-                  />
-                ) : null}
-
-                {/* Fluid intake bar */}
-                <AnimatedBar
-                  x={intakeBarX}
-                  y={intakeY}
-                  width={barWidth}
-                  height={intakeHeight}
-                  fill="url(#intakeGradient)"
-                  delay={index * 50}
-                  chartHeight={CHART_HEIGHT}
+                {/* Grid line at bottom */}
+                <Line
+                  x1={PADDING}
+                  y1={CHART_HEIGHT}
+                  x2={containerWidth - PADDING}
+                  y2={CHART_HEIGHT}
+                  stroke={colors.separator}
+                  strokeWidth={1}
                 />
 
-                {/* Urination output bar */}
-                <AnimatedBar
-                  x={outputBarX}
-                  y={outputY}
-                  width={barWidth}
-                  height={outputHeight}
-                  fill="url(#outputGradient)"
-                  delay={index * 50 + 25}
-                  chartHeight={CHART_HEIGHT}
+                {/* Middle reference line (50% of max) */}
+                <Line
+                  x1={PADDING}
+                  y1={CHART_HEIGHT / 2}
+                  x2={containerWidth - PADDING}
+                  y2={CHART_HEIGHT / 2}
+                  stroke={colors.surfaceMuted}
+                  strokeWidth={1}
+                  strokeDasharray="4,4"
                 />
 
-                {/* Day label */}
-                <SvgText
-                  x={centerX}
-                  y={CHART_HEIGHT + 16}
-                  fontSize={11}
-                  fontWeight={isToday ? "700" : "500"}
-                  fill={isToday ? colors.primary.DEFAULT : "#9CA3AF"}
-                  textAnchor="middle"
-                >
-                  {getDayLabel(day.date)}
-                </SvgText>
-              </G>
-            );
-          })}
-        </Svg>
+                {/* Bars for each day */}
+                {data.map((day, index) => {
+                  const groupX = PADDING + index * barGroupWidth;
+                  const centerX = groupX + barGroupWidth / 2;
 
-        {/* Tap targets overlay */}
-        <View style={[styles.tapOverlay, { width: containerWidth }]}>
-          {data.map((day, index) => {
-            const groupX = PADDING + index * barGroupWidth;
-            return (
-              <Pressable
-                key={day.date.toISOString()}
-                onPress={() => handleDayPress(day.date)}
-                style={[
-                  styles.tapTarget,
-                  { left: groupX, width: barGroupWidth },
-                ]}
-              />
-            );
-          })}
-        </View>
+                  const intakeBarX = centerX - barWidth - barGap / 2;
+                  const outputBarX = centerX + barGap / 2;
+
+                  const intakeHeight = Math.max(
+                    (day.fluidIntake / maxValue) * (CHART_HEIGHT - 8),
+                    day.fluidIntake > 0 ? 4 : 0
+                  );
+                  const intakeY = CHART_HEIGHT - intakeHeight;
+
+                  const outputHeight = Math.max(
+                    (day.urinationOutput / maxValue) * (CHART_HEIGHT - 8),
+                    day.urinationOutput > 0 ? 4 : 0
+                  );
+                  const outputY = CHART_HEIGHT - outputHeight;
+
+                  const isToday = index === data.length - 1;
+
+                  return (
+                    <G key={day.date.toISOString()}>
+                      {/* Today highlight */}
+                      {isToday ? (
+                        <Rect
+                          x={groupX + 2}
+                          y={0}
+                          width={Math.max(barGroupWidth - 4, 0)}
+                          height={CHART_HEIGHT + labelHeight}
+                          fill={colors.accent}
+                          rx={6}
+                        />
+                      ) : null}
+
+                      <AnimatedBar
+                        x={intakeBarX}
+                        y={intakeY}
+                        width={barWidth}
+                        height={intakeHeight}
+                        fill="url(#intakeGradient)"
+                        delay={index * 50}
+                        chartHeight={CHART_HEIGHT}
+                      />
+
+                      <AnimatedBar
+                        x={outputBarX}
+                        y={outputY}
+                        width={barWidth}
+                        height={outputHeight}
+                        fill="url(#outputGradient)"
+                        delay={index * 50 + 25}
+                        chartHeight={CHART_HEIGHT}
+                      />
+
+                      {/* Day label */}
+                      <SvgText
+                        x={centerX}
+                        y={CHART_HEIGHT + labelFontSize + 4}
+                        fontSize={labelFontSize}
+                        fontWeight={isToday ? "700" : "500"}
+                        fill={
+                          isToday ? colors.primary.DEFAULT : colors.textSecondary
+                        }
+                        textAnchor="middle"
+                      >
+                        {dateFormatters.weekdayNarrow.format(day.date)}
+                      </SvgText>
+                    </G>
+                  );
+                })}
+              </Svg>
+            </View>
+
+            {/* One button per day, over its column */}
+            <View
+              style={[
+                styles.tapOverlay,
+                { width: containerWidth, height: CHART_HEIGHT + labelHeight },
+              ]}
+            >
+              {data.map((day, index) => (
+                <AnimatedPressable
+                  key={day.date.toISOString()}
+                  onPress={() => onDayPress?.(day.date)}
+                  disabled={!onDayPress}
+                  style={[
+                    styles.tapTarget,
+                    {
+                      left: PADDING + index * barGroupWidth,
+                      width: barGroupWidth,
+                    },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={dayLabel(day)}
+                  accessibilityHint={t("a11y.today.dayHint")}
+                />
+              ))}
+            </View>
+          </>
+        ) : (
+          <View style={{ height: CHART_HEIGHT + labelHeight }} />
+        )}
       </View>
 
-      {/* Legend */}
-      <View style={styles.legend}>
+      {/* Legend (the chart is described to screen readers above) */}
+      <View
+        style={styles.legend}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
         <View style={styles.legendItem}>
           <View
             style={[
@@ -262,7 +329,9 @@ export function FluidBalanceChart({
               { backgroundColor: colors.secondary.DEFAULT },
             ]}
           />
-          <Text style={styles.legendText}>{t("insights.intake")}</Text>
+          <Text variant="footnote" tone="secondary">
+            {t("insights.intake")}
+          </Text>
         </View>
         <View style={styles.legendItem}>
           <View
@@ -271,7 +340,9 @@ export function FluidBalanceChart({
               { backgroundColor: colors.primary.DEFAULT },
             ]}
           />
-          <Text style={styles.legendText}>{t("insights.output")}</Text>
+          <Text variant="footnote" tone="secondary">
+            {t("insights.output")}
+          </Text>
         </View>
       </View>
     </View>
@@ -302,19 +373,23 @@ function AnimatedBar({
   const animatedY = useSharedValue(chartHeight);
 
   React.useEffect(() => {
-    animatedHeight.value = withDelay(
-      delay,
-      withTiming(height, { duration: 300, easing: Easing.out(Easing.cubic) })
+    animatedHeight.set(
+      withDelay(
+        delay,
+        withTiming(height, { duration: 300, easing: Easing.out(Easing.cubic) })
+      )
     );
-    animatedY.value = withDelay(
-      delay,
-      withTiming(y, { duration: 300, easing: Easing.out(Easing.cubic) })
+    animatedY.set(
+      withDelay(
+        delay,
+        withTiming(y, { duration: 300, easing: Easing.out(Easing.cubic) })
+      )
     );
   }, [height, y, delay, animatedHeight, animatedY]);
 
   const animatedProps = useAnimatedProps(() => ({
-    height: animatedHeight.value,
-    y: animatedY.value,
+    height: animatedHeight.get(),
+    y: animatedY.get(),
   }));
 
   return (
@@ -331,80 +406,69 @@ function AnimatedBar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
+    ...cardStyle,
+    padding: spacing.lg,
   },
   summaryHeader: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
   },
   summaryItem: {
+    flex: 1,
     alignItems: "center",
-    gap: 4,
+    gap: spacing.xs,
   },
   summaryDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginBottom: 2,
   },
-  summaryLabel: {
-    fontSize: 11,
-    color: "#9CA3AF",
-  },
-  summaryValue: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
+  centered: {
+    textAlign: "center",
   },
   estimateNote: {
-    fontSize: 11,
-    color: "#6B7280",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   chartContainer: {
     position: "relative",
-    alignItems: "center",
   },
   tapOverlay: {
     position: "absolute",
     top: 0,
     left: 0,
-    height: CHART_HEIGHT + LABEL_HEIGHT,
-    flexDirection: "row",
   },
   tapTarget: {
     position: "absolute",
     top: 0,
     height: "100%",
+    borderRadius: 6,
+    overflow: "hidden",
   },
   legend: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
-    gap: 20,
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
+    columnGap: spacing.lg,
+    rowGap: spacing.xs,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
   },
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: spacing.xs,
   },
   legendDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  legendText: {
-    fontSize: 12,
-    color: "#6B7280",
   },
 });

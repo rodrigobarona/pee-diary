@@ -1,15 +1,37 @@
 import * as React from 'react';
-import { View, Switch, StyleSheet, Platform, Pressable } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { Text } from './text';
+import { hiddenA11y } from '@/lib/a11y';
+import { haptics } from '@/lib/haptics';
 import { colors } from '@/lib/theme/colors';
+import { ripple, spacing } from '@/lib/theme/styles';
+
+const IS_IOS = Platform.OS === 'ios';
+
+// Switch colours, shared with the Settings rows.
+// iOS: the system's own off track (UISwitch default) and a white thumb.
+// Android (Material 3): a light off track whose outline-coloured thumb
+// (colors.outline, 4.48:1 on white) shows the off state; teal when on.
+const IOS_SWITCH_TRACK_OFF = '#E9E9EB';
+const ANDROID_SWITCH_TRACK_OFF = '#DDE4E4';
+
+export const switchColors = {
+  trackColor: {
+    false: IS_IOS ? IOS_SWITCH_TRACK_OFF : ANDROID_SWITCH_TRACK_OFF,
+    true: colors.primary.DEFAULT,
+  },
+  iosBackgroundColor: IOS_SWITCH_TRACK_OFF,
+  thumbColor: (value: boolean | undefined) =>
+    IS_IOS || value ? colors.surface : colors.outline,
+};
 
 interface ToggleRowProps {
   label: string;
   description?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
+  /** Plays the platform's toggle feedback (on by default). */
   haptic?: boolean;
   testID?: string;
 }
@@ -26,45 +48,47 @@ export function ToggleRow({
   haptic = true,
   testID,
 }: ToggleRowProps) {
-  const handleValueChange = React.useCallback(
-    (newValue: boolean) => {
-      if (haptic && Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      onValueChange(newValue);
-    },
-    [haptic, onValueChange]
-  );
+  const handlePress = React.useCallback(() => {
+    if (haptic) {
+      haptics.toggle(!value);
+    }
+    onValueChange(!value);
+  }, [haptic, onValueChange, value]);
 
   return (
     <Pressable
-      onPress={() => handleValueChange(!value)}
-      style={styles.row}
+      onPress={handlePress}
+      style={({ pressed }) => [
+        styles.row,
+        IS_IOS && pressed ? styles.rowPressedIOS : undefined,
+      ]}
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityHint={description}
       accessibilityState={{ checked: value }}
-      android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
+      android_ripple={ripple}
       testID={testID}
     >
       <View style={styles.labelContainer}>
-        <Text style={styles.label}>{label}</Text>
+        <Text variant="body">{label}</Text>
         {description ? (
-          <Text style={styles.description}>{description}</Text>
+          <Text
+            variant={IS_IOS ? 'footnote' : 'subheadline'}
+            tone="secondary"
+            style={styles.description}
+          >
+            {description}
+          </Text>
         ) : null}
       </View>
       {/* Shows the state only; the row takes the touch, so a tap anywhere
           toggles once */}
-      <View
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
+      <View pointerEvents="none" {...hiddenA11y}>
         <Switch
           value={value}
-          trackColor={{ false: '#E5E7EB', true: colors.primary.DEFAULT }}
-          thumbColor="#FFFFFF"
-          ios_backgroundColor="#E5E7EB"
+          trackColor={switchColors.trackColor}
+          thumbColor={switchColors.thumbColor(value)}
+          ios_backgroundColor={switchColors.iosBackgroundColor}
         />
       </View>
     </Pressable>
@@ -76,22 +100,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: Platform.OS === 'ios' ? 44 : 56,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 12,
+    minHeight: IS_IOS ? 44 : 56,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
+  },
+  rowPressedIOS: {
+    backgroundColor: colors.highlight,
   },
   labelContainer: {
     flex: 1,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
-  },
   description: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
 });

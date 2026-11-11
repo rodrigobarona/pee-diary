@@ -1,16 +1,59 @@
 import * as React from 'react';
-import { View, TouchableOpacity, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as Haptics from 'expo-haptics';
 import { useShallow } from 'zustand/shallow';
 
+import { Icon, type IconName } from '@/components/ui/icon';
 import { SheetHandle } from '@/components/ui/sheet-handle';
 import { Text } from '@/components/ui/text';
-import { colors } from '@/lib/theme/colors';
+import { adjustableA11y, hiddenA11y } from '@/lib/a11y';
+import { haptics } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n/context';
 import { useDiaryStore } from '@/lib/store';
+import { colors } from '@/lib/theme/colors';
+import {
+  cardStyle,
+  iconSize,
+  MIN_TOUCH_TARGET,
+  radius,
+  ripple,
+  rippleBorderless,
+  spacing,
+} from '@/lib/theme/styles';
 import { formatDate, formatTime } from '@/lib/utils/date';
+
+const IS_IOS = Platform.OS === 'ios';
+const STEP = 250;
+const MIN_GOAL = 500;
+const MAX_GOAL = 5000;
+
+interface StepButtonProps {
+  icon: IconName;
+  label: string;
+  disabled: boolean;
+  onPress: () => void;
+}
+
+// A round stepper button: teal glyph on the teal tint, 48pt/dp target
+function StepButton({ icon, label, disabled, onPress }: StepButtonProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      android_ripple={rippleBorderless(STEP_BUTTON_SIZE)}
+      style={({ pressed }) => [
+        styles.stepButton,
+        disabled ? styles.stepButtonDisabled : undefined,
+        IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
+      ]}
+    >
+      <Icon name={icon} size={iconSize.xl} color={colors.primary.DEFAULT} />
+    </Pressable>
+  );
+}
 
 export default function GoalsScreen() {
   const { t } = useI18n();
@@ -21,24 +64,24 @@ export default function GoalsScreen() {
   const [historyExpanded, setHistoryExpanded] = React.useState(false);
 
   const toggleHistory = () => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     setHistoryExpanded(!historyExpanded);
   };
 
+  // The goal is saved as it changes (the user's own target, no norm)
   const adjustFluidGoal = (delta: number) => {
-    const newValue = Math.max(500, Math.min(5000, goals.fluidTarget + delta));
+    const newValue = Math.max(
+      MIN_GOAL,
+      Math.min(MAX_GOAL, goals.fluidTarget + delta)
+    );
     if (newValue !== goals.fluidTarget) {
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+      haptics.selection();
       updateGoals({ fluidTarget: newValue });
     }
   };
 
-  const isFluidMin = goals.fluidTarget <= 500;
-  const isFluidMax = goals.fluidTarget >= 5000;
+  const isFluidMin = goals.fluidTarget <= MIN_GOAL;
+  const isFluidMax = goals.fluidTarget >= MAX_GOAL;
+  const valueText = t('a11y.settings.millilitres', { value: goals.fluidTarget });
 
   // Fluid target changes only, most recent first
   const sortedHistory = React.useMemo(() =>
@@ -52,95 +95,174 @@ export default function GoalsScreen() {
       contentContainerStyle={[
         styles.container,
         Platform.OS === 'android' ? styles.containerAndroid : undefined,
-        { paddingBottom: Math.max(insets.bottom, 16) + 16 },
+        { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg },
       ]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHandle />
       {/* Title */}
-      <Text style={styles.title}>{t('goals.title')}</Text>
-      <Text style={styles.subtitle}>{t('goals.description')}</Text>
+      <Text
+        variant={IS_IOS ? 'title3' : 'title2'}
+        style={styles.title}
+        accessibilityRole="header"
+      >
+        {t('goals.title')}
+      </Text>
+      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+        {t('goals.description')}
+      </Text>
 
       {/* Fluid Goal Card */}
       <View style={styles.goalCard}>
         <View style={styles.goalHeader}>
-          <View style={[styles.iconContainer, { backgroundColor: `${colors.secondary.DEFAULT}15` }]}>
-            <MaterialCommunityIcons name="cup-water" size={24} color={colors.secondary.DEFAULT} />
+          <View style={styles.iconContainer}>
+            <Icon
+              name="cup-water"
+              size={iconSize.lg}
+              color={colors.category.fluid.accent}
+            />
           </View>
           <View style={styles.labelContainer}>
-            <Text style={styles.goalLabel}>{t('goals.fluidTarget')}</Text>
-            <Text style={styles.goalDesc}>{t('goals.fluidDescription')}</Text>
+            <Text variant="headline">{t('goals.fluidTarget')}</Text>
+            <Text variant="footnote" tone="secondary" style={styles.goalDesc}>
+              {t('goals.fluidDescription')}
+            </Text>
           </View>
         </View>
         <View style={styles.stepperRow}>
-          <TouchableOpacity
-            onPress={() => adjustFluidGoal(-250)}
+          <StepButton
+            icon="minus"
+            label={t('a11y.settings.decreaseBy', { amount: STEP })}
             disabled={isFluidMin}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonSecondary, isFluidMin && styles.stepperButtonDisabled]}
+            onPress={() => adjustFluidGoal(-STEP)}
+          />
+          {/* One adjustable element: swipe up/down (VoiceOver) or the
+              adjust actions (TalkBack) change the goal by 250 ml */}
+          <View
+            style={styles.valueContainer}
+            {...adjustableA11y({
+              label: t('goals.fluidDescription'),
+              valueText,
+              min: MIN_GOAL,
+              max: MAX_GOAL,
+              now: goals.fluidTarget,
+              onIncrement: () => adjustFluidGoal(STEP),
+              onDecrement: () => adjustFluidGoal(-STEP),
+            })}
           >
-            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>{goals.fluidTarget}</Text>
-            <Text style={styles.unitText}>ml</Text>
+            <Text variant="largeTitle" style={styles.valueText}>
+              {goals.fluidTarget}
+            </Text>
+            <Text variant="subheadline" tone="secondary">
+              ml
+            </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => adjustFluidGoal(250)}
+          <StepButton
+            icon="plus"
+            label={t('a11y.settings.increaseBy', { amount: STEP })}
             disabled={isFluidMax}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonSecondary, isFluidMax && styles.stepperButtonDisabled]}
-          >
-            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
+            onPress={() => adjustFluidGoal(STEP)}
+          />
         </View>
       </View>
 
       {/* About these targets */}
       <View style={styles.infoBox}>
-        <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
-        <Text style={styles.infoText}>{t('goals.targetsInfo')}</Text>
+        <Icon
+          name="information-outline"
+          size={iconSize.sm}
+          color={colors.textSecondary}
+          style={styles.infoIcon}
+        />
+        <Text variant="footnote" tone="secondary" style={styles.infoText}>
+          {t('goals.targetsInfo')}
+        </Text>
       </View>
 
       {/* Goal History Section */}
       <View style={styles.historySection}>
-        <Pressable onPress={toggleHistory} style={styles.historyHeader}>
+        <Pressable
+          onPress={toggleHistory}
+          style={({ pressed }) => [
+            styles.historyHeader,
+            IS_IOS && pressed ? styles.historyHeaderPressedIOS : undefined,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t('goals.history')}
+          accessibilityState={{ expanded: historyExpanded }}
+          android_ripple={ripple}
+        >
           <View style={styles.historyTitleRow}>
-            <MaterialCommunityIcons name="history" size={18} color="#6B7280" />
-            <Text style={styles.historyTitle}>{t('goals.history')}</Text>
+            <Icon name="history" size={iconSize.md} color={colors.textSecondary} />
+            <Text variant="headline" tone="secondary">
+              {t('goals.history')}
+            </Text>
           </View>
-          <MaterialCommunityIcons 
-            name={historyExpanded ? 'chevron-up' : 'chevron-down'} 
-            size={20} 
-            color="#9CA3AF" 
+          <Icon
+            name={historyExpanded ? 'chevron-up' : 'chevron-down'}
+            size={iconSize.md}
+            color={colors.textSecondary}
           />
         </Pressable>
 
         {historyExpanded ? (
           <View style={styles.historyContent}>
             {sortedHistory.length === 0 ? (
-              <Text style={styles.historyEmpty}>{t('goals.historyEmpty')}</Text>
+              <Text
+                variant="subheadline"
+                tone="secondary"
+                style={styles.historyEmpty}
+              >
+                {t('goals.historyEmpty')}
+              </Text>
             ) : (
-              sortedHistory.map((record, index) => (
-                <View key={record.changedAt} style={[
-                  styles.historyItem,
-                  index < sortedHistory.length - 1 ? styles.historyItemBorder : undefined,
-                ]}>
-                  <Text style={styles.historyDate}>
-                    {formatDate(record.changedAt, 'medium')} • {formatTime(record.changedAt)}
-                  </Text>
-                  <View style={styles.historyChanges}>
-                    {record.changes.fluidTarget ? (
-                      <View style={styles.historyChange}>
-                        <MaterialCommunityIcons name="cup-water" size={14} color={colors.secondary.DEFAULT} />
-                        <Text style={styles.historyChangeText}>
-                          {t('goals.fluids')}: {record.changes.fluidTarget.from}ml → {record.changes.fluidTarget.to}ml
+              sortedHistory.map((record, index) => {
+                const change = record.changes.fluidTarget;
+                const when = `${formatDate(record.changedAt, 'medium')}, ${formatTime(
+                  record.changedAt
+                )}`;
+                return (
+                  <View
+                    key={record.changedAt}
+                    style={[
+                      styles.historyItem,
+                      index < sortedHistory.length - 1
+                        ? styles.historyItemBorder
+                        : undefined,
+                    ]}
+                    accessible
+                    accessibilityLabel={
+                      change
+                        ? t('a11y.settings.goalChange', {
+                            date: when,
+                            from: change.from,
+                            to: change.to,
+                          })
+                        : when
+                    }
+                  >
+                    <Text
+                      variant="footnote"
+                      tone="secondary"
+                      style={styles.historyDate}
+                    >
+                      {when}
+                    </Text>
+                    {change ? (
+                      <View style={styles.historyChange} {...hiddenA11y}>
+                        <Icon
+                          name="cup-water"
+                          size={iconSize.sm}
+                          color={colors.category.fluid.accent}
+                        />
+                        <Text variant="subheadline">
+                          {t('goals.fluids')}: {change.from}ml → {change.to}ml
                         </Text>
                       </View>
                     ) : null}
                   </View>
-                </View>
-              ))
+                );
+              })
             )}
           </View>
         ) : null}
@@ -149,176 +271,143 @@ export default function GoalsScreen() {
   );
 }
 
+const STEP_BUTTON_SIZE = Math.max(MIN_TOUCH_TARGET, 48);
+
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
   },
   container: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
   },
   // The drag handle (SheetHandle) gives the top spacing on Android
   containerAndroid: {
     paddingTop: 0,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
+    textAlign: IS_IOS ? 'center' : 'left',
   },
   subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginTop: 4,
-    marginBottom: 20,
+    textAlign: IS_IOS ? 'center' : 'left',
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
   },
   goalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    ...cardStyle,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
   },
   goalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   iconContainer: {
     width: 48,
     height: 48,
-    borderRadius: 14,
+    borderRadius: radius.md,
+    borderCurve: 'continuous',
+    backgroundColor: colors.category.fluid.container,
     alignItems: 'center',
     justifyContent: 'center',
   },
   labelContainer: {
-    marginLeft: 14,
     flex: 1,
   },
-  goalLabel: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
-  },
   goalDesc: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
   stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 20,
+    gap: spacing.lg,
   },
-  stepperButtonSecondary: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: colors.secondary.DEFAULT,
+  stepButton: {
+    width: STEP_BUTTON_SIZE,
+    height: STEP_BUTTON_SIZE,
+    borderRadius: STEP_BUTTON_SIZE / 2,
+    backgroundColor: colors.primary.subtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepperButtonDisabled: {
-    opacity: 0.3,
+  stepButtonDisabled: {
+    opacity: 0.38,
+  },
+  stepButtonPressedIOS: {
+    opacity: 0.55,
   },
   valueContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 100,
+    minWidth: 112,
   },
   valueText: {
-    fontSize: 32,
     fontWeight: '700',
-    color: '#111827',
-    lineHeight: 40,
-  },
-  unitText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 2,
+    fontVariant: ['tabular-nums'],
   },
   infoBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#F0F9FF',
-    padding: 14,
-    borderRadius: 12,
-    marginTop: 4,
+    gap: spacing.sm,
+    backgroundColor: colors.surfaceMuted,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginTop: spacing.xs,
+  },
+  infoIcon: {
+    marginTop: 1,
   },
   infoText: {
-    fontSize: 13,
-    color: '#4B5563',
     flex: 1,
-    lineHeight: 18,
-    marginLeft: 10,
   },
   // History section
   historySection: {
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   historyHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    borderRadius: radius.sm,
+    overflow: 'hidden',
+  },
+  historyHeaderPressedIOS: {
+    backgroundColor: colors.highlight,
   },
   historyTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  historyTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#6B7280',
+    gap: spacing.sm,
   },
   historyContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    ...cardStyle,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xs,
   },
   historyEmpty: {
-    fontSize: 14,
-    color: '#9CA3AF',
     textAlign: 'center',
-    paddingVertical: 8,
+    paddingVertical: spacing.md,
   },
   historyItem: {
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
   },
   historyItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
   },
   historyDate: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginBottom: 8,
-  },
-  historyChanges: {
-    gap: 6,
+    marginBottom: spacing.sm,
   },
   historyChange: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  historyChangeText: {
-    fontSize: 14,
-    color: '#374151',
+    gap: spacing.sm,
   },
 });

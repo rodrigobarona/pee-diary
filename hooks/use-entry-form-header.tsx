@@ -4,6 +4,7 @@ import * as React from "react";
 import { ActionSheetIOS, Alert, Platform, StyleSheet, View } from "react-native";
 
 import { HeaderIconButton, HeaderTextButton } from "@/components/ui/header-button";
+import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
 
@@ -23,7 +24,9 @@ interface EntryFormHeaderOptions {
  * Header of the add and edit forms, presented as a page sheet on iOS
  * (Cancel, title, Save) and as a Material 3 full-screen dialog on Android
  * (close, title, delete, Save). Closing with unsaved changes (Cancel, close,
- * swipe-down on iOS, system back on Android) asks first.
+ * swipe-down on iOS, system back on Android) asks first. A successful save
+ * plays the success haptic; the edit screen's delete plays the warning
+ * haptic once confirmed.
  */
 export function useEntryFormHeader({
   title,
@@ -51,8 +54,12 @@ export function useEntryFormHeader({
     confirmDiscard(t, () => navigation.dispatch(data.action));
   });
 
+  // Success haptic once the entry is saved (not for Cancel or close)
   const handleSave = React.useCallback(() => {
-    if (onSave()) close();
+    if (onSave()) {
+      haptics.success();
+      close();
+    }
   }, [onSave, close]);
 
   const handleDelete = React.useCallback(() => {
@@ -84,7 +91,7 @@ export function useEntryFormHeader({
               icon="trash-can-outline"
               label={t("common.delete")}
               onPress={handleDelete}
-              color={colors.error}
+              color={colors.destructive}
               testID="form-delete"
             />
           ) : null}

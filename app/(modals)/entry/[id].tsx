@@ -1,16 +1,7 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { parseISO } from "date-fns";
-import * as Haptics from "expo-haptics";
 import { useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 
 import {
   AmountPicker,
@@ -19,6 +10,7 @@ import {
   UrgencyScale,
   VolumePicker,
 } from "@/components/diary";
+import { LeakSeverityPicker } from "@/components/diary/leak-pickers";
 import {
   AnimatedPressable,
   FormCard,
@@ -26,10 +18,13 @@ import {
   SectionTitle,
   ToggleRow,
 } from "@/components/ui";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useEntryFormHeader } from "@/hooks/use-entry-form-header";
-import { dateFormatters } from "@/lib/i18n";
+import { a11yLabel } from "@/lib/a11y";
+import { haptics } from "@/lib/haptics";
+import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type {
@@ -40,17 +35,26 @@ import type {
   VolumeSize,
 } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
+import {
+  cardStyle,
+  MIN_TOUCH_TARGET,
+  spacing,
+} from "@/lib/theme/styles";
 
-// Severity options for leak form
-const severityOptions: {
-  value: LeakSeverity;
-  icon: string;
-  labelKey: string;
-}[] = [
-  { value: "drops", icon: "water-outline", labelKey: "leak.drops" },
-  { value: "moderate", icon: "water", labelKey: "leak.moderate" },
-  { value: "full", icon: "water-alert", labelKey: "leak.full" },
-];
+// Names of the fields in the edit history
+const FIELD_LABEL_KEYS: Record<string, string> = {
+  timestamp: "time.when",
+  volume: "urination.volume",
+  volumeMl: "urination.volumePrecise",
+  urgency: "urination.urgency",
+  hadLeak: "urination.hadLeak",
+  hadPain: "urination.hadPain",
+  drinkType: "fluid.drinkType",
+  amount: "fluid.amount",
+  severity: "leak.severity",
+  activity: "leak.activity",
+  notes: "urination.notes",
+};
 
 const TITLE_KEYS: Record<DiaryEntry["type"], string> = {
   urination: "detail.editUrination",
@@ -90,48 +94,66 @@ export default function EntryDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
+  const entry = useDiaryStore((state) =>
+    id ? state.entries.find((e) => e.id === id) : undefined
+  );
+
+  // The form starts from the entry's values once it is available (the store
+  // may still be loading); a new entry id starts a new form
+  if (!entry) return <EntryLoading />;
+  return <EntryForm key={entry.id} entry={entry} />;
+}
+
+function EntryLoading() {
   const { t } = useI18n();
 
-  // Get entry and actions from store
-  const entries = useDiaryStore((state) => state.entries);
-  const entry = id ? entries.find((e) => e.id === id) : undefined;
+  useEntryFormHeader({
+    title: t("detail.editEntry"),
+    saveLabel: t("detail.update"),
+    onSave: () => false,
+    isDirty: false,
+  });
+
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+      <Text variant="body" tone="secondary">
+        {t("common.loading")}
+      </Text>
+    </View>
+  );
+}
+
+function EntryForm({ entry }: { entry: DiaryEntry }) {
+  const { t } = useI18n();
+
   const updateEntry = useDiaryStore((state) => state.updateEntry);
   const deleteEntry = useDiaryStore((state) => state.deleteEntry);
 
-  // Form state - all with defaults (use lazy initializer)
-  const [timestamp, setTimestamp] = React.useState(() => new Date());
-  const [volume, setVolume] = React.useState<VolumeSize>("medium");
-  const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
-  const [hadLeak, setHadLeak] = React.useState(false);
-  const [hadPain, setHadPain] = React.useState(false);
-  const [drinkType, setDrinkType] = React.useState<DrinkType>("water");
-  const [amount, setAmount] = React.useState("250");
-  const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
-  const [notes, setNotes] = React.useState("");
-  const [showEditHistory, setShowEditHistory] = React.useState(false);
-
   // Values the form was loaded with, to tell whether anything changed
-  const [loadedValues, setLoadedValues] = React.useState<FormValues | null>(
-    null
+  const [loadedValues] = React.useState<FormValues>(() =>
+    valuesFromEntry(entry)
   );
-  const isLoaded = loadedValues !== null;
 
-  // Load entry data when it becomes available
-  React.useEffect(() => {
-    if (entry && !isLoaded) {
-      const values = valuesFromEntry(entry);
-      setTimestamp(new Date(values.timestamp));
-      setNotes(values.notes);
-      setVolume(values.volume);
-      setUrgency(values.urgency);
-      setHadLeak(values.hadLeak);
-      setHadPain(values.hadPain);
-      setDrinkType(values.drinkType);
-      setAmount(values.amount);
-      setSeverity(values.severity);
-      setLoadedValues(values);
-    }
-  }, [entry, isLoaded]);
+  // Form state, starting from the entry
+  const [timestamp, setTimestamp] = React.useState(
+    () => new Date(loadedValues.timestamp)
+  );
+  const [volume, setVolume] = React.useState<VolumeSize>(loadedValues.volume);
+  const [urgency, setUrgency] = React.useState<UrgencyLevel>(
+    loadedValues.urgency
+  );
+  const [hadLeak, setHadLeak] = React.useState(loadedValues.hadLeak);
+  const [hadPain, setHadPain] = React.useState(loadedValues.hadPain);
+  const [drinkType, setDrinkType] = React.useState<DrinkType>(
+    loadedValues.drinkType
+  );
+  const [amount, setAmount] = React.useState(loadedValues.amount);
+  const [severity, setSeverity] = React.useState<LeakSeverity>(
+    loadedValues.severity
+  );
+  const [notes, setNotes] = React.useState(loadedValues.notes);
+  const [showEditHistory, setShowEditHistory] = React.useState(false);
 
   const currentValues: FormValues = {
     timestamp: timestamp.getTime(),
@@ -144,15 +166,11 @@ export default function EntryDetailScreen() {
     amount,
     severity,
   };
-  const isDirty =
-    loadedValues !== null &&
-    (Object.keys(currentValues) as (keyof FormValues)[]).some(
-      (key) => currentValues[key] !== loadedValues[key]
-    );
+  const isDirty = (Object.keys(currentValues) as (keyof FormValues)[]).some(
+    (key) => currentValues[key] !== loadedValues[key]
+  );
 
   const handleUpdate = () => {
-    if (!entry) return false;
-
     const updates: Record<string, unknown> = {
       timestamp: timestamp.toISOString(),
       notes: notes.trim() || undefined,
@@ -172,16 +190,12 @@ export default function EntryDetailScreen() {
     }
 
     updateEntry(entry.id, updates);
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
     return true;
   };
 
   // The bin icon in the header; the legal documents describe deleting an
   // entry as "tap the bin icon and confirm with Delete".
   const handleDelete = (close: () => void) => {
-    if (!entry) return;
     Alert.alert(t("common.delete"), t("detail.deleteConfirm"), [
       { text: t("common.cancel"), style: "cancel" },
       {
@@ -189,9 +203,7 @@ export default function EntryDetailScreen() {
         style: "destructive",
         onPress: () => {
           deleteEntry(entry.id);
-          if (Platform.OS !== "web") {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          }
+          haptics.warning();
           close();
         },
       },
@@ -199,33 +211,17 @@ export default function EntryDetailScreen() {
   };
 
   useEntryFormHeader({
-    title: entry ? t(TITLE_KEYS[entry.type]) : t("detail.editEntry"),
+    title: t(TITLE_KEYS[entry.type]),
     saveLabel: t("detail.update"),
     onSave: handleUpdate,
     isDirty,
     onDelete: handleDelete,
   });
 
-  // Show loading if entry not yet loaded
-  if (!entry || !isLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#006D77" />
-        <Text style={styles.loadingText}>{t("common.loading")}</Text>
-      </View>
-    );
-  }
-
-  const handleSeveritySelect = (value: LeakSeverity) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    setSeverity(value);
-  };
-
   const formatChangeValue = (key: string, value: unknown): string => {
     if (key === "timestamp" && typeof value === "string") {
-      return dateFormatters.time.format(parseISO(value));
+      const date = parseISO(value);
+      return `${dateFormatters.medium.format(date)} ${dateFormatters.time.format(date)}`;
     }
     if (typeof value === "boolean") {
       return value ? t("common.yes") : t("common.no");
@@ -246,11 +242,19 @@ export default function EntryDetailScreen() {
     if (key === "severity") {
       return t(`leak.${value}`);
     }
-    if (key === "amount") {
-      return `${value}ml`;
+    if (key === "activity" && typeof value === "string") {
+      return t(`leak.activities.${value}`);
+    }
+    if ((key === "amount" || key === "volumeMl") && typeof value === "number") {
+      return numberFormatters.ml.format(value);
     }
     return String(value ?? "");
   };
+
+  const fieldLabel = (key: string) =>
+    FIELD_LABEL_KEYS[key] ? t(FIELD_LABEL_KEYS[key]) : key;
+
+  const editCount = entry.editHistory?.length ?? 0;
 
   return (
     <FormScrollView>
@@ -262,12 +266,20 @@ export default function EntryDetailScreen() {
         <>
           <View style={styles.section}>
             <SectionTitle>{t("urination.volume")}</SectionTitle>
-            <VolumePicker value={volume} onChange={setVolume} />
+            <VolumePicker
+              value={volume}
+              onChange={setVolume}
+              label={t("urination.volume")}
+            />
           </View>
 
           <View style={styles.section}>
             <SectionTitle>{t("urination.urgency")}</SectionTitle>
-            <UrgencyScale value={urgency} onChange={setUrgency} />
+            <UrgencyScale
+              value={urgency}
+              onChange={setUrgency}
+              label={t("urination.urgency")}
+            />
           </View>
 
           <View style={styles.section}>
@@ -293,7 +305,11 @@ export default function EntryDetailScreen() {
         <>
           <View style={styles.section}>
             <SectionTitle>{t("fluid.drinkType")}</SectionTitle>
-            <DrinkTypePicker value={drinkType} onChange={setDrinkType} />
+            <DrinkTypePicker
+              value={drinkType}
+              onChange={setDrinkType}
+              label={t("fluid.drinkType")}
+            />
           </View>
 
           <View style={styles.section}>
@@ -301,6 +317,7 @@ export default function EntryDetailScreen() {
             <AmountPicker
               value={amount}
               onChange={setAmount}
+              label={t("fluid.amount")}
               drinkType={drinkType}
               showInput={false}
             />
@@ -312,52 +329,20 @@ export default function EntryDetailScreen() {
         <>
           <View style={styles.section}>
             <SectionTitle>{t("leak.severity")}</SectionTitle>
-            <View style={styles.severityOptions}>
-              {severityOptions.map((option) => {
-                const isSelected = severity === option.value;
-                return (
-                  <AnimatedPressable
-                    key={option.value}
-                    onPress={() => handleSeveritySelect(option.value)}
-                    haptic={false}
-                    style={[
-                      styles.severityOption,
-                      isSelected
-                        ? styles.severityOptionSelected
-                        : styles.severityOptionUnselected,
-                    ]}
-                  >
-                    <View
-                      style={[
-                        styles.severityIconContainer,
-                        isSelected
-                          ? styles.severityIconSelected
-                          : styles.severityIconUnselected,
-                      ]}
-                    >
-                      <MaterialCommunityIcons
-                        name={option.icon as any}
-                        size={24}
-                        color={isSelected ? "#FFFFFF" : colors.error}
-                      />
-                    </View>
-                    <Text
-                      style={[
-                        styles.severityLabel,
-                        isSelected ? styles.severityLabelSelected : undefined,
-                      ]}
-                    >
-                      {t(option.labelKey)}
-                    </Text>
-                  </AnimatedPressable>
-                );
-              })}
-            </View>
+            <LeakSeverityPicker
+              value={severity}
+              onChange={setSeverity}
+              label={t("leak.severity")}
+            />
           </View>
 
           <View style={styles.section}>
             <SectionTitle>{t("leak.urgency")}</SectionTitle>
-            <UrgencyScale value={urgency} onChange={setUrgency} />
+            <UrgencyScale
+              value={urgency}
+              onChange={setUrgency}
+              label={t("leak.urgency")}
+            />
           </View>
         </>
       ) : null}
@@ -370,9 +355,10 @@ export default function EntryDetailScreen() {
             value={notes}
             onChangeText={setNotes}
             placeholder={t("common.notesPlaceholder")}
+            accessibilityLabel={t("urination.notes")}
             multiline
             numberOfLines={3}
-            className="bg-transparent border-0 px-4 py-3 h-auto"
+            appearance="plain"
             style={styles.notesInput}
             textAlignVertical="top"
             testID="form-notes"
@@ -381,50 +367,69 @@ export default function EntryDetailScreen() {
       </View>
 
       {/* Edit History */}
-      {entry.editHistory && entry.editHistory.length > 0 ? (
+      {editCount > 0 ? (
         <View style={styles.section}>
-          <Pressable
+          <AnimatedPressable
             onPress={() => setShowEditHistory(!showEditHistory)}
+            feedback="highlight"
+            highlightColor={colors.highlight}
+            accessibilityRole="button"
+            accessibilityLabel={a11yLabel(t("detail.editHistory"), editCount)}
+            accessibilityState={{ expanded: showEditHistory }}
             style={styles.historyHeader}
           >
             <View style={styles.historyHeaderLeft}>
-              <MaterialCommunityIcons
-                name="history"
-                size={20}
-                color={colors.primary.DEFAULT}
-              />
-              <Text style={styles.historyTitle}>
-                {t("detail.editHistory")} ({entry.editHistory.length})
+              <Icon name="history" size={20} color={colors.primary.DEFAULT} />
+              <Text variant="body" style={styles.historyTitle}>
+                {t("detail.editHistory")} ({editCount})
               </Text>
             </View>
-            <MaterialCommunityIcons
+            <Icon
               name={showEditHistory ? "chevron-up" : "chevron-down"}
               size={20}
-              color="#9CA3AF"
+              color={colors.outline}
             />
-          </Pressable>
+          </AnimatedPressable>
 
           {showEditHistory ? (
             <View style={styles.historyContent}>
-              {entry.editHistory
+              {(entry.editHistory ?? [])
                 .slice()
                 .reverse()
-                .map((edit, index) => (
-                  <View key={index} style={styles.historyItem}>
-                    <Text style={styles.historyDate}>
-                      {t("detail.edited")}:{" "}
-                      {dateFormatters.long.format(parseISO(edit.editedAt))}{" "}
-                      {dateFormatters.time.format(parseISO(edit.editedAt))}
-                    </Text>
-                    {Object.entries(edit.changes).map(([key, change]) => (
-                      <Text key={key} style={styles.historyChangeText}>
-                        <Text style={styles.historyChangeKey}>{key}</Text>:{" "}
-                        {formatChangeValue(key, change.from)} →{" "}
-                        {formatChangeValue(key, change.to)}
+                .map((edit, index) => {
+                  const editedAt = parseISO(edit.editedAt);
+                  return (
+                    <View key={index} style={styles.historyItem}>
+                      <Text
+                        variant="footnote"
+                        tone="secondary"
+                        style={styles.historyDate}
+                      >
+                        {t("detail.edited")}:{" "}
+                        {dateFormatters.long.format(editedAt)}{" "}
+                        {dateFormatters.time.format(editedAt)}
                       </Text>
-                    ))}
-                  </View>
-                ))}
+                      {Object.entries(edit.changes).map(([key, change]) => {
+                        const from = formatChangeValue(key, change.from);
+                        const to = formatChangeValue(key, change.to);
+                        return (
+                          <Text
+                            key={key}
+                            variant="subheadline"
+                            accessibilityLabel={`${fieldLabel(key)}: ${t(
+                              "detail.changedFrom"
+                            )} ${from} ${t("detail.changedTo")} ${to}`}
+                          >
+                            <Text variant="subheadline" style={styles.historyChangeKey}>
+                              {fieldLabel(key)}
+                            </Text>
+                            : {from} → {to}
+                          </Text>
+                        );
+                      })}
+                    </View>
+                  );
+                })}
             </View>
           ) : null}
         </View>
@@ -435,94 +440,46 @@ export default function EntryDetailScreen() {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 12,
+    gap: spacing.sm,
   },
   separator: {
-    height: 1,
-    backgroundColor: "#F3F4F6",
-    marginHorizontal: 16,
-  },
-  severityOptions: {
-    gap: 12,
-  },
-  severityOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    padding: 16,
-    borderRadius: 16,
-    borderCurve: "continuous",
-  },
-  severityOptionSelected: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
-    borderWidth: 1,
-    borderColor: colors.error,
-  },
-  severityOptionUnselected: {
-    backgroundColor: "rgba(0, 109, 119, 0.08)",
-  },
-  severityIconContainer: {
-    width: 48,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 14,
-    borderCurve: "continuous",
-  },
-  severityIconSelected: {
-    backgroundColor: colors.error,
-  },
-  severityIconUnselected: {
-    backgroundColor: "rgba(0, 109, 119, 0.15)",
-  },
-  severityLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#374151",
-  },
-  severityLabelSelected: {
-    color: colors.error,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginStart: spacing.lg,
   },
   notesInput: {
     minHeight: 100,
   },
   historyHeader: {
+    ...cardStyle,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderCurve: "continuous",
+    minHeight: MIN_TOUCH_TARGET,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    overflow: "hidden",
   },
   historyHeaderLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
+    flexShrink: 1,
   },
   historyTitle: {
-    fontSize: 15,
     fontWeight: "500",
-    color: "#374151",
   },
   historyContent: {
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
   },
   historyItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.05)",
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
   },
   historyDate: {
-    fontSize: 13,
-    color: "#6B7280",
-    marginBottom: 8,
-  },
-  historyChangeText: {
-    fontSize: 14,
-    color: "#374151",
+    marginBottom: spacing.sm,
   },
   historyChangeKey: {
     fontWeight: "500",
@@ -531,11 +488,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F9FAFB",
-    gap: 16,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: "#9CA3AF",
+    backgroundColor: colors.background,
+    gap: spacing.lg,
   },
 });

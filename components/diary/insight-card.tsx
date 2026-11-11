@@ -1,168 +1,137 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { useI18n } from "@/lib/i18n/context";
+import { a11yLabel } from "@/lib/a11y";
+import { colors } from "@/lib/theme/colors";
+import { cardStyle, iconSize, spacing } from "@/lib/theme/styles";
 
 // Trends are shown in one neutral colour: a change in the user's own counts
 // is neither good nor bad.
-const TREND_COLOR = "#6B7280";
+const TREND_COLOR = colors.textSecondary;
 
 interface InsightCardProps {
   title: string;
   value: string;
+  // Spoken form of the value when the visible one is not read well
+  // ("3/7" is read as "3 of 7 days")
+  valueAccessibilityText?: string;
   subtitle?: string;
   trend?: "up" | "down" | "stable";
   trendValue?: string;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  icon: IconName;
+  // Identity colour of the icon (a token with at least 3:1)
   color: string;
+  // Tint behind the icon
+  iconBackground?: string;
   onPress?: () => void;
 }
 
+/**
+ * A figure of the Today summary. One accessible element whose label is the
+ * title, the value and the change from the previous period, in words.
+ */
 export function InsightCard({
   title,
   value,
+  valueAccessibilityText,
   subtitle,
   trend,
   trendValue,
   icon,
   color,
+  iconBackground = colors.surfaceMuted,
   onPress,
 }: InsightCardProps) {
-  const handlePress = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    onPress?.();
-  }, [onPress]);
+  const { t } = useI18n();
 
-  const getTrendIcon = (): keyof typeof MaterialCommunityIcons.glyphMap => {
-    switch (trend) {
-      case "up":
-        return "trending-up";
-      case "down":
-        return "trending-down";
-      default:
-        return "minus";
-    }
-  };
+  const trendIcon: IconName =
+    trend === "up"
+      ? "trending-up"
+      : trend === "down"
+        ? "trending-down"
+        : "minus";
 
-  const getTrendColor = (): string =>
-    trend === "stable" ? "#D1D5DB" : TREND_COLOR;
+  const showTrend = trend !== undefined && trendValue !== undefined;
+  const trendText =
+    showTrend && trend === "up"
+      ? t("a11y.today.trendUp", { value: trendValue })
+      : showTrend && trend === "down"
+        ? t("a11y.today.trendDown", { value: trendValue })
+        : undefined;
+
+  const label = a11yLabel(
+    title,
+    valueAccessibilityText ?? value,
+    trendText,
+    !showTrend ? subtitle : undefined
+  );
 
   const content = (
-    <View style={styles.container}>
-      {/* Icon */}
-      <View style={[styles.iconContainer, { backgroundColor: `${color}15` }]}>
-        <MaterialCommunityIcons name={icon} size={18} color={color} />
+    <>
+      <View style={[styles.iconContainer, { backgroundColor: iconBackground }]}>
+        <Icon name={icon} size={iconSize.md} color={color} />
       </View>
 
-      {/* Value - centered and prominent */}
-      <Text style={styles.value} numberOfLines={1} adjustsFontSizeToFit>
+      {/* Value - centered and prominent; wraps rather than shrinking */}
+      <Text variant="title3" style={styles.centered}>
         {value}
       </Text>
 
-      {/* Title - up to two lines, for longer labels in Spanish and Portuguese */}
-      <Text style={styles.title} numberOfLines={2}>
+      {/* Title wraps for longer labels in Spanish and Portuguese */}
+      <Text variant="footnote" tone="secondary" style={styles.centered}>
         {title}
       </Text>
 
-      {/* Trend indicator or subtitle - always show container for consistent height */}
-      <View style={styles.trendContainer}>
-        {trend && trendValue ? (
-          <>
-            <MaterialCommunityIcons
-              name={getTrendIcon()}
-              size={11}
-              color={getTrendColor()}
-            />
-            <Text style={[styles.trendText, { color: getTrendColor() }]}>
-              {trendValue}
-            </Text>
-          </>
-        ) : subtitle ? (
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        ) : (
-          <Text style={styles.trendPlaceholder}> </Text>
-        )}
-      </View>
-    </View>
+      {/* Trend indicator or subtitle */}
+      {showTrend ? (
+        <View style={styles.trendContainer}>
+          <Icon name={trendIcon} size={iconSize.sm} color={TREND_COLOR} />
+          <Text variant="caption1" tone="secondary">
+            {trendValue}
+          </Text>
+        </View>
+      ) : subtitle ? (
+        <Text variant="caption1" tone="secondary" style={styles.centered}>
+          {subtitle}
+        </Text>
+      ) : null}
+    </>
   );
 
   if (onPress) {
     return (
-      <Pressable onPress={handlePress} style={styles.pressable}>
+      <AnimatedPressable
+        onPress={onPress}
+        style={styles.container}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+      >
         {content}
-      </Pressable>
+      </AnimatedPressable>
     );
   }
 
-  return <View style={styles.pressable}>{content}</View>;
-}
-
-// Compact version for inline display
-interface CompactInsightProps {
-  label: string;
-  value: string;
-  trend?: "up" | "down" | "stable";
-  color?: string;
-}
-
-export function CompactInsight({
-  label,
-  value,
-  trend,
-  color = "#6B7280",
-}: CompactInsightProps) {
-  const getTrendIcon = ():
-    | keyof typeof MaterialCommunityIcons.glyphMap
-    | null => {
-    switch (trend) {
-      case "up":
-        return "arrow-up";
-      case "down":
-        return "arrow-down";
-      default:
-        return null;
-    }
-  };
-
-  const getTrendColor = (): string => TREND_COLOR;
-
-  const trendIcon = getTrendIcon();
-
   return (
-    <View style={compactStyles.container}>
-      <Text style={compactStyles.label}>{label}</Text>
-      <View style={compactStyles.valueRow}>
-        <Text style={[compactStyles.value, { color }]}>{value}</Text>
-        {trendIcon ? (
-          <MaterialCommunityIcons
-            name={trendIcon}
-            size={14}
-            color={getTrendColor()}
-          />
-        ) : null}
-      </View>
+    <View style={styles.container} accessible accessibilityLabel={label}>
+      {content}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  pressable: {
+  container: {
+    ...cardStyle,
+    overflow: "hidden",
     flex: 1,
     minWidth: 0,
-  },
-  container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     alignItems: "center",
-    minHeight: 100,
-    // Fill the row height, so cards in a row match when a title wraps
-    flexGrow: 1,
+    gap: spacing.xs,
   },
   iconContainer: {
     width: 32,
@@ -170,58 +139,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 6,
+    marginBottom: spacing.xs,
   },
-  value: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111827",
+  centered: {
     textAlign: "center",
-  },
-  title: {
-    fontSize: 10,
-    color: "#9CA3AF",
-    textAlign: "center",
-    marginTop: 2,
   },
   trendContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 2,
-    marginTop: 4,
-    minHeight: 14,
-  },
-  trendText: {
-    fontSize: 10,
-    fontWeight: "500",
-  },
-  trendPlaceholder: {
-    fontSize: 10,
-    color: "transparent",
-  },
-  subtitle: {
-    fontSize: 10,
-    color: "#6B7280",
-    textAlign: "center",
-  },
-});
-
-const compactStyles = StyleSheet.create({
-  container: {
-    gap: 2,
-  },
-  label: {
-    fontSize: 11,
-    color: "#9CA3AF",
-  },
-  valueRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: "600",
+    gap: spacing.xxs,
   },
 });

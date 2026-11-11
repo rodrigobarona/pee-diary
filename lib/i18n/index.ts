@@ -1,6 +1,15 @@
 import { I18n } from 'i18n-js';
 import { getLocales } from 'expo-localization';
 
+import {
+  hourFormatOptions,
+  readDeviceFormat,
+  resolveIntlLocale,
+  timeFormatOptions,
+  type DeviceFormat,
+  type WeekStartsOn,
+} from './device-format';
+
 import en from './locales/en.json';
 import es from './locales/es.json';
 import pt from './locales/pt.json';
@@ -37,18 +46,29 @@ i18n.enableFallback = true;
 i18n.defaultLocale = 'en';
 
 /**
+ * Device date and time conventions (24-hour clock, first day of the week,
+ * region), read at start-up and again by refreshDeviceFormat().
+ */
+const deviceFormat: DeviceFormat = readDeviceFormat();
+
+/**
  * Locale used for dates, times and numbers. Portuguese and Spanish use the
  * European conventions (pt-PT, es-ES), as in the Eleva monorepo; bare "pt"
- * would format dates the Brazilian way.
+ * would format dates the Brazilian way. English follows the device region.
  */
-export const intlLocales: Record<SupportedLocale, string> = {
-  en: 'en',
-  es: 'es-ES',
-  pt: 'pt-PT',
-};
-
 export const intlLocale = (locale: string): string =>
-  intlLocales[locale as SupportedLocale] ?? locale;
+  resolveIntlLocale(locale, deviceFormat.regionCode);
+
+/** Intl options for hours and minutes in the device's 12/24-hour clock. */
+export const deviceTimeFormatOptions = (): Intl.DateTimeFormatOptions =>
+  timeFormatOptions(deviceFormat.uses24hourClock);
+
+/** First day of the week (date-fns index, 0 = Sunday) from the device. */
+export const getWeekStartsOn = (): WeekStartsOn => deviceFormat.weekStartsOn;
+
+/** Whether the device uses a 24-hour clock (null when it does not say). */
+export const deviceUses24hourClock = (): boolean | null =>
+  deviceFormat.uses24hourClock;
 
 // Hoisted Intl formatters - per js-hoist-intl rule
 // These are expensive to instantiate, so we create them once per locale
@@ -58,17 +78,9 @@ const buildDateFormatters = (locale: SupportedLocale) => {
     short: new Intl.DateTimeFormat(l, { dateStyle: 'short' }),
     medium: new Intl.DateTimeFormat(l, { dateStyle: 'medium' }),
     long: new Intl.DateTimeFormat(l, { dateStyle: 'long' }),
-    // 12-hour clock in English, 24-hour in Spanish and Portuguese
-    time: new Intl.DateTimeFormat(l, {
-      hour: locale === 'en' ? 'numeric' : '2-digit',
-      minute: '2-digit',
-      hour12: locale === 'en',
-    }),
-    timeShort: new Intl.DateTimeFormat(l, {
-      hour: locale === 'en' ? 'numeric' : '2-digit',
-      minute: '2-digit',
-      hour12: locale === 'en',
-    }),
+    // The device's 12- or 24-hour clock, in every language
+    time: new Intl.DateTimeFormat(l, timeFormatOptions(deviceFormat.uses24hourClock)),
+    hour: new Intl.DateTimeFormat(l, hourFormatOptions(deviceFormat.uses24hourClock)),
     dayMonth: new Intl.DateTimeFormat(l, { day: 'numeric', month: 'short' }),
     dayMonthYear: new Intl.DateTimeFormat(l, {
       day: 'numeric',
@@ -103,25 +115,46 @@ const buildNumberFormatters = (locale: SupportedLocale) => {
 export const dateFormatters = buildDateFormatters(i18n.locale as SupportedLocale);
 export const numberFormatters = buildNumberFormatters(i18n.locale as SupportedLocale);
 
-/** Monday-first single-letter weekday labels in the current locale. */
-export const getWeekdayLabels = (): string[] => {
-  // 2 January 2023 was a Monday
-  return Array.from({ length: 7 }, (_, i) =>
-    dateFormatters.weekdayNarrow.format(new Date(2023, 0, 2 + i))
+// 1 January 2023 was a Sunday: day i of the week starting on `weekStartsOn`
+const weekdayDate = (i: number) =>
+  new Date(2023, 0, 1 + ((deviceFormat.weekStartsOn + i) % 7));
+
+/**
+ * Single-letter weekday labels in the current locale, starting on the
+ * device's first day of the week.
+ */
+export const getWeekdayLabels = (): string[] =>
+  Array.from({ length: 7 }, (_, i) =>
+    dateFormatters.weekdayNarrow.format(weekdayDate(i))
   );
+
+/**
+ * Full weekday names in the current locale, starting on the device's first
+ * day of the week (for accessibility labels).
+ */
+export const getWeekdayLongLabels = (): string[] =>
+  Array.from({ length: 7 }, (_, i) =>
+    dateFormatters.weekday.format(weekdayDate(i))
+  );
+
+/**
+ * A range of whole hours in the device's clock, for the time-of-day groups
+ * ("00:00–05:00" or "12 AM–5 AM"). 24 is midnight at the end of the day.
+ */
+export const formatHourRange = (startHour: number, endHour: number): string => {
+  const at = (hour: number) => dateFormatters.hour.format(new Date(2023, 0, 1, hour % 24));
+  return `${at(startHour)}\u2013${at(endHour)}`;
 };
 
 /**
- * Monday-first three-letter weekday names in the current locale
- * (pt-PT "seg, ter…", es-ES "lun, mar…", en "Mon, Tue…").
+ * Re-reads the device's clock, first day of the week and region (call when
+ * the app returns to the foreground) and rebuilds the formatters.
  */
-export const getWeekdayShortLabels = (): string[] => {
-  return Array.from({ length: 7 }, (_, i) =>
-    dateFormatters.weekdayShort
-      .format(new Date(2023, 0, 2 + i))
-      .replace('.', '')
-      .slice(0, 3)
-  );
+export const refreshDeviceFormat = () => {
+  Object.assign(deviceFormat, readDeviceFormat());
+  const locale = i18n.locale as SupportedLocale;
+  Object.assign(dateFormatters, buildDateFormatters(locale));
+  Object.assign(numberFormatters, buildNumberFormatters(locale));
 };
 
 // Helper function to update formatters when locale changes
@@ -132,4 +165,4 @@ export const updateLocale = (locale: SupportedLocale) => {
 };
 
 export { i18n };
-export type { SupportedLocale };
+export type { SupportedLocale, WeekStartsOn };

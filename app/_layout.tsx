@@ -3,7 +3,6 @@ import "../global.css";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFonts } from "expo-font";
 import {
-  DefaultTheme,
   type NativeStackNavigationOptions,
   Stack,
   ThemeProvider,
@@ -24,7 +23,7 @@ import { useReminderSync } from "@/hooks/use-reminder-sync";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
-import { stackHeaderOptions } from "@/lib/theme/navigation";
+import { navigationTheme, stackHeaderOptions } from "@/lib/theme/navigation";
 import { getLaunchAction } from "@/lib/utils/launch";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
@@ -105,8 +104,9 @@ function InnerLayout() {
   return (
     // The app has only a light appearance for now (app.json
     // userInterfaceStyle "light"): light navigation colours and dark
-    // status-bar content, even when the phone is in dark mode.
-    <ThemeProvider value={DefaultTheme}>
+    // status-bar content, even when the phone is in dark mode; the brand
+    // teal as the navigation tint.
+    <ThemeProvider value={navigationTheme}>
       <Stack
         key={locale} // Force re-mount on locale change to update all translations
         screenOptions={stackHeaderOptions}

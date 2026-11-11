@@ -1,46 +1,31 @@
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
+import { a11yLabel, choiceA11y, choiceGroupA11y } from "@/lib/a11y";
+import { haptics } from "@/lib/haptics";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
+import { cardStyle, iconSize, spacing } from "@/lib/theme/styles";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const IS_IOS = Platform.OS === "ios";
 
+// Languages by their own names; no flags (a flag is a country, not a
+// language)
 const languageOptions: {
   value: SupportedLocale;
   nativeLabel: string;
   // Name of the language in the app's current language
   labelKey: string;
-  flag: string;
 }[] = [
-  {
-    value: "en",
-    nativeLabel: "English",
-    labelKey: "settings.english",
-    flag: "🇬🇧",
-  },
-  {
-    value: "es",
-    nativeLabel: "Español",
-    labelKey: "settings.spanish",
-    flag: "🇪🇸",
-  },
-  {
-    value: "pt",
-    nativeLabel: "Português",
-    labelKey: "settings.portuguese",
-    flag: "🇵🇹",
-  },
+  { value: "en", nativeLabel: "English", labelKey: "settings.english" },
+  { value: "es", nativeLabel: "Español", labelKey: "settings.spanish" },
+  { value: "pt", nativeLabel: "Português", labelKey: "settings.portuguese" },
 ];
 
 interface LanguageOptionProps {
@@ -49,56 +34,45 @@ interface LanguageOptionProps {
   onPress: () => void;
 }
 
+// A list row: iOS marks the chosen language with a trailing checkmark,
+// Android with a Material radio button
 function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
   const { t } = useI18n();
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = React.useCallback(() => {
-    scale.set(withTiming(0.97, { duration: 100 }));
-  }, [scale]);
-
-  const handlePressOut = React.useCallback(() => {
-    scale.set(withTiming(1, { duration: 150 }));
-  }, [scale]);
+  const translatedName = t(option.labelKey);
 
   return (
     <AnimatedPressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       testID={`language-option-${option.value}`}
-      accessibilityRole="radio"
-      accessibilityState={{ checked: isSelected }}
-      accessibilityLabel={option.nativeLabel}
-      style={[
-        styles.optionContainer,
-        isSelected && styles.optionContainerSelected,
-        animatedStyle,
-      ]}
+      feedback="highlight"
+      highlightColor={colors.highlight}
+      {...choiceA11y(isSelected)}
+      accessibilityLabel={a11yLabel(
+        option.nativeLabel,
+        translatedName !== option.nativeLabel ? translatedName : null
+      )}
+      style={styles.option}
     >
-      {/* Flag */}
-      <View style={styles.flagContainer}>
-        <Text style={styles.flag}>{option.flag}</Text>
-      </View>
-
-      {/* Labels */}
       <View style={styles.labelContainer}>
-        <Text
-          style={[styles.nativeLabel, isSelected && styles.nativeLabelSelected]}
-        >
+        <Text variant="body" style={isSelected ? styles.labelSelected : undefined}>
           {option.nativeLabel}
         </Text>
-        <Text style={styles.englishLabel}>{t(option.labelKey)}</Text>
+        <Text variant={IS_IOS ? "footnote" : "subheadline"} tone="secondary">
+          {translatedName}
+        </Text>
       </View>
 
-      {/* Radio indicator */}
-      <View style={[styles.radio, isSelected && styles.radioSelected]}>
-        {isSelected ? <View style={styles.radioInner} /> : null}
-      </View>
+      {IS_IOS ? (
+        <View style={styles.checkmarkSlot}>
+          {isSelected ? (
+            <Icon name="check" size={iconSize.lg} color={colors.primary.DEFAULT} />
+          ) : null}
+        </View>
+      ) : (
+        <View style={[styles.radio, isSelected && styles.radioSelected]}>
+          {isSelected ? <View style={styles.radioInner} /> : null}
+        </View>
+      )}
     </AnimatedPressable>
   );
 }
@@ -109,8 +83,8 @@ export default function LanguageScreen() {
 
   const handleLanguageSelect = React.useCallback(
     (newLocale: SupportedLocale) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (newLocale !== locale) {
+        haptics.selection();
       }
       setLocale(newLocale);
       // Dismiss the sheet after selection
@@ -118,7 +92,7 @@ export default function LanguageScreen() {
         router.dismiss();
       }, 150);
     },
-    [setLocale]
+    [locale, setLocale]
   );
 
   return (
@@ -128,25 +102,38 @@ export default function LanguageScreen() {
       style={[
         styles.container,
         {
-          paddingBottom: Math.max(insets.bottom, 16) + 16,
-          paddingTop: Platform.OS === "ios" ? 24 : 0,
+          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg,
+          paddingTop: IS_IOS ? spacing.xl : 0,
         },
       ]}
     >
       <SheetHandle />
       {/* Title */}
-      <Text style={styles.title}>{t("settings.language")}</Text>
-      <Text style={styles.subtitle}>{t("settings.languageSubtitle")}</Text>
+      <Text
+        variant={IS_IOS ? "title3" : "title2"}
+        style={styles.title}
+        accessibilityRole="header"
+      >
+        {t("settings.language")}
+      </Text>
+      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+        {t("settings.languageSubtitle")}
+      </Text>
 
-      {/* Language Options */}
-      <View style={styles.optionsContainer}>
-        {languageOptions.map((option) => (
-          <LanguageOption
-            key={option.value}
-            option={option}
-            isSelected={locale === option.value}
-            onPress={() => handleLanguageSelect(option.value)}
-          />
+      {/* Language Options: one choice */}
+      <View
+        style={styles.optionsContainer}
+        {...choiceGroupA11y(t("settings.language"))}
+      >
+        {languageOptions.map((option, index) => (
+          <React.Fragment key={option.value}>
+            {index > 0 ? <View style={styles.separator} /> : null}
+            <LanguageOption
+              option={option}
+              isSelected={locale === option.value}
+              onPress={() => handleLanguageSelect(option.value)}
+            />
+          </React.Fragment>
         ))}
       </View>
     </View>
@@ -155,78 +142,53 @@ export default function LanguageScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 20,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#111827",
-    textAlign: "center",
-    marginBottom: 4,
+    textAlign: IS_IOS ? "center" : "left",
+    marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 16,
+    textAlign: IS_IOS ? "center" : "left",
+    marginBottom: spacing.lg,
   },
+  // One opaque grouped card (no translucent fill on an elevated view)
   optionsContainer: {
-    gap: 8,
-  },
-  optionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  optionContainerSelected: {
-    backgroundColor: "rgba(0, 109, 119, 0.06)",
-    borderWidth: 2,
-    borderColor: colors.primary.DEFAULT,
-  },
-  flagContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#F3F4F6",
-    alignItems: "center",
-    justifyContent: "center",
+    ...cardStyle,
     overflow: "hidden",
   },
-  flag: {
-    fontSize: 26,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginStart: spacing.lg,
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    minHeight: IS_IOS ? 44 : 56,
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.surface,
   },
   labelContainer: {
     flex: 1,
-    marginLeft: 14,
   },
-  nativeLabel: {
-    fontSize: 16,
+  labelSelected: {
     fontWeight: "600",
-    color: "#111827",
   },
-  nativeLabelSelected: {
-    color: colors.primary.DEFAULT,
+  checkmarkSlot: {
+    width: iconSize.lg,
+    alignItems: "center",
   },
-  englishLabel: {
-    fontSize: 13,
-    color: "#6B7280",
-    marginTop: 1,
-  },
+  // Material 3 radio button: 20dp, 2dp outline (colors.outline, 4.48:1)
   radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#D1D5DB",
+    borderColor: colors.outline,
     alignItems: "center",
     justifyContent: "center",
   },

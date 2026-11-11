@@ -1,14 +1,16 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { getHours, parseISO } from "date-fns";
-import * as Haptics from "expo-haptics";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { a11yLabel, hiddenA11y } from "@/lib/a11y";
 import { useI18n } from "@/lib/i18n/context";
-import { dateFormatters } from "@/lib/i18n";
+import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import type { DiaryEntry } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
+import { cardStyle, iconSize, radius, spacing } from "@/lib/theme/styles";
 
 interface TimelineEntryProps {
   entry: DiaryEntry;
@@ -22,21 +24,39 @@ interface TimelineEntryProps {
 const entryConfig = {
   urination: {
     icon: "toilet" as const,
-    color: colors.primary.DEFAULT,
+    color: colors.category.urination.accent,
+    container: colors.category.urination.container,
     labelKey: "entry.urination",
   },
   fluid: {
     icon: "cup-water" as const,
-    color: colors.secondary.DEFAULT,
+    color: colors.category.fluid.accent,
+    container: colors.category.fluid.container,
     labelKey: "entry.fluid",
   },
   leak: {
     icon: "water-alert" as const,
-    color: colors.error,
+    color: colors.category.leak.accent,
+    container: colors.category.leak.container,
     labelKey: "entry.leak",
   },
 };
 
+// Above this font scale the time moves above the card, so a fixed time
+// column never clips it
+const STACKED_FONT_SCALE = 1.35;
+// Time column wide enough for "12:30 AM" at the default size
+const TIME_COLUMN_WIDTH = 64;
+
+const capitalize = (value: string) =>
+  value.charAt(0).toUpperCase() + value.slice(1);
+
+/**
+ * One entry in the History timeline: the time and a track on the left, a
+ * card on the right. The card is one accessible button whose label reads
+ * the whole entry in words ("Urination, 7:06 AM, Small, Urgency 3 of 5,
+ * Moderate").
+ */
 export function TimelineEntry({
   entry,
   isLast = false,
@@ -46,188 +66,175 @@ export function TimelineEntry({
   testID,
 }: TimelineEntryProps) {
   const { t } = useI18n();
+  const { fontScale } = useWindowDimensions();
+  const stacked = fontScale > STACKED_FONT_SCALE;
   const config = entryConfig[entry.type];
-  // 12-hour clock in English, 24-hour in Spanish and Portuguese
+  // The device's 12- or 24-hour clock
   const time = dateFormatters.time.format(parseISO(entry.timestamp));
+  const typeLabel = t(config.labelKey);
+  const isEdited = (entry.editHistory?.length ?? 0) > 0;
 
-  const handlePress = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  // Short visible details and their spoken form
+  const details: string[] = [];
+  const spoken: (string | null)[] = [];
+  switch (entry.type) {
+    case "urination": {
+      const volume = t(`urination.volume${capitalize(entry.volume)}`);
+      details.push(volume, t("a11y.history.urgencyShort", { value: entry.urgency }));
+      spoken.push(
+        volume,
+        t("a11y.history.urgencyOfFive", {
+          value: entry.urgency,
+          description: t(`urgency.${entry.urgency}`),
+        }),
+        entry.hadLeak ? t("a11y.history.withLeak") : null
+      );
+      break;
     }
-    onPress?.();
-  }, [onPress]);
+    case "fluid": {
+      const drink = t(`fluid.${entry.drinkType}`);
+      const amount = `${numberFormatters.decimal.format(entry.amount)} ml`;
+      details.push(drink, amount);
+      spoken.push(drink, t("a11y.history.millilitres", { count: entry.amount }));
+      break;
+    }
+    case "leak": {
+      const severity = t(`leak.${entry.severity}`);
+      details.push(severity, t("a11y.history.urgencyShort", { value: entry.urgency }));
+      spoken.push(
+        severity,
+        t("a11y.history.urgencyOfFive", {
+          value: entry.urgency,
+          description: t(`urgency.${entry.urgency}`),
+        })
+      );
+      break;
+    }
+  }
 
-  // Get compact details based on type
-  const getCompactDetails = () => {
-    switch (entry.type) {
-      case "urination":
-        return (
-          <>
-            <Text style={styles.detailText}>
-              {t(
-                `urination.volume${
-                  entry.volume.charAt(0).toUpperCase() + entry.volume.slice(1)
-                }`
-              )}
-            </Text>
-            <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>{t("pdf.urgency")} {entry.urgency}</Text>
-            {entry.hadLeak ? <>
-                <Text style={styles.detailSeparator}>·</Text>
-                <MaterialCommunityIcons
-                  name="water-alert"
-                  size={12}
-                  color={colors.error}
-                />
-              </> : null}
-          </>
-        );
-      case "fluid":
-        return (
-          <>
-            <Text style={styles.detailText}>
-              {t(`fluid.${entry.drinkType}`)}
-            </Text>
-            <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailHighlight}>{entry.amount}ml</Text>
-          </>
-        );
-      case "leak":
-        return (
-          <>
-            <Text style={styles.detailText}>{t(`leak.${entry.severity}`)}</Text>
-            <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>{t("pdf.urgency")} {entry.urgency}</Text>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
+  const accessibilityLabel = a11yLabel(
+    typeLabel,
+    time,
+    ...spoken,
+    entry.notes ? t("a11y.history.note", { notes: entry.notes }) : null,
+    isEdited ? t("common.edited") : null
+  );
+
+  const timeText = (
+    <Text
+      variant="footnote"
+      tone="secondary"
+      style={styles.timeText}
+      {...hiddenA11y}
+    >
+      {time}
+    </Text>
+  );
 
   return (
-    <View style={styles.row}>
-      {/* Left side: Time + Track */}
-      <View style={styles.leftColumn}>
-        {/* Top connector line (invisible placeholder when first) */}
-        <View
-          style={[styles.trackLineTop, isFirst && styles.trackLineHidden]}
-        />
-
-        {/* Time + Dot row (aligned horizontally) */}
-        <View style={styles.timeAndDot}>
-          <View style={styles.timeColumn}>
-            {showTime ? <Text style={styles.timeText}>{time}</Text> : null}
-          </View>
-          <View style={[styles.trackDot, { backgroundColor: config.color }]}>
-            <View
-              style={[styles.trackDotInner, { backgroundColor: config.color }]}
-            />
-          </View>
-        </View>
-
-        {/* Bottom connector line (invisible placeholder when last) */}
-        <View
-          style={[styles.trackLineBottom, isLast && styles.trackLineHidden]}
-        />
-      </View>
-
-      {/* Content */}
-      <Pressable onPress={handlePress} style={styles.content} testID={testID}>
-        <View style={styles.contentInner}>
-          {/* Icon */}
+    <View style={stacked ? styles.rowStacked : styles.row}>
+      {stacked ? (
+        // Large text: the time on its own line above the card
+        showTime ? <View style={styles.stackedTime}>{timeText}</View> : null
+      ) : (
+        <View style={styles.leftColumn} {...hiddenA11y}>
+          {/* Top connector line (invisible placeholder when first) */}
           <View
-            style={[styles.iconBadge, { backgroundColor: `${config.color}12` }]}
-          >
-            <MaterialCommunityIcons
-              name={config.icon}
-              size={16}
-              color={config.color}
-            />
+            style={[styles.trackLineTop, isFirst && styles.trackLineHidden]}
+          />
+
+          {/* Time and dot on one line */}
+          <View style={styles.timeAndDot}>
+            <View style={styles.timeColumn}>{showTime ? timeText : null}</View>
+            <View style={[styles.trackDot, { backgroundColor: config.color }]} />
           </View>
 
-          {/* Details */}
+          {/* Bottom connector line (invisible placeholder when last) */}
+          <View
+            style={[styles.trackLineBottom, isLast && styles.trackLineHidden]}
+          />
+        </View>
+      )}
+
+      {/* The entry card */}
+      <AnimatedPressable
+        onPress={onPress}
+        style={[styles.content, stacked ? styles.contentStacked : null]}
+        testID={testID}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+      >
+        <View style={styles.contentInner}>
+          <View style={[styles.iconBadge, { backgroundColor: config.container }]}>
+            <Icon name={config.icon} size={iconSize.md} color={config.color} />
+          </View>
+
           <View style={styles.details}>
-            <Text style={styles.typeLabel}>{t(config.labelKey)}</Text>
-            <View style={styles.detailsRow}>{getCompactDetails()}</View>
+            <Text variant="subheadline" style={styles.typeLabel}>
+              {typeLabel}
+            </Text>
+            <View style={styles.detailsRow}>
+              {details.map((detail, index) => (
+                <Text
+                  key={index}
+                  variant="footnote"
+                  tone={
+                    entry.type === "fluid" && index === 1 ? undefined : "secondary"
+                  }
+                  style={
+                    entry.type === "fluid" && index === 1
+                      ? styles.detailHighlight
+                      : undefined
+                  }
+                >
+                  {index > 0 ? `· ${detail}` : detail}
+                </Text>
+              ))}
+              {entry.type === "urination" && entry.hadLeak ? (
+                <Icon
+                  name="water-alert"
+                  size={iconSize.sm}
+                  color={colors.category.leak.accent}
+                />
+              ) : null}
+            </View>
           </View>
 
-          {/* Edited indicator - subtle pencil icon */}
-          {entry.editHistory && entry.editHistory.length > 0 ? (
-            <MaterialCommunityIcons
+          {/* Edited: a small pencil (read as "Edited" in the label) */}
+          {isEdited ? (
+            <Icon
               name="pencil-outline"
-              size={12}
-              color="#D1D5DB"
+              size={iconSize.sm}
+              color={colors.textTertiary}
               style={styles.editedIcon}
             />
           ) : null}
 
-          {/* Arrow */}
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={18}
-            color="#D1D5DB"
-          />
+          {/* Disclosure chevron on iOS; Material cards have none */}
+          {Platform.OS === "ios" ? (
+            <Icon name="chevron-right" size={iconSize.md} color={colors.chevron} />
+          ) : null}
         </View>
 
         {/* Notes */}
         {entry.notes ? (
-          <Text style={styles.notes} numberOfLines={1}>
-            💬 {entry.notes}
-          </Text>
+          <View style={styles.notesRow}>
+            <Icon
+              name="note-text-outline"
+              size={iconSize.sm}
+              color={colors.textSecondary}
+            />
+            <Text
+              variant="footnote"
+              tone="secondary"
+              style={styles.notesText}
+              numberOfLines={1}
+            >
+              {entry.notes}
+            </Text>
+          </View>
         ) : null}
-      </Pressable>
-    </View>
-  );
-}
-
-// Time period header component
-interface TimePeriodHeaderProps {
-  period: "morning" | "afternoon" | "evening" | "night";
-  count: number;
-}
-
-const periodConfig = {
-  morning: {
-    icon: "weather-sunny" as const,
-    color: "#F59E0B",
-    labelKey: "timePeriod.morning",
-  },
-  afternoon: {
-    icon: "white-balance-sunny" as const,
-    color: "#F97316",
-    labelKey: "timePeriod.afternoon",
-  },
-  evening: {
-    icon: "weather-sunset" as const,
-    color: "#8B5CF6",
-    labelKey: "timePeriod.evening",
-  },
-  night: {
-    icon: "weather-night" as const,
-    color: "#6366F1",
-    labelKey: "timePeriod.night",
-  },
-};
-
-export function TimePeriodHeader({ period, count }: TimePeriodHeaderProps) {
-  const { t } = useI18n();
-  const config = periodConfig[period];
-
-  return (
-    <View style={periodStyles.container}>
-      <View style={periodStyles.iconContainer}>
-        <MaterialCommunityIcons
-          name={config.icon}
-          size={14}
-          color={config.color}
-        />
-      </View>
-      <Text style={periodStyles.label}>{t(config.labelKey)}</Text>
-      <View style={periodStyles.badge}>
-        <Text style={periodStyles.badgeText}>{count}</Text>
-      </View>
-      <View style={periodStyles.line} />
+      </AnimatedPressable>
     </View>
   );
 }
@@ -248,36 +255,39 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     minHeight: 56,
-    paddingBottom: 8,
+    paddingBottom: spacing.sm,
+  },
+  rowStacked: {
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
+  },
+  stackedTime: {
+    paddingBottom: spacing.xs,
   },
   // Left column containing time + track
   leftColumn: {
-    width: 90,
+    width: TIME_COLUMN_WIDTH + 12,
     alignItems: "flex-end",
   },
-  // Time and dot aligned horizontally
   timeAndDot: {
     flexDirection: "row",
     alignItems: "center",
   },
-  // Time column - wide enough for "12:30 AM"
   timeColumn: {
-    width: 70,
+    width: TIME_COLUMN_WIDTH,
     alignItems: "flex-end",
-    paddingRight: 8,
+    paddingRight: spacing.sm,
   },
   timeText: {
-    fontSize: 12,
     fontWeight: "500",
-    color: "#6B7280",
     fontVariant: ["tabular-nums"],
     textAlign: "right",
   },
-  // Track elements
+  // Track elements (decorative)
   trackLineTop: {
     width: 2,
-    height: 12,
-    backgroundColor: "#E5E7EB",
+    height: spacing.md,
+    backgroundColor: colors.separator,
     alignSelf: "flex-end",
     marginRight: 4,
   },
@@ -285,134 +295,73 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  trackDotInner: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    opacity: 0.4,
   },
   trackLineBottom: {
     flex: 1,
-    minHeight: 12,
+    minHeight: spacing.md,
     width: 2,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: colors.separator,
     alignSelf: "flex-end",
     marginRight: 4,
   },
   trackLineHidden: {
     backgroundColor: "transparent",
   },
-  // Content
+  // The card
   content: {
+    ...cardStyle,
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginLeft: 8,
-    marginRight: 12,
-    padding: 12,
-    ...(Platform.OS === "web"
-      ? { boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.06)" }
-      : {
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
-          shadowRadius: 3,
-          elevation: 1,
-        }),
+    marginLeft: spacing.sm,
+    marginRight: spacing.md,
+    padding: spacing.md,
+    overflow: "hidden",
+  },
+  contentStacked: {
+    marginLeft: spacing.sm,
+    marginRight: spacing.sm,
   },
   contentInner: {
     flexDirection: "row",
     alignItems: "center",
+    gap: spacing.md,
   },
   iconBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+    width: 36,
+    height: 36,
+    borderRadius: radius.sm,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
   },
   details: {
     flex: 1,
-    marginLeft: 10,
   },
   typeLabel: {
-    fontSize: 14,
     fontWeight: "600",
-    color: "#111827",
   },
   editedIcon: {
-    marginRight: 4,
+    marginRight: spacing.xs,
   },
   detailsRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 2,
-  },
-  detailText: {
-    fontSize: 12,
-    color: "#6B7280",
+    columnGap: spacing.xs,
+    marginTop: spacing.xxs,
   },
   detailHighlight: {
-    fontSize: 12,
     fontWeight: "600",
-    color: "#111827",
   },
-  detailSeparator: {
-    fontSize: 12,
-    color: "#D1D5DB",
-    marginHorizontal: 4,
-  },
-  notes: {
-    fontSize: 11,
-    color: "#9CA3AF",
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
-  },
-});
-
-const periodStyles = StyleSheet.create({
-  container: {
+  notesRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginTop: 8,
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
   },
-  iconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#F3F4F6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#6B7280",
-    marginLeft: 8,
-  },
-  badge: {
-    backgroundColor: "#F3F4F6",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#9CA3AF",
-  },
-  line: {
+  notesText: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#E5E7EB",
-    marginLeft: 12,
   },
 });

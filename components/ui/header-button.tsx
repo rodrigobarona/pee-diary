@@ -1,13 +1,19 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, StyleSheet } from "react-native";
 
+import { Icon, type IconName } from "./icon";
+import { Text } from "./text";
 import { colors } from "@/lib/theme/colors";
-
-type IconName = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+import {
+  MIN_TOUCH_TARGET,
+  iconSize,
+  ripple,
+  rippleBorderless,
+} from "@/lib/theme/styles";
+import { CONTROL_MAX_FONT_SCALE } from "@/lib/theme/typography";
 
 // Touch targets: 44pt on iOS (HIG), 48dp on Android (Material 3)
-const TARGET_SIZE = Platform.OS === "ios" ? 44 : 48;
+const TARGET_SIZE = MIN_TOUCH_TARGET;
 
 interface HeaderIconButtonProps {
   icon: IconName;
@@ -26,7 +32,7 @@ export function HeaderIconButton({
   label,
   onPress,
   testID,
-  color = Platform.OS === "ios" ? colors.primary.DEFAULT : "#374151",
+  color = Platform.OS === "ios" ? colors.primary.DEFAULT : colors.textSecondary,
 }: HeaderIconButtonProps) {
   return (
     <Pressable
@@ -34,23 +40,13 @@ export function HeaderIconButton({
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={label}
-      android_ripple={{
-        color: "rgba(0, 0, 0, 0.12)",
-        borderless: true,
-        radius: TARGET_SIZE / 2,
-      }}
+      android_ripple={rippleBorderless(TARGET_SIZE)}
       style={({ pressed }) => [
         styles.iconButton,
         Platform.OS === "ios" && pressed ? styles.pressedIOS : undefined,
       ]}
     >
-      <MaterialCommunityIcons
-        name={icon}
-        size={24}
-        color={color}
-        accessible={false}
-        importantForAccessibility="no"
-      />
+      <Icon name={icon} size={iconSize.lg} color={color} />
     </Pressable>
   );
 }
@@ -84,7 +80,7 @@ export function HeaderTextButton({
       accessibilityLabel={label}
       accessibilityState={{ disabled }}
       hitSlop={Platform.OS === "android" ? 4 : undefined}
-      android_ripple={{ color: "rgba(0, 109, 119, 0.12)" }}
+      android_ripple={ripple}
       style={({ pressed }) => [
         styles.textButton,
         Platform.OS === "ios" && pressed ? styles.pressedIOS : undefined,
@@ -92,11 +88,10 @@ export function HeaderTextButton({
       ]}
     >
       <Text
-        style={[
-          styles.textButtonLabel,
-          prominent ? styles.textButtonLabelProminent : undefined,
-        ]}
-        maxFontSizeMultiplier={1.4}
+        variant={Platform.OS === "ios" ? "body" : "button"}
+        tone="accent"
+        style={prominent ? styles.textButtonLabelProminent : undefined}
+        maxFontSizeMultiplier={CONTROL_MAX_FONT_SCALE}
       >
         {label}
       </Text>
@@ -117,29 +112,19 @@ const styles = StyleSheet.create({
       minHeight: 44,
       minWidth: 44,
       paddingHorizontal: 8,
+      paddingVertical: 4,
       alignItems: "center",
       justifyContent: "center",
     },
     default: {
-      // Material 3 text button: 40dp tall, full radius, 12dp padding
-      height: 40,
+      // Material 3 text button: 40dp visual (48dp target via hitSlop), full
+      // radius, 12dp padding; grows with the font size
+      minHeight: 40,
       paddingHorizontal: 12,
       borderRadius: 20,
       overflow: "hidden",
       alignItems: "center",
       justifyContent: "center",
-    },
-  }),
-  textButtonLabel: Platform.select({
-    ios: {
-      fontSize: 17,
-      color: colors.primary.DEFAULT,
-    },
-    default: {
-      fontSize: 14,
-      fontWeight: "500",
-      letterSpacing: 0.1,
-      color: colors.primary.DEFAULT,
     },
   }),
   textButtonLabelProminent: Platform.select({

@@ -1,14 +1,21 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { isToday } from "date-fns";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { a11yLabel } from "@/lib/a11y";
 import { dateFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
+import { MIN_TOUCH_TARGET, radius, spacing } from "@/lib/theme/styles";
+
+// Above this font scale the "When" label sits above the date and time
+const STACK_FONT_SCALE = 1.3;
 
 interface TimePickerProps {
   value: Date;
@@ -25,12 +32,24 @@ export function TimePicker({
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [showTimePicker, setShowTimePicker] = React.useState(false);
 
-  // Ensure value is a valid Date, fallback to current date/time
-  const safeValue =
-    value instanceof Date && !isNaN(value.getTime()) ? value : new Date();
+  const { fontScale } = useWindowDimensions();
+  const stacked = fontScale > STACK_FONT_SCALE;
 
+  // Ensure value is a valid Date, fallback to current date/time
+  const safeValue = React.useMemo(
+    () =>
+      value instanceof Date && !isNaN(value.getTime()) ? value : new Date(),
+    [value]
+  );
+
+  // The device's clock (12/24 h) and a medium date ("11 Nov 2026"), which
+  // is not ambiguous between day-month and month-day orders
   const formattedTime = dateFormatters.time.format(safeValue);
-  const formattedDate = dateFormatters.short.format(safeValue);
+  const formattedDate = dateFormatters.medium.format(safeValue);
+  const dateLabel = a11yLabel(t("time.date"), dateFormatters.long.format(safeValue));
+  const timeLabel = a11yLabel(t("time.time"), formattedTime);
+  // No time later than now on today's date
+  const maximumTime = isToday(safeValue) ? new Date() : undefined;
 
   const handleDateChange = React.useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -46,7 +65,9 @@ export function TimePicker({
           safeValue.getMinutes(),
           safeValue.getSeconds()
         );
-        onChange(newDate);
+        // Moving to today keeps the time only if it has already passed
+        const now = new Date();
+        onChange(newDate > now ? now : newDate);
       }
     },
     [onChange, safeValue]
@@ -67,11 +88,19 @@ export function TimePicker({
           selectedDate.getMinutes(),
           selectedDate.getSeconds()
         );
-        onChange(newDate);
+        // An entry cannot be in the future
+        const now = new Date();
+        onChange(newDate > now ? now : newDate);
       }
     },
     [onChange, safeValue]
   );
+
+  const label = showLabel ? (
+    <Text variant="body" style={styles.label} accessibilityRole="header">
+      {t("time.when")}
+    </Text>
+  ) : null;
 
   // Helper to format date for input value (local date, not UTC)
   const getLocalDateString = (date: Date) => {
@@ -84,16 +113,14 @@ export function TimePicker({
   // Web fallback
   if (Platform.OS === "web") {
     return (
-      <View style={styles.container}>
-        {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
-        <View style={styles.chipsContainer}>
-          <Pressable style={styles.chip}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={16}
-              color={colors.primary.DEFAULT}
-            />
-            <Text style={styles.chipText}>{formattedDate}</Text>
+      <View style={[styles.container, stacked ? styles.containerStacked : undefined]}>
+        {label}
+        <View style={[styles.chipsContainer, stacked ? styles.chipsStacked : undefined]}>
+          <View style={styles.chip}>
+            <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+            <Text variant="subheadline" style={styles.chipText}>
+              {formattedDate}
+            </Text>
             <input
               type="date"
               value={getLocalDateString(safeValue)}
@@ -109,15 +136,13 @@ export function TimePicker({
               }}
               style={styles.hiddenInput as any}
             />
-          </Pressable>
+          </View>
 
-          <Pressable style={styles.chip}>
-            <MaterialCommunityIcons
-              name="clock-outline"
-              size={16}
-              color={colors.secondary.DEFAULT}
-            />
-            <Text style={styles.chipText}>{formattedTime}</Text>
+          <View style={styles.chip}>
+            <Icon name="clock-outline" size={16} color={colors.primary.DEFAULT} />
+            <Text variant="subheadline" style={styles.chipText}>
+              {formattedTime}
+            </Text>
             <input
               type="time"
               value={`${safeValue
@@ -135,7 +160,7 @@ export function TimePicker({
               }}
               style={styles.hiddenInput as any}
             />
-          </Pressable>
+          </View>
         </View>
       </View>
     );
@@ -144,9 +169,9 @@ export function TimePicker({
   // iOS: Use compact display - shows inline tappable picker that opens popover
   if (Platform.OS === "ios") {
     return (
-      <View style={styles.container}>
-        {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
-        <View style={styles.chipsContainer}>
+      <View style={[styles.container, stacked ? styles.containerStacked : undefined]}>
+        {label}
+        <View style={[styles.chipsContainer, stacked ? styles.chipsStacked : undefined]}>
           <DateTimePicker
             value={safeValue}
             mode="date"
@@ -161,6 +186,7 @@ export function TimePicker({
             mode="time"
             display="compact"
             onChange={handleTimeChange}
+            maximumDate={maximumTime}
             themeVariant="light"
             accentColor={colors.primary.DEFAULT}
           />
@@ -171,28 +197,34 @@ export function TimePicker({
 
   // Android: Custom chips that trigger native dialog
   return (
-    <View style={styles.container}>
-      {showLabel ? <Text style={styles.label}>{t("time.when")}</Text> : null}
-      <View style={styles.chipsContainer}>
+    <View style={[styles.container, stacked ? styles.containerStacked : undefined]}>
+      {label}
+      <View style={[styles.chipsContainer, stacked ? styles.chipsStacked : undefined]}>
         {/* Date Chip */}
-        <Pressable style={styles.chip} onPress={() => setShowDatePicker(true)}>
-          <MaterialCommunityIcons
-            name="calendar"
-            size={16}
-            color={colors.primary.DEFAULT}
-          />
-          <Text style={styles.chipText}>{formattedDate}</Text>
-        </Pressable>
+        <AnimatedPressable
+          style={styles.chip}
+          onPress={() => setShowDatePicker(true)}
+          accessibilityRole="button"
+          accessibilityLabel={dateLabel}
+        >
+          <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+          <Text variant="subheadline" style={styles.chipText}>
+            {formattedDate}
+          </Text>
+        </AnimatedPressable>
 
         {/* Time Chip */}
-        <Pressable style={styles.chip} onPress={() => setShowTimePicker(true)}>
-          <MaterialCommunityIcons
-            name="clock-outline"
-            size={16}
-            color={colors.secondary.DEFAULT}
-          />
-          <Text style={styles.chipText}>{formattedTime}</Text>
-        </Pressable>
+        <AnimatedPressable
+          style={styles.chip}
+          onPress={() => setShowTimePicker(true)}
+          accessibilityRole="button"
+          accessibilityLabel={timeLabel}
+        >
+          <Icon name="clock-outline" size={16} color={colors.primary.DEFAULT} />
+          <Text variant="subheadline" style={styles.chipText}>
+            {formattedTime}
+          </Text>
+        </AnimatedPressable>
       </View>
 
       {/* Android: Material 3 date and time pickers (need the Material 3 app
@@ -220,36 +252,43 @@ export function TimePicker({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
-    gap: 12,
+    columnGap: spacing.md,
+    rowGap: spacing.sm,
+  },
+  containerStacked: {
+    flexDirection: "column",
+    alignItems: "stretch",
   },
   label: {
-    fontSize: 15,
     fontWeight: "500",
-    color: "#374151",
   },
   chipsContainer: {
     flexDirection: "row",
-    gap: 8,
-    flex: 1,
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    flexGrow: 1,
     justifyContent: "flex-end",
     alignItems: "center",
+  },
+  chipsStacked: {
+    justifyContent: "flex-start",
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 20,
+    gap: spacing.sm,
+    minHeight: MIN_TOUCH_TARGET,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
+    overflow: "hidden",
   },
   chipText: {
-    fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
   },
   hiddenInput: {
     position: "absolute",

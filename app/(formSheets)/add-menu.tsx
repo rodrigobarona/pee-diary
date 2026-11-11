@@ -1,20 +1,22 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Icon, type IconName } from "@/components/ui/icon";
 import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
+import { radius, ripple, spacing } from "@/lib/theme/styles";
 
 interface AddOptionProps {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  icon: IconName;
   label: string;
   description: string;
+  // Identity accent of the entry type (icon) and its tile
   color: string;
+  tileColor: string;
   onPress: () => void;
   testID: string;
 }
@@ -26,6 +28,7 @@ function AddOption({
   label,
   description,
   color,
+  tileColor,
   onPress,
   testID,
 }: AddOptionProps) {
@@ -36,26 +39,25 @@ function AddOption({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={description}
-      android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+      android_ripple={ripple}
       style={({ pressed }) => [
         styles.option,
         Platform.OS === "ios" && pressed ? styles.optionPressedIOS : undefined,
       ]}
     >
-      <View
-        style={[styles.optionIconContainer, { backgroundColor: `${color}15` }]}
-      >
-        <MaterialCommunityIcons
-          name={icon}
-          size={26}
-          color={color}
-          accessible={false}
-          importantForAccessibility="no"
-        />
+      <View style={[styles.optionIconContainer, { backgroundColor: tileColor }]}>
+        <Icon name={icon} size={26} color={color} />
       </View>
       <View style={styles.optionTextContainer}>
-        <Text style={styles.optionLabel}>{label}</Text>
-        <Text style={styles.optionDescription}>{description}</Text>
+        <Text variant={Platform.OS === "ios" ? "headline" : "body"}>
+          {label}
+        </Text>
+        <Text
+          variant="subheadline"
+          tone="secondary"
+        >
+          {description}
+        </Text>
       </View>
     </Pressable>
   );
@@ -66,10 +68,6 @@ export default function AddMenuScreen() {
   const insets = useSafeAreaInsets();
 
   const handleOptionPress = React.useCallback((route: string) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
     // Dismiss the formSheet first, then push the modal form
     router.dismiss();
 
@@ -84,7 +82,8 @@ export default function AddMenuScreen() {
       icon: "toilet" as const,
       label: t("add.urination"),
       description: t("add.urinationDesc"),
-      color: colors.primary.DEFAULT,
+      color: colors.category.urination.accent,
+      tileColor: colors.category.urination.container,
       route: "/(modals)/add/urination",
       testID: "add-menu-urination",
     },
@@ -92,7 +91,8 @@ export default function AddMenuScreen() {
       icon: "cup-water" as const,
       label: t("add.fluid"),
       description: t("add.fluidDesc"),
-      color: colors.secondary.DEFAULT,
+      color: colors.category.fluid.accent,
+      tileColor: colors.category.fluid.container,
       route: "/(modals)/add/fluid",
       testID: "add-menu-fluid",
     },
@@ -100,7 +100,8 @@ export default function AddMenuScreen() {
       icon: "water-alert" as const,
       label: t("add.leak"),
       description: t("add.leakDesc"),
-      color: colors.error,
+      color: colors.category.leak.accent,
+      tileColor: colors.category.leak.container,
       route: "/(modals)/add/leak",
       testID: "add-menu-leak",
     },
@@ -113,15 +114,25 @@ export default function AddMenuScreen() {
     <View
       style={[
         styles.container,
-        { paddingBottom: Math.max(insets.bottom, 16) + 8 },
+        { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.sm },
       ]}
     >
       <SheetHandle />
 
-      <Text style={styles.title} accessibilityRole="header">
+      <Text
+        variant={Platform.OS === "ios" ? "title3" : "title2"}
+        style={styles.title}
+        accessibilityRole="header"
+      >
         {t("add.title")}
       </Text>
-      <Text style={styles.subtitle}>{t("add.subtitle")}</Text>
+      <Text
+        variant="subheadline"
+        tone="secondary"
+        style={styles.subtitle}
+      >
+        {t("add.subtitle")}
+      </Text>
 
       <View style={styles.options}>
         {options.map((option, index) => (
@@ -134,6 +145,7 @@ export default function AddMenuScreen() {
               label={option.label}
               description={option.description}
               color={option.color}
+              tileColor={option.tileColor}
               onPress={() => handleOptionPress(option.route)}
               testID={option.testID}
             />
@@ -144,53 +156,45 @@ export default function AddMenuScreen() {
   );
 }
 
+const ICON_TILE = 44;
+
 const styles = StyleSheet.create({
   container: Platform.select({
     ios: {
-      backgroundColor: "#F9FAFB",
-      paddingHorizontal: 16,
+      backgroundColor: colors.background,
+      paddingHorizontal: spacing.lg,
       // Clears the system grabber
       paddingTop: 28,
     },
     default: {
-      backgroundColor: "#F9FAFB",
+      backgroundColor: colors.background,
     },
   }),
   title: Platform.select({
     ios: {
-      fontSize: 20,
-      fontWeight: "700",
-      color: "#111827",
       textAlign: "center",
     },
     default: {
       // Material 3 sheet headline, start-aligned
-      fontSize: 22,
-      fontWeight: "500",
-      color: "#111827",
-      paddingHorizontal: 24,
+      paddingHorizontal: spacing.xl,
     },
   }),
   subtitle: Platform.select({
     ios: {
-      fontSize: 15,
-      color: "#6B7280",
       textAlign: "center",
-      marginTop: 4,
-      marginBottom: 16,
+      marginTop: spacing.xs,
+      marginBottom: spacing.lg,
     },
     default: {
-      fontSize: 14,
-      color: "#6B7280",
-      paddingHorizontal: 24,
-      marginTop: 4,
-      marginBottom: 8,
+      paddingHorizontal: spacing.xl,
+      marginTop: spacing.xs,
+      marginBottom: spacing.sm,
     },
   }),
   options: Platform.select({
     ios: {
-      backgroundColor: "#FFFFFF",
-      borderRadius: 12,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
       borderCurve: "continuous",
       overflow: "hidden",
     },
@@ -200,48 +204,40 @@ const styles = StyleSheet.create({
     ios: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 12,
+      gap: spacing.md,
       minHeight: 64,
-      paddingVertical: 10,
-      paddingHorizontal: 16,
+      paddingVertical: spacing.sm + 2,
+      paddingHorizontal: spacing.lg,
     },
     default: {
       // Material 3 two-line list item (72dp), aligned with the headline
       flexDirection: "row",
       alignItems: "center",
-      gap: 16,
+      gap: spacing.lg,
       minHeight: 72,
-      paddingVertical: 8,
-      paddingStart: 24,
-      paddingEnd: 24,
+      paddingVertical: spacing.sm,
+      paddingStart: spacing.xl,
+      paddingEnd: spacing.xl,
     },
   }),
   optionPressedIOS: {
-    backgroundColor: "#E5E5EA",
+    backgroundColor: colors.highlight,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: "#C6C6C8",
-    marginStart: 16 + 44 + 12,
+    backgroundColor: "#C6C6C8", // iOS separator (decorative)
+    marginStart: spacing.lg + ICON_TILE + spacing.md,
   },
   optionIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: ICON_TILE,
+    height: ICON_TILE,
+    borderRadius: radius.md,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
   },
   optionTextContainer: {
     flex: 1,
-  },
-  optionLabel: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#111827",
-    marginBottom: 2,
-  },
-  optionDescription: {
-    fontSize: 14,
-    color: "#6B7280",
+    gap: spacing.xxs,
   },
 });

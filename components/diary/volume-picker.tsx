@@ -1,62 +1,84 @@
 import * as React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { StyleSheet, View } from 'react-native';
 
-import { Text } from '@/components/ui/text';
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
-import { colors } from '@/lib/theme/colors';
+import { Icon, type IconName } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { a11yLabel, choiceA11y, choiceGroupA11y } from '@/lib/a11y';
+import { haptics } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n/context';
+import { colors } from '@/lib/theme/colors';
+import {
+  MIN_TOUCH_TARGET,
+  radius,
+  selectionStyle,
+  spacing,
+} from '@/lib/theme/styles';
 
 type VolumeSize = 'small' | 'medium' | 'large';
 
 interface VolumePickerProps {
   value: VolumeSize;
   onChange: (value: VolumeSize) => void;
+  // The section title, the group's accessible name ("Volume")
+  label: string;
   disabled?: boolean;
 }
 
+// Icon box: the same for every size so the labels line up
+const ICON_BOX = 40;
+
 const volumeConfig: Record<
   VolumeSize,
-  { labelKey: string; icon: string; size: number; description: string }
+  {
+    labelKey: string;
+    icon: IconName;
+    size: number;
+    description: string;
+    // Spoken range, in words
+    rangeKey: string;
+  }
 > = {
   small: {
     labelKey: 'urination.volumeSmall',
     icon: 'water-outline',
     size: 24,
-    description: '< 100ml',
+    description: '< 100 ml',
+    rangeKey: 'a11y.forms.volumeSmallRange',
   },
   medium: {
     labelKey: 'urination.volumeMedium',
     icon: 'water',
     size: 32,
-    description: '100-300ml',
+    description: '100–300 ml',
+    rangeKey: 'a11y.forms.volumeMediumRange',
   },
   large: {
     labelKey: 'urination.volumeLarge',
     icon: 'water',
     size: 40,
-    description: '> 300ml',
+    description: '> 300 ml',
+    rangeKey: 'a11y.forms.volumeLargeRange',
   },
 };
 
-export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
+const SIZES: VolumeSize[] = ['small', 'medium', 'large'];
+
+export function VolumePicker({ value, onChange, label, disabled }: VolumePickerProps) {
   const { t } = useI18n();
 
   const handlePress = React.useCallback(
     (size: VolumeSize) => {
-      if (disabled) return;
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+      if (disabled || size === value) return;
+      haptics.selection();
       onChange(size);
     },
-    [disabled, onChange]
+    [disabled, onChange, value]
   );
 
   return (
-    <View style={styles.container}>
-      {(['small', 'medium', 'large'] as VolumeSize[]).map((size) => {
+    <View style={styles.container} {...choiceGroupA11y(label)}>
+      {SIZES.map((size) => {
         const config = volumeConfig[size];
         const isSelected = value === size;
 
@@ -65,31 +87,38 @@ export function VolumePicker({ value, onChange, disabled }: VolumePickerProps) {
             key={size}
             onPress={() => handlePress(size)}
             disabled={disabled}
-            haptic={false}
+            {...choiceA11y(isSelected)}
+            accessibilityLabel={a11yLabel(t(config.labelKey), t(config.rangeKey))}
             style={[
               styles.option,
-              isSelected ? styles.optionSelected : styles.optionUnselected,
+              isSelected ? selectionStyle.selected : selectionStyle.unselected,
               disabled ? styles.optionDisabled : undefined,
             ]}
           >
-            <MaterialCommunityIcons
-              name={config.icon as any}
-              size={config.size}
-              color={isSelected ? '#FFFFFF' : colors.primary.DEFAULT}
-            />
+            <View style={styles.iconBox}>
+              <Icon
+                name={config.icon}
+                size={config.size}
+                color={isSelected ? colors.primary.onContainer : colors.primary.DEFAULT}
+              />
+            </View>
             <Text
+              variant="subheadline"
               style={[
                 styles.label,
-                isSelected ? styles.labelSelected : undefined,
+                {
+                  color: isSelected
+                    ? selectionStyle.textSelected
+                    : selectionStyle.textUnselected,
+                },
               ]}
             >
               {t(config.labelKey)}
             </Text>
             <Text
-              style={[
-                styles.description,
-                isSelected ? styles.descriptionSelected : undefined,
-              ]}
+              variant="caption1"
+              tone="secondary"
+              style={isSelected ? styles.descriptionSelected : undefined}
             >
               {config.description}
             </Text>
@@ -104,39 +133,34 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: spacing.md,
   },
   option: {
     flex: 1,
+    minHeight: MIN_TOUCH_TARGET,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
+    borderRadius: radius.md,
     borderCurve: 'continuous',
-    paddingVertical: 16,
-    gap: 8,
-  },
-  optionSelected: {
-    backgroundColor: colors.primary.DEFAULT,
-  },
-  optionUnselected: {
-    backgroundColor: 'rgba(0, 109, 119, 0.08)',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xs,
+    gap: spacing.xs,
+    overflow: 'hidden',
   },
   optionDisabled: {
     opacity: 0.5,
   },
+  iconBox: {
+    width: ICON_BOX,
+    height: ICON_BOX,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
   label: {
-    fontSize: 15,
     fontWeight: '600',
-    color: '#374151',
-  },
-  labelSelected: {
-    color: '#FFFFFF',
-  },
-  description: {
-    fontSize: 12,
-    color: '#6B7280',
+    textAlign: 'center',
   },
   descriptionSelected: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.primary.onContainer,
   },
 });

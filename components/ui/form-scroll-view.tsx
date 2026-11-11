@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { colors } from "@/lib/theme/colors";
+import { spacing } from "@/lib/theme/styles";
+
 interface FormScrollViewProps {
   children: React.ReactNode;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -73,12 +76,12 @@ export function FormScrollView({
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   content: {
-    paddingTop: 16,
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-    gap: 20,
+    paddingTop: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xxl,
+    gap: spacing.xl,
   },
 });

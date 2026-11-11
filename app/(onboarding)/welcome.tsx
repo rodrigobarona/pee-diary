@@ -1,16 +1,15 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
 import {
   BackHandler,
-  Dimensions,
   Linking,
+  Platform,
   Pressable,
   Text as RNText,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import Animated, {
@@ -23,29 +22,22 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Text } from "@/components/ui";
+import { Icon, type IconName } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
+import { hiddenA11y } from "@/lib/a11y";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
-import { spacing } from "@/lib/theme";
+import { colors } from "@/lib/theme/colors";
+import { iconSize, radius, ripple, spacing } from "@/lib/theme/styles";
+import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
 
-// Hardcoded colors to ensure they work
-const COLORS = {
-  primary: "#006D77",
-  secondary: "#E29578",
-  text: "#333333",
-  textMuted: "#6B7280",
-  background: "#FAFBFC",
-  white: "#FFFFFF",
-};
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-type IconName = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+const IS_IOS = Platform.OS === "ios";
 
 interface OnboardingPage {
   key: string;
   icons: { name: IconName; size: number; offset: { x: number; y: number } }[];
+  // Subtitle text and illustration colour (accessible accent tokens)
   accentColor: string;
   titleKey: string;
   subtitleKey: string;
@@ -62,7 +54,7 @@ const PAGES: OnboardingPage[] = [
       { name: "calendar-check-outline", size: 24, offset: { x: 40, y: -30 } },
       { name: "chart-line", size: 20, offset: { x: -45, y: 25 } },
     ],
-    accentColor: COLORS.primary,
+    accentColor: colors.primary.DEFAULT,
     titleKey: "onboarding.welcome.title",
     subtitleKey: "onboarding.welcome.subtitle",
     descriptionKey: "onboarding.welcome.description",
@@ -74,7 +66,7 @@ const PAGES: OnboardingPage[] = [
       { name: "water-outline", size: 22, offset: { x: 42, y: -25 } },
       { name: "clock-outline", size: 20, offset: { x: -40, y: 30 } },
     ],
-    accentColor: COLORS.secondary,
+    accentColor: colors.secondary.text,
     titleKey: "onboarding.track.title",
     subtitleKey: "onboarding.track.subtitle",
     descriptionKey: "onboarding.track.description",
@@ -86,7 +78,7 @@ const PAGES: OnboardingPage[] = [
       { name: "file-document-outline", size: 22, offset: { x: 45, y: -20 } },
       { name: "share-variant-outline", size: 20, offset: { x: -42, y: 28 } },
     ],
-    accentColor: COLORS.primary,
+    accentColor: colors.primary.DEFAULT,
     titleKey: "onboarding.share.title",
     subtitleKey: "onboarding.share.subtitle",
     descriptionKey: "onboarding.share.description",
@@ -94,23 +86,26 @@ const PAGES: OnboardingPage[] = [
   },
 ];
 
-// Fixed heights (the bottom section grows to fit the terms line on the last page)
+// Minimum heights (both grow with the font size; the bottom section also
+// grows to fit the terms line on the last page)
 const HEADER_HEIGHT = 56;
 const BOTTOM_HEIGHT = 140;
 
-// Page indicator dot
+// Page indicator dot (decorative: the dots' container announces the page)
 function PageDot({
   index,
   scrollX,
+  pageWidth,
 }: {
   index: number;
   scrollX: SharedValue<number>;
+  pageWidth: number;
 }) {
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
-      (index - 1) * SCREEN_WIDTH,
-      index * SCREEN_WIDTH,
-      (index + 1) * SCREEN_WIDTH,
+      (index - 1) * pageWidth,
+      index * pageWidth,
+      (index + 1) * pageWidth,
     ];
 
     const width = interpolate(
@@ -133,7 +128,8 @@ function PageDot({
   return <Animated.View style={[styles.dot, animatedStyle]} />;
 }
 
-// CTA Button with haptics and pressed state
+// Primary button: a filled button with UIKit dimming on iOS and the
+// Material ripple on Android. No haptic: it navigates.
 function CTAButton({
   onPress,
   label,
@@ -145,64 +141,23 @@ function CTAButton({
   showArrow: boolean;
   testID: string;
 }) {
-  const [isPressed, setIsPressed] = useState(false);
-
-  const handlePressIn = useCallback(() => {
-    setIsPressed(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
-
-  const handlePressOut = useCallback(() => {
-    setIsPressed(false);
-  }, []);
-
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       accessibilityRole="button"
       accessibilityLabel={label}
       testID={testID}
-      style={{
-        height: 56,
-        backgroundColor: "#006D77",
-        borderRadius: 14,
-        borderCurve: "continuous",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        // iOS shadow
-        shadowColor: "#006D77",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: isPressed ? 0.15 : 0.3,
-        shadowRadius: isPressed ? 4 : 8,
-        // Android elevation
-        elevation: isPressed ? 2 : 6,
-        // Pressed state
-        opacity: isPressed ? 0.9 : 1,
-        transform: [{ scale: isPressed ? 0.98 : 1 }],
-      }}
+      android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
+      style={({ pressed }) => [
+        styles.ctaButton,
+        IS_IOS && pressed ? styles.ctaButtonPressedIOS : undefined,
+      ]}
     >
-      <RNText
-        style={{
-          fontSize: 17,
-          fontWeight: "600",
-          color: "#FFFFFF",
-          letterSpacing: -0.2,
-        }}
-      >
+      <Text variant="button" tone="onAccent">
         {label}
-      </RNText>
+      </Text>
       {showArrow ? (
-        <MaterialCommunityIcons
-          name="arrow-right"
-          size={20}
-          color="#FFFFFF"
-          accessible={false}
-          importantForAccessibility="no"
-        />
+        <Icon name="arrow-right" size={iconSize.md} color={colors.onPrimary} />
       ) : null}
     </Pressable>
   );
@@ -217,7 +172,7 @@ function IconCluster({
   accentColor: string;
 }) {
   return (
-    <View style={styles.iconCluster}>
+    <View style={styles.iconCluster} {...hiddenA11y}>
       {icons.map((icon, idx) => (
         <View
           key={idx}
@@ -232,10 +187,11 @@ function IconCluster({
             },
           ]}
         >
-          <MaterialCommunityIcons
+          <Icon
             name={icon.name}
             size={icon.size}
-            color={idx === 0 ? accentColor : `${accentColor}80`}
+            color={accentColor}
+            style={idx === 0 ? undefined : styles.secondaryIcon}
           />
         </View>
       ))}
@@ -248,17 +204,19 @@ function OnboardingPageContent({
   page,
   index,
   scrollX,
+  pageWidth,
 }: {
   page: OnboardingPage;
   index: number;
   scrollX: SharedValue<number>;
+  pageWidth: number;
 }) {
   const { t } = useI18n();
 
   const inputRange = [
-    (index - 1) * SCREEN_WIDTH,
-    index * SCREEN_WIDTH,
-    (index + 1) * SCREEN_WIDTH,
+    (index - 1) * pageWidth,
+    index * pageWidth,
+    (index + 1) * pageWidth,
   ];
 
   // Icon cluster animation - scale + opacity
@@ -366,7 +324,7 @@ function OnboardingPageContent({
 
   return (
     <ScrollView
-      style={styles.page}
+      style={[styles.page, { width: pageWidth }]}
       contentContainerStyle={styles.pageScrollContent}
       showsVerticalScrollIndicator={false}
     >
@@ -378,30 +336,43 @@ function OnboardingPageContent({
 
         {/* Title with fade + slide */}
         <Animated.View style={titleStyle}>
-          <Text style={styles.title}>{t(page.titleKey)}</Text>
+          <Text
+            variant="title1"
+            style={styles.title}
+            accessibilityRole="header"
+          >
+            {t(page.titleKey)}
+          </Text>
         </Animated.View>
 
         {/* Subtitle with staggered fade + slide */}
         <Animated.View style={subtitleStyle}>
-          <Text style={[styles.subtitle, { color: page.accentColor }]}>
+          <Text
+            variant="headline"
+            style={[styles.subtitle, { color: page.accentColor }]}
+          >
             {t(page.subtitleKey)}
           </Text>
         </Animated.View>
 
         {/* Description with cascade fade + slide */}
         <Animated.View style={descriptionStyle}>
-          <Text style={styles.description}>{t(page.descriptionKey)}</Text>
+          <Text variant="body" tone="secondary" style={styles.description}>
+            {t(page.descriptionKey)}
+          </Text>
         </Animated.View>
 
         {/* Notice (medical disclaimer on the last page) */}
         {page.noticeKey ? (
           <Animated.View style={[styles.notice, descriptionStyle]}>
-            <MaterialCommunityIcons
+            <Icon
               name="information-outline"
               size={18}
-              color={COLORS.textMuted}
+              color={colors.textSecondary}
             />
-            <Text style={styles.noticeText}>{t(page.noticeKey)}</Text>
+            <Text variant="subheadline" tone="secondary" style={styles.noticeText}>
+              {t(page.noticeKey)}
+            </Text>
           </Animated.View>
         ) : null}
       </View>
@@ -451,6 +422,8 @@ export default function OnboardingScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  // Follows rotation and window resizes (iPad, split screen)
+  const { width: pageWidth } = useWindowDimensions();
   const { completeOnboarding } = useDiaryStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<Animated.ScrollView>(null);
@@ -465,17 +438,17 @@ export default function OnboardingScreen() {
   const handleMomentumEnd = useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
       const index = Math.round(
-        event.nativeEvent.contentOffset.x / SCREEN_WIDTH
+        event.nativeEvent.contentOffset.x / pageWidth
       );
       setCurrentIndex(index);
     },
-    []
+    [pageWidth]
   );
 
   const handleNext = useCallback(() => {
     if (currentIndex < PAGES.length - 1) {
       scrollViewRef.current?.scrollTo({
-        x: (currentIndex + 1) * SCREEN_WIDTH,
+        x: (currentIndex + 1) * pageWidth,
         animated: true,
       });
       setCurrentIndex(currentIndex + 1);
@@ -483,28 +456,28 @@ export default function OnboardingScreen() {
       completeOnboarding();
       router.replace("/(tabs)");
     }
-  }, [currentIndex, completeOnboarding, router]);
+  }, [currentIndex, completeOnboarding, router, pageWidth]);
 
   // Skip jumps to the last page, so everyone sees the medical disclaimer and
   // the terms line; only its button completes onboarding.
   const handleSkip = useCallback(() => {
     const lastIndex = PAGES.length - 1;
     scrollViewRef.current?.scrollTo({
-      x: lastIndex * SCREEN_WIDTH,
+      x: lastIndex * pageWidth,
       animated: true,
     });
     setCurrentIndex(lastIndex);
-  }, []);
+  }, [pageWidth]);
 
   const handleBack = useCallback(() => {
     if (currentIndex > 0) {
       scrollViewRef.current?.scrollTo({
-        x: (currentIndex - 1) * SCREEN_WIDTH,
+        x: (currentIndex - 1) * pageWidth,
         animated: true,
       });
       setCurrentIndex(currentIndex - 1);
     }
-  }, [currentIndex]);
+  }, [currentIndex, pageWidth]);
 
   // Android back goes to the previous page. On the first page it leaves the
   // app (as back does on any app's first screen) rather than popping this
@@ -529,7 +502,7 @@ export default function OnboardingScreen() {
 
   const isLastPage = currentIndex === PAGES.length - 1;
   const topPadding = insets.top;
-  const bottomPadding = Math.max(insets.bottom, 20);
+  const bottomPadding = Math.max(insets.bottom, spacing.lg) + spacing.xs;
 
   return (
     <View style={styles.container}>
@@ -540,17 +513,22 @@ export default function OnboardingScreen() {
           {currentIndex > 0 ? (
             <Pressable
               onPress={handleBack}
-              style={styles.backButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              style={({ pressed }) => [
+                styles.backButton,
+                IS_IOS && pressed ? styles.pressedIOS : undefined,
+              ]}
               accessibilityRole="button"
               accessibilityLabel={t("common.back")}
+              android_ripple={ripple}
               testID="onboarding-back"
             >
-              <MaterialCommunityIcons
-                name="chevron-left"
-                size={24}
-                color={COLORS.text}
-              />
+              <View style={styles.backButtonCircle}>
+                <Icon
+                  name="chevron-left"
+                  size={iconSize.lg}
+                  color={colors.text}
+                />
+              </View>
             </Pressable>
           ) : (
             <View style={styles.backButtonPlaceholder} />
@@ -562,11 +540,22 @@ export default function OnboardingScreen() {
           {!isLastPage ? (
             <Pressable
               onPress={handleSkip}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              style={({ pressed }) => [
+                styles.skipButton,
+                IS_IOS && pressed ? styles.pressedIOS : undefined,
+              ]}
               accessibilityRole="button"
+              android_ripple={ripple}
               testID="onboarding-skip"
             >
-              <RNText style={styles.skipText}>{t("onboarding.skip")}</RNText>
+              <Text
+                variant="body"
+                tone="accent"
+                style={styles.skipText}
+                maxFontSizeMultiplier={CONTROL_MAX_FONT_SCALE}
+              >
+                {t("onboarding.skip")}
+              </Text>
             </Pressable>
           ) : (
             <View style={styles.skipPlaceholder} />
@@ -591,6 +580,7 @@ export default function OnboardingScreen() {
             page={page}
             index={index}
             scrollX={scrollX}
+            pageWidth={pageWidth}
           />
         ))}
       </Animated.ScrollView>
@@ -598,13 +588,28 @@ export default function OnboardingScreen() {
       {/* Bottom section - FIXED HEIGHT */}
       <View style={[styles.bottomSection, { paddingBottom: bottomPadding }]}>
         {/* Pagination dots - fixed position */}
-        <View style={styles.pagination}>
+        {/* One element for screen readers: "Page 2 of 3" */}
+        <View
+          style={styles.pagination}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={t("a11y.settings.pageOf", {
+            page: currentIndex + 1,
+            total: PAGES.length,
+          })}
+          accessibilityLiveRegion="polite"
+        >
           {PAGES.map((_, index) => (
-            <PageDot key={index} index={index} scrollX={scrollX} />
+            <PageDot
+              key={index}
+              index={index}
+              scrollX={scrollX}
+              pageWidth={pageWidth}
+            />
           ))}
         </View>
 
-        {/* CTA Button - native-feeling with haptics */}
+        {/* Primary button */}
         <CTAButton
           onPress={handleNext}
           label={isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
@@ -621,59 +626,73 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
-  // Header - fixed height
+  // Header - grows with the font size
   header: {
-    height: HEADER_HEIGHT,
+    minHeight: HEADER_HEIGHT,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.sm,
   },
   headerSide: {
-    width: 80,
-    height: HEADER_HEIGHT,
+    minWidth: 80,
+    minHeight: HEADER_HEIGHT,
     justifyContent: "center",
   },
+  // 48-point target around a 36-point circle
   backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  backButtonCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
   backButtonPlaceholder: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
+  },
+  skipButton: {
+    minHeight: 48,
+    minWidth: 48,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.full,
+    overflow: "hidden",
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   skipText: {
-    fontSize: 16,
-    color: COLORS.textMuted,
-    fontWeight: "500",
+    fontWeight: "600",
     textAlign: "right",
   },
   skipPlaceholder: {
-    width: 40,
-    height: 20,
+    width: 48,
+    height: 48,
+  },
+  pressedIOS: {
+    opacity: 0.55,
   },
   // Scroll view
   scrollView: {
     flex: 1,
   },
-  page: {
-    width: SCREEN_WIDTH,
-  },
+  page: {},
   pageScrollContent: {
     paddingHorizontal: spacing.xl,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.lg,
   },
   pageContent: {
     alignItems: "center",
@@ -684,80 +703,87 @@ const styles = StyleSheet.create({
     height: 120,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 28,
+    marginBottom: spacing.xl,
   },
   iconWrapper: {
     position: "absolute",
   },
+  secondaryIcon: {
+    opacity: 0.5,
+  },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: COLORS.text,
     textAlign: "center",
-    marginBottom: 6,
-    lineHeight: 34,
+    marginBottom: spacing.sm,
   },
   subtitle: {
-    fontSize: 17,
-    fontWeight: "600",
     textAlign: "center",
-    marginBottom: 14,
-    lineHeight: 22,
+    marginBottom: spacing.md,
   },
   description: {
-    fontSize: 16,
-    color: COLORS.textMuted,
     textAlign: "center",
-    lineHeight: 24,
     paddingHorizontal: spacing.md,
-    maxWidth: 300,
+    maxWidth: 320,
   },
   notice: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 8,
-    marginTop: 20,
-    padding: 12,
-    maxWidth: 320,
-    borderRadius: 12,
-    backgroundColor: COLORS.white,
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    maxWidth: 340,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
   },
   noticeText: {
     flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-    color: COLORS.textMuted,
   },
-  // Bottom section - fixed height
+  // Bottom section - grows with the content
   bottomSection: {
     minHeight: BOTTOM_HEIGHT,
     paddingHorizontal: spacing.xl,
-    paddingTop: 16,
-    backgroundColor: COLORS.background,
+    paddingTop: spacing.lg,
+    backgroundColor: colors.background,
   },
   pagination: {
-    height: 24,
+    minHeight: 24,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 16,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
   },
   dot: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
-  // Same size as the page description (16), dark text, line spacing 1.4
+  // Filled button: iOS 12-point corners, Material 3 full radius
+  ctaButton: {
+    minHeight: 56,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.primary.DEFAULT,
+    borderRadius: IS_IOS ? radius.md : radius.full,
+    borderCurve: "continuous",
+    overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+  },
+  ctaButtonPressedIOS: {
+    opacity: 0.7,
+  },
+  // Body size, dark text: this line incorporates the Terms, so it must be
+  // easy to read
   acceptanceText: {
-    marginTop: 14,
-    fontSize: 16,
-    lineHeight: 22,
-    color: COLORS.text,
+    ...typography.body,
+    marginTop: spacing.md,
+    color: colors.text,
     textAlign: "center",
   },
   acceptanceLink: {
-    color: COLORS.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: "600",
     textDecorationLine: "underline",
   },

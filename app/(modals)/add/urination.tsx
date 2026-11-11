@@ -1,8 +1,5 @@
-import * as Haptics from "expo-haptics";
 import * as React from "react";
-import { Platform, StyleSheet, View } from "react-native";
-
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { StyleSheet, View } from "react-native";
 
 import { TimePicker, UrgencyScale, VolumePicker } from "@/components/diary";
 import {
@@ -12,6 +9,7 @@ import {
   SectionTitle,
   ToggleRow,
 } from "@/components/ui";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useEntryFormHeader } from "@/hooks/use-entry-form-header";
@@ -19,6 +17,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { UrgencyLevel, VolumeSize } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
+import { MIN_TOUCH_TARGET, radius, spacing } from "@/lib/theme/styles";
 
 const INITIAL_VOLUME: VolumeSize = "medium";
 const INITIAL_URGENCY: UrgencyLevel = 3;
@@ -59,9 +58,6 @@ export default function UrinationScreen() {
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
     return true;
   }, [
     addUrinationEntry,
@@ -82,9 +78,6 @@ export default function UrinationScreen() {
   });
 
   const handleTogglePreciseVolume = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     setShowPreciseVolume((prev) => !prev);
     if (showPreciseVolume) {
       setVolumeMl(""); // Clear when hiding
@@ -99,20 +92,26 @@ export default function UrinationScreen() {
       {/* Volume */}
       <View style={styles.section}>
         <SectionTitle>{t("urination.volume")}</SectionTitle>
-        <VolumePicker value={volume} onChange={setVolume} />
+        <VolumePicker
+          value={volume}
+          onChange={setVolume}
+          label={t("urination.volume")}
+        />
 
         {/* Toggle for precise volume input */}
         <AnimatedPressable
           onPress={handleTogglePreciseVolume}
-          haptic={false}
           style={styles.preciseVolumeToggle}
+          accessibilityRole="button"
+          accessibilityLabel={t("urination.volumePrecise")}
+          accessibilityState={{ expanded: showPreciseVolume }}
         >
-          <MaterialCommunityIcons
+          <Icon
             name={showPreciseVolume ? "chevron-up" : "chevron-down"}
-            size={18}
+            size={20}
             color={colors.primary.DEFAULT}
           />
-          <Text style={styles.preciseVolumeToggleText}>
+          <Text variant="subheadline" tone="accent" style={styles.linkText}>
             {t("urination.volumePrecise")}
           </Text>
         </AnimatedPressable>
@@ -128,8 +127,9 @@ export default function UrinationScreen() {
                 setVolumeMl(numericValue);
               }}
               placeholder={t("urination.volumePrecisePlaceholder")}
+              accessibilityLabel={t("urination.volumePrecise")}
               keyboardType="number-pad"
-              className="bg-transparent border-0 px-4 py-3"
+              appearance="plain"
               returnKeyType="done"
             />
           </FormCard>
@@ -139,7 +139,11 @@ export default function UrinationScreen() {
       {/* Urgency */}
       <View style={styles.section}>
         <SectionTitle>{t("urination.urgency")}</SectionTitle>
-        <UrgencyScale value={urgency} onChange={setUrgency} />
+        <UrgencyScale
+          value={urgency}
+          onChange={setUrgency}
+          label={t("urination.urgency")}
+        />
       </View>
 
       {/* Additional Options */}
@@ -168,9 +172,10 @@ export default function UrinationScreen() {
             value={notes}
             onChangeText={setNotes}
             placeholder={t("common.notesPlaceholder")}
+            accessibilityLabel={t("urination.notes")}
             multiline
             numberOfLines={3}
-            className="bg-transparent border-0 px-4 py-3 h-auto"
+            appearance="plain"
             style={styles.notesInput}
             textAlignVertical="top"
             testID="form-notes"
@@ -183,24 +188,26 @@ export default function UrinationScreen() {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 12,
+    gap: spacing.sm,
   },
   preciseVolumeToggle: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
-    paddingVertical: 8,
+    alignSelf: "center",
+    gap: spacing.xs,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    overflow: "hidden",
   },
-  preciseVolumeToggleText: {
-    fontSize: 14,
-    color: colors.primary.DEFAULT,
+  linkText: {
     fontWeight: "500",
   },
   separator: {
-    height: 1,
-    backgroundColor: "#F3F4F6",
-    marginHorizontal: 16,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginStart: spacing.lg,
   },
   notesInput: {
     minHeight: 100,

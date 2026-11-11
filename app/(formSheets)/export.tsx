@@ -1,5 +1,3 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Haptics from "expo-haptics";
 import * as React from "react";
 import {
   ActivityIndicator,
@@ -10,23 +8,28 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { DateRangePicker } from "@/components/diary/date-range-picker";
+import { Icon, type IconName } from "@/components/ui/icon";
+import { OptionRow } from "@/components/ui/option-row";
+import { SectionTitle } from "@/components/ui/section-title";
 import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
+import { a11yLabel, choiceGroupA11y } from "@/lib/a11y";
+import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
 import { dateFormatters } from "@/lib/i18n";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
+import {
+  cardStyle,
+  iconSize,
+  radius,
+  spacing,
+} from "@/lib/theme/styles";
 import {
   exportAndShare,
   filterEntriesByDateRange,
@@ -43,75 +46,7 @@ type PresetKey =
   | "allTime"
   | "custom";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-// Row option component matching app style
-interface OptionRowProps {
-  icon: string;
-  label: string;
-  isSelected: boolean;
-  onPress: () => void;
-  color?: string;
-}
-
-function OptionRow({
-  icon,
-  label,
-  isSelected,
-  onPress,
-  color,
-}: OptionRowProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.set(withTiming(0.98, { duration: 100 }));
-  };
-
-  const handlePressOut = () => {
-    scale.set(withTiming(1, { duration: 150 }));
-  };
-
-  const iconColor = color || (isSelected ? colors.primary.DEFAULT : "#6B7280");
-
-  return (
-    <AnimatedPressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[styles.optionRow, animatedStyle]}
-    >
-      <View
-        style={[
-          styles.optionIcon,
-          {
-            backgroundColor: isSelected ? `${iconColor}15` : "#F3F4F6",
-          },
-        ]}
-      >
-        <MaterialCommunityIcons
-          name={icon as any}
-          size={22}
-          color={iconColor}
-        />
-      </View>
-      <Text
-        style={[
-          styles.optionLabel,
-          isSelected && { color: colors.primary.DEFAULT, fontWeight: "600" },
-        ]}
-      >
-        {label}
-      </Text>
-      <View style={[styles.radioOuter, isSelected && styles.radioOuterActive]}>
-        {isSelected ? <View style={styles.radioInner} /> : null}
-      </View>
-    </AnimatedPressable>
-  );
-}
+const IS_IOS = Platform.OS === "ios";
 
 export default function ExportScreen() {
   const { t, locale } = useI18n();
@@ -137,9 +72,6 @@ export default function ExportScreen() {
     React.useState<ExportFormat>("pdf");
   const [isExporting, setIsExporting] = React.useState(false);
 
-  // Animation for custom range
-  const customRangeHeight = useSharedValue(0);
-
   // Filter entries
   const filteredEntries = React.useMemo(() => {
     if (!isHydrated) return [];
@@ -155,34 +87,20 @@ export default function ExportScreen() {
   // Handle preset selection
   const handlePresetSelect = React.useCallback(
     (preset: PresetKey) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-
+      // OptionRow plays the selection feedback
       setActivePreset(preset);
 
-      if (preset === "custom") {
-        customRangeHeight.set(
-          withSpring(140, {
-            damping: 18,
-            stiffness: 120,
-          })
-        );
-      } else {
-        customRangeHeight.set(withTiming(0, { duration: 200 }));
+      if (preset !== "custom") {
         const range = getDateRangePreset(preset, entries);
         setStartDate(range.start);
         setEndDate(range.end);
       }
     },
-    [entries, customRangeHeight],
+    [entries],
   );
 
   // Handle format selection
   const handleFormatSelect = React.useCallback((fmt: ExportFormat) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     setSelectedFormat(fmt);
   }, []);
 
@@ -235,10 +153,6 @@ export default function ExportScreen() {
       return;
     }
 
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-
     setIsExporting(true);
 
     try {
@@ -251,9 +165,7 @@ export default function ExportScreen() {
       );
 
       if (result.success) {
-        if (Platform.OS !== "web") {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
+        haptics.success();
       } else if (result.error) {
         Alert.alert(
           t("common.error"),
@@ -272,15 +184,8 @@ export default function ExportScreen() {
     }
   }, [filteredEntries, selectedFormat, startDate, endDate, t, pdfTranslations, locale]);
 
-  // Animated style for custom range
-  const customRangeStyle = useAnimatedStyle(() => ({
-    height: customRangeHeight.value,
-    opacity: interpolate(customRangeHeight.value, [0, 140], [0, 1]),
-    overflow: "hidden",
-  }));
-
   // Preset options
-  const presets: { key: PresetKey; label: string; icon: string }[] = [
+  const presets: { key: PresetKey; label: string; icon: IconName }[] = [
     { key: "last7days", label: t("export.last7Days"), icon: "calendar-week" },
     {
       key: "last30days",
@@ -296,31 +201,37 @@ export default function ExportScreen() {
   const formats: {
     key: ExportFormat;
     label: string;
-    icon: string;
+    icon: IconName;
     color: string;
   }[] = [
     {
       key: "pdf",
       label: `${t("export.pdf")} - ${t("export.pdfDesc")}`,
       icon: "file-pdf-box",
-      color: "#DC2626",
+      color: colors.orange.accent,
     },
     {
       key: "csv",
       label: `${t("export.csv")} - ${t("export.csvDesc")}`,
       icon: "file-delimited",
-      color: "#059669",
+      color: colors.green.accent,
     },
     {
       key: "json",
       label: `${t("export.json")} - ${t("export.jsonDesc")}`,
       icon: "code-json",
-      color: "#7C3AED",
+      color: colors.violet.accent,
     },
   ];
 
   // Date range text
-  const dateRangeText = `${dateFormatters.dayMonth.format(startDate)} - ${dateFormatters.dayMonthYear.format(endDate)}`;
+  // Formatted on every render: the screen re-renders when the language or
+  // the device's date settings change (useI18n)
+  const dateRangeText = `${dateFormatters.dayMonth.format(startDate)}\u2013${dateFormatters.dayMonthYear.format(endDate)}`;
+  const entryCountText = isHydrated
+    ? t("export.entryCount", { count: filteredEntries.length })
+    : t("common.loading");
+  const isExportDisabled = filteredEntries.length === 0 || isExporting;
 
   return (
     <ScrollView
@@ -330,20 +241,28 @@ export default function ExportScreen() {
         {
           // Keeps Export & Share above the home indicator or the Android
           // gesture / 3-button navigation bar
-          paddingBottom: Math.max(insets.bottom, 16) + 16,
-          paddingTop: Platform.OS === "ios" ? 50 : 0,
+          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg,
+          paddingTop: IS_IOS ? 48 : 0,
         },
       ]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHandle />
       {/* Header */}
-      <Text style={styles.title}>{t("export.title")}</Text>
-      <Text style={styles.subtitle}>{t("settings.exportDescription")}</Text>
+      <Text
+        variant={IS_IOS ? "title3" : "title2"}
+        style={styles.title}
+        accessibilityRole="header"
+      >
+        {t("export.title")}
+      </Text>
+      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+        {t("settings.exportDescription")}
+      </Text>
 
-      {/* Date Range Section */}
-      <Text style={styles.sectionTitle}>{t("export.dateRange")}</Text>
-      <View style={styles.card}>
+      {/* Date Range Section: one choice */}
+      <SectionTitle>{t("export.dateRange")}</SectionTitle>
+      <View style={styles.card} {...choiceGroupA11y(t("export.dateRange"))}>
         {presets.map((preset, index) => (
           <React.Fragment key={preset.key}>
             <OptionRow
@@ -352,13 +271,20 @@ export default function ExportScreen() {
               isSelected={activePreset === preset.key}
               onPress={() => handlePresetSelect(preset.key)}
             />
-            {index < presets.length - 1 && <View style={styles.separator} />}
+            {index < presets.length - 1 ? (
+              <View style={styles.separator} />
+            ) : null}
           </React.Fragment>
         ))}
 
-        {/* Custom Date Range (animated) */}
-        <Animated.View style={customRangeStyle}>
-          <View style={styles.customRangePicker}>
+        {/* Custom date range: shown when chosen; it grows with the font
+            size instead of sitting in a fixed-height box */}
+        {activePreset === "custom" ? (
+          <Animated.View
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(150)}
+            style={styles.customRangePicker}
+          >
             <DateRangePicker
               startDate={startDate}
               endDate={endDate}
@@ -373,28 +299,33 @@ export default function ExportScreen() {
               minDate={minDate}
               maxDate={new Date()}
             />
-          </View>
-        </Animated.View>
+          </Animated.View>
+        ) : null}
       </View>
 
       {/* Selected Range */}
-      <View style={styles.selectedRange}>
-        <MaterialCommunityIcons
+      <View
+        style={styles.selectedRange}
+        accessible
+        accessibilityLabel={a11yLabel(dateRangeText, entryCountText)}
+        accessibilityLiveRegion="polite"
+      >
+        <Icon
           name="calendar-range"
-          size={16}
+          size={iconSize.sm}
           color={colors.primary.DEFAULT}
         />
-        <Text style={styles.selectedRangeText}>{dateRangeText}</Text>
-        <Text style={styles.entryCount}>
-          {isHydrated
-            ? t("export.entryCount", { count: filteredEntries.length })
-            : "..."}
+        <Text variant="subheadline" tone="accent" style={styles.selectedRangeText}>
+          {dateRangeText}
+        </Text>
+        <Text variant="footnote" tone="secondary">
+          {entryCountText}
         </Text>
       </View>
 
-      {/* Format Section */}
-      <Text style={styles.sectionTitle}>{t("export.format")}</Text>
-      <View style={styles.card}>
+      {/* Format Section: one choice */}
+      <SectionTitle>{t("export.format")}</SectionTitle>
+      <View style={styles.card} {...choiceGroupA11y(t("export.format"))}>
         {formats.map((fmt, index) => (
           <React.Fragment key={fmt.key}>
             <OptionRow
@@ -404,37 +335,39 @@ export default function ExportScreen() {
               onPress={() => handleFormatSelect(fmt.key)}
               color={fmt.color}
             />
-            {index < formats.length - 1 && <View style={styles.separator} />}
+            {index < formats.length - 1 ? (
+              <View style={styles.separator} />
+            ) : null}
           </React.Fragment>
         ))}
       </View>
 
       {/* Export Button */}
       <Pressable
-        style={[
+        style={({ pressed }) => [
           styles.exportButton,
-          (filteredEntries.length === 0 || isExporting) &&
-            styles.exportButtonDisabled,
+          isExportDisabled ? styles.exportButtonDisabled : undefined,
+          IS_IOS && pressed ? styles.exportButtonPressedIOS : undefined,
         ]}
         onPress={handleExport}
-        disabled={filteredEntries.length === 0 || isExporting}
+        disabled={isExportDisabled}
         accessibilityRole="button"
+        accessibilityLabel={
+          isExporting ? t("export.exporting") : t("export.exportAndShare")
+        }
         accessibilityState={{
-          disabled: filteredEntries.length === 0 || isExporting,
+          disabled: isExportDisabled,
           busy: isExporting,
         }}
+        android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
         testID="export-button"
       >
         {isExporting ? (
-          <ActivityIndicator size="small" color="#FFFFFF" />
+          <ActivityIndicator size="small" color={colors.onPrimary} />
         ) : (
-          <MaterialCommunityIcons
-            name="share-variant"
-            size={22}
-            color="#FFFFFF"
-          />
+          <Icon name="share-variant" size={iconSize.md} color={colors.onPrimary} />
         )}
-        <Text style={styles.exportButtonText}>
+        <Text variant="button" tone="onAccent">
           {isExporting ? t("export.exporting") : t("export.exportAndShare")}
         </Text>
       </Pressable>
@@ -445,129 +378,72 @@ export default function ExportScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.lg,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#111827",
-    textAlign: "center",
+    textAlign: IS_IOS ? "center" : "left",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 20,
-    marginTop: 4,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#6B7280",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 10,
-    marginLeft: 4,
+    textAlign: IS_IOS ? "center" : "left",
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    ...cardStyle,
+    overflow: "hidden",
+    marginBottom: spacing.lg,
   },
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  optionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 14,
-  },
-  optionLabel: {
-    flex: 1,
-    fontSize: 16,
-    color: "#374151",
-  },
-  radioOuter: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: "#D1D5DB",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  radioOuterActive: {
-    borderColor: colors.primary.DEFAULT,
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: colors.primary.DEFAULT,
-  },
+  // Inset to the start of the label (row padding + icon tile + gap)
   separator: {
-    height: 1,
-    backgroundColor: "#F3F4F6",
-    marginLeft: 70,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginStart: spacing.lg + 32 + spacing.md,
   },
   customRangePicker: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
   },
   selectedRange: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: `${colors.primary.DEFAULT}08`,
-    borderRadius: 12,
-    marginBottom: 20,
+    columnGap: spacing.sm,
+    rowGap: spacing.xs,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.primary.subtle,
+    borderRadius: radius.md,
+    marginBottom: spacing.xl,
   },
   selectedRangeText: {
-    fontSize: 14,
     fontWeight: "500",
-    color: colors.primary.DEFAULT,
   },
-  entryCount: {
-    fontSize: 13,
-    color: "#6B7280",
-  },
+  // Filled button: iOS 12-point corners, Material 3 full radius
   exportButton: {
     backgroundColor: colors.primary.DEFAULT,
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: IS_IOS ? radius.md : radius.full,
+    borderCurve: "continuous",
+    overflow: "hidden",
+    minHeight: IS_IOS ? 50 : 48,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
-    marginTop: 4,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   exportButtonDisabled: {
     opacity: 0.5,
   },
-  exportButtonText: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#FFFFFF",
+  exportButtonPressedIOS: {
+    opacity: 0.7,
   },
 });

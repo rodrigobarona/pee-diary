@@ -11,7 +11,7 @@ import {
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 
-import { intlLocale } from "@/lib/i18n";
+import { deviceTimeFormatOptions, intlLocale } from "@/lib/i18n";
 import { groupByDay, parseDayKey } from "@/lib/utils/day";
 
 // Export files are written to the cache folder, which device backups do not
@@ -334,12 +334,11 @@ export function generatePDFHTML(
     day: "numeric",
   });
 
-  // Time formatter based on locale (12h for EN, 24h for ES/PT)
-  const timeFormatter = new Intl.DateTimeFormat(formatLocale, {
-    hour: locale === "en" ? "numeric" : "2-digit",
-    minute: "2-digit",
-    hour12: locale === "en",
-  });
+  // Times in the device's 12- or 24-hour clock, as everywhere in the app
+  const timeFormatter = new Intl.DateTimeFormat(
+    formatLocale,
+    deviceTimeFormatOptions(),
+  );
 
   // Generate entry row for the integrated table
   const generateEntryRow = (entry: DiaryEntry, index: number): string => {
@@ -607,17 +606,17 @@ export function generatePDFHTML(
       color: #006D77;
     }
 
-    /* Page Footer */
+    /* Page Footer: the app's text-secondary grey (7.56:1 on white) */
     .page-footer {
       margin-top: 12px;
       text-align: center;
       font-size: 9px;
-      color: #6B7280;
+      color: #4B5563;
     }
     .page-disclaimer {
       margin-top: 4px;
-      font-size: 8px;
-      color: #6B7280;
+      font-size: 9px;
+      color: #4B5563;
     }
 
     /* Print optimizations */

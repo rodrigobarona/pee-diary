@@ -1,16 +1,20 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as React from "react";
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { i18n } from "@/lib/i18n";
 import { colors } from "@/lib/theme/colors";
+import {
+  iconSize,
+  MIN_TOUCH_TARGET,
+  radius,
+  ripple,
+  spacing,
+} from "@/lib/theme/styles";
+import { typography } from "@/lib/theme/typography";
+
+const IS_IOS = Platform.OS === "ios";
 
 interface Props {
   children: React.ReactNode;
@@ -66,12 +70,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 }
 
-export interface DefaultErrorFallbackProps {
+interface DefaultErrorFallbackProps {
   error: Error | null;
   onRetry?: () => void;
 }
 
-export function DefaultErrorFallback({
+function DefaultErrorFallback({
   error,
   onRetry,
 }: DefaultErrorFallbackProps) {
@@ -84,47 +88,58 @@ export function DefaultErrorFallback({
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <MaterialCommunityIcons
+          <Icon
             name="alert-circle-outline"
             size={64}
-            color={colors.warning}
+            color={colors.amber.accent}
           />
         </View>
 
-        <Text style={styles.title}>{t("error.title")}</Text>
-        <Text style={styles.description}>{t("error.description")}</Text>
+        <Text variant="title3" style={styles.title} accessibilityRole="header">
+          {t("error.title")}
+        </Text>
+        <Text variant="subheadline" tone="secondary" style={styles.description}>
+          {t("error.description")}
+        </Text>
 
         {onRetry ? (
-          <TouchableOpacity
-            style={styles.retryButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.retryButton,
+              IS_IOS && pressed ? styles.pressedIOS : undefined,
+            ]}
             onPress={onRetry}
-            activeOpacity={0.8}
+            accessibilityRole="button"
+            android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
           >
-            <MaterialCommunityIcons
-              name="refresh"
-              size={20}
-              color={colors.surface}
-            />
-            <Text style={styles.retryButtonText}>{t("error.tryAgain")}</Text>
-          </TouchableOpacity>
+            <Icon name="refresh" size={iconSize.md} color={colors.onPrimary} />
+            <Text variant="button" tone="onAccent">
+              {t("error.tryAgain")}
+            </Text>
+          </Pressable>
         ) : null}
 
         {__DEV__ && error ? (
           <>
-            <TouchableOpacity
-              style={styles.detailsToggle}
+            <Pressable
+              style={({ pressed }) => [
+                styles.detailsToggle,
+                IS_IOS && pressed ? styles.pressedIOS : undefined,
+              ]}
               onPress={() => setShowDetails(!showDetails)}
-              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: showDetails }}
+              android_ripple={ripple}
             >
-              <Text style={styles.detailsToggleText}>
+              <Text variant="subheadline" tone="secondary">
                 {showDetails ? t("error.hideDetails") : t("error.showDetails")}
               </Text>
-              <MaterialCommunityIcons
+              <Icon
                 name={showDetails ? "chevron-up" : "chevron-down"}
-                size={16}
-                color={colors.textMuted}
+                size={iconSize.sm}
+                color={colors.textSecondary}
               />
-            </TouchableOpacity>
+            </Pressable>
 
             {showDetails ? (
               <ScrollView
@@ -152,42 +167,7 @@ export function DefaultErrorFallback({
   );
 }
 
-// Hook for functional component error handling (for use with suspense)
-export function useErrorHandler() {
-  const [error, setError] = React.useState<Error | null>(null);
-
-  const resetError = React.useCallback(() => {
-    setError(null);
-  }, []);
-
-  const handleError = React.useCallback((err: Error) => {
-    setError(err);
-  }, []);
-
-  return { error, handleError, resetError };
-}
-
-// Wrapper component for screens/routes
-interface ScreenErrorBoundaryProps {
-  children: React.ReactNode;
-  screenName?: string;
-}
-
-export function ScreenErrorBoundary({
-  children,
-  screenName,
-}: ScreenErrorBoundaryProps) {
-  const handleError = React.useCallback(
-    (error: Error, errorInfo: React.ErrorInfo) => {
-      if (__DEV__) {
-        console.error(`Error in screen ${screenName}:`, error, errorInfo);
-      }
-    },
-    [screenName]
-  );
-
-  return <ErrorBoundary onError={handleError}>{children}</ErrorBoundary>;
-}
+const MONOSPACE = Platform.select({ ios: "Menlo", default: "monospace" });
 
 const styles = StyleSheet.create({
   container: {
@@ -195,81 +175,73 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: spacing.xl,
   },
   content: {
     alignItems: "center",
-    maxWidth: 320,
+    maxWidth: 360,
   },
   iconContainer: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: colors.text,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   description: {
-    fontSize: 15,
-    color: colors.textMuted,
     textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
   retryButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
     backgroundColor: colors.primary.DEFAULT,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 12,
-    marginBottom: 16,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: IS_IOS ? radius.md : radius.full,
+    overflow: "hidden",
+    marginBottom: spacing.lg,
   },
-  retryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.surface,
+  pressedIOS: {
+    opacity: 0.6,
   },
   detailsToggle: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingVertical: 8,
-  },
-  detailsToggleText: {
-    fontSize: 14,
-    color: colors.textMuted,
+    gap: spacing.xs,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.sm,
+    overflow: "hidden",
   },
   errorDetails: {
-    marginTop: 12,
+    marginTop: spacing.md,
     maxHeight: 200,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     width: "100%",
   },
   errorDetailsContent: {
-    padding: 12,
+    padding: spacing.md,
   },
   errorName: {
-    fontSize: 13,
+    ...typography.footnote,
     fontWeight: "600",
-    color: colors.error,
-    marginBottom: 4,
-    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
+    color: colors.destructive,
+    marginBottom: spacing.xs,
+    fontFamily: MONOSPACE,
   },
   errorMessage: {
-    fontSize: 12,
+    ...typography.caption1,
     color: colors.text,
-    marginBottom: 8,
-    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
+    marginBottom: spacing.sm,
+    fontFamily: MONOSPACE,
   },
   errorStack: {
-    fontSize: 10,
-    color: colors.textMuted,
-    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
-    lineHeight: 14,
+    ...typography.caption2,
+    color: colors.textSecondary,
+    fontFamily: MONOSPACE,
   },
 });

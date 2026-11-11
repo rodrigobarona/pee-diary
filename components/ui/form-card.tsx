@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
+import { cardStyle } from '@/lib/theme/styles';
+
 interface FormCardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
 /**
- * White card container with shadow for form sections.
- * Uses modern styling: borderCurve, boxShadow, gap.
+ * White card for a form section: an inset grouped cell on iOS (no shadow),
+ * a Material 3 outlined card on Android. Clips its rows' ripples.
  */
 export function FormCard({ children, style }: FormCardProps) {
   return <View style={[styles.card, style]}>{children}</View>;
@@ -16,11 +18,7 @@ export function FormCard({ children, style }: FormCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderCurve: 'continuous',
-    marginBottom: 16,
-    // Modern shadow syntax (Rule 9.2)
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+    ...cardStyle,
+    overflow: 'hidden',
   },
 });

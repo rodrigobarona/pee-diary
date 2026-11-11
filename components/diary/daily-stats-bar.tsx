@@ -1,71 +1,84 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { StyleSheet, View } from 'react-native';
 
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { a11yLabel, hiddenA11y } from '@/lib/a11y';
+import { numberFormatters } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
+import { iconSize, spacing } from '@/lib/theme/styles';
 
 interface DailyStatsBarProps {
   voids: number;
   fluids: number;
   leaks: number;
-  compact?: boolean;
+  /**
+   * Hide from screen readers when a parent element already reads the
+   * counts (the History day header).
+   */
+  hideFromAccessibility?: boolean;
 }
 
-export function DailyStatsBar({ voids, fluids, leaks, compact = false }: DailyStatsBarProps) {
-  if (compact) {
-    return (
-      <View style={styles.compactContainer}>
-        {/* Voids */}
-        <View style={styles.compactStat}>
-          <MaterialCommunityIcons name="toilet" size={11} color={colors.primary.DEFAULT} />
-          <Text style={styles.compactValue}>{voids}</Text>
-        </View>
+/** Spoken summary of a day's counts: "8 bathroom visits, 1780 millilitres". */
+export function useDayCountsLabel() {
+  const { t } = useI18n();
+  return React.useCallback(
+    (voids: number, fluids: number, leaks: number) =>
+      a11yLabel(
+        t('a11y.history.voidCount', { count: voids }),
+        t('a11y.history.millilitres', { count: fluids }),
+        leaks > 0 ? t('a11y.history.leakCount', { count: leaks }) : null
+      ),
+    [t]
+  );
+}
 
-        {/* Fluids */}
-        <View style={styles.compactStat}>
-          <MaterialCommunityIcons name="cup-water" size={11} color={colors.secondary.DEFAULT} />
-          <Text style={styles.compactValue}>{fluids}</Text>
-        </View>
-
-        {/* Leaks - only if > 0 */}
-        {leaks > 0 && (
-          <View style={styles.compactStat}>
-            <MaterialCommunityIcons name="water-alert" size={11} color={colors.error} />
-            <Text style={[styles.compactValue, { color: colors.error }]}>{leaks}</Text>
-          </View>
-        )}
-      </View>
-    );
-  }
+/**
+ * A day's counts (bathroom visits, fluid intake, leaks), as neutral totals.
+ * One accessible element read in words.
+ */
+export function DailyStatsBar({
+  voids,
+  fluids,
+  leaks,
+  hideFromAccessibility = false,
+}: DailyStatsBarProps) {
+  const countsLabel = useDayCountsLabel();
 
   return (
-    <View style={styles.container}>
-      {/* Voids */}
+    <View
+      style={styles.container}
+      {...(hideFromAccessibility
+        ? hiddenA11y
+        : { accessible: true, accessibilityLabel: countsLabel(voids, fluids, leaks) })}
+    >
       <View style={styles.stat}>
-        <MaterialCommunityIcons name="toilet" size={12} color={colors.primary.DEFAULT} />
-        <Text style={styles.statValue}>{voids}</Text>
+        <Icon name="toilet" size={iconSize.sm} color={colors.category.urination.accent} />
+        <Text variant="footnote" style={styles.value}>
+          {numberFormatters.decimal.format(voids)}
+        </Text>
       </View>
 
-      <View style={styles.divider} />
-
-      {/* Fluids */}
       <View style={styles.stat}>
-        <MaterialCommunityIcons name="cup-water" size={12} color={colors.secondary.DEFAULT} />
-        <Text style={styles.statValue}>{fluids}</Text>
-        <Text style={styles.statUnit}>ml</Text>
+        <Icon name="cup-water" size={iconSize.sm} color={colors.category.fluid.accent} />
+        <Text variant="footnote" style={styles.value}>
+          {`${numberFormatters.decimal.format(fluids)} ml`}
+        </Text>
       </View>
 
-      {/* Only show leaks if > 0 */}
-      {leaks > 0 && (
-        <>
-          <View style={styles.divider} />
-          <View style={styles.stat}>
-            <MaterialCommunityIcons name="water-alert" size={12} color={colors.error} />
-            <Text style={[styles.statValue, { color: colors.error }]}>{leaks}</Text>
-          </View>
-        </>
-      )}
+      {/* Leaks only when there are some */}
+      {leaks > 0 ? (
+        <View style={styles.stat}>
+          <Icon name="water-alert" size={iconSize.sm} color={colors.category.leak.accent} />
+          <Text
+            variant="footnote"
+            style={[styles.value, { color: colors.category.leak.accent }]}
+          >
+            {numberFormatters.decimal.format(leaks)}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -73,49 +86,18 @@ export function DailyStatsBar({ voids, fluids, leaks, compact = false }: DailySt
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginLeft: 24, // Align with timeline content
-    marginRight: 16,
-    marginBottom: 6,
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
   },
   stat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: spacing.xs,
   },
-  statValue: {
-    fontSize: 12,
+  value: {
     fontWeight: '600',
-    color: '#111827',
-  },
-  statUnit: {
-    fontSize: 11,
-    color: '#6B7280',
-  },
-  divider: {
-    width: 1,
-    height: 12,
-    backgroundColor: '#E5E7EB',
-    marginHorizontal: 10,
-  },
-  // Compact styles
-  compactContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  compactStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  compactValue: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#6B7280',
+    fontVariant: ['tabular-nums'],
   },
 });

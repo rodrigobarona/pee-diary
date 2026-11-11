@@ -1,12 +1,15 @@
-import * as React from "react";
-import { View, Pressable, Platform, StyleSheet } from "react-native";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { a11yLabel } from "@/lib/a11y";
 import { colors } from "@/lib/theme/colors";
+import { MIN_TOUCH_TARGET, radius, spacing } from "@/lib/theme/styles";
 import { dateFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
@@ -26,19 +29,29 @@ export function DateRangePicker({
   onStartDateChange,
   onEndDateChange,
   minDate,
-  maxDate = new Date(),
+  maxDate,
 }: DateRangePickerProps) {
   const { t } = useI18n();
   const [showStartPicker, setShowStartPicker] = React.useState(false);
   const [showEndPicker, setShowEndPicker] = React.useState(false);
 
-  // Ensure dates are valid, fallback to current date
-  const safeStartDate = startDate instanceof Date && !isNaN(startDate.getTime()) ? startDate : new Date();
-  const safeEndDate = endDate instanceof Date && !isNaN(endDate.getTime()) ? endDate : new Date();
-  const safeMaxDate = maxDate instanceof Date && !isNaN(maxDate.getTime()) ? maxDate : new Date();
+  // Ensure dates are valid, fallback to current date (the latest date
+  // defaults to today)
+  const safeStartDate = React.useMemo(() => validOrNow(startDate), [startDate]);
+  const safeEndDate = React.useMemo(() => validOrNow(endDate), [endDate]);
+  const safeMaxDate = React.useMemo(() => validOrNow(maxDate), [maxDate]);
 
-  const formattedStartDate = dateFormatters.short.format(safeStartDate);
-  const formattedEndDate = dateFormatters.short.format(safeEndDate);
+  // A medium date ("11 Nov 2026"), not the ambiguous numeric one
+  const formattedStartDate = dateFormatters.medium.format(safeStartDate);
+  const formattedEndDate = dateFormatters.medium.format(safeEndDate);
+  const startLabel = a11yLabel(
+    t("export.startDate"),
+    dateFormatters.long.format(safeStartDate),
+  );
+  const endLabel = a11yLabel(
+    t("export.endDate"),
+    dateFormatters.long.format(safeEndDate),
+  );
 
   const handleStartDateChange = React.useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -77,14 +90,14 @@ export function DateRangePicker({
     return (
       <View style={styles.container}>
         <View style={styles.dateRow}>
-          <Text style={styles.label}>{t("export.startDate")}</Text>
-          <Pressable style={styles.chip}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={16}
-              color={colors.primary.DEFAULT}
-            />
-            <Text style={styles.chipText}>{formattedStartDate}</Text>
+          <Text variant="body" style={styles.label}>
+            {t("export.startDate")}
+          </Text>
+          <View style={styles.chip}>
+            <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+            <Text variant="subheadline" style={styles.chipText}>
+              {formattedStartDate}
+            </Text>
             <input
               type="date"
               value={toDayKey(safeStartDate)}
@@ -95,18 +108,18 @@ export function DateRangePicker({
               }}
               style={styles.hiddenInput as React.CSSProperties}
             />
-          </Pressable>
+          </View>
         </View>
 
         <View style={styles.dateRow}>
-          <Text style={styles.label}>{t("export.endDate")}</Text>
-          <Pressable style={styles.chip}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={16}
-              color={colors.primary.DEFAULT}
-            />
-            <Text style={styles.chipText}>{formattedEndDate}</Text>
+          <Text variant="body" style={styles.label}>
+            {t("export.endDate")}
+          </Text>
+          <View style={styles.chip}>
+            <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+            <Text variant="subheadline" style={styles.chipText}>
+              {formattedEndDate}
+            </Text>
             <input
               type="date"
               value={toDayKey(safeEndDate)}
@@ -121,7 +134,7 @@ export function DateRangePicker({
               }}
               style={styles.hiddenInput as React.CSSProperties}
             />
-          </Pressable>
+          </View>
         </View>
       </View>
     );
@@ -132,7 +145,9 @@ export function DateRangePicker({
     return (
       <View style={styles.container}>
         <View style={styles.dateRow}>
-          <Text style={styles.label}>{t("export.startDate")}</Text>
+          <Text variant="body" style={styles.label}>
+            {t("export.startDate")}
+          </Text>
           <DateTimePicker
             value={safeStartDate}
             mode="date"
@@ -146,7 +161,9 @@ export function DateRangePicker({
         </View>
 
         <View style={styles.dateRow}>
-          <Text style={styles.label}>{t("export.endDate")}</Text>
+          <Text variant="body" style={styles.label}>
+            {t("export.endDate")}
+          </Text>
           <DateTimePicker
             value={safeEndDate}
             mode="date"
@@ -166,27 +183,37 @@ export function DateRangePicker({
   return (
     <View style={styles.container}>
       <View style={styles.dateRow}>
-        <Text style={styles.label}>{t("export.startDate")}</Text>
-        <Pressable style={styles.chip} onPress={() => setShowStartPicker(true)}>
-          <MaterialCommunityIcons
-            name="calendar"
-            size={16}
-            color={colors.primary.DEFAULT}
-          />
-          <Text style={styles.chipText}>{formattedStartDate}</Text>
-        </Pressable>
+        <Text variant="body" style={styles.label} {...hiddenLabel}>
+          {t("export.startDate")}
+        </Text>
+        <AnimatedPressable
+          style={styles.chip}
+          onPress={() => setShowStartPicker(true)}
+          accessibilityRole="button"
+          accessibilityLabel={startLabel}
+        >
+          <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+          <Text variant="subheadline" style={styles.chipText}>
+            {formattedStartDate}
+          </Text>
+        </AnimatedPressable>
       </View>
 
       <View style={styles.dateRow}>
-        <Text style={styles.label}>{t("export.endDate")}</Text>
-        <Pressable style={styles.chip} onPress={() => setShowEndPicker(true)}>
-          <MaterialCommunityIcons
-            name="calendar"
-            size={16}
-            color={colors.primary.DEFAULT}
-          />
-          <Text style={styles.chipText}>{formattedEndDate}</Text>
-        </Pressable>
+        <Text variant="body" style={styles.label} {...hiddenLabel}>
+          {t("export.endDate")}
+        </Text>
+        <AnimatedPressable
+          style={styles.chip}
+          onPress={() => setShowEndPicker(true)}
+          accessibilityRole="button"
+          accessibilityLabel={endLabel}
+        >
+          <Icon name="calendar" size={16} color={colors.primary.DEFAULT} />
+          <Text variant="subheadline" style={styles.chipText}>
+            {formattedEndDate}
+          </Text>
+        </AnimatedPressable>
       </View>
 
       {/* Android: Material 3 date pickers */}
@@ -213,35 +240,46 @@ export function DateRangePicker({
   );
 }
 
+// The chip's own label names the date ("Start date, 1 November 2026"), so
+// the visible row label is not read twice
+const hiddenLabel = {
+  importantForAccessibility: "no" as const,
+};
+
+function validOrNow(date: Date | undefined): Date {
+  return date instanceof Date && !isNaN(date.getTime()) ? date : new Date();
+}
+
 const styles = StyleSheet.create({
   container: {
-    gap: 16,
+    gap: spacing.lg,
   },
   dateRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
+    columnGap: spacing.md,
+    rowGap: spacing.sm,
   },
   label: {
-    fontSize: 15,
     fontWeight: "500",
-    color: "#374151",
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    gap: spacing.sm,
+    minHeight: MIN_TOUCH_TARGET,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.md,
+    borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
+    overflow: "hidden",
   },
   chipText: {
-    fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
   },
   hiddenInput: {
     position: "absolute",

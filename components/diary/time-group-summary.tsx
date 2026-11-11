@@ -1,18 +1,40 @@
+import { getHours, parseISO } from "date-fns";
+import * as React from "react";
+import { StyleSheet, View } from "react-native";
+
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { a11yLabel } from "@/lib/a11y";
+import { dateFormatters, formatHourRange } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import type { DiaryEntry } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { getHours, parseISO } from "date-fns";
-import * as React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { cardStyle, iconSize, spacing } from "@/lib/theme/styles";
 
-type TimePeriod =
+export type TimePeriod =
   | "earlyMorning"
   | "morning"
   | "afternoon"
   | "evening"
   | "night";
+
+/** The hours each time of day covers (start inclusive, end exclusive). */
+export const TIME_PERIOD_HOURS: Record<TimePeriod, [number, number]> = {
+  earlyMorning: [0, 5],
+  morning: [5, 12],
+  afternoon: [12, 17],
+  evening: [17, 21],
+  night: [21, 24],
+};
+
+const PERIODS: TimePeriod[] = [
+  "earlyMorning",
+  "morning",
+  "afternoon",
+  "evening",
+  "night",
+];
 
 interface TimeGroupSummaryProps {
   entries: DiaryEntry[];
@@ -22,30 +44,22 @@ interface TimeGroupSummaryProps {
 // Helper to categorize entry by time period (matching history page)
 const getTimePeriod = (timestamp: string): TimePeriod => {
   const hour = getHours(parseISO(timestamp));
-  if (hour >= 0 && hour < 5) return "earlyMorning"; // 00:00 - 05:00
-  if (hour >= 5 && hour < 12) return "morning"; // 05:00 - 12:00
-  if (hour >= 12 && hour < 17) return "afternoon"; // 12:00 - 17:00
-  if (hour >= 17 && hour < 21) return "evening"; // 17:00 - 21:00
-  return "night"; // 21:00 - 23:59
+  return (
+    PERIODS.find((period) => hour < TIME_PERIOD_HOURS[period][1]) ?? "night"
+  );
 };
 
-// Get period icon
-const getPeriodIcon = (
-  period: TimePeriod
-): keyof typeof MaterialCommunityIcons.glyphMap => {
-  switch (period) {
-    case "earlyMorning":
-      return "weather-night";
-    case "morning":
-      return "weather-sunny";
-    case "afternoon":
-      return "white-balance-sunny";
-    case "evening":
-      return "weather-sunset";
-    case "night":
-      return "weather-night";
-  }
+const PERIOD_ICONS: Record<TimePeriod, IconName> = {
+  earlyMorning: "weather-night",
+  morning: "weather-sunny",
+  afternoon: "white-balance-sunny",
+  evening: "weather-sunset",
+  night: "weather-night",
 };
+
+// A whole hour in the device's clock (24 is the midnight that ends the day)
+const formatHour = (hour: number) =>
+  dateFormatters.hour.format(new Date(2023, 0, 1, hour % 24));
 
 interface PeriodSummary {
   voids: number;
@@ -54,6 +68,10 @@ interface PeriodSummary {
   leaks: number;
 }
 
+/**
+ * Today's entries by time of day, in the device's 12- or 24-hour clock. Each
+ * time of day is one button that opens it in History.
+ */
 export function TimeGroupSummary({
   entries,
   onPeriodPress,
@@ -85,266 +103,165 @@ export function TimeGroupSummary({
     return groups;
   }, [entries]);
 
-  const periods: TimePeriod[] = [
-    "earlyMorning",
-    "morning",
-    "afternoon",
-    "evening",
-    "night",
-  ];
-
   return (
     <View style={styles.container}>
-      {periods.map((period, index) => {
+      {PERIODS.map((period, index) => {
         const summary = groupedEntries[period];
         const hasEntries =
           summary.voids > 0 || summary.fluids > 0 || summary.leaks > 0;
+        const [startHour, endHour] = TIME_PERIOD_HOURS[period];
+        const name = t(`timePeriod.${period}`);
+
+        const label = a11yLabel(
+          name,
+          t("a11y.today.timeRange", {
+            start: formatHour(startHour),
+            end: formatHour(endHour),
+          }),
+          summary.voids > 0 &&
+            t("a11y.today.voids", { count: summary.voids }),
+          summary.fluids > 0 &&
+            t("a11y.today.drinks", {
+              count: summary.fluids,
+              amount: summary.fluidAmount,
+            }),
+          summary.leaks > 0 &&
+            t("a11y.today.leaks", { count: summary.leaks }),
+          !hasEntries && t("timePeriod.noEntries")
+        );
 
         return (
-          <Pressable
-            key={period}
-            onPress={() => onPeriodPress?.(period)}
-            style={[
-              styles.periodCard,
-              index < periods.length - 1 && styles.periodCardBorder,
-            ]}
-          >
-            <View style={styles.periodHeader}>
-              <View style={styles.periodTitleRow}>
-                <MaterialCommunityIcons
-                  name={getPeriodIcon(period)}
-                  size={18}
-                  color={colors.primary.DEFAULT}
-                />
-                <Text style={styles.periodTitle}>
-                  {t(`timePeriod.${period}`)}
+          <React.Fragment key={period}>
+            {index > 0 ? <View style={styles.separator} /> : null}
+            <AnimatedPressable
+              onPress={() => onPeriodPress?.(period)}
+              feedback="highlight"
+              highlightColor={colors.highlight}
+              style={styles.periodRow}
+              accessibilityRole="button"
+              accessibilityLabel={label}
+              accessibilityHint={t("a11y.today.periodHint")}
+            >
+              <View style={styles.periodHeader}>
+                <View style={styles.periodTitleRow}>
+                  <Icon
+                    name={PERIOD_ICONS[period]}
+                    size={iconSize.md}
+                    color={colors.primary.DEFAULT}
+                  />
+                  <Text variant="headline" style={styles.shrink}>
+                    {name}
+                  </Text>
+                </View>
+                <Text variant="footnote" tone="secondary">
+                  {formatHourRange(startHour, endHour)}
                 </Text>
               </View>
-              <Text style={styles.periodTimeRange}>
-                {t(`timePeriod.range.${period}`)}
-              </Text>
-            </View>
 
-            {hasEntries ? (
-              <View style={styles.entrySummary}>
-                {summary.voids > 0 && (
-                  <View style={styles.entryItem}>
-                    <MaterialCommunityIcons
-                      name="toilet"
-                      size={16}
-                      color={colors.primary.DEFAULT}
-                    />
-                    <Text style={styles.entryCount}>×{summary.voids}</Text>
-                  </View>
-                )}
-                {summary.fluids > 0 && (
-                  <View style={styles.entryItem}>
-                    <MaterialCommunityIcons
-                      name="cup-water"
-                      size={16}
-                      color={colors.secondary.DEFAULT}
-                    />
-                    <Text style={styles.entryCount}>×{summary.fluids}</Text>
-                    <Text style={styles.entryAmount}>
-                      ({summary.fluidAmount}ml)
-                    </Text>
-                  </View>
-                )}
-                {summary.leaks > 0 && (
-                  <View style={styles.entryItem}>
-                    <MaterialCommunityIcons
-                      name="water-alert"
-                      size={16}
-                      color={colors.error}
-                    />
-                    <Text style={[styles.entryCount, { color: colors.error }]}>
-                      ×{summary.leaks}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            ) : (
-              <Text style={styles.noEntries}>{t("timePeriod.noEntries")}</Text>
-            )}
-          </Pressable>
+              {hasEntries ? (
+                <View style={styles.entrySummary}>
+                  {summary.voids > 0 ? (
+                    <View style={styles.entryItem}>
+                      <Icon
+                        name="toilet"
+                        size={iconSize.sm}
+                        color={colors.category.urination.accent}
+                      />
+                      <Text variant="subheadline" style={styles.count}>
+                        ×{summary.voids}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {summary.fluids > 0 ? (
+                    <View style={styles.entryItem}>
+                      <Icon
+                        name="cup-water"
+                        size={iconSize.sm}
+                        color={colors.category.fluid.accent}
+                      />
+                      <Text variant="subheadline" style={styles.count}>
+                        ×{summary.fluids}
+                      </Text>
+                      <Text variant="footnote" tone="secondary">
+                        ({summary.fluidAmount} ml)
+                      </Text>
+                    </View>
+                  ) : null}
+                  {summary.leaks > 0 ? (
+                    <View style={styles.entryItem}>
+                      <Icon
+                        name="water-alert"
+                        size={iconSize.sm}
+                        color={colors.category.leak.accent}
+                      />
+                      <Text
+                        variant="subheadline"
+                        style={[styles.count, styles.leakCount]}
+                      >
+                        ×{summary.leaks}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              ) : (
+                <Text variant="subheadline" tone="secondary">
+                  {t("timePeriod.noEntries")}
+                </Text>
+              )}
+            </AnimatedPressable>
+          </React.Fragment>
         );
       })}
     </View>
   );
 }
 
-// Single period card (for use in expandable views)
-interface SinglePeriodCardProps {
-  period: TimePeriod;
-  entries: DiaryEntry[];
-  onPress?: () => void;
-}
-
-export function SinglePeriodCard({
-  period,
-  entries,
-  onPress,
-}: SinglePeriodCardProps) {
-  const { t } = useI18n();
-
-  const summary = React.useMemo(() => {
-    const result = { voids: 0, fluids: 0, fluidAmount: 0, leaks: 0 };
-    entries.forEach((entry) => {
-      if (entry.type === "urination") result.voids++;
-      else if (entry.type === "fluid") {
-        result.fluids++;
-        result.fluidAmount += entry.amount;
-      } else if (entry.type === "leak") result.leaks++;
-    });
-    return result;
-  }, [entries]);
-
-  const hasEntries =
-    summary.voids > 0 || summary.fluids > 0 || summary.leaks > 0;
-
-  return (
-    <Pressable onPress={onPress} style={styles.singleCard}>
-      <View style={styles.periodHeader}>
-        <View style={styles.periodTitleRow}>
-          <MaterialCommunityIcons
-            name={getPeriodIcon(period)}
-            size={20}
-            color={colors.primary.DEFAULT}
-          />
-          <Text style={styles.singleCardTitle}>
-            {t(`timePeriod.${period}`)}
-          </Text>
-        </View>
-        <Text style={styles.periodTimeRange}>
-          {t(`timePeriod.range.${period}`)}
-        </Text>
-      </View>
-
-      {hasEntries ? (
-        <View style={styles.singleCardEntries}>
-          {summary.voids > 0 && (
-            <View style={styles.singleCardEntry}>
-              <MaterialCommunityIcons
-                name="toilet"
-                size={18}
-                color={colors.primary.DEFAULT}
-              />
-              <Text style={styles.singleCardValue}>{summary.voids}</Text>
-            </View>
-          )}
-          {summary.fluids > 0 && (
-            <View style={styles.singleCardEntry}>
-              <MaterialCommunityIcons
-                name="cup-water"
-                size={18}
-                color={colors.secondary.DEFAULT}
-              />
-              <Text style={styles.singleCardValue}>
-                {summary.fluidAmount}ml
-              </Text>
-            </View>
-          )}
-          {summary.leaks > 0 && (
-            <View style={styles.singleCardEntry}>
-              <MaterialCommunityIcons
-                name="water-alert"
-                size={18}
-                color={colors.error}
-              />
-              <Text style={[styles.singleCardValue, { color: colors.error }]}>
-                {summary.leaks}
-              </Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        <Text style={styles.noEntries}>{t("timePeriod.noEntries")}</Text>
-      )}
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    ...cardStyle,
     overflow: "hidden",
   },
-  periodCard: {
-    padding: 16,
+  periodRow: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
   },
-  periodCardBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.separator,
+    marginStart: spacing.lg,
   },
   periodHeader: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    columnGap: spacing.sm,
   },
   periodTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
+    flexShrink: 1,
   },
-  periodTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  periodTimeRange: {
-    fontSize: 12,
-    color: "#9CA3AF",
+  shrink: {
+    flexShrink: 1,
   },
   entrySummary: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
+    columnGap: spacing.lg,
+    rowGap: spacing.xs,
   },
   entryItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: spacing.xs,
   },
-  entryCount: {
-    fontSize: 14,
+  count: {
     fontWeight: "600",
-    color: "#374151",
   },
-  entryAmount: {
-    fontSize: 12,
-    color: "#6B7280",
-  },
-  noEntries: {
-    fontSize: 13,
-    color: "#9CA3AF",
-    fontStyle: "italic",
-  },
-  // Single card styles
-  singleCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-  },
-  singleCardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  singleCardEntries: {
-    flexDirection: "row",
-    gap: 20,
-    marginTop: 4,
-  },
-  singleCardEntry: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  singleCardValue: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#374151",
+  leakCount: {
+    color: colors.category.leak.accent,
   },
 });

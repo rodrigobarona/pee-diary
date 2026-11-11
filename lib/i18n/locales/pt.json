@@ -3,14 +3,10 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
-    "edit": "Editar",
     "edited": "Editado",
     "back": "Voltar",
-    "done": "Concluído",
     "loading": "A carregar…",
     "error": "Erro",
-    "success": "Sucesso",
-    "confirm": "Confirmar",
     "yes": "Sim",
     "no": "Não",
     "notesPlaceholder": "Adicione uma nota…",
@@ -32,17 +28,13 @@
     "evening": "Boa noite!"
   },
   "home": {
-    "title": "Hoje",
-    "timeline": "Cronologia",
     "noEntries": "Ainda não há registos hoje",
     "addFirst": "Toque no botão + abaixo para adicionar o primeiro registo",
-    "tapToEditGoals": "Toque para editar os objetivos",
     "editGoals": "Editar objetivos diários",
     "exportData": "Exportar os seus dados",
     "todayActivity": "Atividade de hoje",
     "viewInHistory": "Ver no histórico",
     "addNew": "Adicionar registo",
-    "addNewHint": "Abre o menu para registar uma micção, uma bebida ou uma perda",
     "noLeaks": "Nenhuma",
     "summary": {
       "voids": "Micções",
@@ -55,22 +47,17 @@
     "avgFluids": "Média de líquidos",
     "avgVoids": "Média de micções",
     "fluidGoalReached": "Objetivo de líquidos atingido",
-    "vsLastWeek": "face à semana passada",
     "thisWeek": "Esta semana",
     "week": "Semana",
     "month": "Mês",
-    "last30Days": "Resumo dos últimos 30 dias",
-    "nightVoids": "Micções 21h–5h",
     "nightVoidsAvg": "média por noite",
-    "dayVsNight": "Dia e noite",
-    "day": "Dia",
-    "night": "Noite",
     "fluidBalance": "Líquidos ingeridos e urina",
     "fluidIntake": "Líquidos ingeridos",
     "urinationOutput": "Urina estimada",
     "intake": "Ingestão",
     "output": "Urina (estimada)",
-    "outputEstimateNote": "O volume de urina é estimado a partir dos tamanhos que escolheu (pequeno, médio, grande), exceto quando indicou uma quantidade exata."
+    "outputEstimateNote": "O volume de urina é estimado a partir dos tamanhos que escolheu (pequeno, médio, grande), exceto quando indicou uma quantidade exata.",
+    "nightVoidsBetween": "Micções {{range}}"
   },
   "goals": {
     "title": "Objetivos diários",
@@ -80,18 +67,11 @@
     "targetsInfo": "O seu objetivo serve para o seu próprio registo. Pergunte ao seu profissional de saúde o que é adequado para si.",
     "history": "Histórico de objetivos",
     "historyEmpty": "Ainda não há alterações",
-    "changedTo": "Alterado para",
     "fluids": "Líquidos"
   },
   "streak": {
     "day": "dia",
-    "days": "dias",
-    "start": "Comece a sua sequência hoje!",
-    "started": "Já começou!",
-    "keepGoing": "Continue assim!",
-    "good": "Boa sequência!",
-    "great": "Muito bem!",
-    "amazing": "Que constância!"
+    "days": "dias"
   },
   "timePeriod": {
     "earlyMorning": "Madrugada",
@@ -99,14 +79,7 @@
     "afternoon": "Tarde",
     "evening": "Fim de tarde",
     "night": "Noite",
-    "noEntries": "Ainda não há registos",
-    "range": {
-      "earlyMorning": "00:00 - 05:00",
-      "morning": "05:00 - 12:00",
-      "afternoon": "12:00 - 17:00",
-      "evening": "17:00 - 21:00",
-      "night": "21:00 - 00:00"
-    }
+    "noEntries": "Ainda não há registos"
   },
   "add": {
     "title": "Adicionar registo",
@@ -122,14 +95,12 @@
     "urination": "Micção",
     "fluid": "Ingestão de líquidos",
     "leak": "Perda/acidente",
-    "a11yLabel": "{{label}}, às {{time}}",
     "addUrination": "Registar micção",
     "addFluid": "Registar bebida",
     "addLeak": "Registar perda"
   },
   "urination": {
     "title": "Registar micção",
-    "subtitle": "Registe a ida à casa de banho",
     "volume": "Volume",
     "volumeSmall": "Pequeno",
     "volumeMedium": "Médio",
@@ -143,7 +114,6 @@
   },
   "fluid": {
     "title": "Registar ingestão de líquidos",
-    "subtitle": "Registe o que bebeu",
     "drinkType": "Tipo de bebida",
     "water": "Água",
     "coffee": "Café",
@@ -156,7 +126,6 @@
   },
   "leak": {
     "title": "Registar perda/acidente",
-    "subtitle": "Registe uma perda",
     "severity": "Quantidade",
     "drops": "Gotas",
     "dropsDesc": "Algumas gotas",
@@ -166,7 +135,6 @@
     "fullDesc": "Perda completa",
     "urgency": "Nível de urgência",
     "activity": "Atividade (opcional)",
-    "activityDescription": "O que estava a fazer?",
     "activities": {
       "coughing": "A tossir",
       "sneezing": "A espirrar",
@@ -181,23 +149,13 @@
     "notes": "Notas"
   },
   "history": {
-    "title": "Histórico",
     "today": "Hoje",
     "yesterday": "Ontem",
-    "noEntries": "Sem registos para este dia",
-    "list": "Lista",
-    "calendar": "Calendário",
     "all": "Tudo",
-    "voids": "micções",
-    "leaks": "perdas",
-    "avgUrgency": "urgência média",
-    "noEntriesYet": "Ainda não há registos",
     "startTracking": "Comece a registar para ver o seu histórico",
     "noDataForDay": "Sem registos para este dia",
     "noEntriesForDate": "Não há registos nesta data",
-    "tapToAdd": "Toque aqui para adicionar",
-    "weekly": "Semanal",
-    "monthly": "Mensal"
+    "tapToAdd": "Toque aqui para adicionar"
   },
   "settings": {
     "title": "Definições",
@@ -211,13 +169,11 @@
     "exportDescription": "Partilhe o diário em PDF, CSV ou JSON",
     "data": "Dados",
     "noDataToExport": "Não há registos para exportar.",
-    "exportError": "Não foi possível exportar os dados. Tente novamente.",
     "clearData": "Apagar todos os dados",
     "clearDataDescription": "Esta ação não pode ser desfeita",
     "clearDataConfirm": "Tem a certeza de que pretende eliminar todos os registos, objetivos e definições? Esta ação não pode ser desfeita.",
     "clearDataTypeConfirm": "Escreva \"APAGAR\" para confirmar",
     "clearDataConfirmWord": "APAGAR",
-    "clearDataPlaceholder": "APAGAR",
     "about": "Sobre",
     "version": "Versão",
     "medicalInfo": "Informação médica",
@@ -228,17 +184,13 @@
       "other": "{{count}} registos guardados"
     },
     "waitForData": "Os seus dados ainda estão a carregar. Tente novamente daqui a pouco.",
-    "privacy": "Política de Privacidade",
-    "dailyGoals": "Objetivos diários",
     "editGoals": "Editar objetivos",
-    "goalsDescription": "Defina os objetivos diários",
     "restore": "Restaurar",
     "localBackup": "Cópia local",
     "exportBackup": "Exportar cópia de segurança",
     "exportBackupDescription": "Guardar uma cópia dos dados num ficheiro",
     "importBackup": "Importar cópia de segurança",
     "importBackupDescription": "Restaurar os dados a partir de um ficheiro de cópia de segurança",
-    "exportBackupSuccess": "Ficheiro de cópia de segurança pronto a guardar",
     "importBackupSuccess": {
       "one": "{{count}} registo restaurado a partir da cópia de segurança",
       "other": "{{count}} registos restaurados a partir da cópia de segurança"
@@ -261,13 +213,9 @@
     "remindersEnabled": "Ativar lembretes",
     "remindersEnabledDescription": "Receba um lembrete para atualizar o diário",
     "reminderInterval": "Intervalo dos lembretes",
-    "reminderIntervalDescription": "Frequência dos lembretes",
     "everyXHours": "De {{count}} em {{count}} horas",
-    "quietHours": "Horas de silêncio",
     "quietHoursEnabled": "Ativar horas de silêncio",
     "quietHoursEnabledDescription": "Sem lembretes neste período",
-    "quietHoursStart": "De",
-    "quietHoursEnd": "Até",
     "reminderNotificationTitle": "Lembrete do diário",
     "reminderNotificationBody": "Está na hora de atualizar o seu diário.",
     "permissionRequired": "Permissão necessária",
@@ -292,20 +240,16 @@
     "editLeak": "Editar perda",
     "editHistory": "Histórico de edições",
     "edited": "Editado",
-    "created": "Criado",
-    "noEdits": "Ainda não há edições",
     "changedFrom": "de",
     "changedTo": "para",
     "deleteConfirm": "Tem a certeza de que pretende eliminar este registo?",
-    "update": "Atualizar",
-    "notFound": "Registo não encontrado"
+    "update": "Atualizar"
   },
   "export": {
     "title": "Exportar dados",
     "dateRange": "Período",
     "startDate": "Data de início",
     "endDate": "Data de fim",
-    "quickSelect": "Seleção rápida",
     "last7Days": "Últimos 7 dias",
     "last30Days": "Últimos 30 dias",
     "thisMonth": "Este mês",
@@ -318,15 +262,9 @@
     "jsonDesc": "Para programadores",
     "pdf": "PDF",
     "pdfDesc": "Fácil de ler",
-    "preview": "Pré-visualização",
-    "entriesCount": {
-      "one": "{{count}} registo pronto",
-      "other": "{{count}} registos prontos"
-    },
     "noEntries": "Sem registos no período selecionado",
     "exportAndShare": "Exportar e partilhar",
     "exporting": "A exportar…",
-    "success": "Dados exportados com sucesso",
     "error": "Não foi possível exportar os dados",
     "fileUnavailable": "Não foi possível criar o ficheiro de exportação neste dispositivo.",
     "entryCount": {
@@ -415,5 +353,87 @@
   },
   "disclaimer": {
     "text": "O Eleva Diary é um diário pessoal. Não é um dispositivo médico e não diagnostica, trata, cura nem previne qualquer doença. Fale com um profissional de saúde sobre os seus sintomas."
+  },
+  "a11y": {
+    "forms": {
+      "urgencyValue": "{{value}} de 5",
+      "volumeSmallRange": "menos de 100 mililitros",
+      "volumeMediumRange": "de 100 a 300 mililitros",
+      "volumeLargeRange": "mais de 300 mililitros",
+      "amountValue": "{{amount}} mililitros",
+      "decreaseAmount": "Diminuir {{step}} mililitros",
+      "increaseAmount": "Aumentar {{step}} mililitros",
+      "quickAmounts": "Quantidades habituais"
+    },
+    "history": {
+      "entryCount": {
+        "one": "{{count}} registo",
+        "other": "{{count}} registos"
+      },
+      "voidCount": {
+        "one": "{{count}} micção",
+        "other": "{{count}} micções"
+      },
+      "leakCount": {
+        "one": "{{count}} perda",
+        "other": "{{count}} perdas"
+      },
+      "millilitres": {
+        "one": "{{count}} mililitro",
+        "other": "{{count}} mililitros"
+      },
+      "urgencyShort": "Urgência {{value}}",
+      "urgencyOfFive": "Urgência {{value}} de 5, {{description}}",
+      "withLeak": "com perda",
+      "note": "Nota: {{notes}}",
+      "chooseDateHint": "Abre um calendário para escolher uma data",
+      "goToTodayHint": "Mostra os registos de hoje",
+      "previousWeek": "Semana anterior",
+      "nextWeek": "Semana seguinte"
+    },
+    "settings": {
+      "millilitres": "{{value}} mililitros",
+      "decreaseBy": "Diminuir {{amount}} ml",
+      "increaseBy": "Aumentar {{amount}} ml",
+      "goalChange": "{{date}}, líquidos alterados de {{from}} para {{to}} mililitros",
+      "pageOf": "Página {{page}} de {{total}}"
+    },
+    "today": {
+      "streak": {
+        "one": "Registos em {{count}} dia seguido",
+        "other": "Registos em {{count}} dias seguidos"
+      },
+      "streakHint": "Mostra o resumo",
+      "statWithTarget": "{{label}}, {{value}} de {{target}} mililitros",
+      "statHint": "Mostra opções para ver estes registos no histórico ou adicionar um",
+      "periodPicker": "Período do resumo",
+      "timeRange": "das {{start}} às {{end}}",
+      "periodHint": "Abre este período do dia no histórico",
+      "voids": {
+        "one": "{{count}} micção",
+        "other": "{{count}} micções"
+      },
+      "drinks": {
+        "one": "{{count}} bebida, {{amount}} mililitros",
+        "other": "{{count}} bebidas, {{amount}} mililitros"
+      },
+      "leaks": {
+        "one": "{{count}} perda",
+        "other": "{{count}} perdas"
+      },
+      "millilitres": "{{amount}} mililitros",
+      "weeklyChart": "Gráfico de micções e líquidos de cada um dos últimos 7 dias",
+      "monthlyChart": "Gráfico da média diária de micções e líquidos, semana a semana, dos últimos 30 dias",
+      "fluidBalanceChart": "Gráfico de líquidos ingeridos e urina estimada de cada um dos últimos 7 dias",
+      "chartDay": "{{date}}: {{details}}",
+      "chartWeek": "Semana de {{start}} a {{end}}: {{details}}",
+      "avgVoidsPerDay": "uma média de {{count}} micções por dia",
+      "avgFluidsPerDay": "uma média de {{amount}} mililitros de líquidos por dia",
+      "intakeOutput": "ingestão {{intake}} mililitros, urina estimada {{output}} mililitros",
+      "dayHint": "Abre este dia no histórico",
+      "trendUp": "mais {{value}} do que no período anterior",
+      "trendDown": "menos {{value}} do que no período anterior",
+      "daysOf": "{{count}} de {{total}} dias"
+    }
   }
 }

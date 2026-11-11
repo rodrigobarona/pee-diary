@@ -451,27 +451,14 @@ export const useDiaryStore = create<DiaryState>()(
   )
 );
 
-// Hydration state check
-export const useStoreHydrated = () => {
-  const [hydrated, setHydrated] = React.useState(false);
+// Hydration state check: subscribes to the persist middleware, which says
+// both whether it has hydrated and when it finishes
+const subscribeToHydration = (onChange: () => void) =>
+  useDiaryStore.persist.onFinishHydration(onChange);
+const getHydrated = () => useDiaryStore.persist.hasHydrated();
 
-  React.useEffect(() => {
-    const unsubFinishHydration = useDiaryStore.persist.onFinishHydration(() => {
-      setHydrated(true);
-    });
-
-    // Check if already hydrated
-    if (useDiaryStore.persist.hasHydrated()) {
-      setHydrated(true);
-    }
-
-    return () => {
-      unsubFinishHydration();
-    };
-  }, []);
-
-  return hydrated;
-};
+export const useStoreHydrated = () =>
+  React.useSyncExternalStore(subscribeToHydration, getHydrated, getHydrated);
 
 // Note: Complex selectors that return new objects/arrays on each call
 // should NOT be used directly with useDiaryStore() as they cause infinite loops.

@@ -1,26 +1,28 @@
+import { isSameDay } from "date-fns";
 import * as React from "react";
 import {
-  View,
+  type LayoutChangeEvent,
   StyleSheet,
-  Pressable,
-  Platform,
   useWindowDimensions,
+  View,
 } from "react-native";
-import Svg, { Rect, Line, Text as SvgText, G } from "react-native-svg";
 import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-  withTiming,
-  withDelay,
   Easing,
+  useAnimatedProps,
+  useSharedValue,
+  withDelay,
+  withTiming,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-import { isSameDay } from "date-fns";
+import Svg, { G, Line, Rect, Text as SvgText } from "react-native-svg";
 
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/lib/theme/colors";
-import { useI18n } from "@/lib/i18n/context";
+import { a11yLabel } from "@/lib/a11y";
 import { dateFormatters } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/context";
+import { colors } from "@/lib/theme/colors";
+import { cardStyle, spacing } from "@/lib/theme/styles";
+import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -39,171 +41,211 @@ interface WeeklyChartProps {
 
 // Chart dimensions
 const CHART_HEIGHT = 100;
-const LABEL_HEIGHT = 20;
 const PADDING = 8;
 
+/**
+ * Voids and fluids for each of the last 7 days. The drawing is one image
+ * for screen readers with a summary; each day is a button named with its
+ * date and counts that opens it in History.
+ */
 export function WeeklyChart({
   data,
   onDayPress,
   fluidTarget = 2000,
 }: WeeklyChartProps) {
   const { t } = useI18n();
-  const { width: screenWidth } = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
+  const [containerWidth, setContainerWidth] = React.useState(0);
   // The data ends on today (see the Today screen), which follows the change
   // of day; a new Date() here would keep yesterday after midnight.
   const today = data[data.length - 1]?.date ?? new Date();
 
-  // Calculate responsive dimensions
-  const containerWidth = screenWidth - 72; // Account for padding
-  const dayCount = data.length;
-  const barGroupWidth = (containerWidth - PADDING * 2) / dayCount;
-  const barWidth = Math.min((barGroupWidth - 8) / 2, 16); // Max 16px per bar
+  // Axis labels: the caption size, grown with the system font size up to a
+  // cap so they still fit under the bars (SVG text does not scale by itself)
+  const labelFontSize =
+    (typography.caption1.fontSize ?? 12) *
+    Math.min(Math.max(fontScale, 1), CONTROL_MAX_FONT_SCALE);
+  const labelHeight = Math.ceil(labelFontSize * 1.4) + spacing.sm;
+
+  const handleLayout = React.useCallback((event: LayoutChangeEvent) => {
+    setContainerWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  // Responsive dimensions
+  const dayCount = data.length || 1;
+  const barGroupWidth = Math.max(containerWidth - PADDING * 2, 0) / dayCount;
+  const barWidth = Math.max(Math.min((barGroupWidth - 8) / 2, 16), 2); // Max 16px per bar
   const barGap = 2;
 
-  // Calculate max values for scaling. The visit scale follows the logged
-  // counts only: there is no visit target.
+  // The visit scale follows the logged counts only: there is no visit target
   const maxVoids = Math.max(...data.map((d) => d.voids), 1);
-  const maxFluids = Math.max(...data.map((d) => d.fluids), fluidTarget, 1);
-
-  // Scale factor for bars
   const voidScale = (CHART_HEIGHT - 8) / maxVoids;
-  const fluidScale = (CHART_HEIGHT - 8) / maxFluids;
 
-  const handleDayPress = React.useCallback(
-    (date: Date) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      onDayPress?.(date);
-    },
-    [onDayPress],
-  );
-
-  // Get day label (localized short weekday)
-  const getDayLabel = (date: Date): string => {
-    return dateFormatters.weekdayNarrow.format(date); // Single letter
-  };
+  const dayLabel = (day: DayData) =>
+    t("a11y.today.chartDay", {
+      date: dateFormatters.weekdayDayMonth.format(day.date),
+      details: a11yLabel(
+        t("a11y.today.voids", { count: day.voids }),
+        `${t("home.summary.fluids")} ${t("a11y.today.millilitres", {
+          amount: day.fluids,
+        })}`,
+        day.leaks > 0 && t("a11y.today.leaks", { count: day.leaks })
+      ),
+    });
 
   return (
     <View style={styles.container}>
-      <View style={styles.chartContainer}>
-        <Svg width={containerWidth} height={CHART_HEIGHT + LABEL_HEIGHT}>
-          {/* Grid line at bottom */}
-          <Line
-            x1={PADDING}
-            y1={CHART_HEIGHT}
-            x2={containerWidth - PADDING}
-            y2={CHART_HEIGHT}
-            stroke="#E5E7EB"
-            strokeWidth={1}
-          />
-
-          {/* Bars for each day */}
-          {data.map((day, index) => {
-            const groupX = PADDING + index * barGroupWidth;
-            const centerX = groupX + barGroupWidth / 2;
-            const isToday = isSameDay(day.date, today);
-
-            // Bar positions
-            const voidBarX = centerX - barWidth - barGap / 2;
-            const fluidBarX = centerX + barGap / 2;
-
-            // Void bar height
-            const voidHeight = Math.max(
-              day.voids * voidScale,
-              day.voids > 0 ? 4 : 0,
-            );
-            const voidY = CHART_HEIGHT - voidHeight;
-
-            // Fluid bar height
-            const fluidHeight = Math.max(
-              (day.fluids / fluidTarget) * (CHART_HEIGHT - 8),
-              day.fluids > 0 ? 4 : 0,
-            );
-            const fluidY = CHART_HEIGHT - fluidHeight;
-
-            return (
-              <G key={day.date.toISOString()}>
-                {/* Today highlight */}
-                {isToday ? <Rect
-                    x={groupX + 2}
-                    y={0}
-                    width={barGroupWidth - 4}
-                    height={CHART_HEIGHT + LABEL_HEIGHT}
-                    fill="#E0FBFC"
-                    rx={6}
-                  /> : null}
-
-                {/* Void bar (primary color) */}
-                <AnimatedBar
-                  x={voidBarX}
-                  y={voidY}
-                  width={barWidth}
-                  height={voidHeight}
-                  fill={colors.primary.DEFAULT}
-                  delay={index * 40}
-                  chartHeight={CHART_HEIGHT}
+      <View style={styles.chartContainer} onLayout={handleLayout}>
+        {containerWidth > 0 ? (
+          <>
+            <View
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel={t("a11y.today.weeklyChart")}
+            >
+              <Svg width={containerWidth} height={CHART_HEIGHT + labelHeight}>
+                {/* Grid line at bottom */}
+                <Line
+                  x1={PADDING}
+                  y1={CHART_HEIGHT}
+                  x2={containerWidth - PADDING}
+                  y2={CHART_HEIGHT}
+                  stroke={colors.separator}
+                  strokeWidth={1}
                 />
 
-                {/* Fluid bar (secondary color) */}
-                <AnimatedBar
-                  x={fluidBarX}
-                  y={fluidY}
-                  width={barWidth}
-                  height={fluidHeight}
-                  fill={colors.secondary.DEFAULT}
-                  delay={index * 40 + 20}
-                  chartHeight={CHART_HEIGHT}
+                {/* Bars for each day */}
+                {data.map((day, index) => {
+                  const groupX = PADDING + index * barGroupWidth;
+                  const centerX = groupX + barGroupWidth / 2;
+                  const isToday = isSameDay(day.date, today);
+
+                  // Bar positions
+                  const voidBarX = centerX - barWidth - barGap / 2;
+                  const fluidBarX = centerX + barGap / 2;
+
+                  // Void bar height
+                  const voidHeight = Math.max(
+                    day.voids * voidScale,
+                    day.voids > 0 ? 4 : 0
+                  );
+                  const voidY = CHART_HEIGHT - voidHeight;
+
+                  // Fluid bar height, against the user's own target
+                  const fluidHeight = Math.min(
+                    Math.max(
+                      (day.fluids / Math.max(fluidTarget, 1)) *
+                        (CHART_HEIGHT - 8),
+                      day.fluids > 0 ? 4 : 0
+                    ),
+                    CHART_HEIGHT
+                  );
+                  const fluidY = CHART_HEIGHT - fluidHeight;
+
+                  return (
+                    <G key={day.date.toISOString()}>
+                      {/* Today highlight */}
+                      {isToday ? (
+                        <Rect
+                          x={groupX + 2}
+                          y={0}
+                          width={Math.max(barGroupWidth - 4, 0)}
+                          height={CHART_HEIGHT + labelHeight}
+                          fill={colors.accent}
+                          rx={6}
+                        />
+                      ) : null}
+
+                      {/* Void bar (primary color) */}
+                      <AnimatedBar
+                        x={voidBarX}
+                        y={voidY}
+                        width={barWidth}
+                        height={voidHeight}
+                        fill={colors.primary.DEFAULT}
+                        delay={index * 40}
+                        chartHeight={CHART_HEIGHT}
+                      />
+
+                      {/* Fluid bar (secondary color) */}
+                      <AnimatedBar
+                        x={fluidBarX}
+                        y={fluidY}
+                        width={barWidth}
+                        height={fluidHeight}
+                        fill={colors.secondary.DEFAULT}
+                        delay={index * 40 + 20}
+                        chartHeight={CHART_HEIGHT}
+                      />
+
+                      {/* Leak marker: the category colour, not a warning */}
+                      {day.leaks > 0 ? (
+                        <Rect
+                          x={centerX - 4}
+                          y={2}
+                          width={8}
+                          height={8}
+                          fill={colors.category.leak.accent}
+                          rx={4}
+                        />
+                      ) : null}
+
+                      {/* Day label */}
+                      <SvgText
+                        x={centerX}
+                        y={CHART_HEIGHT + labelFontSize + 4}
+                        fontSize={labelFontSize}
+                        fontWeight={isToday ? "700" : "500"}
+                        fill={
+                          isToday ? colors.primary.DEFAULT : colors.textSecondary
+                        }
+                        textAnchor="middle"
+                      >
+                        {dateFormatters.weekdayNarrow.format(day.date)}
+                      </SvgText>
+                    </G>
+                  );
+                })}
+              </Svg>
+            </View>
+
+            {/* One button per day, over its column */}
+            <View
+              style={[
+                styles.tapOverlay,
+                { width: containerWidth, height: CHART_HEIGHT + labelHeight },
+              ]}
+            >
+              {data.map((day, index) => (
+                <AnimatedPressable
+                  key={day.date.toISOString()}
+                  onPress={() => onDayPress?.(day.date)}
+                  disabled={!onDayPress}
+                  style={[
+                    styles.tapTarget,
+                    {
+                      left: PADDING + index * barGroupWidth,
+                      width: barGroupWidth,
+                    },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={dayLabel(day)}
+                  accessibilityHint={t("a11y.today.dayHint")}
                 />
-
-                {/* Leak indicator dot */}
-                {day.leaks > 0 && (
-                  <Rect
-                    x={centerX - 3}
-                    y={4}
-                    width={6}
-                    height={6}
-                    fill={colors.error}
-                    rx={3}
-                  />
-                )}
-
-                {/* Day label */}
-                <SvgText
-                  x={centerX}
-                  y={CHART_HEIGHT + 14}
-                  fontSize={11}
-                  fontWeight={isToday ? "700" : "500"}
-                  fill={isToday ? colors.primary.DEFAULT : "#9CA3AF"}
-                  textAnchor="middle"
-                >
-                  {getDayLabel(day.date)}
-                </SvgText>
-              </G>
-            );
-          })}
-        </Svg>
-
-        {/* Tap targets overlay */}
-        <View style={[styles.tapOverlay, { width: containerWidth }]}>
-          {data.map((day, index) => {
-            const groupX = PADDING + index * barGroupWidth;
-            return (
-              <Pressable
-                key={day.date.toISOString()}
-                onPress={() => handleDayPress(day.date)}
-                style={[
-                  styles.tapTarget,
-                  { left: groupX, width: barGroupWidth },
-                ]}
-              />
-            );
-          })}
-        </View>
+              ))}
+            </View>
+          </>
+        ) : (
+          <View style={{ height: CHART_HEIGHT + labelHeight }} />
+        )}
       </View>
 
-      {/* Legend */}
-      <View style={styles.legend}>
+      {/* Legend (the chart is described to screen readers above) */}
+      <View
+        style={styles.legend}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
         <View style={styles.legendItem}>
           <View
             style={[
@@ -211,7 +253,9 @@ export function WeeklyChart({
               { backgroundColor: colors.primary.DEFAULT },
             ]}
           />
-          <Text style={styles.legendText}>{t("home.summary.voids")}</Text>
+          <Text variant="footnote" tone="secondary">
+            {t("home.summary.voids")}
+          </Text>
         </View>
         <View style={styles.legendItem}>
           <View
@@ -220,16 +264,23 @@ export function WeeklyChart({
               { backgroundColor: colors.secondary.DEFAULT },
             ]}
           />
-          <Text style={styles.legendText}>{t("home.summary.fluids")}</Text>
+          <Text variant="footnote" tone="secondary">
+            {t("home.summary.fluids")}
+          </Text>
         </View>
-        {data.some((d) => d.leaks > 0) && (
+        {data.some((d) => d.leaks > 0) ? (
           <View style={styles.legendItem}>
             <View
-              style={[styles.legendDot, { backgroundColor: colors.error }]}
+              style={[
+                styles.legendDot,
+                { backgroundColor: colors.category.leak.accent },
+              ]}
             />
-            <Text style={styles.legendText}>{t("home.summary.leaks")}</Text>
+            <Text variant="footnote" tone="secondary">
+              {t("home.summary.leaks")}
+            </Text>
           </View>
-        )}
+        ) : null}
       </View>
     </View>
   );
@@ -259,19 +310,23 @@ function AnimatedBar({
   const animatedY = useSharedValue(chartHeight);
 
   React.useEffect(() => {
-    animatedHeight.value = withDelay(
-      delay,
-      withTiming(height, { duration: 300, easing: Easing.out(Easing.cubic) }),
+    animatedHeight.set(
+      withDelay(
+        delay,
+        withTiming(height, { duration: 300, easing: Easing.out(Easing.cubic) })
+      )
     );
-    animatedY.value = withDelay(
-      delay,
-      withTiming(y, { duration: 300, easing: Easing.out(Easing.cubic) }),
+    animatedY.set(
+      withDelay(
+        delay,
+        withTiming(y, { duration: 300, easing: Easing.out(Easing.cubic) })
+      )
     );
   }, [height, y, delay, animatedHeight, animatedY]);
 
   const animatedProps = useAnimatedProps(() => ({
-    height: animatedHeight.value,
-    y: animatedY.value,
+    height: animatedHeight.get(),
+    y: animatedY.get(),
   }));
 
   return (
@@ -288,47 +343,43 @@ function AnimatedBar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 12,
+    ...cardStyle,
+    padding: spacing.md,
   },
   chartContainer: {
     position: "relative",
-    alignItems: "center",
   },
   tapOverlay: {
     position: "absolute",
     top: 0,
     left: 0,
-    height: CHART_HEIGHT + LABEL_HEIGHT,
-    flexDirection: "row",
   },
   tapTarget: {
     position: "absolute",
     top: 0,
     height: "100%",
+    borderRadius: 6,
+    overflow: "hidden",
   },
   legend: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
-    gap: 16,
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
+    columnGap: spacing.lg,
+    rowGap: spacing.xs,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
   },
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: spacing.xs,
   },
   legendDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  legendText: {
-    fontSize: 11,
-    color: "#9CA3AF",
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

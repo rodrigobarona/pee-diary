@@ -1,6 +1,5 @@
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import {
@@ -21,13 +20,17 @@ import { useShallow } from "zustand/react/shallow";
 import { SettingsRow, SettingsSection } from "@/components/ui/settings-list";
 import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
+import { dateFormatters } from "@/lib/i18n";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
+import { haptics } from "@/lib/haptics";
 import {
   REMINDER_INTERVAL_OPTIONS,
   useDiaryStore,
   useStoreHydrated,
 } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
+import { ripple, spacing } from "@/lib/theme/styles";
+import { typography } from "@/lib/theme/typography";
 import {
   exportBackupFile,
   importBackupFile,
@@ -46,13 +49,19 @@ const APP_VERSION = [
   .filter(Boolean)
   .join(" ");
 
-const languageDisplay: Record<
-  SupportedLocale,
-  { nativeLabel: string; flag: string }
-> = {
-  en: { nativeLabel: "English", flag: "🇬🇧" },
-  es: { nativeLabel: "Español", flag: "🇪🇸" },
-  pt: { nativeLabel: "Português", flag: "🇵🇹" },
+// Languages by their own names; no flags (a flag is a country, not a
+// language)
+const languageNames: Record<SupportedLocale, string> = {
+  en: "English",
+  es: "Español",
+  pt: "Português",
+};
+
+// A stored "HH:mm" time shown in the device's 12- or 24-hour clock
+const formatClockTime = (value: string): string => {
+  const [hours, minutes] = value.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return value;
+  return dateFormatters.time.format(new Date(2023, 0, 1, hours, minutes));
 };
 
 export default function SettingsScreen() {
@@ -92,26 +101,17 @@ export default function SettingsScreen() {
     deleteConfirmText.toUpperCase() === confirmWord.toUpperCase();
 
   const handleOpenLanguage = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     router.push("/(formSheets)/language");
   }, [router]);
 
   const handleToggleOpenAddMenu = React.useCallback(
     (value: boolean) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
       setOpenAddMenuOnLaunch(value);
     },
     [setOpenAddMenuOnLaunch]
   );
 
   const handleViewTutorial = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     resetOnboarding();
     router.replace("/welcome");
   }, [resetOnboarding, router]);
@@ -119,9 +119,6 @@ export default function SettingsScreen() {
   // Handle toggling reminders
   const handleToggleReminders = React.useCallback(
     async (value: boolean) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
 
       if (value) {
         // Request permission first
@@ -150,9 +147,6 @@ export default function SettingsScreen() {
 
   // Handle changing reminder interval
   const handleChangeInterval = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
 
     const intervals = REMINDER_INTERVAL_OPTIONS;
     const options = intervals.map((h) =>
@@ -173,9 +167,6 @@ export default function SettingsScreen() {
   // Handle toggling quiet hours
   const handleToggleQuietHours = React.useCallback(
     async (value: boolean) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
 
       // useReminderSync (app/_layout.tsx) reschedules the reminders
       updateReminderSettings({ quietHoursEnabled: value });
@@ -188,9 +179,6 @@ export default function SettingsScreen() {
   }, [router]);
 
   const handleExport = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
 
     // Wait for store to be hydrated
     if (!isHydrated) {
@@ -210,23 +198,14 @@ export default function SettingsScreen() {
   }, [isHydrated, t, router]);
 
   const handleOpenLink = React.useCallback((url: string) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     Linking.openURL(url);
   }, []);
 
   const handleShowMedicalInfo = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
     Alert.alert(t("settings.medicalInfo"), t("disclaimer.text"));
   }, [t]);
 
   const handleOpenDeleteConfirm = React.useCallback(() => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
 
     if (Platform.OS === "ios") {
       // Use native iOS prompt with text input
@@ -246,9 +225,7 @@ export default function SettingsScreen() {
             onPress: (value?: string) => {
               if (value?.toUpperCase() === confirmWord.toUpperCase()) {
                 clearEverything();
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                );
+                haptics.warning();
               } else {
                 // Show error if wrong word entered
                 Alert.alert(
@@ -281,19 +258,13 @@ export default function SettingsScreen() {
     clearEverything();
     setShowDeleteConfirm(false);
     setDeleteConfirmText("");
-
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
+    haptics.warning();
   }, [clearEverything, isDeleteConfirmed]);
 
   // Handle local file backup export
   const handleExportBackup = React.useCallback(async () => {
     if (isSyncing) return;
 
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
 
     setIsSyncing(true);
     try {
@@ -319,9 +290,6 @@ export default function SettingsScreen() {
   const handleImportBackup = React.useCallback(async () => {
     if (isSyncing) return;
 
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
 
     Alert.alert(t("settings.importBackup"), t("settings.importBackupConfirm"), [
       {
@@ -330,16 +298,14 @@ export default function SettingsScreen() {
       },
       {
         text: t("settings.restore"),
+        // Restoring replaces the diary on this device
+        style: "destructive",
         onPress: async () => {
           setIsSyncing(true);
           try {
             const result = await importBackupFile();
             if (result.success) {
-              if (Platform.OS !== "web") {
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                );
-              }
+              haptics.success();
               Alert.alert(
                 t("settings.importBackup"),
                 t("settings.importBackupSuccess", {
@@ -364,8 +330,14 @@ export default function SettingsScreen() {
     ]);
   }, [isSyncing, t]);
 
-  const currentLanguage = languageDisplay[locale];
-  const currentLanguageLabel = `${currentLanguage.flag} ${currentLanguage.nativeLabel}`;
+  const currentLanguageLabel = languageNames[locale];
+
+  // Formatted on every render: the screen re-renders when the language or
+  // the device clock changes (useI18n)
+  const quietHoursRange = `${formatClockTime(
+    reminderSettings.quietHoursStart
+  )}\u2013${formatClockTime(reminderSettings.quietHoursEnd)}`;
+
 
   return (
     <ScrollView
@@ -386,23 +358,38 @@ export default function SettingsScreen() {
           visible={showDeleteConfirm}
           transparent
           animationType="fade"
+          // The scrim covers the status and navigation bars (edge to edge)
+          statusBarTranslucent
+          navigationBarTranslucent
           onRequestClose={handleCloseDeleteConfirm}
         >
           <Pressable
             style={styles.deleteModalOverlay}
             onPress={handleCloseDeleteConfirm}
+            accessible={false}
+            importantForAccessibility="no"
           >
             <Pressable
               style={styles.deleteModalContent}
               onPress={(e) => e.stopPropagation()}
+              accessible={false}
+              accessibilityViewIsModal
             >
-              <Text style={styles.deleteModalTitle}>
+              <Text
+                variant="title2"
+                style={styles.deleteModalTitle}
+                accessibilityRole="header"
+              >
                 {t("settings.clearData")}
               </Text>
-              <Text style={styles.deleteModalDescription}>
+              <Text
+                variant="subheadline"
+                tone="secondary"
+                style={styles.deleteModalDescription}
+              >
                 {t("settings.clearDataConfirm")}
               </Text>
-              <Text style={styles.deleteModalInstruction}>
+              <Text variant="subheadline" style={styles.deleteModalInstruction}>
                 {t("settings.clearDataTypeConfirm")}
               </Text>
               <TextInput
@@ -413,7 +400,8 @@ export default function SettingsScreen() {
                 value={deleteConfirmText}
                 onChangeText={setDeleteConfirmText}
                 placeholder={confirmWord}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textPlaceholder}
+                accessibilityLabel={t("settings.clearDataTypeConfirm")}
                 autoCapitalize="characters"
                 autoCorrect={false}
                 autoComplete="off"
@@ -422,8 +410,10 @@ export default function SettingsScreen() {
                 <Pressable
                   style={styles.deleteModalTextButton}
                   onPress={handleCloseDeleteConfirm}
+                  accessibilityRole="button"
+                  android_ripple={ripple}
                 >
-                  <Text style={styles.deleteModalCancelText}>
+                  <Text variant="button" tone="accent">
                     {t("common.cancel")}
                   </Text>
                 </Pressable>
@@ -431,13 +421,18 @@ export default function SettingsScreen() {
                   style={styles.deleteModalTextButton}
                   onPress={handleConfirmDelete}
                   disabled={!isDeleteConfirmed}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !isDeleteConfirmed }}
+                  android_ripple={ripple}
                 >
                   <Text
-                    style={[
-                      styles.deleteModalDeleteText,
-                      !isDeleteConfirmed &&
-                        styles.deleteModalDeleteTextDisabled,
-                    ]}
+                    variant="button"
+                    tone="destructive"
+                    style={
+                      !isDeleteConfirmed
+                        ? styles.deleteModalDeleteTextDisabled
+                        : undefined
+                    }
                   >
                     {t("common.delete")}
                   </Text>
@@ -512,7 +507,7 @@ export default function SettingsScreen() {
             label={t("settings.quietHoursEnabled")}
             description={
               reminderSettings.quietHoursEnabled
-                ? `${reminderSettings.quietHoursStart} - ${reminderSettings.quietHoursEnd}`
+                ? quietHoursRange
                 : t("settings.quietHoursEnabledDescription")
             }
             switchValue={reminderSettings.quietHoursEnabled}
@@ -615,7 +610,7 @@ export default function SettingsScreen() {
 
       {/* Stats */}
       <View style={styles.statsContainer}>
-        <Text style={styles.statsText}>
+        <Text variant="footnote" tone="secondary">
           {isHydrated
             ? t("settings.entriesRecorded", { count: entries.length })
             : t("common.loading")}
@@ -628,102 +623,82 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   scrollContent: Platform.select({
     // Inset grouped list on iOS; full-width Material list on Android
-    ios: { paddingHorizontal: 16, paddingBottom: 24 },
-    default: { paddingBottom: 24 },
+    ios: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
+    default: { paddingBottom: spacing.xl },
   }),
   statsContainer: {
-    marginTop: 24,
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.lg,
     alignItems: "center",
   },
-  statsText: {
-    fontSize: 13,
-    color: "#9CA3AF",
-  },
-  // Delete confirmation modal styles (Material Design style for Android)
+  // Delete confirmation dialog (Material 3 basic dialog, Android)
   deleteModalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: spacing.xl,
   },
   deleteModalContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
-    paddingTop: 24,
-    paddingHorizontal: 24,
-    paddingBottom: 8,
+    paddingTop: spacing.xl,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.sm,
     width: "100%",
-    maxWidth: 320,
-    elevation: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    maxWidth: 360,
+    elevation: 6,
   },
   deleteModalTitle: {
-    fontSize: 24,
-    fontWeight: "400",
-    color: "#1F1F1F",
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   deleteModalDescription: {
-    fontSize: 14,
-    color: "#49454F",
-    lineHeight: 20,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   deleteModalInstruction: {
-    fontSize: 14,
     fontWeight: "500",
-    color: "#1F1F1F",
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: spacing.sm,
+    marginTop: spacing.sm,
   },
+  // Material 3 outlined text field
   deleteInput: {
+    ...typography.body,
     width: "100%",
-    height: 56,
+    minHeight: 56,
     borderWidth: 1,
-    borderColor: "#79747E",
+    borderColor: colors.outline,
     borderRadius: 4,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: "#1F1F1F",
-    marginBottom: 16,
+    paddingHorizontal: spacing.lg,
+    color: colors.text,
+    marginBottom: spacing.lg,
     backgroundColor: "transparent",
   },
   deleteInputConfirmed: {
-    borderColor: colors.error,
+    borderColor: colors.primary.DEFAULT,
     borderWidth: 2,
   },
   deleteModalButtons: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 8,
-    marginTop: 8,
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
+  // Material 3 text button, 48dp touch target
   deleteModalTextButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-  },
-  deleteModalCancelText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: colors.primary.DEFAULT,
-    letterSpacing: 0.1,
-  },
-  deleteModalDeleteText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: colors.error,
-    letterSpacing: 0.1,
+    minHeight: 48,
+    minWidth: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    borderRadius: 24,
+    overflow: "hidden",
   },
   deleteModalDeleteTextDisabled: {
-    color: "#CAC4D0",
+    // Material 3 disabled content: on-surface at 38%
+    color: "rgba(17, 24, 39, 0.38)",
   },
 });

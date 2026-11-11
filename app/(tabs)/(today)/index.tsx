@@ -1,15 +1,13 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { eachDayOfInterval, getHours, parseISO, subDays } from "date-fns";
-import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import {
   ActionSheetIOS,
   Alert,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { useShallow } from "zustand/shallow";
@@ -21,17 +19,32 @@ import {
   ProgressBar,
   StreakBadge,
   TimeGroupSummary,
+  type TimePeriod,
   VOLUME_ESTIMATES,
   WeeklyChart,
 } from "@/components/diary";
 import { AddEntryFab } from "@/components/add-entry-fab";
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useTabScreenBottomSpace } from "@/hooks/use-tab-screen-bottom-space";
 import { useTodayKey } from "@/hooks/use-today-key";
+import { tabA11y, tabListA11y } from "@/lib/a11y";
+import { haptics } from "@/lib/haptics";
+import { formatHourRange } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
+import {
+  cardStyle,
+  hitSlopFor,
+  iconSize,
+  MIN_TOUCH_TARGET,
+  radius,
+  SCREEN_MARGIN,
+  spacing,
+} from "@/lib/theme/styles";
 import { formatDateHeader } from "@/lib/utils/date";
 import { groupByDay, parseDayKey, toDayKey } from "@/lib/utils/day";
 
@@ -56,6 +69,7 @@ const getGreeting = (t: (key: string) => string): string => {
 export default function HomeScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const { fontScale } = useWindowDimensions();
   const bottomSpace = useTabScreenBottomSpace();
 
   // Refs for scroll handling
@@ -261,7 +275,7 @@ export default function HomeScreen() {
       voidTrend,
       fluidTrend,
       voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
-      fluidDiff: fluidDiff > 0 ? `${fluidDiff}ml` : undefined,
+      fluidDiff: fluidDiff > 0 ? `${fluidDiff} ml` : undefined,
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
@@ -384,7 +398,7 @@ export default function HomeScreen() {
       voidTrend,
       fluidTrend,
       voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
-      fluidDiff: fluidDiff > 0 ? `${fluidDiff}ml` : undefined,
+      fluidDiff: fluidDiff > 0 ? `${fluidDiff} ml` : undefined,
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
@@ -393,13 +407,10 @@ export default function HomeScreen() {
   // Get current period stats based on toggle
   const currentStats = insightsPeriod === "week" ? weeklyStats : monthlyStats;
 
-  // Handle stat card press - show action sheet with options
+  // Handle stat card press - show action sheet with options (navigation:
+  // no haptic)
   const handleStatPress = React.useCallback(
     (type: "urination" | "fluid" | "leak") => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-
       const todayStr = todayKey;
 
       const options = [
@@ -456,12 +467,7 @@ export default function HomeScreen() {
 
   // Handle time period press - navigate to history with period filter
   const handlePeriodPress = React.useCallback(
-    (
-      period: "earlyMorning" | "morning" | "afternoon" | "evening" | "night"
-    ) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+    (period: TimePeriod) => {
       router.push(`/(tabs)/history?date=${todayKey}&period=${period}`);
     },
     [router, todayKey]
@@ -484,6 +490,19 @@ export default function HomeScreen() {
     [router]
   );
 
+  // Week/Month segmented control: a selection change
+  const handlePeriodChange = React.useCallback(
+    (period: "week" | "month") => {
+      if (period === insightsPeriod) return;
+      haptics.selection();
+      setInsightsPeriod(period);
+    },
+    [insightsPeriod]
+  );
+
+  // At large text sizes the three summary cards stack instead of squeezing
+  const stackCards = fontScale > 1.3;
+
   return (
     <>
       <ScrollView
@@ -497,18 +516,18 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         testID="today-scroll"
       >
-        {/* Header */}
+        {/* Greeting and date under the "Today" title: secondary lines, not a
+            second title */}
         <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>{greeting}</Text>
-            <Text
-              style={styles.date}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
-            >
-              {dateLabel}
+          <View
+            style={styles.headerText}
+            accessible
+            accessibilityLabel={`${greeting} ${dateLabel}`}
+          >
+            <Text variant="subheadline" tone="secondary">
+              {greeting}
             </Text>
+            <Text variant="headline">{dateLabel}</Text>
           </View>
           <StreakBadge
             streak={streak.currentStreak}
@@ -516,9 +535,21 @@ export default function HomeScreen() {
           />
         </View>
 
+        {/* Empty state, near the top where it is seen */}
+        {todayEntries.length === 0 ? (
+          <View style={styles.emptyHint}>
+            <Text variant="headline" style={styles.centered}>
+              {t("home.noEntries")}
+            </Text>
+            <Text variant="subheadline" tone="secondary" style={styles.centered}>
+              {t("home.addFirst")}
+            </Text>
+          </View>
+        ) : null}
+
         {/* Progress Section */}
         <View style={styles.progressSection}>
-          {/* Fluid Progress */}
+          {/* Fluids, against the user's own target */}
           <ProgressBar
             progress={fluidProgress}
             value={summary.fluids}
@@ -526,8 +557,16 @@ export default function HomeScreen() {
             unit="ml"
             label={t("home.summary.fluids")}
             icon="cup-water"
-            color={colors.secondary.DEFAULT}
+            color={colors.category.fluid.accent}
+            iconBackground={colors.category.fluid.container}
+            fillColor={colors.category.fluid.fill}
             onPress={() => handleStatPress("fluid")}
+            accessibilityLabel={t("a11y.today.statWithTarget", {
+              label: t("home.summary.fluids"),
+              value: summary.fluids,
+              target: goals.fluidTarget,
+            })}
+            accessibilityHint={t("a11y.today.statHint")}
           />
 
           {/* Voids - no target and no bar, only the count */}
@@ -537,36 +576,55 @@ export default function HomeScreen() {
             target={0}
             label={t("home.summary.voids")}
             icon="toilet"
-            color={colors.primary.DEFAULT}
+            color={colors.category.urination.accent}
+            iconBackground={colors.category.urination.container}
             onPress={() => handleStatPress("urination")}
+            accessibilityHint={t("a11y.today.statHint")}
           />
 
-          {/* Leaks - no target and no bar, only the count, in a neutral colour */}
+          {/* Leaks - no target and no bar, only the count; the category
+              colour marks the icon, the count stays neutral */}
           <ProgressBar
             progress={0}
             value={summary.leaks}
             target={0}
             label={t("home.summary.leaks")}
             icon="water-alert"
-            color={colors.textMuted}
+            color={colors.category.leak.accent}
+            valueColor={colors.text}
+            iconBackground={colors.category.leak.container}
             onPress={() => handleStatPress("leak")}
             successLabel={t("home.noLeaks")}
+            accessibilityHint={t("a11y.today.statHint")}
           />
 
           {/* Edit Goals Link */}
-          <Pressable onPress={handleEditGoals} style={styles.editGoalsLink}>
-            <MaterialCommunityIcons
+          <AnimatedPressable
+            onPress={handleEditGoals}
+            style={styles.link}
+            accessibilityRole="button"
+            accessibilityLabel={t("home.editGoals")}
+          >
+            <Icon
               name="cog-outline"
-              size={14}
-              color="#9CA3AF"
+              size={iconSize.sm}
+              color={colors.primary.DEFAULT}
             />
-            <Text style={styles.editGoalsText}>{t("home.editGoals")}</Text>
-          </Pressable>
+            <Text variant="subheadline" tone="accent">
+              {t("home.editGoals")}
+            </Text>
+          </AnimatedPressable>
         </View>
 
         {/* Time Period Summary */}
-        <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>{t("home.todayActivity")}</Text>
+        <View style={styles.section}>
+          <Text
+            variant="headline"
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
+            {t("home.todayActivity")}
+          </Text>
           <TimeGroupSummary
             entries={todayEntries}
             onPeriodPress={handlePeriodPress}
@@ -575,71 +633,56 @@ export default function HomeScreen() {
 
         {/* Insights Section */}
         <View
-          style={styles.insightsSection}
+          style={styles.section}
           onLayout={(e) => {
             insightsSectionY.current = e.nativeEvent.layout.y;
           }}
         >
           {/* Header with period toggle */}
           <View style={styles.insightsHeader}>
-            <Text style={styles.insightsTitle}>{t("insights.title")}</Text>
-            <View style={styles.periodToggle}>
-              <Pressable
-                onPress={() => {
-                  if (Platform.OS !== "web") {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-                  setInsightsPeriod("week");
-                }}
-                style={[
-                  styles.periodButton,
-                  insightsPeriod === "week" && styles.periodButtonActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.periodButtonText,
-                    insightsPeriod === "week" && styles.periodButtonTextActive,
-                  ]}
-                >
-                  {t("insights.week")}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  if (Platform.OS !== "web") {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-                  setInsightsPeriod("month");
-                }}
-                style={[
-                  styles.periodButton,
-                  insightsPeriod === "month" && styles.periodButtonActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.periodButtonText,
-                    insightsPeriod === "month" && styles.periodButtonTextActive,
-                  ]}
-                >
-                  {t("insights.month")}
-                </Text>
-              </Pressable>
+            <Text variant="headline" accessibilityRole="header">
+              {t("insights.title")}
+            </Text>
+            <View
+              style={styles.periodToggle}
+              {...tabListA11y}
+              accessibilityLabel={t("a11y.today.periodPicker")}
+            >
+              {(["week", "month"] as const).map((period) => {
+                const selected = insightsPeriod === period;
+                return (
+                  <AnimatedPressable
+                    key={period}
+                    onPress={() => handlePeriodChange(period)}
+                    style={[
+                      styles.periodButton,
+                      selected ? styles.periodButtonActive : undefined,
+                    ]}
+                    hitSlop={hitSlopFor(MIN_TOUCH_TARGET, PERIOD_BUTTON_HEIGHT)}
+                    {...tabA11y(selected)}
+                    accessibilityLabel={t(`insights.${period}`)}
+                  >
+                    <Text
+                      variant="subheadline"
+                      tone={selected ? "primary" : "secondary"}
+                      style={selected ? styles.periodTextActive : undefined}
+                    >
+                      {t(`insights.${period}`)}
+                    </Text>
+                  </AnimatedPressable>
+                );
+              })}
             </View>
           </View>
 
-          {/* Chart - only show weekly as monthly would be too crowded */}
-          {insightsPeriod === "week" && (
+          {/* Chart */}
+          {insightsPeriod === "week" ? (
             <WeeklyChart
               data={weeklyData}
               onDayPress={handleDayPress}
               fluidTarget={goals.fluidTarget}
             />
-          )}
-
-          {/* Monthly Chart - 4 weeks */}
-          {insightsPeriod === "month" && (
+          ) : (
             <MonthlyChart
               data={monthlyData}
               onWeekPress={handleDayPress}
@@ -648,14 +691,20 @@ export default function HomeScreen() {
           )}
 
           {/* Insight Cards - Row 1 */}
-          <View style={styles.insightCardsRow}>
+          <View
+            style={[
+              styles.insightCardsRow,
+              stackCards ? styles.insightCardsStacked : undefined,
+            ]}
+          >
             <InsightCard
               title={t("insights.avgFluids")}
-              value={`${currentStats.avgFluids}ml`}
+              value={`${currentStats.avgFluids} ml`}
               trend={currentStats.fluidTrend}
               trendValue={currentStats.fluidDiff}
               icon="cup-water"
-              color={colors.secondary.DEFAULT}
+              color={colors.category.fluid.accent}
+              iconBackground={colors.category.fluid.container}
             />
             <InsightCard
               title={t("insights.avgVoids")}
@@ -663,33 +712,46 @@ export default function HomeScreen() {
               trend={currentStats.voidTrend}
               trendValue={currentStats.voidDiff}
               icon="toilet"
-              color={colors.primary.DEFAULT}
+              color={colors.category.urination.accent}
+              iconBackground={colors.category.urination.container}
             />
             <InsightCard
               title={t("insights.fluidGoalReached")}
               value={`${currentStats.fluidGoalDays}/${currentStats.totalDays}`}
+              valueAccessibilityText={t("a11y.today.daysOf", {
+                count: currentStats.fluidGoalDays,
+                total: currentStats.totalDays,
+              })}
               icon="trophy-outline"
-              color="#F59E0B"
+              color={colors.amber.accent}
+              iconBackground={colors.amber.container}
             />
           </View>
 
           {/* Insight Cards - Row 2: visits logged 21:00-05:00 */}
           <View style={styles.insightCardsRow}>
             <InsightCard
-              title={t("insights.nightVoids")}
+              title={t("insights.nightVoidsBetween", {
+                range: formatHourRange(21, 5),
+              })}
               value={`${currentStats.nightVoidsTotal}`}
               subtitle={`${currentStats.avgNightVoids} ${t(
                 "insights.nightVoidsAvg"
               )}`}
               icon="weather-night"
-              color="#6366F1"
+              color={colors.indigo.accent}
+              iconBackground={colors.indigo.container}
             />
           </View>
 
           {/* Fluid Balance Chart - only show in week view for clarity */}
           {insightsPeriod === "week" ? (
             <View style={styles.fluidBalanceSection}>
-              <Text style={styles.fluidBalanceTitle}>
+              <Text
+                variant="headline"
+                accessibilityRole="header"
+                style={styles.sectionTitle}
+              >
                 {t("insights.fluidBalance")}
               </Text>
               <FluidBalanceChart
@@ -699,168 +761,143 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          {/* Medical disclaimer under the charts */}
-          <Text style={styles.disclaimerText}>{t("disclaimer.text")}</Text>
+          {/* Medical disclaimer under the charts (wording fixed by legal) */}
+          <Text
+            variant={Platform.OS === "ios" ? "footnote" : "subheadline"}
+            tone="secondary"
+            style={styles.disclaimerText}
+          >
+            {t("disclaimer.text")}
+          </Text>
 
           {/* Export Data Link */}
-          <Pressable onPress={handleExportData} style={styles.exportDataLink}>
-            <MaterialCommunityIcons name="download" size={14} color="#9CA3AF" />
-            <Text style={styles.exportDataText}>{t("home.exportData")}</Text>
-          </Pressable>
+          <AnimatedPressable
+            onPress={handleExportData}
+            style={styles.link}
+            accessibilityRole="button"
+            accessibilityLabel={t("home.exportData")}
+          >
+            <Icon
+              name="download"
+              size={iconSize.sm}
+              color={colors.primary.DEFAULT}
+            />
+            <Text variant="subheadline" tone="accent">
+              {t("home.exportData")}
+            </Text>
+          </AnimatedPressable>
         </View>
-
-        {/* Empty state hint */}
-        {todayEntries.length === 0 && (
-          <View style={styles.emptyHint}>
-            <Text style={styles.emptyHintText}>{t("home.noEntries")}</Text>
-            <Text style={styles.emptyHintSubtext}>{t("home.addFirst")}</Text>
-          </View>
-        )}
       </ScrollView>
       <AddEntryFab />
     </>
   );
 }
 
+// The Week/Month segments are 36 tall; their touch target is 44pt / 48dp
+const PERIOD_BUTTON_HEIGHT = 36;
+
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: SCREEN_MARGIN,
+    paddingTop: Platform.OS === "ios" ? spacing.sm : spacing.lg,
   },
   // Header
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 20,
+    gap: spacing.md,
+    marginBottom: spacing.xl,
   },
   headerText: {
     flex: 1,
+    gap: spacing.xxs,
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111827",
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: 15,
-    color: "#6B7280",
+  centered: {
+    textAlign: "center",
   },
   // Progress section
   progressSection: {
-    gap: 12,
-    marginBottom: 24,
+    gap: spacing.md,
+    marginBottom: spacing.sm,
   },
-  editGoalsLink: {
+  link: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    paddingVertical: 8,
+    alignSelf: "center",
+    gap: spacing.sm,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    overflow: "hidden",
   },
-  editGoalsText: {
-    fontSize: 13,
-    color: "#9CA3AF",
-  },
-  // Activity section
-  activitySection: {
-    marginTop: 8,
+  section: {
+    marginTop: spacing.xl,
   },
   sectionTitle: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#111827",
-    marginBottom: 12,
-  },
-  // Insights section
-  insightsSection: {
-    marginTop: 24,
+    marginBottom: spacing.md,
   },
   insightsHeader: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
-  insightsTitle: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#111827",
-  },
+  // Segmented control: the selected segment is a raised white surface with
+  // semibold text, so it does not rely on colour alone
   periodToggle: {
     flexDirection: "row",
-    backgroundColor: "#F3F4F6",
-    borderRadius: 8,
-    padding: 2,
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.sm + 2,
+    padding: spacing.xxs,
   },
   periodButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+    minHeight: PERIOD_BUTTON_HEIGHT,
+    minWidth: 64,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.sm,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
   },
   periodButtonActive: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
   },
-  periodButtonText: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#6B7280",
-  },
-  periodButtonTextActive: {
-    color: "#111827",
+  periodTextActive: {
+    fontWeight: "600",
   },
   insightCardsRow: {
     flexDirection: "row",
-    gap: 8,
-    marginTop: 12,
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  insightCardsStacked: {
+    flexDirection: "column",
   },
   fluidBalanceSection: {
-    marginTop: 20,
-  },
-  fluidBalanceTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 12,
+    marginTop: spacing.xl,
   },
   disclaimerText: {
-    fontSize: 11,
-    lineHeight: 16,
-    color: "#6B7280",
     textAlign: "center",
-    marginTop: 16,
-    paddingHorizontal: 8,
-  },
-  exportDataLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 12,
-    marginTop: 4,
-  },
-  exportDataText: {
-    fontSize: 13,
-    color: "#9CA3AF",
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.sm,
   },
   // Empty state
   emptyHint: {
     alignItems: "center",
-    paddingVertical: 32,
-  },
-  emptyHintText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#6B7280",
-    marginBottom: 4,
-  },
-  emptyHintSubtext: {
-    fontSize: 14,
-    color: "#9CA3AF",
-    textAlign: "center",
+    gap: spacing.xs,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    ...cardStyle,
   },
 });

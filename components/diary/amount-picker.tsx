@@ -1,27 +1,35 @@
 import * as React from "react";
-import { View, Pressable, StyleSheet, Platform } from "react-native";
-import * as Haptics from "expo-haptics";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { StyleSheet, View } from "react-native";
 
-import { Text } from "@/components/ui/text";
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
-import { colors } from "@/lib/theme/colors";
+import { Text } from "@/components/ui/text";
+import { adjustableA11y, choiceA11y, choiceGroupA11y } from "@/lib/a11y";
+import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
 import type { DrinkType } from "@/lib/store/types";
+import { colors } from "@/lib/theme/colors";
+import {
+  cardStyle,
+  MIN_TOUCH_TARGET,
+  radius,
+  spacing,
+} from "@/lib/theme/styles";
 import { drinkTypes } from "./drink-type-picker";
 
-// Quick amounts
-const quickAmounts = [
-  { value: 100, label: "100" },
-  { value: 200, label: "200" },
-  { value: 250, label: "250" },
-  { value: 330, label: "330" },
-  { value: 500, label: "500" },
-];
+// Quick amounts (ml)
+const QUICK_AMOUNTS = [100, 200, 250, 330, 500];
+// The -/+ buttons change the amount by this many ml
+const STEP = 50;
+// The round -/+ buttons: at least the platform's touch target
+const STEP_BUTTON = Math.max(MIN_TOUCH_TARGET, 48);
 
 interface AmountPickerProps {
   value: string;
   onChange: (amount: string) => void;
+  // The section title, the control's accessible name ("Amount (ml)")
+  label: string;
   drinkType?: DrinkType;
   showInput?: boolean;
 }
@@ -29,6 +37,7 @@ interface AmountPickerProps {
 export function AmountPicker({
   value,
   onChange,
+  label,
   drinkType = "water",
   showInput = true,
 }: AmountPickerProps) {
@@ -38,94 +47,114 @@ export function AmountPicker({
   const currentDrink =
     drinkTypes.find((d) => d.type === drinkType) ?? drinkTypes[0];
 
+  const current = parseInt(value, 10) || 0;
+
   const handleQuickAmount = React.useCallback(
     (amount: number) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+      if (amount.toString() === value) return;
+      haptics.selection();
       onChange(amount.toString());
     },
-    [onChange],
+    [onChange, value],
   );
 
   const adjustAmount = React.useCallback(
     (delta: number) => {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      const current = parseInt(value, 10) || 0;
       const newAmount = Math.max(0, current + delta);
+      if (newAmount === current) return;
+      haptics.selection();
       onChange(newAmount.toString());
     },
-    [value, onChange],
+    [current, onChange],
   );
+
+  const amountText = t("a11y.forms.amountValue", { amount: current });
 
   return (
     <View style={styles.container}>
-      {/* Large Amount Display with +/- */}
+      {/* Stepper: the value is one adjustable element, with labelled -/+ */}
       <View style={styles.amountContainer}>
-        {/* Minus Button */}
-        <Pressable
-          onPress={() => adjustAmount(-50)}
-          style={styles.adjustButton}
+        <AnimatedPressable
+          onPress={() => adjustAmount(-STEP)}
+          disabled={current <= 0}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.forms.decreaseAmount", { step: STEP })}
+          style={[styles.adjustButton, current <= 0 ? styles.disabled : undefined]}
         >
-          <MaterialCommunityIcons
-            name="minus"
-            size={24}
-            color={colors.primary.DEFAULT}
-          />
-        </Pressable>
+          <Icon name="minus" size={24} color={colors.primary.DEFAULT} />
+        </AnimatedPressable>
 
-        {/* Amount Display */}
-        <View style={styles.amountDisplay}>
+        <View
+          style={styles.amountDisplay}
+          {...adjustableA11y({
+            label,
+            valueText: amountText,
+            min: 0,
+            now: current,
+            onIncrement: () => adjustAmount(STEP),
+            onDecrement: () => adjustAmount(-STEP),
+          })}
+        >
           <View
             style={[
               styles.amountIconBg,
               { backgroundColor: currentDrink.bgColor },
             ]}
           >
-            <MaterialCommunityIcons
-              name={currentDrink.icon as any}
-              size={32}
-              color={currentDrink.color}
-            />
+            <Icon name={currentDrink.icon} size={32} color={currentDrink.color} />
           </View>
-          <Text style={styles.amountValue}>{value || "0"}</Text>
-          <Text style={styles.amountUnit}>ml</Text>
+          <Text variant="largeTitle" style={styles.amountValue}>
+            {value || "0"}
+          </Text>
+          <Text variant="callout" tone="secondary">
+            ml
+          </Text>
         </View>
 
-        {/* Plus Button */}
-        <Pressable onPress={() => adjustAmount(50)} style={styles.adjustButton}>
-          <MaterialCommunityIcons
-            name="plus"
-            size={24}
-            color={colors.primary.DEFAULT}
-          />
-        </Pressable>
+        <AnimatedPressable
+          onPress={() => adjustAmount(STEP)}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.forms.increaseAmount", { step: STEP })}
+          style={styles.adjustButton}
+        >
+          <Icon name="plus" size={24} color={colors.primary.DEFAULT} />
+        </AnimatedPressable>
       </View>
 
-      {/* Quick Amount Pills */}
-      <View style={styles.quickAmounts}>
-        {quickAmounts.map((item) => {
-          const isSelected = value === item.value.toString();
+      {/* Quick amounts: a single choice */}
+      <View
+        style={styles.quickAmounts}
+        {...choiceGroupA11y(t("a11y.forms.quickAmounts"))}
+      >
+        {QUICK_AMOUNTS.map((amount) => {
+          const isSelected = value === amount.toString();
           return (
-            <Pressable
-              key={item.value}
-              onPress={() => handleQuickAmount(item.value)}
+            <AnimatedPressable
+              key={amount}
+              onPress={() => handleQuickAmount(amount)}
+              {...choiceA11y(isSelected)}
+              accessibilityLabel={t("a11y.forms.amountValue", { amount })}
               style={[
                 styles.quickAmountPill,
-                isSelected && styles.quickAmountPillSelected,
+                isSelected
+                  ? styles.quickAmountPillSelected
+                  : styles.quickAmountPillUnselected,
               ]}
             >
               <Text
+                variant="subheadline"
                 style={[
                   styles.quickAmountText,
-                  isSelected && styles.quickAmountTextSelected,
+                  {
+                    color: isSelected
+                      ? colors.primary.onContainer
+                      : colors.text,
+                  },
                 ]}
               >
-                {item.label}ml
+                {amount} ml
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           );
         })}
       </View>
@@ -134,10 +163,11 @@ export function AmountPicker({
       {showInput ? (
         <Input
           value={value}
-          onChangeText={onChange}
-          keyboardType="numeric"
-          placeholder={t("fluid.amount")}
-          style={{ textAlign: "center" }}
+          onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
+          keyboardType="number-pad"
+          placeholder={label}
+          accessibilityLabel={label}
+          style={styles.input}
         />
       ) : null}
     </View>
@@ -146,75 +176,71 @@ export function AmountPicker({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: spacing.md,
   },
   amountContainer: {
+    ...cardStyle,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    gap: 16,
-    borderCurve: "continuous",
+    padding: spacing.lg,
+    gap: spacing.lg,
   },
   adjustButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderCurve: 'continuous',
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: STEP_BUTTON,
+    height: STEP_BUTTON,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary.subtle,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  disabled: {
+    opacity: 0.4,
   },
   amountDisplay: {
     flex: 1,
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   amountIconBg: {
     width: 64,
     height: 64,
-    borderRadius: 32,
-    borderCurve: 'continuous',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
   amountValue: {
-    fontSize: 40,
     fontWeight: "700",
-    color: "#111827",
-    lineHeight: 48,
-  },
-  amountUnit: {
-    fontSize: 16,
-    color: "#6B7280",
-    marginTop: -4,
   },
   quickAmounts: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 8,
+    gap: spacing.sm,
     flexWrap: "wrap",
   },
   quickAmountPill: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderCurve: 'continuous',
-    backgroundColor: '#F3F4F6',
-    minWidth: 60,
-    alignItems: 'center',
+    minHeight: MIN_TOUCH_TARGET,
+    minWidth: 64,
+    paddingHorizontal: spacing.lg,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: radius.full,
+    borderWidth: 2,
+    overflow: "hidden",
+  },
+  quickAmountPillUnselected: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
   },
   quickAmountPillSelected: {
-    backgroundColor: "#006D77",
+    backgroundColor: colors.primary.container,
+    borderColor: colors.primary.DEFAULT,
   },
   quickAmountText: {
-    fontSize: 14,
     fontWeight: "500",
-    color: "#4B5563",
   },
-  quickAmountTextSelected: {
-    color: "#FFFFFF",
+  input: {
+    textAlign: "center",
   },
 });

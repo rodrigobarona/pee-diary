@@ -1,6 +1,5 @@
-import * as Haptics from "expo-haptics";
 import * as React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { AmountPicker, DrinkTypePicker, TimePicker } from "@/components/diary";
 import { FormCard, FormScrollView, SectionTitle } from "@/components/ui";
@@ -9,6 +8,7 @@ import { useEntryFormHeader } from "@/hooks/use-entry-form-header";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { DrinkType } from "@/lib/store/types";
+import { spacing } from "@/lib/theme/styles";
 
 const INITIAL_DRINK: DrinkType = "water";
 const INITIAL_AMOUNT = "250";
@@ -41,9 +41,6 @@ export default function FluidScreen() {
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
     return true;
   }, [addFluidEntry, drinkType, amount, notes, timestamp]);
 
@@ -62,7 +59,11 @@ export default function FluidScreen() {
       {/* Drink Type Grid */}
       <View style={styles.section}>
         <SectionTitle>{t("fluid.drinkType")}</SectionTitle>
-        <DrinkTypePicker value={drinkType} onChange={setDrinkType} />
+        <DrinkTypePicker
+          value={drinkType}
+          onChange={setDrinkType}
+          label={t("fluid.drinkType")}
+        />
       </View>
 
       {/* Amount Section */}
@@ -71,6 +72,7 @@ export default function FluidScreen() {
         <AmountPicker
           value={amount}
           onChange={setAmount}
+          label={t("fluid.amount")}
           drinkType={drinkType}
         />
       </View>
@@ -83,9 +85,10 @@ export default function FluidScreen() {
             value={notes}
             onChangeText={setNotes}
             placeholder={t("common.notesPlaceholder")}
+            accessibilityLabel={t("fluid.notes")}
             multiline
             numberOfLines={3}
-            className="bg-transparent border-0 px-4 py-3 h-auto"
+            appearance="plain"
             style={styles.notesInput}
             textAlignVertical="top"
             testID="form-notes"
@@ -98,7 +101,7 @@ export default function FluidScreen() {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 12,
+    gap: spacing.sm,
   },
   notesInput: {
     minHeight: 100,

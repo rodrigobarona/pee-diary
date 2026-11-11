@@ -1,4 +1,3 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BlurView } from 'expo-blur';
 import { BottomTabBar, type BottomTabBarProps, Tabs } from 'expo-router/tabs';
 import React from 'react';
@@ -12,18 +11,20 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AddTabButton } from '@/components/add-tab-button';
+import { Icon, type IconName } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
 import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
-
-type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+import { iconSize } from '@/lib/theme/styles';
+import { typography } from '@/lib/theme/typography';
 
 // iOS tab bar content height (UITabBar), above the home indicator; the
 // 44pt "+" is centred in it
 const IOS_TAB_BAR_HEIGHT = 49;
 // Material 3 navigation bar height, above the system navigation bar
 const MATERIAL_NAV_BAR_HEIGHT = 80;
-// Material 3 active indicator
-const INDICATOR_COLOR = '#CDE8EA';
+// Material 3 active indicator (primary container)
+const INDICATOR_COLOR = colors.primary.container;
 
 /**
  * The tab bar holds exactly two tabs, Today and History.
@@ -61,23 +62,46 @@ function renderTabIcon(icon: IconName, focusedIcon: IconName) {
             focused ? styles.materialIndicatorActive : undefined,
           ]}
         >
-          <MaterialCommunityIcons
+          <Icon
             name={focused ? focusedIcon : icon}
-            size={24}
-            color={color}
+            size={iconSize.lg}
+            color={String(color)}
           />
         </View>
       );
     }
     return (
-      <MaterialCommunityIcons
+      <Icon
         name={focused ? focusedIcon : icon}
         size={26}
-        color={color}
+        color={String(color)}
       />
     );
   }
   return TabIcon;
+}
+
+// The navigation bar has a fixed height: its labels grow with the font
+// size only this far
+const TAB_LABEL_MAX_FONT_SCALE = 1.3;
+
+function MaterialTabLabel({
+  color,
+  children,
+}: {
+  color: ColorValue;
+  children: string;
+}) {
+  return (
+    <Text
+      variant="caption1"
+      style={[styles.materialLabel, { color }]}
+      numberOfLines={1}
+      maxFontSizeMultiplier={TAB_LABEL_MAX_FONT_SCALE}
+    >
+      {children}
+    </Text>
+  );
 }
 
 export default function TabLayout() {
@@ -95,13 +119,21 @@ export default function TabLayout() {
       screenOptions={{
         // Each tab is a native stack with its own header
         headerShown: false,
+        // Labels and icons of the unselected tab: 7.56:1 on the bar (text
+        // contrast, as the labels are text); the selected one is brand teal
         tabBarActiveTintColor: colors.primary.DEFAULT,
-        tabBarInactiveTintColor:
-          Platform.OS === 'android' ? '#3F4948' : colors.textMuted,
+        tabBarInactiveTintColor: colors.textSecondary,
         ...Platform.select({
           ios: {
             tabBarStyle: {
               borderTopColor: 'rgba(0, 0, 0, 0.2)',
+            },
+            // The navigator keeps these labels at a fixed size and shows
+            // the Large Content Viewer on a long press, as UITabBar does;
+            // 11pt (caption 2) is the iOS minimum (the default is 10)
+            tabBarLabelStyle: {
+              fontSize: typography.caption2.fontSize,
+              fontWeight: '500',
             },
             tabBarBackground: () => (
               <BlurView
@@ -115,7 +147,7 @@ export default function TabLayout() {
             tabBarStyle: {
               height: MATERIAL_NAV_BAR_HEIGHT + insets.bottom,
               paddingTop: 7,
-              backgroundColor: '#EEF2F2',
+              backgroundColor: colors.surfaceMuted,
               borderTopWidth: 0,
               elevation: 0,
             },
@@ -123,11 +155,9 @@ export default function TabLayout() {
               width: 64,
               height: 32,
             },
-            tabBarLabelStyle: {
-              fontSize: 12,
-              fontWeight: '500',
-              marginTop: 4,
-            },
+            // Material 3 label medium (12sp); grows with the font size up
+            // to a cap, as the bar keeps its 80dp height
+            tabBarLabel: MaterialTabLabel,
           },
         }),
       }}
@@ -182,5 +212,10 @@ const styles = StyleSheet.create({
   },
   materialIndicatorActive: {
     backgroundColor: INDICATOR_COLOR,
+  },
+  materialLabel: {
+    fontWeight: '500',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

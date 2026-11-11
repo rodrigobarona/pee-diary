@@ -1,66 +1,73 @@
 import * as React from 'react';
-import { i18n, updateLocale, type SupportedLocale } from './index';
+import { AppState } from 'react-native';
+
+import {
+  i18n,
+  refreshDeviceFormat,
+  updateLocale,
+  type SupportedLocale,
+} from './index';
 import { useDiaryStore } from '@/lib/store';
 
 interface I18nContextValue {
   locale: SupportedLocale;
   t: (key: string, options?: Record<string, unknown>) => string;
   setLocale: (locale: SupportedLocale) => void;
+  /**
+   * Changes when the device's clock, first weekday or region may have
+   * changed (the app came back to the foreground), so dates re-render.
+   */
+  formatVersion: number;
 }
 
 const I18nContext = React.createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const storeLanguage = useDiaryStore((state) => state.language);
+  // The stored language is the source of truth
+  const locale = useDiaryStore((state) => state.language);
   const setStoreLanguage = useDiaryStore((state) => state.setLanguage);
-  
-  // Local state to trigger re-renders - initialize with store language
-  const [locale, setLocaleState] = React.useState<SupportedLocale>(storeLanguage);
 
-  // Sync i18n with store language on mount and when store changes
+  // Keep the module-level translations and formatters in step before the
+  // children render with the new language
+  if (i18n.locale !== locale) {
+    updateLocale(locale);
+  }
+
+  // The user can switch between 12- and 24-hour time, or change region,
+  // while the app is in the background
+  const [formatVersion, setFormatVersion] = React.useState(0);
   React.useEffect(() => {
-    // Always update i18n when store language changes
-    if (storeLanguage !== i18n.locale) {
-      updateLocale(storeLanguage);
-    }
-    
-    // Update local state to trigger re-renders
-    if (storeLanguage !== locale) {
-      setLocaleState(storeLanguage);
-    }
-  }, [storeLanguage, locale]);
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        refreshDeviceFormat();
+        setFormatVersion((version) => version + 1);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const setLocale = React.useCallback(
     (newLocale: SupportedLocale) => {
-      setStoreLanguage(newLocale);
       updateLocale(newLocale);
-      setLocaleState(newLocale);
+      setStoreLanguage(newLocale);
     },
     [setStoreLanguage]
   );
 
-  // Bind t function to current instance
+  // Translate in the current language; a new function per language so
+  // memoised children re-render
   const t = React.useCallback(
-    (key: string, options?: Record<string, unknown>) => {
-      return i18n.t(key, options);
-    },
-    [locale] // Re-create when locale changes to ensure fresh translations
+    (key: string, options?: Record<string, unknown>) =>
+      i18n.t(key, { locale, ...options }),
+    [locale]
   );
 
   const value = React.useMemo(
-    () => ({
-      locale,
-      t,
-      setLocale,
-    }),
-    [locale, t, setLocale]
+    () => ({ locale, t, setLocale, formatVersion }),
+    [locale, t, setLocale, formatVersion]
   );
 
-  return (
-    <I18nContext.Provider value={value}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 
 export function useI18n() {

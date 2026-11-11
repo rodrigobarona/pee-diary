@@ -1,68 +1,88 @@
 import * as React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { StyleSheet, View } from 'react-native';
 
-import { Text } from '@/components/ui/text';
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
+import { Text } from '@/components/ui/text';
+import { a11yLabel, adjustableA11y, hiddenA11y } from '@/lib/a11y';
+import { haptics } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n/context';
+import { colors } from '@/lib/theme/colors';
+import { MIN_TOUCH_TARGET, radius, spacing } from '@/lib/theme/styles';
 
 type UrgencyLevel = 1 | 2 | 3 | 4 | 5;
+
+const LEVELS: UrgencyLevel[] = [1, 2, 3, 4, 5];
 
 interface UrgencyScaleProps {
   value: UrgencyLevel;
   onChange: (value: UrgencyLevel) => void;
+  // The section title, the control's accessible name ("Urgency Level")
+  label: string;
   disabled?: boolean;
 }
 
-// Urgency colors matching the original design
-const urgencyColors: Record<UrgencyLevel, string> = {
-  1: '#22C55E', // green-500
-  2: '#84CC16', // lime-500
-  3: '#EAB308', // yellow-500
-  4: '#F97316', // orange-500
-  5: '#EF4444', // red-500
-};
-
-export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
+/**
+ * Urgency from 1 to 5. One neutral treatment for every level (no colour
+ * ramp): the selected level is filled with the brand teal and outlined, the
+ * others are a faint teal tint.
+ *
+ * Screen readers see one adjustable control ("Urgency Level, 3 of 5,
+ * Moderate"): swipe up or down (VoiceOver) or use the adjust actions
+ * (TalkBack) to change it. The five buttons stay tappable but are hidden
+ * from screen readers.
+ */
+export function UrgencyScale({ value, onChange, label, disabled }: UrgencyScaleProps) {
   const { t } = useI18n();
 
-  const handlePress = React.useCallback(
+  const select = React.useCallback(
     (level: UrgencyLevel) => {
-      if (disabled) return;
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+      if (disabled || level === value) return;
+      haptics.selection();
       onChange(level);
     },
-    [disabled, onChange]
+    [disabled, onChange, value]
+  );
+
+  const valueText = a11yLabel(
+    t('a11y.forms.urgencyValue', { value }),
+    t(`urgency.${value}`)
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.scaleContainer}>
-        {([1, 2, 3, 4, 5] as UrgencyLevel[]).map((level) => {
+    <View
+      style={styles.container}
+      {...adjustableA11y({
+        label,
+        valueText,
+        min: 1,
+        max: 5,
+        now: value,
+        onIncrement: () => select(Math.min(5, value + 1) as UrgencyLevel),
+        onDecrement: () => select(Math.max(1, value - 1) as UrgencyLevel),
+      })}
+      accessibilityState={{ disabled: !!disabled }}
+    >
+      <View style={styles.scaleContainer} {...hiddenA11y}>
+        {LEVELS.map((level) => {
           const isSelected = value === level;
           return (
             <AnimatedPressable
               key={level}
-              onPress={() => handlePress(level)}
+              onPress={() => select(level)}
               disabled={disabled}
-              haptic={false}
+              accessible={false}
+              importantForAccessibility="no"
               style={[
                 styles.option,
-                {
-                  backgroundColor: isSelected
-                    ? urgencyColors[level]
-                    : 'rgba(0, 109, 119, 0.08)',
-                },
+                isSelected ? styles.optionSelected : styles.optionUnselected,
                 disabled ? styles.optionDisabled : undefined,
               ]}
             >
               <Text
-                style={[
-                  styles.levelText,
-                  isSelected ? styles.levelTextSelected : undefined,
-                ]}
+                variant="title2"
+                tone={isSelected ? 'onAccent' : 'primary'}
+                style={styles.levelText}
+                maxFontSizeMultiplier={1.5}
               >
                 {level}
               </Text>
@@ -70,42 +90,53 @@ export function UrgencyScale({ value, onChange, disabled }: UrgencyScaleProps) {
           );
         })}
       </View>
-      <Text style={styles.description}>{t(`urgency.${value}`)}</Text>
+      <Text
+        variant="subheadline"
+        tone="secondary"
+        style={styles.description}
+        {...hiddenA11y}
+      >
+        {t(`urgency.${value}`)}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: spacing.md,
   },
   scaleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: spacing.sm,
   },
   option: {
     flex: 1,
+    minHeight: Math.max(MIN_TOUCH_TARGET, 56),
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
+    borderRadius: radius.md,
     borderCurve: 'continuous',
-    paddingVertical: 16,
+    borderWidth: 2,
+    paddingVertical: spacing.sm,
+    overflow: 'hidden',
+  },
+  optionSelected: {
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.dark,
+  },
+  optionUnselected: {
+    backgroundColor: colors.primary.subtle,
+    borderColor: colors.primary.subtle,
   },
   optionDisabled: {
     opacity: 0.5,
   },
   levelText: {
-    fontSize: 24,
     fontWeight: '700',
-    color: '#374151',
-  },
-  levelTextSelected: {
-    color: '#FFFFFF',
   },
   description: {
     textAlign: 'center',
-    fontSize: 14,
-    color: '#6B7280',
   },
 });
