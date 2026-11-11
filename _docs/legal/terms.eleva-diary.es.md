@@ -1,7 +1,7 @@
 # Términos de Uso de Eleva Diary
 
-**Fecha de vigencia:** Febrero 2026  
-**Última actualización:** Febrero 2026
+**Fecha de vigencia:** 11 de noviembre de 2026  
+**Última actualización:** 11 de noviembre de 2026
 
 ---
 
@@ -28,7 +28,7 @@ Eleva Diary es una aplicación de registro de salud personal que permite a los u
 - Establecer y seguir metas diarias de salud
 - Ver análisis y patrones a través de gráficos y estadísticas
 - Exportar datos de salud en varios formatos (PDF, CSV, JSON)
-- Opcionalmente hacer copia de seguridad de datos en iCloud (solo iOS)
+- Opcionalmente hacer copia de seguridad de datos en un archivo local y restaurarla en cualquier dispositivo
 
 La Aplicación está diseñada como una herramienta de diario personal para ayudar a los usuarios a controlar los patrones de salud de la vejiga y compartir información con profesionales de la salud.
 
@@ -75,7 +75,7 @@ Eres responsable de la exactitud de los datos que introduces en la Aplicación. 
 
 ### 4.2 Copia de Seguridad de Datos
 
-Aunque proporcionamos copia de seguridad opcional en iCloud (iOS) y funciones de exportación, eres el responsable final de hacer copias de seguridad de tus propios datos. No somos responsables de la pérdida de datos debido a:
+Aunque proporcionamos funciones de archivo de copia de seguridad local y de exportación, eres el responsable final de hacer copias de seguridad de tus propios datos. No somos responsables de la pérdida de datos debido a:
 
 - Pérdida, daño o robo del dispositivo
 - Desinstalación de la Aplicación
@@ -143,13 +143,13 @@ Conservas la propiedad de los datos de salud que introduces en la Aplicación. A
 
 La Aplicación se distribuye a través de Apple App Store y Google Play Store. Tu uso de estas plataformas está sujeto a sus respectivos términos y condiciones.
 
-### 7.2 iCloud (iOS)
+### 7.2 Copias de Seguridad del Dispositivo (iOS y Android)
 
-Si eliges usar la función opcional de copia de seguridad en iCloud, tu uso de iCloud está sujeto a los términos de servicio y política de privacidad de Apple.
+Si el sistema operativo de tu dispositivo incluye los datos de la Aplicación en sus copias de seguridad (por ejemplo, la Copia de Seguridad de iCloud en iOS o la copia de seguridad de Android en tu cuenta de Google), dichas copias están sujetas a los términos de servicio y políticas de privacidad de Apple o de Google.
 
 ### 7.3 Destinos de Exportación
 
-Cuando exportas datos, el destino (email, almacenamiento en la nube, etc.) está sujeto a los términos y políticas de privacidad de ese servicio.
+Cuando exportas datos o un archivo de copia de seguridad, el destino (email, almacenamiento en la nube, etc.) está sujeto a los términos y políticas de privacidad de ese servicio.
 
 ---
 

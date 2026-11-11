@@ -1,7 +1,7 @@
 # Opções de Privacidade e Exclusão de Dados do Eleva Diary
 
-**Data de vigência:** Fevereiro 2026  
-**Última atualização:** Fevereiro 2026
+**Data de vigência:** 11 de novembro de 2026  
+**Última atualização:** 11 de novembro de 2026
 
 ---
 
@@ -14,7 +14,7 @@ Esta página explica:
 - Como seus dados são armazenados
 - Como exportar seus dados
 - Como excluir seus dados
-- Como gerenciar o backup no iCloud (iOS)
+- Como fazer backup e restaurar seus dados com um arquivo de backup
 
 ---
 
@@ -28,14 +28,14 @@ Todas as entradas do diário, metas e configurações são armazenadas **localme
 - São protegidos pela segurança do seu dispositivo (código/biometria)
 - São automaticamente excluídos se você desinstalar o app
 
-### iCloud (Apenas Usuários iOS)
+### Em Backups do Dispositivo (Depende das Configurações do Seu Dispositivo)
 
-Se você ativar o recurso opcional de backup no iCloud:
+O Eleva Diary não envia seus dados para nenhum serviço de nuvem. Independentemente do app, o sistema operacional do seu dispositivo pode incluir os dados do app nos seus próprios backups:
 
-- Uma cópia dos seus dados é armazenada no Armazenamento de Chave-Valor do iCloud da Apple
-- Este backup está associado ao seu Apple ID
-- A Apple criptografa esses dados em trânsito e em repouso
-- A Eleva Care não tem acesso aos seus dados do iCloud
+- **iOS:** no Backup do iCloud ou em um backup no seu computador, se você os usa
+- **Android:** no backup do Android na sua Conta do Google, se o backup do dispositivo estiver ativado
+
+Esses backups são controlados por você nas configurações do seu dispositivo e são gerenciados pela Apple ou pelo Google. A Eleva Care não tem acesso a eles.
 
 ---
 
@@ -104,47 +104,30 @@ Para excluir uma entrada individual:
 
 ---
 
-## Gerenciamento de Backup no iCloud (Apenas iOS)
+## Backup e Restauração dos Seus Dados
 
-### Verificar se o Backup no iCloud Está Ativado
-
-1. Abra o Eleva Diary
-2. Vá para **Configurações**
-3. Procure por **Sincronização iCloud** ou **Backup na Nuvem**
-4. O interruptor mostra se o backup está ativado
-
-### Desativar Backup no iCloud
+### Exportar um Arquivo de Backup
 
 1. Abra o Eleva Diary
 2. Vá para **Configurações**
-3. Encontre **Sincronização iCloud** ou **Backup na Nuvem**
-4. Desative
+3. Em **Cópia Local**, toque em **Exportar Cópia de Segurança**
+4. Escolha onde salvar o arquivo ou para onde enviá-lo (Arquivos, email, armazenamento na nuvem, etc.)
 
-Nota: Desativar o backup não exclui automaticamente os dados já armazenados no iCloud.
+O arquivo de backup contém suas entradas do diário, metas, histórico de metas, dados de sequências e preferência de idioma. O arquivo não é criptografado; guarde-o em um local de sua confiança.
 
-### Excluir Dados de Backup no iCloud
+### Importar um Arquivo de Backup
 
-Para remover seus dados do Eleva Diary do iCloud:
+1. Abra o Eleva Diary em qualquer dispositivo iOS ou Android
+2. Vá para **Configurações**
+3. Em **Cópia Local**, toque em **Importar Cópia de Segurança**
+4. Confirme e selecione seu arquivo de backup
 
-**Método 1: Dentro do App**
+Nota: Importar um arquivo de backup substitui os dados atuais do app.
 
-1. Desative a Sincronização do iCloud nas configurações do Eleva Diary
-2. Isso interrompe backups futuros, mas pode não excluir dados existentes
+### Excluir Arquivos de Backup e Backups do Dispositivo
 
-**Método 2: Pelas Configurações do iOS**
-
-1. Abra **Ajustes** do iOS
-2. Toque no seu **Apple ID** no topo
-3. Toque em **iCloud**
-4. Toque em **Gerenciar Armazenamento** ou **Gerenciar Armazenamento da Conta**
-5. Encontre **Eleva Diary** na lista de apps
-6. Toque em **Apagar Dados**
-
-**Método 3: Excluir App + Dados do iCloud**
-
-1. Desinstale o Eleva Diary do seu dispositivo
-2. Vá para **Ajustes** do iOS → **Apple ID** → **iCloud** → **Gerenciar Armazenamento**
-3. Encontre e exclua quaisquer dados restantes do Eleva Diary
+- **Arquivos de backup:** São suas cópias. Exclua-os onde você os salvou (Arquivos, email, armazenamento na nuvem, etc.)
+- **Backups do dispositivo:** Para remover os dados do app de um backup do dispositivo, gerencie ou exclua esse backup nas configurações do iOS ou do Android
 
 ---
 
@@ -159,8 +142,8 @@ Quando você desinstala o Eleva Diary:
 
 ### O Que Pode Permanecer
 
-- Dados de backup no iCloud (se você ativou) — exclua manualmente nas Configurações do iOS
-- Arquivos exportados que você salvou em outro lugar (são suas cópias para gerenciar)
+- Backups do dispositivo feitos pelo iOS ou pelo Android (se você os usa) — gerencie-os nas configurações do seu dispositivo
+- Arquivos exportados e arquivos de backup que você salvou em outro lugar (são suas cópias para gerenciar)
 
 ---
 
@@ -172,7 +155,7 @@ A Eleva Care não retém nenhum dos seus dados de saúde. Não:
 
 - Armazenamos suas entradas do diário em nossos servidores
 - Temos acesso aos seus dados locais
-- Temos acesso aos seus dados de backup no iCloud
+- Temos acesso aos seus arquivos de backup nem aos backups do seu dispositivo
 
 ### Seu Controle
 
@@ -188,12 +171,13 @@ Você decide por quanto tempo manter seus dados:
 
 ### A Eleva Care pode ver meus dados?
 
-**Não.** Seus dados são armazenados apenas no seu dispositivo (e opcionalmente na sua conta pessoal do iCloud). Não temos acesso a eles.
+**Não.** Seus dados são armazenados apenas no seu dispositivo (e nos arquivos de backup ou backups do dispositivo que você escolher fazer). Não temos acesso a eles.
 
 ### O que acontece com meus dados se eu trocar de telefone?
 
-- **iOS para iOS (com backup no iCloud ativado):** Você pode restaurar seus dados do iCloud no seu novo dispositivo
-- **Sem backup:** Seus dados não são transferidos automaticamente. Exporte seus dados antes de trocar de dispositivo.
+- **Qualquer dispositivo (iOS ou Android):** Exporte um arquivo de backup no seu telefone antigo e importe-o no seu novo telefone
+- **Com um backup do dispositivo:** Se o backup do seu dispositivo iOS ou Android incluir os dados do app, restaurar esse backup no seu novo telefone também pode restaurar seu diário. Isso depende das configurações do seu dispositivo, não do app.
+- **Sem backup:** Seus dados não são transferidos. Exporte um arquivo de backup antes de trocar de dispositivo.
 
 ### Posso solicitar meus dados à Eleva Care?
 
@@ -202,7 +186,7 @@ Como não coletamos seus dados, não temos nada a fornecer. Seus dados já estã
 ### Meus dados estão criptografados?
 
 - **No dispositivo:** Sim, iOS e Android criptografam os dados do app em repouso
-- **No iCloud:** Sim, a Apple criptografa os dados do iCloud
+- **Em backups do dispositivo:** São gerenciados pela Apple ou pelo Google com suas próprias medidas de segurança e de acordo com as configurações do seu dispositivo
 - **Durante a exportação:** O arquivo em si não está criptografado; você controla a segurança dos arquivos exportados
 
 ### Como sei que meus dados foram excluídos?

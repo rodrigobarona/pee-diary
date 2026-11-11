@@ -1,7 +1,7 @@
 # Eleva Diary Privacy Choices & Data Deletion
 
-**Effective Date:** February 2026  
-**Last Updated:** February 2026
+**Effective Date:** 11 November 2026  
+**Last Updated:** 11 November 2026
 
 ---
 
@@ -14,7 +14,7 @@ This page explains:
 - How your data is stored
 - How to export your data
 - How to delete your data
-- How to manage iCloud backup (iOS)
+- How to back up and restore your data with a backup file
 
 ---
 
@@ -28,14 +28,14 @@ All diary entries, goals, and settings are stored **locally on your device** usi
 - Is protected by your device's security (passcode/biometrics)
 - Is automatically deleted if you uninstall the app
 
-### iCloud (iOS Users Only)
+### In Device Backups (Depends on Your Device Settings)
 
-If you enable the optional iCloud backup feature:
+Eleva Diary does not upload your data to any cloud service. Separately from the app, your device's operating system may include the app's data in its own device backups:
 
-- A copy of your data is stored in Apple's iCloud Key-Value Store
-- This backup is associated with your Apple ID
-- Apple encrypts this data in transit and at rest
-- Eleva Care does not have access to your iCloud data
+- **iOS:** in iCloud Backup or a backup to your computer, if you use them
+- **Android:** in Android's backup to your Google account, if device backup is turned on
+
+These backups are controlled by you through your device settings and are handled by Apple or Google. Eleva Care does not have access to them.
 
 ---
 
@@ -104,47 +104,30 @@ To delete a single entry:
 
 ---
 
-## iCloud Backup Management (iOS Only)
+## Backing Up and Restoring Your Data
 
-### Check if iCloud Backup is Enabled
-
-1. Open Eleva Diary
-2. Go to **Settings**
-3. Look for **iCloud Sync** or **Cloud Backup**
-4. The toggle shows if backup is enabled
-
-### Disable iCloud Backup
+### Export a Backup File
 
 1. Open Eleva Diary
 2. Go to **Settings**
-3. Find **iCloud Sync** or **Cloud Backup**
-4. Toggle it **OFF**
+3. Under **Local Backup**, tap **Export Backup File**
+4. Choose where to save or send the file (Files, email, cloud storage, etc.)
 
-Note: Disabling backup does not automatically delete data already stored in iCloud.
+The backup file contains your diary entries, goals, goal history, streak information and language preference. The file is not encrypted; keep it somewhere you trust.
 
-### Delete iCloud Backup Data
+### Import a Backup File
 
-To remove your Eleva Diary data from iCloud:
+1. Open Eleva Diary on any iOS or Android device
+2. Go to **Settings**
+3. Under **Local Backup**, tap **Import Backup File**
+4. Confirm, then select your backup file
 
-**Method 1: Within the App**
+Note: Importing a backup file replaces the data currently in the app.
 
-1. Disable iCloud Sync in Eleva Diary settings
-2. This stops future backups but may not delete existing data
+### Delete Backup Files and Device Backups
 
-**Method 2: Via iOS Settings**
-
-1. Open iOS **Settings**
-2. Tap your **Apple ID** at the top
-3. Tap **iCloud**
-4. Tap **Manage Storage** or **Manage Account Storage**
-5. Find **Eleva Diary** in the app list
-6. Tap **Delete Data**
-
-**Method 3: Delete App + iCloud Data**
-
-1. Uninstall Eleva Diary from your device
-2. Go to iOS **Settings** → **Apple ID** → **iCloud** → **Manage Storage**
-3. Find and delete any remaining Eleva Diary data
+- **Backup files:** These are your copies. Delete them wherever you saved them (Files, email, cloud storage, etc.)
+- **Device backups:** To remove the app's data from a device backup, manage or delete that backup in your iOS or Android settings
 
 ---
 
@@ -159,8 +142,8 @@ When you uninstall Eleva Diary:
 
 ### What May Remain
 
-- iCloud backup data (if you enabled it) — delete manually via iOS Settings
-- Exported files you saved elsewhere (these are your copies to manage)
+- Device backups made by iOS or Android (if you use them) — manage them in your device settings
+- Exported files and backup files you saved elsewhere (these are your copies to manage)
 
 ---
 
@@ -172,7 +155,7 @@ Eleva Care does not retain any of your health data. We do not:
 
 - Store your diary entries on our servers
 - Have access to your local data
-- Have access to your iCloud backup data
+- Have access to your backup files or device backups
 
 ### Your Control
 
@@ -188,12 +171,13 @@ You decide how long to keep your data:
 
 ### Can Eleva Care see my data?
 
-**No.** Your data is stored only on your device (and optionally in your personal iCloud account). We do not have access to it.
+**No.** Your data is stored only on your device (and in any backup files or device backups you choose to make). We do not have access to it.
 
 ### What happens to my data if I get a new phone?
 
-- **iOS to iOS (with iCloud backup enabled):** You can restore your data from iCloud on your new device
-- **Without backup:** Your data does not transfer automatically. Export your data before switching devices.
+- **Any device (iOS or Android):** Export a backup file on your old phone and import it on your new phone
+- **With a device backup:** If your iOS or Android device backup includes the app's data, restoring that device backup on your new phone may also restore your diary. This depends on your device settings, not on the app.
+- **Without backup:** Your data does not transfer. Export a backup file before switching devices.
 
 ### Can I request my data from Eleva Care?
 
@@ -202,7 +186,7 @@ Since we don't collect your data, we have nothing to provide. Your data is alrea
 ### Is my data encrypted?
 
 - **On device:** Yes, iOS and Android encrypt app data at rest
-- **In iCloud:** Yes, Apple encrypts iCloud data
+- **In device backups:** Handled by Apple or Google under their own security measures and your device settings
 - **During export:** The file itself is not encrypted; you control security of exported files
 
 ### How do I know my data was deleted?

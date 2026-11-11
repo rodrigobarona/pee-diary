@@ -1,6 +1,6 @@
 # Eleva Diary — Metadatos App Store de Apple (Español)
 
-> **Última actualización:** Febrero 2026  
+> **Última actualización:** 11 de noviembre de 2026  
 > **Límites de caracteres:** Nombre (30), Subtítulo (30), Texto Promocional (170), Palabras clave (100), Descripción (4000)
 
 ---
@@ -72,7 +72,7 @@ EXPORTACIÓN Y COMPARTIR
 
 PRIVACIDAD PRIMERO
 • Todos los datos se almacenan localmente en tu dispositivo—no se requiere cuenta
-• Copia de seguridad opcional en iCloud para iOS (tus datos permanecen en tu cuenta de Apple)
+• Copia de seguridad en un archivo que tú controlas, restaurable en cualquier dispositivo
 • Sin anuncios, sin analíticas, sin rastreo de terceros
 • Tú controlas cuándo y cómo salen tus datos de tu dispositivo
 
@@ -106,7 +106,7 @@ Parte de Eleva Care — empoderándote para tomar control de tu viaje de salud.
 • Establece metas diarias personalizadas
 • Visualiza análisis con gráficos semanales y mensuales
 • Exporta informes como PDF, CSV o JSON
-• Copia de seguridad opcional en iCloud para usuarios de iOS
+• Haz una copia de seguridad en un archivo y restáurala en cualquier dispositivo
 • Disponible en inglés, español y portugués
 ```
 
@@ -139,8 +139,7 @@ Parte de Eleva Care — empoderándote para tomar control de tu viaje de salud.
 
 Ver `app-privacy-answers.md` para orientación detallada.
 
-- **Datos No Recopilados** (postura principal para la mayoría de categorías)
-- **Datos de Salud y Forma Física**: Recopilados solo cuando el usuario activa la copia de seguridad opcional en iCloud; vinculados al Apple ID del usuario pero no usados para rastreo
+- **Datos No Recopilados** (todas las categorías, incluidos los Datos de Salud y Forma Física)
 
 ---
 

@@ -1,6 +1,6 @@
 # Eleva Diary — App Behavior to Disclosures Mapping
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Purpose:** Single source of truth mapping app features to required privacy/compliance disclosures
 
 This document maps Eleva Diary's actual app behavior to the required disclosures for Apple App Store, Google Play Store, and legal documents.
@@ -29,12 +29,19 @@ This document maps Eleva Diary's actual app behavior to the required disclosures
 | CSV export   | Spreadsheet-compatible format | User-controlled (share sheet) | Yes             |
 | JSON export  | Technical/backup format       | User-controlled (share sheet) | Yes             |
 
-### Platform-Specific Features
+### Backup Features
 
-| Feature        | Platform | Description                   | Data Destination              |
-| -------------- | -------- | ----------------------------- | ----------------------------- |
-| iCloud backup  | iOS only | Optional backup to iCloud KVS | Apple iCloud (user's account) |
-| iCloud restore | iOS only | Restore data from iCloud      | From iCloud to device         |
+| Feature            | Platform      | Description                                                   | Data Destination                            |
+| ------------------ | ------------- | ------------------------------------------------------------- | ------------------------------------------- |
+| Export backup file | iOS & Android | JSON file with entries, goals, goal history, streak, language | User-controlled (share sheet)               |
+| Import backup file | iOS & Android | Restore from a file picked with the system document picker    | From file to device (replaces current data) |
+
+### Operating System Backups (Not App Features)
+
+| Mechanism           | Platform | Behavior                                                                                    | Controlled By           |
+| ------------------- | -------- | ------------------------------------------------------------------------------------------- | ----------------------- |
+| Device backup       | iOS      | iCloud Backup or a computer backup may include the app's local data                         | User's iOS settings     |
+| Android Auto Backup | Android  | `android.allowBackup: true`; may copy app data to the user's Google account if backup is on | User's Android settings |
 
 ### Non-Features (Not Present)
 
@@ -43,11 +50,13 @@ This document maps Eleva Diary's actual app behavior to the required disclosures
 | User accounts/login   | ❌ No    | No authentication required     |
 | Analytics SDKs        | ❌ No    | No Firebase, Amplitude, etc.   |
 | Crash reporting       | ❌ No    | No Sentry, Crashlytics, etc.   |
+| Performance tracing   | ❌ No    | No tracing or session replay   |
+| iCloud storage        | ❌ No    | No iCloud entitlement or KVS   |
 | Advertising           | ❌ No    | No ad SDKs                     |
 | Third-party auth      | ❌ No    | No Google/Apple/Facebook login |
 | HealthKit integration | ❌ No    | No iOS HealthKit read/write    |
 | Remote server sync    | ❌ No    | No proprietary cloud sync      |
-| Push notifications    | ❌ No    | No remote push capability      |
+| Push notifications    | ❌ No    | Local reminders only, no token |
 
 ---
 
@@ -57,7 +66,7 @@ This document maps Eleva Diary's actual app behavior to the required disclosures
 
 | Apple Category       | Sub-category | Collected? | Linked to Identity? | Used for Tracking? | Rationale                         |
 | -------------------- | ------------ | ---------- | ------------------- | ------------------ | --------------------------------- |
-| **Health & Fitness** | Health       | ⚠️ Yes\*   | Yes\*               | No                 | \*Only via optional iCloud backup |
+| **Health & Fitness** | Health       | No         | —                   | —                  | Not collected                     |
 | Contact Info         | (all)        | No         | —                   | —                  | Not collected                     |
 | Financial Info       | (all)        | No         | —                   | —                  | Not collected                     |
 | Location             | (all)        | No         | —                   | —                  | Not collected                     |
@@ -74,22 +83,15 @@ This document maps Eleva Diary's actual app behavior to the required disclosures
 
 #### Health Data Disclosure Details
 
-**Why we disclose Health data as "collected":**
+**Why Health data is declared "Data Not Collected":**
 
-Per Apple's definition, "collect" means transmitting data off the device in readable form. When a user enables iCloud backup:
+Per Apple's definition, "collect" means transmitting data off the device in readable form. The app does not do this:
 
-- Health diary data (urination, fluid, leak entries) is transmitted to Apple's iCloud
-- This data is linked to the user's Apple ID
-- Therefore, we must disclose Health data as collected
+- Health diary data (urination, fluid, leak entries) stays in AsyncStorage on the device
+- The app makes no network requests and does not write to iCloud
+- Data leaves the device only through user-initiated exports and backup files (see below)
 
-**Purpose selection:**
-
-- ✅ App Functionality (backup/restore)
-- All other purposes: ❌ No
-
-**If iCloud backup feature were removed:**
-
-- Could declare "Data Not Collected" for all categories
+Result: "Data Not Collected" for all categories. iOS device backups (iCloud Backup or a computer backup) may include the app's local data under the user's own settings; these are made by iOS, not by the app.
 
 #### User-Initiated Exports (Not Disclosed)
 
@@ -100,7 +102,7 @@ Per Apple's guidance, data sent off-device only:
 
 ...does not need to be disclosed as "collection."
 
-Our PDF/CSV/JSON exports meet both criteria → **Not disclosed**
+Our PDF/CSV/JSON exports and the local backup file meet both criteria → **Not disclosed**
 
 ---
 
@@ -133,7 +135,9 @@ Our PDF/CSV/JSON exports meet both criteria → **Not disclosed**
 
 - No data transmitted to developer servers
 - No third-party services receive data
-- Android version has no cloud backup
+- The app has no cloud backup of its own
+
+**Android Auto Backup:** With `android.allowBackup: true`, Android may copy the app's local data to the user's Google account when the user has device backup turned on. This is done by the OS, not by app code. Whether it affects the Data safety answers is an open item for the owner (see `app-stores/google/data-safety-answers.md`).
 
 #### Security Practices
 
@@ -161,7 +165,7 @@ Our PDF/CSV/JSON exports meet both criteria → **Not disclosed**
 | Controller identification | Buzios e Tartarugas, Lda.                 | Introduction |
 | Contact information       | privacy@eleva.care                        | Introduction |
 | Data types processed      | Health diary entries                      | Section 2    |
-| Storage location          | Local device, optional iCloud             | Sections 2-3 |
+| Storage location          | Local device, backup files, OS backups    | Sections 2-3 |
 | Third-party sharing       | None                                      | Section 5    |
 | User rights               | Access, correction, deletion, portability | Section 10   |
 | Data retention            | User-controlled                           | Section 7    |
@@ -186,7 +190,7 @@ Our PDF/CSV/JSON exports meet both criteria → **Not disclosed**
 | ------------------ | ------------------------------- | ---------------- |
 | How to access data | View in app, export             | Export section   |
 | How to delete data | Clear Data in Settings          | Deletion section |
-| iCloud management  | Enable/disable, delete from iOS | iCloud section   |
+| Backup and restore | Export/import backup file       | Backup section   |
 | Account deletion   | N/A (no accounts)               | —                |
 
 ---
@@ -220,16 +224,18 @@ Before each app submission, verify:
 ### Code Review
 
 - [ ] No analytics SDK imports (Firebase Analytics, Amplitude, Mixpanel, etc.)
-- [ ] No crash reporting imports that collect PII (Sentry with user context, etc.)
+- [ ] No crash reporting or performance monitoring imports (Sentry, Crashlytics, etc.)
 - [ ] No ad SDK imports
 - [ ] No third-party auth imports
-- [ ] No network calls to non-Apple servers (except user-initiated sharing)
+- [ ] No network calls from app code (except user-initiated sharing)
 - [ ] AsyncStorage is only local storage mechanism
-- [ ] iCloud backup uses only Apple's iCloud KVS API
+- [ ] No iCloud entitlement or iCloud storage APIs
+- [ ] Notifications are local scheduled reminders only (no push token requested)
 
 ### Feature Check
 
-- [ ] iCloud backup is opt-in (disabled by default)
+- [ ] Local backup file export and import work on iOS and Android
+- [ ] Android Auto Backup (`android.allowBackup`) and its disclosure reviewed
 - [ ] Clear Data function works correctly
 - [ ] Export generates files locally before sharing
 - [ ] No automatic data transmission on app launch
@@ -247,10 +253,11 @@ Before each app submission, verify:
 
 When app features change, update this document and review all disclosure implications.
 
-| Date     | Change                | Disclosure Impact     |
-| -------- | --------------------- | --------------------- |
-| Feb 2026 | Initial documentation | —                     |
-| (Future) | [Feature]             | [Impact assessment]   |
+| Date        | Change                                                                                                                                                  | Disclosure Impact                                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Feb 2026    | Initial documentation                                                                                                                                   | —                                                                                                                |
+| 11 Nov 2026 | Removed optional iCloud backup/restore (Guideline 5.1.3(ii)) and Sentry crash reporting, performance tracing and session replay; local backup file kept | Apple label: Data Not Collected; legal documents and store texts updated; Android Auto Backup flagged for review |
+| (Future)    | [Feature]                                                                                                                                               | [Impact assessment]                                                                                              |
 
 ---
 

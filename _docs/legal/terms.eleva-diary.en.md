@@ -1,7 +1,7 @@
 # Eleva Diary Terms of Use
 
-**Effective Date:** February 2026  
-**Last Updated:** February 2026
+**Effective Date:** 11 November 2026  
+**Last Updated:** 11 November 2026
 
 ---
 
@@ -28,7 +28,7 @@ Eleva Diary is a personal health logging application that allows users to:
 - Set and track daily health goals
 - View insights and patterns through charts and statistics
 - Export health data in various formats (PDF, CSV, JSON)
-- Optionally back up data to iCloud (iOS only)
+- Optionally back up data to a local backup file and restore it on any device
 
 The App is designed as a personal diary tool to help users track bladder health patterns and share information with healthcare providers.
 
@@ -75,7 +75,7 @@ You are responsible for the accuracy of the data you enter into the App. We do n
 
 ### 4.2 Data Backup
 
-While we provide optional iCloud backup (iOS) and export features, you are ultimately responsible for backing up your own data. We are not responsible for data loss due to:
+While we provide local backup file and export features, you are ultimately responsible for backing up your own data. We are not responsible for data loss due to:
 
 - Device loss, damage, or theft
 - App uninstallation
@@ -143,13 +143,13 @@ You retain ownership of the health data you enter into the App. By using the exp
 
 The App is distributed through Apple App Store and Google Play Store. Your use of these platforms is subject to their respective terms and conditions.
 
-### 7.2 iCloud (iOS)
+### 7.2 Device Backups (iOS and Android)
 
-If you choose to use the optional iCloud backup feature, your use of iCloud is subject to Apple's terms of service and privacy policy.
+If your device's operating system includes the App's data in its device backups (for example, iCloud Backup on iOS or Android's backup to your Google account), those backups are subject to Apple's or Google's terms of service and privacy policies.
 
 ### 7.3 Export Destinations
 
-When you export data, the destination (email, cloud storage, etc.) is subject to that service's terms and privacy policies.
+When you export data or a backup file, the destination (email, cloud storage, etc.) is subject to that service's terms and privacy policies.
 
 ---
 

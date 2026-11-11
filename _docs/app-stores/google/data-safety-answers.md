@@ -1,6 +1,6 @@
 # Eleva Diary — Google Play Data Safety Answers
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Reference:** [Google Play Data Safety](https://support.google.com/googleplay/android-developer/answer/10787469)
 
 This document provides guidance for completing the Data Safety section in Google Play Console for Eleva Diary.
@@ -29,9 +29,12 @@ Google Play requires developers to disclose:
 | Diary entries               | Local (AsyncStorage) | ❌ No               |
 | Goals & settings            | Local (AsyncStorage) | ❌ No               |
 | Export (PDF/CSV/JSON)       | Generated locally    | User-initiated only |
+| Local backup file (JSON)    | Generated locally    | User-initiated only |
 | Language preference         | Local                | ❌ No               |
 
-**Note:** The Android version of Eleva Diary does **not** include cloud backup functionality. iCloud backup is iOS-only.
+**Note:** Eleva Diary has no cloud backup or sync of its own on any platform, makes no network requests and includes no analytics or crash reporting SDKs. Users can export a local backup file through the Android share sheet (they choose the destination) and import it again with the system file picker.
+
+**Android Auto Backup:** `app.json` sets `android.allowBackup: true` and defines no backup exclusion rules. If the user has device backup turned on, Android's Auto Backup may copy the app's local storage, including the diary, to the user's Google account and restore it on a new device. This is done by the Android system under the user's settings, not by app code. **Open item for the owner:** confirm against Google's current Data safety guidance whether this needs to be reflected in the form before submitting.
 
 ---
 
@@ -165,11 +168,12 @@ Based on the above answers, the Data Safety label will show:
 Before submitting, verify:
 
 - [ ] No analytics SDKs (Firebase Analytics, etc.) in the Android build
-- [ ] No crash reporting that collects user data (Sentry with PII, etc.)
+- [ ] No crash reporting or performance monitoring SDKs (e.g., Sentry, Crashlytics)
 - [ ] No ad SDKs
 - [ ] No third-party auth providers
 - [ ] Clear Data functionality works correctly
-- [ ] Export uses Android share sheet (user controls destination)
+- [ ] Export and local backup file use Android share sheet (user controls destination)
+- [ ] Decision on Android Auto Backup (`android.allowBackup`) confirmed (see note in App Behavior Summary)
 
 ---
 

@@ -1,7 +1,7 @@
 # Termos de Uso do Eleva Diary
 
-**Data de vigência:** Fevereiro 2026  
-**Última atualização:** Fevereiro 2026
+**Data de vigência:** 11 de novembro de 2026  
+**Última atualização:** 11 de novembro de 2026
 
 ---
 
@@ -28,7 +28,7 @@ O Eleva Diary é um aplicativo de registro de saúde pessoal que permite aos usu
 - Definir e acompanhar metas diárias de saúde
 - Ver análises e padrões através de gráficos e estatísticas
 - Exportar dados de saúde em vários formatos (PDF, CSV, JSON)
-- Opcionalmente fazer backup de dados no iCloud (apenas iOS)
+- Opcionalmente fazer backup de dados em um arquivo local e restaurá-lo em qualquer dispositivo
 
 O Aplicativo é projetado como uma ferramenta de diário pessoal para ajudar os usuários a acompanhar os padrões de saúde da bexiga e compartilhar informações com profissionais de saúde.
 
@@ -75,7 +75,7 @@ Você é responsável pela precisão dos dados que insere no Aplicativo. Não ve
 
 ### 4.2 Backup de Dados
 
-Embora forneçamos backup opcional no iCloud (iOS) e recursos de exportação, você é o responsável final por fazer backup de seus próprios dados. Não somos responsáveis pela perda de dados devido a:
+Embora forneçamos recursos de arquivo de backup local e de exportação, você é o responsável final por fazer backup de seus próprios dados. Não somos responsáveis pela perda de dados devido a:
 
 - Perda, dano ou roubo do dispositivo
 - Desinstalação do Aplicativo
@@ -143,13 +143,13 @@ Você mantém a propriedade dos dados de saúde que insere no Aplicativo. Ao usa
 
 O Aplicativo é distribuído através da Apple App Store e Google Play Store. Seu uso dessas plataformas está sujeito aos respectivos termos e condições.
 
-### 7.2 iCloud (iOS)
+### 7.2 Backups do Dispositivo (iOS e Android)
 
-Se você optar por usar o recurso opcional de backup no iCloud, seu uso do iCloud está sujeito aos termos de serviço e política de privacidade da Apple.
+Se o sistema operacional do seu dispositivo incluir os dados do Aplicativo nos backups do dispositivo (por exemplo, o Backup do iCloud no iOS ou o backup do Android na sua Conta do Google), esses backups estão sujeitos aos termos de serviço e políticas de privacidade da Apple ou do Google.
 
 ### 7.3 Destinos de Exportação
 
-Quando você exporta dados, o destino (email, armazenamento na nuvem, etc.) está sujeito aos termos e políticas de privacidade desse serviço.
+Quando você exporta dados ou um arquivo de backup, o destino (email, armazenamento na nuvem, etc.) está sujeito aos termos e políticas de privacidade desse serviço.
 
 ---
 

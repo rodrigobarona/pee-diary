@@ -1,6 +1,6 @@
 # Eleva Diary — Apple App Privacy Answers
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Reference:** [Apple App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/)
 
 This document provides guidance for completing the App Privacy section in App Store Connect for Eleva Diary.
@@ -28,8 +28,11 @@ Apple requires developers to disclose:
 | -------------------------------------- | -------------------- | ------------------------------------ |
 | Diary entries (urination, fluid, leak) | Local (AsyncStorage) | Only via user-initiated export/share |
 | Goals & settings                       | Local (AsyncStorage) | Only via user-initiated export/share |
-| iCloud backup (iOS only)               | Apple iCloud KVS     | Yes, when user enables backup        |
+| Local backup file (JSON)               | Generated locally    | Shared via OS share sheet            |
 | Export (PDF/CSV/JSON)                  | Generated locally    | Shared via OS share sheet            |
+| Reminders                              | Local notifications  | None (no push token, no server)      |
+
+The app has no network code, no analytics, crash reporting or advertising SDKs, and no iCloud entitlement. It does not write to iCloud. iOS may include the app's local data in the user's own device backup (iCloud Backup or a computer backup) according to the user's device settings; the app does not control or initiate this.
 
 ---
 
@@ -45,15 +48,9 @@ Apple requires developers to disclose:
 
 ### Section 2: Data Linked to You
 
-**Selection:** ⚠️ **Yes** (conditional on iCloud backup usage)
+**Selection:** ❌ **None**
 
-If the user enables optional iCloud backup, health data is transmitted to Apple's iCloud Key-Value Store. This data is linked to the user's Apple ID.
-
-| Data Type                 | Linked? | Reason                                                           |
-| ------------------------- | ------- | ---------------------------------------------------------------- |
-| Health & Fitness → Health | Yes     | iCloud backup stores bladder diary data in user's iCloud account |
-
-**If asked for purpose:** Select **App Functionality** (backup/restore)
+The app does not transmit any data off the device itself. Diary data leaves the device only when the user exports a report or a backup file and chooses the destination in the OS share sheet (see "User-Initiated Exports" below).
 
 ---
 
@@ -67,10 +64,11 @@ No anonymous or pseudonymous data collection occurs.
 
 ### Section 4: Data Not Collected
 
-For all other data types, select **Data Not Collected**:
+For all data types, select **Data Not Collected**. The resulting privacy label is **"Data Not Collected"**:
 
 | Data Type Category | Collected?       |
 | ------------------ | ---------------- |
+| Health & Fitness   | ❌ Not collected |
 | Contact Info       | ❌ Not collected |
 | Financial Info     | ❌ Not collected |
 | Location           | ❌ Not collected |
@@ -95,37 +93,11 @@ Since Eleva Diary handles bladder health data, you must carefully answer the Hea
 
 **Is health data collected?**
 
-- **Answer:** ⚠️ **Yes** (conservatively, due to iCloud backup)
+- **Answer:** ❌ **No**
 
-**How is it used?**
+Bladder diary data is stored only on the device (AsyncStorage). The app does not send it to Eleva Care, to Apple's iCloud storage, or to any other service. Because the data is not collected, App Store Connect does not ask for purpose, linkage to identity or tracking for this data type.
 
-| Purpose                 | Selected?               |
-| ----------------------- | ----------------------- |
-| App Functionality       | ✅ Yes (backup/restore) |
-| Analytics               | ❌ No                   |
-| Developer's Advertising | ❌ No                   |
-| Third-Party Advertising | ❌ No                   |
-| Product Personalization | ❌ No                   |
-| Other Purposes          | ❌ No                   |
-
-**Is it linked to user identity?**
-
-- **Answer:** ✅ Yes (linked to Apple ID via iCloud)
-
-**Is it used for tracking?**
-
-- **Answer:** ❌ No
-
----
-
-## Alternative: If iCloud Backup is Removed
-
-If you remove the iCloud backup feature entirely, you can answer:
-
-- **Health & Fitness Data Collected:** ❌ No
-- This would allow a "Data Not Collected" privacy label
-
-However, the current implementation includes optional iCloud backup, so the conservative disclosure above is recommended.
+**Device backups:** If the user has iCloud Backup turned on or backs up the device to a computer, iOS may include the app's local data in that backup. This is done by iOS under the user's own settings; the app does not initiate it and the developer has no access to it.
 
 ---
 
@@ -148,9 +120,11 @@ Therefore, the PDF/CSV/JSON export feature does **not** require disclosure as "c
 Before submitting, verify:
 
 - [ ] No analytics SDKs in `package.json` (e.g., Firebase Analytics, Amplitude)
-- [ ] No crash reporting SDKs that collect user data
+- [ ] No crash reporting or performance monitoring SDKs (e.g., Sentry, Crashlytics)
 - [ ] No ad SDKs
-- [ ] iCloud backup implementation uses only Apple's iCloud KVS (no third-party cloud)
+- [ ] No iCloud entitlement or iCloud storage APIs in `app.json` and `package.json`
+- [ ] No network requests in app code and no push token requested (reminders are local notifications)
+- [ ] Local backup file uses the OS share sheet to export and the document picker to import
 - [ ] Export feature uses OS share sheet (user controls destination)
 
 ---
