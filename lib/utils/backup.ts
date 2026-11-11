@@ -9,7 +9,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
-import { EXPORT_FILE_PREFIX } from "@/lib/utils/export";
+import { deleteExportFiles, EXPORT_FILE_PREFIX } from "@/lib/utils/export";
 import { Platform } from "react-native";
 
 // Uses the export prefix so deleteExportFiles() removes it.
@@ -26,6 +26,14 @@ interface BackupData {
   exportedAt: string;
 }
 
+// Error codes, not messages: the screens map them to translated text.
+export type ExportBackupError = "sharingUnavailable" | "failed";
+export type ImportBackupError =
+  | "cancelled"
+  | "incompatibleVersion"
+  | "invalidFormat"
+  | "failed";
+
 // ============================================
 // Local file backup: the user exports and imports the file themselves
 // ============================================
@@ -34,9 +42,12 @@ interface BackupData {
  * Export diary data to a local file and share it
  * Works on both iOS and Android
  */
-export async function exportBackupFile(): Promise<{
+export async function exportBackupFile(options?: {
+  // Title of the Android share sheet, in the user's language
+  dialogTitle?: string;
+}): Promise<{
   success: boolean;
-  error?: string;
+  error?: ExportBackupError;
 }> {
   try {
     const state = useDiaryStore.getState();
@@ -55,6 +66,9 @@ export async function exportBackupFile(): Promise<{
 
     // Write to temporary file
     const fileUri = `${FileSystem.cacheDirectory}${BACKUP_FILENAME}`;
+    // Remove files from earlier exports before writing a new one
+    await deleteExportFiles();
+
     await FileSystem.writeAsStringAsync(fileUri, jsonData, {
       encoding: FileSystem.EncodingType.UTF8,
     });
@@ -62,24 +76,19 @@ export async function exportBackupFile(): Promise<{
     // Check if sharing is available
     const isAvailable = await Sharing.isAvailableAsync();
     if (!isAvailable) {
-      return {
-        success: false,
-        error: "Sharing is not available on this device",
-      };
+      return { success: false, error: "sharingUnavailable" };
     }
 
     // Share the file
     await Sharing.shareAsync(fileUri, {
       mimeType: "application/json",
-      dialogTitle: "Save Backup File",
+      dialogTitle: options?.dialogTitle,
       UTI: "public.json",
     });
 
     return { success: true };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return { success: false, error: errorMessage };
+  } catch {
+    return { success: false, error: "failed" };
   }
 }
 
@@ -89,7 +98,7 @@ export async function exportBackupFile(): Promise<{
 export async function importBackupFile(): Promise<{
   success: boolean;
   entriesCount?: number;
-  error?: string;
+  error?: ImportBackupError;
 }> {
   try {
     // Open file picker
@@ -99,7 +108,7 @@ export async function importBackupFile(): Promise<{
     });
 
     if (result.canceled || !result.assets?.[0]) {
-      return { success: false, error: "File selection cancelled" };
+      return { success: false, error: "cancelled" };
     }
 
     const fileUri = result.assets[0].uri;
@@ -121,12 +130,12 @@ export async function importBackupFile(): Promise<{
 
     // Validate backup version
     if (!backupData.version || backupData.version > 1) {
-      return { success: false, error: "Incompatible backup version" };
+      return { success: false, error: "incompatibleVersion" };
     }
 
     // Validate required fields
     if (!Array.isArray(backupData.entries)) {
-      return { success: false, error: "Invalid backup file format" };
+      return { success: false, error: "invalidFormat" };
     }
 
     // Restore data to store
@@ -147,10 +156,8 @@ export async function importBackupFile(): Promise<{
       success: true,
       entriesCount: backupData.entries?.length ?? 0,
     };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return { success: false, error: errorMessage };
+  } catch {
+    return { success: false, error: "failed" };
   }
 }
 

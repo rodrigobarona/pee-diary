@@ -5,6 +5,10 @@ import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 
+// Trends are shown in one neutral colour: a change in the user's own counts
+// is neither good nor bad.
+const TREND_COLOR = "#6B7280";
+
 interface InsightCardProps {
   title: string;
   value: string;
@@ -44,16 +48,8 @@ export function InsightCard({
     }
   };
 
-  const getTrendColor = (): string => {
-    switch (trend) {
-      case "up":
-        return "#10B981"; // Green
-      case "down":
-        return "#EF4444"; // Red
-      default:
-        return "#D1D5DB"; // Light gray
-    }
-  };
+  const getTrendColor = (): string =>
+    trend === "stable" ? "#D1D5DB" : TREND_COLOR;
 
   const content = (
     <View style={styles.container}>
@@ -132,16 +128,7 @@ export function CompactInsight({
     }
   };
 
-  const getTrendColor = (): string => {
-    switch (trend) {
-      case "up":
-        return "#10B981";
-      case "down":
-        return "#EF4444";
-      default:
-        return "#6B7280";
-    }
-  };
+  const getTrendColor = (): string => TREND_COLOR;
 
   const trendIcon = getTrendIcon();
 

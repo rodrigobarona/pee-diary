@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/text';
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
+import { intlLocale } from '@/lib/i18n';
 import type { DiaryEntry } from '@/lib/store/types';
 
 interface EntryCardProps {
@@ -45,10 +46,10 @@ export const EntryCard = React.memo(function EntryCard({
   // Create formatter based on current locale
   const timeFormatter = React.useMemo(
     () =>
-      new Intl.DateTimeFormat(locale, {
-        hour: 'numeric',
+      new Intl.DateTimeFormat(intlLocale(locale), {
+        hour: locale === 'en' ? 'numeric' : '2-digit',
         minute: '2-digit',
-        hour12: true,
+        hour12: locale === 'en',
       }),
     [locale]
   );
@@ -80,7 +81,7 @@ export const EntryCard = React.memo(function EntryCard({
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
         }}
         accessibilityRole="button"
-        accessibilityLabel={`${label} entry at ${time}`}
+        accessibilityLabel={t('entry.a11yLabel', { label, time })}
         accessibilityHint={description}
       >
         <View

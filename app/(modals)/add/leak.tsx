@@ -35,25 +35,25 @@ const severityOptions: {
   value: LeakSeverity;
   icon: string;
   labelKey: string;
-  description: string;
+  descriptionKey: string;
 }[] = [
   {
     value: "drops",
     icon: "water-outline",
     labelKey: "leak.drops",
-    description: "A few drops",
+    descriptionKey: "leak.dropsDesc",
   },
   {
     value: "moderate",
     icon: "water",
     labelKey: "leak.moderate",
-    description: "Noticeable amount",
+    descriptionKey: "leak.moderateDesc",
   },
   {
     value: "full",
     icon: "water-alert",
     labelKey: "leak.full",
-    description: "Full accident",
+    descriptionKey: "leak.fullDesc",
   },
 ];
 
@@ -199,7 +199,7 @@ export default function LeakScreen() {
                       {t(option.labelKey)}
                     </Text>
                     <Text style={styles.severityDescription}>
-                      {option.description}
+                      {t(option.descriptionKey)}
                     </Text>
                   </View>
                 </AnimatedPressable>

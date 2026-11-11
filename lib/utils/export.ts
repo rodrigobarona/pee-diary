@@ -11,6 +11,8 @@ import {
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 
+import { intlLocale } from "@/lib/i18n";
+
 // Export files are written to the cache folder, which device backups do not
 // include, and are removed by deleteExportFiles(). Null on web.
 const getFileDirectory = () => cacheDirectory;
@@ -76,6 +78,19 @@ export function filterEntriesByDateRange(
 }
 
 /**
+ * Escape text written by the user before putting it in the PDF's HTML, so a
+ * note such as "<200 ml" shows as written.
+ */
+function escapeHTML(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
  * Escape a value for CSV format
  */
 function escapeCSV(
@@ -101,12 +116,14 @@ export function formatToCSV(entries: DiaryEntry[]): string {
     "Date",
     "Time",
     "Volume",
+    "Volume (ml)",
     "Urgency",
     "Had Leak",
     "Had Pain",
     "Drink Type",
     "Amount (ml)",
     "Severity",
+    "Activity",
     "Notes",
   ].join(",");
 
@@ -125,9 +142,11 @@ export function formatToCSV(entries: DiaryEntry[]): string {
         return [
           ...base,
           escapeCSV(entry.volume),
+          escapeCSV(entry.volumeMl),
           escapeCSV(entry.urgency),
           escapeCSV(entry.hadLeak),
           escapeCSV(entry.hadPain),
+          "",
           "",
           "",
           "",
@@ -140,8 +159,10 @@ export function formatToCSV(entries: DiaryEntry[]): string {
           "",
           "",
           "",
+          "",
           escapeCSV(entry.drinkType),
           escapeCSV(entry.amount),
+          "",
           "",
           escapeCSV(entry.notes),
         ].join(",");
@@ -149,12 +170,14 @@ export function formatToCSV(entries: DiaryEntry[]): string {
         return [
           ...base,
           "",
+          "",
           escapeCSV(entry.urgency),
           "",
           "",
           "",
           "",
           escapeCSV(entry.severity),
+          escapeCSV(entry.activity),
           escapeCSV(entry.notes),
         ].join(",");
       default:
@@ -208,8 +231,13 @@ export interface PDFTranslations {
   pain: string;
   notes: string;
   dailyTotal: string;
-  voids: string;
-  leaks: string;
+  // Singular and plural nouns for the daily totals ("1 void", "2 voids")
+  voids: { one: string; other: string };
+  leaks: { one: string; other: string };
+  // Daily total of voids with pain ("2 with pain")
+  withPain: string;
+  // Medical disclaimer printed in every page footer
+  disclaimer: string;
   fluidTypes: {
     water: string;
     coffee: string;
@@ -247,8 +275,11 @@ const defaultPDFTranslations: PDFTranslations = {
   pain: "Pain",
   notes: "Notes",
   dailyTotal: "Daily Total:",
-  voids: "voids",
-  leaks: "leaks",
+  voids: { one: "void", other: "voids" },
+  leaks: { one: "leak", other: "leaks" },
+  withPain: "with pain",
+  disclaimer:
+    "Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms.",
   fluidTypes: {
     water: "Water",
     coffee: "Coffee",
@@ -265,7 +296,7 @@ const defaultPDFTranslations: PDFTranslations = {
 };
 
 /**
- * Generate HTML for PDF export in traditional medical bladder diary format
+ * Generate HTML for PDF export in the usual paper bladder diary layout
  * - Time-based rows (each entry as a row)
  * - Single integrated table with all entry types
  * - One day per page with page breaks
@@ -316,13 +347,10 @@ export function generatePDFHTML(
     (e) => e.type === "urination" && e.hadPain,
   ).length;
 
-  const dateRangeStr = `${format(dateRange.start, "MMM d, yyyy")} - ${format(
-    dateRange.end,
-    "MMM d, yyyy",
-  )}`;
+  const formatLocale = intlLocale(locale);
 
   // Create locale-aware date formatter
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
+  const dateFormatter = new Intl.DateTimeFormat(formatLocale, {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -330,8 +358,8 @@ export function generatePDFHTML(
   });
 
   // Time formatter based on locale (12h for EN, 24h for ES/PT)
-  const timeFormatter = new Intl.DateTimeFormat(locale, {
-    hour: "numeric",
+  const timeFormatter = new Intl.DateTimeFormat(formatLocale, {
+    hour: locale === "en" ? "numeric" : "2-digit",
     minute: "2-digit",
     hour12: locale === "en",
   });
@@ -358,8 +386,11 @@ export function generatePDFHTML(
         entry.drinkType;
       fluidAmount = String(entry.amount);
     } else if (entry.type === "urination") {
+      // The exact amount when the user entered one, otherwise the size
       voidVolume =
-        t.volumes[entry.volume as keyof typeof t.volumes] || entry.volume;
+        entry.volumeMl !== undefined
+          ? `${entry.volumeMl} ${t.ml}`
+          : t.volumes[entry.volume as keyof typeof t.volumes] || entry.volume;
       urgency = String(entry.urgency);
       pain = entry.hadPain ? "X" : "";
       if (entry.hadLeak) {
@@ -379,11 +410,11 @@ export function generatePDFHTML(
         <td class="num-cell">${fluidAmount}</td>
         <td>${voidVolume}</td>
         <td class="mark-cell ${leakDrops ? "has-mark" : ""}">${leakDrops}</td>
-        <td class="mark-cell ${leakMod ? "has-mark warning" : ""}">${leakMod}</td>
-        <td class="mark-cell ${leakFull ? "has-mark danger" : ""}">${leakFull}</td>
-        <td class="num-cell ${urgency && parseInt(urgency) >= 4 ? "highlight-warning" : ""}">${urgency}</td>
-        <td class="mark-cell ${pain ? "has-mark danger" : ""}">${pain}</td>
-        <td class="notes-cell">${notes}</td>
+        <td class="mark-cell ${leakMod ? "has-mark" : ""}">${leakMod}</td>
+        <td class="mark-cell ${leakFull ? "has-mark" : ""}">${leakFull}</td>
+        <td class="num-cell">${urgency}</td>
+        <td class="mark-cell ${pain ? "has-mark" : ""}">${pain}</td>
+        <td class="notes-cell">${escapeHTML(notes)}</td>
       </tr>
     `;
   };
@@ -446,9 +477,9 @@ export function generatePDFHTML(
             <tr class="summary-row">
               <td colspan="2" class="summary-label">${t.dailyTotal}</td>
               <td class="num-cell">${dayTotalFluids}</td>
-              <td class="num-cell">${dayVoids.length} ${t.voids}</td>
-              <td colspan="3" class="num-cell">${dayLeaks.length} ${t.leaks}</td>
-              <td colspan="2" class="num-cell">${dayPainCount > 0 ? dayPainCount + " " + t.pain.toLowerCase() : "-"}</td>
+              <td class="num-cell">${dayVoids.length} ${dayVoids.length === 1 ? t.voids.one : t.voids.other}</td>
+              <td colspan="3" class="num-cell">${dayLeaks.length} ${dayLeaks.length === 1 ? t.leaks.one : t.leaks.other}</td>
+              <td colspan="2" class="num-cell">${dayPainCount > 0 ? `${dayPainCount} ${t.withPain}` : "-"}</td>
               <td></td>
             </tr>
           </tfoot>
@@ -456,6 +487,7 @@ export function generatePDFHTML(
 
         <div class="page-footer">
           ${t.page} ${pageNum} ${t.of} ${totalPages} • ${t.generatedBy}
+          <div class="page-disclaimer">${t.disclaimer}</div>
         </div>
       </div>
     `;
@@ -565,17 +597,10 @@ export function generatePDFHTML(
       font-weight: 700;
       font-size: 12px;
     }
+    /* One neutral style for every mark: the report records, it does not rate */
     .mark-cell.has-mark {
       background: #E0F2FE;
       color: #0369A1;
-    }
-    .mark-cell.has-mark.warning {
-      background: #FEF3C7;
-      color: #B45309;
-    }
-    .mark-cell.has-mark.danger {
-      background: #FEE2E2;
-      color: #DC2626;
     }
     .notes-cell {
       text-align: left;
@@ -585,11 +610,6 @@ export function generatePDFHTML(
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-    .highlight-warning {
-      background: #FEF3C7 !important;
-      color: #B45309;
-      font-weight: 600;
     }
 
     /* Summary Row */
@@ -613,6 +633,11 @@ export function generatePDFHTML(
       margin-top: 12px;
       text-align: center;
       font-size: 9px;
+      color: #6B7280;
+    }
+    .page-disclaimer {
+      margin-top: 4px;
+      font-size: 8px;
       color: #6B7280;
     }
 
@@ -642,6 +667,9 @@ export function generatePDFHTML(
 
 export type ExportFormat = "csv" | "json" | "pdf";
 
+// Error codes, not messages: the export screen maps them to translated text.
+export type ExportError = "noEntries" | "fileUnavailable" | "failed";
+
 /**
  * Export entries to file and share via native share sheet
  */
@@ -651,23 +679,24 @@ export async function exportAndShare(
   dateRange: { start: Date; end: Date },
   pdfTranslations?: PDFTranslations,
   locale?: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: ExportError }> {
   if (entries.length === 0) {
-    return { success: false, error: "No entries to export" };
+    return { success: false, error: "noEntries" };
   }
 
   try {
     const fileDir = getFileDirectory();
     if (!fileDir) {
-      return { success: false, error: "File system not available" };
+      return { success: false, error: "fileUnavailable" };
     }
 
     // Remove files from earlier exports before writing a new one
     await deleteExportFiles();
 
     // Generate filename with date range info
-    const startStr = format(dateRange.start, "MMM-d");
-    const endStr = format(dateRange.end, "MMM-d-yyyy");
+    // Numeric dates keep file names the same in every language
+    const startStr = format(dateRange.start, "yyyy-MM-dd");
+    const endStr = format(dateRange.end, "yyyy-MM-dd");
     const filename = `${EXPORT_FILE_PREFIX}${startStr}-to-${endStr}.${exportFormat}`;
     let filePath = `${fileDir}${filename}`;
     let mimeType: string;
@@ -711,10 +740,7 @@ export async function exportAndShare(
       return { success: true };
     }
     console.error("Export error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
+    return { success: false, error: "failed" };
   }
 }
 

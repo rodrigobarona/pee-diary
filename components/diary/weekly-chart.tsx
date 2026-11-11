@@ -15,11 +15,12 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import { format, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 
 import { Text } from "@/components/ui/text";
 import { colors } from "@/lib/theme/colors";
 import { useI18n } from "@/lib/i18n/context";
+import { dateFormatters } from "@/lib/i18n";
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -79,7 +80,7 @@ export function WeeklyChart({
 
   // Get day label (localized short weekday)
   const getDayLabel = (date: Date): string => {
-    return format(date, "EEEEE"); // Single letter
+    return dateFormatters.weekdayNarrow.format(date); // Single letter
   };
 
   return (

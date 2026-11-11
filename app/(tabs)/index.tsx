@@ -49,8 +49,8 @@ const isEntryFromToday = (entry: DiaryEntry) => {
   });
 };
 
-// Helper to check if an entry is during nighttime hours (9pm-5am)
-// This is medically relevant for nocturia tracking
+// Helper to check if an entry is between 21:00 and 05:00, for the count of
+// bathroom visits logged in that time window
 const isNighttimeEntry = (entry: DiaryEntry): boolean => {
   const hour = getHours(parseISO(entry.timestamp));
   // Nighttime: 9pm (21:00) to 5am
@@ -248,7 +248,7 @@ export default function HomeScreen() {
       return voidsMet && fluidsMet;
     }).length;
 
-    // Calculate nighttime voids (nocturia) for the week
+    // Count bathroom visits logged between 21:00 and 05:00 this week
     const weekStart = startOfDay(subDays(today, 6));
     const weekEnd = endOfDay(today);
     const weekEntries = allEntries.filter((entry) =>
@@ -393,7 +393,7 @@ export default function HomeScreen() {
       return voidsMet && fluidsMet;
     }).length;
 
-    // Calculate nighttime voids (nocturia) for the month
+    // Count bathroom visits logged between 21:00 and 05:00 this month
     const monthStart = startOfDay(subDays(today, 29));
     const monthEnd = endOfDay(today);
     const monthEntries = allEntries.filter((entry) =>
@@ -590,15 +590,14 @@ export default function HomeScreen() {
             onPress={() => handleStatPress("urination")}
           />
 
-          {/* Leaks - no target, goal is 0 */}
+          {/* Leaks - no target and no bar, only the count, in a neutral colour */}
           <ProgressBar
-            progress={summary.leaks > 0 ? 1 : 0}
+            progress={0}
             value={summary.leaks}
             target={0}
             label={t("home.summary.leaks")}
             icon="water-alert"
-            color={summary.leaks > 0 ? colors.error : "#10B981"}
-            backgroundColor={summary.leaks > 0 ? "#FEE2E2" : "#D1FAE5"}
+            color={colors.textMuted}
             onPress={() => handleStatPress("leak")}
             successLabel={t("home.noLeaks")}
           />
@@ -725,7 +724,7 @@ export default function HomeScreen() {
             />
           </View>
 
-          {/* Insight Cards - Row 2: Nocturia */}
+          {/* Insight Cards - Row 2: visits logged 21:00-05:00 */}
           <View style={styles.insightCardsRow}>
             <InsightCard
               title={t("insights.nightVoids")}
@@ -750,6 +749,9 @@ export default function HomeScreen() {
               />
             </View>
           ) : null}
+
+          {/* Medical disclaimer under the charts */}
+          <Text style={styles.disclaimerText}>{t("disclaimer.text")}</Text>
 
           {/* Export Data Link */}
           <Pressable onPress={handleExportData} style={styles.exportDataLink}>
@@ -878,6 +880,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#374151",
     marginBottom: 12,
+  },
+  disclaimerText: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: "#6B7280",
+    textAlign: "center",
+    marginTop: 16,
+    paddingHorizontal: 8,
   },
   exportDataLink: {
     flexDirection: "row",

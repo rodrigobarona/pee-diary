@@ -26,6 +26,7 @@ import Svg, {
 
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import { dateFormatters } from "@/lib/i18n";
 import { colors } from "@/lib/theme/colors";
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -46,7 +47,7 @@ const CHART_HEIGHT = 120;
 const LABEL_HEIGHT = 24;
 const PADDING = 16;
 
-// Estimated volume outputs for when precise ml is not available
+// Volumes used to estimate output when no exact amount in ml was entered
 export const VOLUME_ESTIMATES = {
   small: 100,
   medium: 250,
@@ -76,17 +77,6 @@ export function FluidBalanceChart({
   const totalIntake = data.reduce((sum, d) => sum + d.fluidIntake, 0);
   const totalOutput = data.reduce((sum, d) => sum + d.urinationOutput, 0);
 
-  // Calculate ratio (output/intake) - ideally close to 1
-  const ratio = totalIntake > 0 ? totalOutput / totalIntake : 0;
-  const ratioPercent = Math.round(ratio * 100);
-
-  // Get ratio status color
-  const getRatioColor = () => {
-    if (ratio >= 0.7 && ratio <= 1.2) return "#10B981"; // Green - normal
-    if (ratio >= 0.5 && ratio <= 1.4) return "#F59E0B"; // Amber - slightly off
-    return colors.error; // Red - concerning
-  };
-
   const handleDayPress = React.useCallback(
     (date: Date) => {
       if (Platform.OS !== "web") {
@@ -99,7 +89,7 @@ export function FluidBalanceChart({
 
   // Get day label
   const getDayLabel = (date: Date): string => {
-    return date.toLocaleDateString("en", { weekday: "narrow" });
+    return dateFormatters.weekdayNarrow.format(date);
   };
 
   return (
@@ -130,27 +120,8 @@ export function FluidBalanceChart({
         </View>
       </View>
 
-      {/* Ratio Indicator */}
-      <View style={styles.ratioContainer}>
-        <Text style={styles.ratioLabel}>{t("insights.outputRatio")}</Text>
-        <View
-          style={[
-            styles.ratioBadge,
-            { backgroundColor: getRatioColor() + "20" },
-          ]}
-        >
-          <Text style={[styles.ratioValue, { color: getRatioColor() }]}>
-            {ratioPercent}%
-          </Text>
-        </View>
-        <Text style={styles.ratioHint}>
-          {ratio >= 0.7 && ratio <= 1.2
-            ? t("insights.ratioNormal")
-            : ratio < 0.7
-            ? t("insights.ratioLow")
-            : t("insights.ratioHigh")}
-        </Text>
-      </View>
+      {/* How output is estimated */}
+      <Text style={styles.estimateNote}>{t("insights.outputEstimateNote")}</Text>
 
       {/* Chart */}
       <View style={styles.chartContainer}>
@@ -391,30 +362,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#111827",
   },
-  ratioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 16,
-  },
-  ratioLabel: {
-    fontSize: 12,
-    color: "#6B7280",
-  },
-  ratioBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  ratioValue: {
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  ratioHint: {
+  estimateNote: {
     fontSize: 11,
-    color: "#9CA3AF",
-    fontStyle: "italic",
+    color: "#6B7280",
+    textAlign: "center",
+    marginBottom: 16,
   },
   chartContainer: {
     position: "relative",

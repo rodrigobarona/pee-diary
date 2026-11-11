@@ -5,8 +5,10 @@ import * as React from "react";
 import { useCallback, useRef, useState } from "react";
 import {
   Dimensions,
+  Linking,
   Pressable,
   Text as RNText,
+  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
@@ -21,6 +23,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui";
+import { LEGAL_URLS } from "@/constants/legal";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { spacing } from "@/lib/theme";
@@ -46,6 +49,8 @@ interface OnboardingPage {
   titleKey: string;
   subtitleKey: string;
   descriptionKey: string;
+  // Extra notice shown in a box under the description (medical disclaimer)
+  noticeKey?: string;
 }
 
 const PAGES: OnboardingPage[] = [
@@ -53,7 +58,7 @@ const PAGES: OnboardingPage[] = [
     key: "welcome",
     icons: [
       { name: "water", size: 48, offset: { x: 0, y: 0 } },
-      { name: "heart-pulse", size: 24, offset: { x: 40, y: -30 } },
+      { name: "calendar-check-outline", size: 24, offset: { x: 40, y: -30 } },
       { name: "chart-line", size: 20, offset: { x: -45, y: 25 } },
     ],
     accentColor: COLORS.primary,
@@ -74,20 +79,21 @@ const PAGES: OnboardingPage[] = [
     descriptionKey: "onboarding.track.description",
   },
   {
-    key: "insights",
+    key: "share",
     icons: [
       { name: "chart-timeline-variant", size: 48, offset: { x: 0, y: 0 } },
       { name: "file-document-outline", size: 22, offset: { x: 45, y: -20 } },
       { name: "share-variant-outline", size: 20, offset: { x: -42, y: 28 } },
     ],
     accentColor: COLORS.primary,
-    titleKey: "onboarding.insights.title",
-    subtitleKey: "onboarding.insights.subtitle",
-    descriptionKey: "onboarding.insights.description",
+    titleKey: "onboarding.share.title",
+    subtitleKey: "onboarding.share.subtitle",
+    descriptionKey: "onboarding.share.description",
+    noticeKey: "disclaimer.text",
   },
 ];
 
-// Fixed heights
+// Fixed heights (the bottom section grows to fit the terms line on the last page)
 const HEADER_HEIGHT = 56;
 const BOTTOM_HEIGHT = 140;
 
@@ -347,7 +353,11 @@ function OnboardingPageContent({
   });
 
   return (
-    <View style={styles.page}>
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={styles.pageScrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.pageContent}>
         {/* Icon cluster with scale animation */}
         <Animated.View style={iconStyle}>
@@ -370,8 +380,58 @@ function OnboardingPageContent({
         <Animated.View style={descriptionStyle}>
           <Text style={styles.description}>{t(page.descriptionKey)}</Text>
         </Animated.View>
+
+        {/* Notice (medical disclaimer on the last page) */}
+        {page.noticeKey ? (
+          <Animated.View style={[styles.notice, descriptionStyle]}>
+            <MaterialCommunityIcons
+              name="information-outline"
+              size={18}
+              color={COLORS.textMuted}
+            />
+            <Text style={styles.noticeText}>{t(page.noticeKey)}</Text>
+          </Animated.View>
+        ) : null}
       </View>
-    </View>
+    </ScrollView>
+  );
+}
+
+// "By continuing, you accept the Terms of Use. See how your data is handled
+// in the Privacy Policy.", with both documents as links. Shown under the
+// button on the last page, which is the only way to complete onboarding
+// (Skip leads there too). Body-size, dark text: this line incorporates the
+// Terms, so it must be easy to read.
+function TermsAcceptance() {
+  const { t } = useI18n();
+  const parts = t("onboarding.acceptance", {
+    terms: "{terms}",
+    privacy: "{privacy}",
+  }).split(/(\{terms\}|\{privacy\})/);
+
+  return (
+    <RNText style={styles.acceptanceText}>
+      {parts.map((part, index) => {
+        if (part === "{terms}" || part === "{privacy}") {
+          const isTerms = part === "{terms}";
+          return (
+            <RNText
+              key={index}
+              style={styles.acceptanceLink}
+              accessibilityRole="link"
+              onPress={() =>
+                Linking.openURL(
+                  isTerms ? LEGAL_URLS.terms : LEGAL_URLS.privacy
+                )
+              }
+            >
+              {isTerms ? t("settings.terms") : t("settings.privacyPolicy")}
+            </RNText>
+          );
+        }
+        return part;
+      })}
+    </RNText>
   );
 }
 
@@ -413,10 +473,16 @@ export default function OnboardingScreen() {
     }
   }, [currentIndex, completeOnboarding, router]);
 
+  // Skip jumps to the last page, so everyone sees the medical disclaimer and
+  // the terms line; only its button completes onboarding.
   const handleSkip = useCallback(() => {
-    completeOnboarding();
-    router.replace("/(tabs)");
-  }, [completeOnboarding, router]);
+    const lastIndex = PAGES.length - 1;
+    scrollViewRef.current?.scrollTo({
+      x: lastIndex * SCREEN_WIDTH,
+      animated: true,
+    });
+    setCurrentIndex(lastIndex);
+  }, []);
 
   const handleBack = useCallback(() => {
     if (currentIndex > 0) {
@@ -443,6 +509,8 @@ export default function OnboardingScreen() {
               onPress={handleBack}
               style={styles.backButton}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.back")}
             >
               <MaterialCommunityIcons
                 name="chevron-left"
@@ -461,6 +529,7 @@ export default function OnboardingScreen() {
             <Pressable
               onPress={handleSkip}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
             >
               <RNText style={styles.skipText}>{t("onboarding.skip")}</RNText>
             </Pressable>
@@ -506,6 +575,8 @@ export default function OnboardingScreen() {
           label={isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
           showArrow={!isLastPage}
         />
+
+        {isLastPage ? <TermsAcceptance /> : null}
       </View>
     </View>
   );
@@ -562,8 +633,11 @@ const styles = StyleSheet.create({
   },
   page: {
     width: SCREEN_WIDTH,
+  },
+  pageScrollContent: {
     paddingHorizontal: spacing.xl,
     paddingTop: 20,
+    paddingBottom: 16,
   },
   pageContent: {
     alignItems: "center",
@@ -602,9 +676,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     maxWidth: 300,
   },
+  notice: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    marginTop: 20,
+    padding: 12,
+    maxWidth: 320,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+  },
+  noticeText: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+    color: COLORS.textMuted,
+  },
   // Bottom section - fixed height
   bottomSection: {
-    height: BOTTOM_HEIGHT,
+    minHeight: BOTTOM_HEIGHT,
     paddingHorizontal: spacing.xl,
     paddingTop: 16,
     backgroundColor: COLORS.background,
@@ -621,5 +711,18 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: COLORS.primary,
+  },
+  // Same size as the page description (16), dark text, line spacing 1.4
+  acceptanceText: {
+    marginTop: 14,
+    fontSize: 16,
+    lineHeight: 22,
+    color: COLORS.text,
+    textAlign: "center",
+  },
+  acceptanceLink: {
+    color: COLORS.primary,
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
 });

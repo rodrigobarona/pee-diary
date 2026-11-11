@@ -1,5 +1,4 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { format } from "date-fns";
 import * as Haptics from "expo-haptics";
 import * as React from "react";
 import {
@@ -24,6 +23,7 @@ import { useShallow } from "zustand/react/shallow";
 import { DateRangePicker } from "@/components/diary/date-range-picker";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import { dateFormatters } from "@/lib/i18n";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import {
@@ -206,8 +206,10 @@ export default function ExportScreen() {
       pain: t("pdf.pain"),
       notes: t("pdf.notes"),
       dailyTotal: t("pdf.dailyTotal"),
-      voids: t("pdf.voids"),
-      leaks: t("pdf.leaks"),
+      voids: { one: t("pdf.voids.one"), other: t("pdf.voids.other") },
+      leaks: { one: t("pdf.leaks.one"), other: t("pdf.leaks.other") },
+      withPain: t("pdf.withPain"),
+      disclaimer: t("disclaimer.text"),
       fluidTypes: {
         water: t("pdf.fluidTypes.water"),
         coffee: t("pdf.fluidTypes.coffee"),
@@ -252,7 +254,14 @@ export default function ExportScreen() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
       } else if (result.error) {
-        Alert.alert(t("common.error"), result.error);
+        Alert.alert(
+          t("common.error"),
+          result.error === "noEntries"
+            ? t("export.noEntries")
+            : result.error === "fileUnavailable"
+              ? t("export.fileUnavailable")
+              : t("export.error")
+        );
       }
     } catch (error) {
       console.error("Export error:", error);
@@ -310,10 +319,7 @@ export default function ExportScreen() {
   ];
 
   // Date range text
-  const dateRangeText = `${format(startDate, "MMM d")} - ${format(
-    endDate,
-    "MMM d, yyyy",
-  )}`;
+  const dateRangeText = `${dateFormatters.dayMonth.format(startDate)} - ${dateFormatters.dayMonthYear.format(endDate)}`;
 
   return (
     <ScrollView
@@ -378,9 +384,7 @@ export default function ExportScreen() {
         <Text style={styles.selectedRangeText}>{dateRangeText}</Text>
         <Text style={styles.entryCount}>
           {isHydrated
-            ? `${filteredEntries.length} ${
-                filteredEntries.length === 1 ? "entry" : "entries"
-              }`
+            ? t("export.entryCount", { count: filteredEntries.length })
             : "..."}
         </Text>
       </View>

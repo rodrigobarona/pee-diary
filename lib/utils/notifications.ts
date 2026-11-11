@@ -158,10 +158,13 @@ export async function getScheduledReminderCount(): Promise<number> {
 }
 
 // Initialize notifications on app start
-export async function initializeNotifications(): Promise<void> {
+export async function initializeNotifications(
+  // Channel name shown in Android's notification settings, translated
+  channelName: string
+): Promise<void> {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
-      name: "Reminders",
+      name: channelName,
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#006D77",

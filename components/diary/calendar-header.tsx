@@ -32,6 +32,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
+import { dateFormatters, getWeekdayLabels } from '@/lib/i18n';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = 50;
@@ -105,7 +106,7 @@ export function CalendarHeader({
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [selectedDate]);
 
-  const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const dayLabels = getWeekdayLabels();
 
   const animateWeekChange = React.useCallback((direction: 'left' | 'right', callback: () => void) => {
     const toValue = direction === 'left' ? -WEEK_WIDTH : WEEK_WIDTH;
@@ -233,17 +234,16 @@ export function CalendarHeader({
     return <View style={styles.dotsRow}>{dots}</View>;
   };
 
-  // Get display month with year
-  const displayMonth = React.useMemo(() => {
-    const midWeek = weekDays[3];
-    return format(midWeek, "MMMM yyyy");
-  }, [weekDays]);
+  // Display month with year, computed on every render (not memoised):
+  // dateFormatters is updated in place when the language changes, and
+  // useI18n re-renders this component then.
+  const displayMonth = dateFormatters.monthYear.format(weekDays[3]);
 
   // Check if week spans two months and get month label for each day
   const getMonthLabel = React.useCallback((day: Date, index: number, days: Date[]): string | null => {
     // Show month label on the first day of a new month (when day is 1)
     if (day.getDate() === 1 && index > 0) {
-      return format(day, 'MMM');
+      return dateFormatters.monthShort.format(day);
     }
     return null;
   }, []);
@@ -391,7 +391,7 @@ export function CalendarHeader({
           >
             <View style={styles.monthPickerCard}>
               <Text style={styles.pickerMonthTitle}>
-                {format(selectedDate, 'MMMM yyyy')}
+                {dateFormatters.monthYear.format(selectedDate)}
               </Text>
 
               <View style={styles.pickerDayLabels}>

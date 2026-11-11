@@ -14,6 +14,7 @@ import { format, startOfWeek, endOfWeek, isWithinInterval, isSameWeek } from 'da
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
+import { dateFormatters } from '@/lib/i18n';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -213,7 +214,7 @@ export function MonthlyChart({
                   fill="#9CA3AF"
                   textAnchor="middle"
                 >
-                  {isCurrentWeek ? '' : format(week.weekStart, 'MMM')}
+                  {isCurrentWeek ? '' : dateFormatters.monthShort.format(week.weekStart)}
                 </SvgText>
               </G>
             );

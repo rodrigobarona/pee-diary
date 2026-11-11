@@ -1,4 +1,4 @@
-import { isToday, isYesterday, startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek } from 'date-fns';
 import { dateFormatters } from '@/lib/i18n';
 
 /**
@@ -16,21 +16,6 @@ export const formatDate = (date: Date | string, style: 'short' | 'medium' | 'lon
 export const formatTime = (date: Date | string) => {
   const d = typeof date === 'string' ? new Date(date) : date;
   return dateFormatters.time.format(d);
-};
-
-/**
- * Get a relative date label (Today, Yesterday, or formatted date)
- */
-export const getRelativeDateLabel = (date: Date | string) => {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  
-  if (isToday(d)) {
-    return 'Today';
-  }
-  if (isYesterday(d)) {
-    return 'Yesterday';
-  }
-  return dateFormatters.medium.format(d);
 };
 
 /**

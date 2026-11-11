@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { Text } from "@/components/ui/text";
+import { i18n } from "@/lib/i18n";
 import { colors } from "@/lib/theme/colors";
 
 interface Props {
@@ -75,6 +76,9 @@ export function DefaultErrorFallback({
   onRetry,
 }: DefaultErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
+  // The root error boundary sits outside I18nProvider, so read the shared
+  // i18n instance directly; its locale follows the user's language setting.
+  const t = (key: string) => i18n.t(key);
 
   return (
     <View style={styles.container}>
@@ -87,10 +91,8 @@ export function DefaultErrorFallback({
           />
         </View>
 
-        <Text style={styles.title}>Something went wrong</Text>
-        <Text style={styles.description}>
-          We encountered an unexpected error. Please try again.
-        </Text>
+        <Text style={styles.title}>{t("error.title")}</Text>
+        <Text style={styles.description}>{t("error.description")}</Text>
 
         {onRetry ? (
           <TouchableOpacity
@@ -103,7 +105,7 @@ export function DefaultErrorFallback({
               size={20}
               color={colors.surface}
             />
-            <Text style={styles.retryButtonText}>Try Again</Text>
+            <Text style={styles.retryButtonText}>{t("error.tryAgain")}</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -115,7 +117,7 @@ export function DefaultErrorFallback({
               activeOpacity={0.7}
             >
               <Text style={styles.detailsToggleText}>
-                {showDetails ? "Hide Details" : "Show Details"}
+                {showDetails ? t("error.hideDetails") : t("error.showDetails")}
               </Text>
               <MaterialCommunityIcons
                 name={showDetails ? "chevron-up" : "chevron-down"}

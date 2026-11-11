@@ -19,6 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
+import { LEGAL_URLS } from "@/constants/legal";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
@@ -119,12 +120,6 @@ const languageDisplay: Record<
   pt: { nativeLabel: "Português", flag: "🇵🇹" },
 };
 
-const LEGAL_URLS = {
-  privacy: "https://diary.eleva.care/privacy",
-  terms: "https://diary.eleva.care/terms",
-  dataDelete: "https://diary.eleva.care/privacy#data-deletion",
-};
-
 export default function SettingsScreen() {
   const { t, locale } = useI18n();
   const router = useRouter();
@@ -156,10 +151,11 @@ export default function SettingsScreen() {
   const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
 
-  // Initialize notifications on mount
+  // Initialize notifications on mount (the Android channel name is shown
+  // in the phone's notification settings, so it follows the app language)
   React.useEffect(() => {
-    initializeNotifications();
-  }, []);
+    initializeNotifications(t("settings.reminders"));
+  }, [t]);
 
   // Get the confirmation word for the current locale
   const confirmWord = t("settings.clearDataConfirmWord");
@@ -302,7 +298,7 @@ export default function SettingsScreen() {
 
     // Wait for store to be hydrated
     if (!isHydrated) {
-      Alert.alert(t("common.error"), "Please wait for data to load...");
+      Alert.alert(t("common.error"), t("settings.waitForData"));
       return;
     }
 
@@ -323,6 +319,13 @@ export default function SettingsScreen() {
     }
     Linking.openURL(url);
   }, []);
+
+  const handleShowMedicalInfo = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    Alert.alert(t("settings.medicalInfo"), t("disclaimer.text"));
+  }, [t]);
 
   const handleOpenDeleteConfirm = React.useCallback(() => {
     if (Platform.OS !== "web") {
@@ -398,11 +401,15 @@ export default function SettingsScreen() {
 
     setIsSyncing(true);
     try {
-      const result = await exportBackupFile();
+      const result = await exportBackupFile({
+        dialogTitle: t("settings.exportBackup"),
+      });
       if (!result.success) {
         Alert.alert(
           t("common.error"),
-          result.error ?? t("settings.exportBackupError")
+          result.error === "sharingUnavailable"
+            ? t("settings.sharingUnavailable")
+            : t("settings.exportBackupError")
         );
       }
     } catch {
@@ -443,10 +450,12 @@ export default function SettingsScreen() {
                   count: result.entriesCount ?? 0,
                 })
               );
-            } else if (result.error !== "File selection cancelled") {
+            } else if (result.error !== "cancelled") {
               Alert.alert(
                 t("common.error"),
-                result.error ?? t("settings.importBackupError")
+                result.error === "incompatibleVersion"
+                  ? t("settings.importBackupIncompatible")
+                  : t("settings.importBackupError")
               );
             }
           } catch {
@@ -551,7 +560,7 @@ export default function SettingsScreen() {
 
       {/* General Section */}
       <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        General
+        {t("settings.general")}
       </Text>
       <View style={styles.card}>
         <SettingRow
@@ -635,7 +644,9 @@ export default function SettingsScreen() {
       </View>
 
       {/* Data Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>Data</Text>
+      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
+        {t("settings.data")}
+      </Text>
       <View style={styles.card}>
         <SettingRow
           icon="download"
@@ -689,9 +700,15 @@ export default function SettingsScreen() {
         />
         <View style={styles.separator} />
         <SettingRow
+          icon="information-outline"
+          label={t("settings.medicalInfo")}
+          onPress={handleShowMedicalInfo}
+        />
+        <View style={styles.separator} />
+        <SettingRow
           icon="heart"
-          label="Made with care"
-          description="by Eleva Care"
+          label={t("settings.madeWithCare")}
+          description={t("settings.byElevaCare")}
         />
       </View>
 
@@ -716,9 +733,9 @@ export default function SettingsScreen() {
         <View style={styles.separator} />
         <SettingRow
           icon="delete-circle"
-          label={t("settings.dataDelete")}
-          description={t("settings.dataDeleteDescription")}
-          onPress={() => handleOpenLink(LEGAL_URLS.dataDelete)}
+          label={t("settings.privacyChoices")}
+          description={t("settings.privacyChoicesDescription")}
+          onPress={() => handleOpenLink(LEGAL_URLS.privacyChoices)}
           externalLink
         />
       </View>
@@ -726,7 +743,9 @@ export default function SettingsScreen() {
       {/* Stats */}
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>
-          {isHydrated ? `${entries.length} entries recorded` : "Loading..."}
+          {isHydrated
+            ? t("settings.entriesRecorded", { count: entries.length })
+            : t("common.loading")}
         </Text>
       </View>
     </ScrollView>

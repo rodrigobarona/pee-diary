@@ -1,11 +1,12 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { format, getHours, parseISO } from "date-fns";
+import { getHours, parseISO } from "date-fns";
 import * as Haptics from "expo-haptics";
 import * as React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import { dateFormatters } from "@/lib/i18n";
 import type { DiaryEntry } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
 
@@ -42,11 +43,10 @@ export function TimelineEntry({
   showTime = true,
   onPress,
 }: TimelineEntryProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const config = entryConfig[entry.type];
-  // Use 12-hour format for English, 24-hour for Spanish/Portuguese
-  const timeFormat = locale === "en" ? "h:mm a" : "HH:mm";
-  const time = format(parseISO(entry.timestamp), timeFormat);
+  // 12-hour clock in English, 24-hour in Spanish and Portuguese
+  const time = dateFormatters.time.format(parseISO(entry.timestamp));
 
   const handlePress = React.useCallback(() => {
     if (Platform.OS !== "web") {
@@ -69,7 +69,7 @@ export function TimelineEntry({
               )}
             </Text>
             <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>Lv {entry.urgency}</Text>
+            <Text style={styles.detailText}>{t("pdf.urgency")} {entry.urgency}</Text>
             {entry.hadLeak ? <>
                 <Text style={styles.detailSeparator}>·</Text>
                 <MaterialCommunityIcons
@@ -95,7 +95,7 @@ export function TimelineEntry({
           <>
             <Text style={styles.detailText}>{t(`leak.${entry.severity}`)}</Text>
             <Text style={styles.detailSeparator}>·</Text>
-            <Text style={styles.detailText}>Lv {entry.urgency}</Text>
+            <Text style={styles.detailText}>{t("pdf.urgency")} {entry.urgency}</Text>
           </>
         );
       default:

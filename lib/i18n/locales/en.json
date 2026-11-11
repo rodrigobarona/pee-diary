@@ -7,13 +7,13 @@
     "edited": "Edited",
     "back": "Back",
     "done": "Done",
-    "loading": "Loading...",
+    "loading": "Loading…",
     "error": "Error",
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "notesPlaceholder": "Add any additional notes...",
+    "notesPlaceholder": "Add any notes…",
     "options": "Options"
   },
   "tabs": {
@@ -37,6 +37,7 @@
     "todayActivity": "Today's Activity",
     "viewInHistory": "View in History",
     "addNew": "Add New Entry",
+    "addNewHint": "Opens the menu to add a urination, drink or leak entry",
     "noLeaks": "None",
     "summary": {
       "voids": "Voids",
@@ -45,7 +46,7 @@
     }
   },
   "insights": {
-    "title": "Insights",
+    "title": "Summary",
     "avgFluids": "Avg Fluids",
     "avgVoids": "Avg Voids",
     "goalsMet": "Goals Met",
@@ -54,31 +55,28 @@
     "week": "Week",
     "month": "Month",
     "last30Days": "Last 30 days summary",
-    "nightVoids": "Night Voids",
-    "nightVoidsAvg": "avg/night",
-    "dayVsNight": "Day vs Night",
+    "nightVoids": "Voids 9pm–5am",
+    "nightVoidsAvg": "avg per night",
+    "dayVsNight": "Day and night",
     "day": "Day",
     "night": "Night",
-    "fluidBalance": "Fluid Balance",
-    "fluidIntake": "Fluid Intake",
-    "urinationOutput": "Output",
-    "outputRatio": "Output Ratio",
+    "fluidBalance": "Intake and output",
+    "fluidIntake": "Fluid intake",
+    "urinationOutput": "Estimated output",
     "intake": "Intake",
-    "output": "Output",
-    "ratioNormal": "Normal range",
-    "ratioLow": "Low output",
-    "ratioHigh": "High output"
+    "output": "Output (estimated)",
+    "outputEstimateNote": "Output is estimated from the sizes you chose (small, medium, large), unless you entered an exact amount."
   },
   "goals": {
     "title": "Daily Goals",
-    "description": "Set your daily targets to track your progress. These are based on medical recommendations.",
+    "description": "Set your own daily targets, for example ones your health professional gave you. They are for your own reference.",
     "fluidTarget": "Fluid Intake",
-    "fluidDescription": "Daily fluid intake target",
+    "fluidDescription": "Your daily fluid target",
     "voidTarget": "Bathroom Visits",
-    "voidDescription": "Expected visits per day",
+    "voidDescription": "Your own daily number, if you want one",
     "perDay": "per day",
     "voids": "voids",
-    "medicalInfo": "Medical guidelines suggest 2000ml of fluids and 6-8 bathroom visits per day. Adjust based on your doctor's advice.",
+    "targetsInfo": "Your targets are for your own record. Ask your health professional what is right for you.",
     "history": "Goal History",
     "historyEmpty": "No changes yet",
     "changedTo": "Changed to",
@@ -92,7 +90,7 @@
     "started": "You've started!",
     "keepGoing": "Keep it going!",
     "good": "Good streak!",
-    "great": "Great progress!",
+    "great": "Well done!",
     "amazing": "Amazing dedication!"
   },
   "timePeriod": {
@@ -116,14 +114,15 @@
     "urination": "Urination",
     "urinationDesc": "Log a bathroom visit",
     "fluid": "Fluid Intake",
-    "fluidDesc": "Track what you drank",
+    "fluidDesc": "Log what you drank",
     "leak": "Leak/Accident",
-    "leakDesc": "Record any incidents"
+    "leakDesc": "Log a leak"
   },
   "entry": {
     "urination": "Urination",
     "fluid": "Fluid Intake",
     "leak": "Leak/Accident",
+    "a11yLabel": "{{label}} entry at {{time}}",
     "addUrination": "Log Urination",
     "addFluid": "Log Fluid",
     "addLeak": "Log Leak"
@@ -136,15 +135,15 @@
     "volumeMedium": "Medium",
     "volumeLarge": "Large",
     "volumePrecise": "Enter exact amount (ml)",
-    "volumePrecisePlaceholder": "e.g., 250",
+    "volumePrecisePlaceholder": "e.g. 250",
     "urgency": "Urgency Level",
-    "hadLeak": "Had any leakage?",
-    "hadPain": "Experienced pain or discomfort?",
+    "hadLeak": "Any leakage?",
+    "hadPain": "Any pain or discomfort?",
     "notes": "Notes"
   },
   "fluid": {
     "title": "Log Fluid Intake",
-    "subtitle": "Track what you drank",
+    "subtitle": "Log what you drank",
     "drinkType": "Drink Type",
     "water": "Water",
     "coffee": "Coffee",
@@ -157,11 +156,14 @@
   },
   "leak": {
     "title": "Log Leak/Accident",
-    "subtitle": "Record any incidents",
-    "severity": "Severity",
+    "subtitle": "Record a leak",
+    "severity": "Amount",
     "drops": "Drops",
+    "dropsDesc": "A few drops",
     "moderate": "Moderate",
+    "moderateDesc": "Noticeable amount",
     "full": "Full",
+    "fullDesc": "Full accident",
     "urgency": "Urgency Level",
     "activity": "Activity (optional)",
     "activityDescription": "What were you doing?",
@@ -190,15 +192,16 @@
     "leaks": "leaks",
     "avgUrgency": "avg urgency",
     "noEntriesYet": "No entries yet",
-    "startTracking": "Start tracking to see your history",
+    "startTracking": "Start logging to see your history",
     "noDataForDay": "No entries for this day",
-    "noEntriesForDate": "Nothing was recorded on this date",
+    "noEntriesForDate": "Nothing was logged on this date",
     "tapToAdd": "Tap here to add",
     "weekly": "Weekly",
     "monthly": "Monthly"
   },
   "settings": {
     "title": "Settings",
+    "general": "General",
     "language": "Language",
     "languageSubtitle": "Choose your preferred language",
     "english": "English",
@@ -206,8 +209,9 @@
     "portuguese": "Portuguese",
     "export": "Export Data",
     "exportDescription": "Share your diary as PDF, CSV or JSON",
+    "data": "Data",
     "noDataToExport": "There are no entries to export.",
-    "exportError": "Failed to export data. Please try again.",
+    "exportError": "Couldn't export your data. Please try again.",
     "clearData": "Clear All Data",
     "clearDataDescription": "This action cannot be undone",
     "clearDataConfirm": "Are you sure you want to delete all your diary entries, goals and settings? This action cannot be undone.",
@@ -216,6 +220,14 @@
     "clearDataPlaceholder": "DELETE",
     "about": "About",
     "version": "Version",
+    "medicalInfo": "Medical information",
+    "madeWithCare": "Made with care",
+    "byElevaCare": "by Eleva Care",
+    "entriesRecorded": {
+      "one": "{{count}} entry recorded",
+      "other": "{{count}} entries recorded"
+    },
+    "waitForData": "Your data is still loading. Try again in a moment.",
     "privacy": "Privacy Policy",
     "dailyGoals": "Daily Goals",
     "editGoals": "Edit Daily Goals",
@@ -227,22 +239,27 @@
     "importBackup": "Import Backup File",
     "importBackupDescription": "Restore data from a backup file",
     "exportBackupSuccess": "Backup file ready to save",
-    "importBackupSuccess": "Restored {{count}} entries from backup",
+    "importBackupSuccess": {
+      "one": "Restored {{count}} entry from backup",
+      "other": "Restored {{count}} entries from backup"
+    },
     "importBackupConfirm": "This will replace your current data with the backup. Continue?",
-    "importBackupError": "Failed to import backup. The file may be invalid.",
-    "exportBackupError": "Failed to create backup file.",
+    "importBackupError": "Couldn't import the backup. The file may not be valid.",
+    "importBackupIncompatible": "This version of the app can't read this backup file.",
+    "exportBackupError": "Couldn't create the backup file.",
+    "sharingUnavailable": "Sharing isn't available on this device.",
     "openAddMenuOnLaunch": "Open Add Menu on Launch",
     "openAddMenuOnLaunchDescription": "Show the add entry menu when opening the app",
     "viewTutorial": "View Tutorial",
-    "viewTutorialDescription": "Replay the onboarding walkthrough",
+    "viewTutorialDescription": "Replay the welcome screens",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "dataDelete": "Privacy Choices",
-    "dataDeleteDescription": "Request data deletion",
+    "terms": "Terms of Use",
+    "privacyChoices": "Privacy Choices",
+    "privacyChoicesDescription": "How to delete your data",
     "reminders": "Reminders",
     "remindersEnabled": "Enable Reminders",
-    "remindersEnabledDescription": "Get notified to log your entries",
+    "remindersEnabledDescription": "Get a reminder to update your diary",
     "reminderInterval": "Reminder Interval",
     "reminderIntervalDescription": "How often to remind you",
     "everyXHours": "Every {{count}} hours",
@@ -251,10 +268,10 @@
     "quietHoursEnabledDescription": "No reminders during this time",
     "quietHoursStart": "From",
     "quietHoursEnd": "To",
-    "reminderNotificationTitle": "Time to log!",
-    "reminderNotificationBody": "Don't forget to track your fluids and bathroom visits.",
+    "reminderNotificationTitle": "Diary reminder",
+    "reminderNotificationBody": "Time to update your diary.",
     "permissionRequired": "Permission Required",
-    "permissionRequiredDescription": "Please enable notifications in your device settings to receive reminders."
+    "permissionRequiredDescription": "Turn on notifications in your phone's settings to get reminders."
   },
   "urgency": {
     "1": "None",
@@ -302,16 +319,24 @@
     "pdf": "PDF",
     "pdfDesc": "Easy to read",
     "preview": "Preview",
-    "entriesCount": "{{count}} entries ready",
+    "entriesCount": {
+      "one": "{{count}} entry ready",
+      "other": "{{count}} entries ready"
+    },
     "noEntries": "No entries in selected range",
     "exportAndShare": "Export & Share",
-    "exporting": "Exporting...",
+    "exporting": "Exporting…",
     "success": "Data exported successfully",
-    "error": "Failed to export data"
+    "error": "Couldn't export your data",
+    "fileUnavailable": "Couldn't create the export file on this device.",
+    "entryCount": {
+      "one": "{{count}} entry",
+      "other": "{{count}} entries"
+    }
   },
   "error": {
     "title": "Something went wrong",
-    "description": "We encountered an unexpected error. Please try again.",
+    "description": "Something unexpected happened. Please try again.",
     "tryAgain": "Try Again",
     "showDetails": "Show Details",
     "hideDetails": "Hide Details"
@@ -319,22 +344,23 @@
   "onboarding": {
     "welcome": {
       "title": "Welcome to Eleva Diary",
-      "subtitle": "Your personal bladder health companion",
-      "description": "Track your bathroom habits, fluid intake, and get insights to improve your bladder health."
+      "subtitle": "Your personal bladder diary",
+      "description": "Write down your bathroom visits, drinks and any leaks. Your diary stays on your phone."
     },
     "track": {
-      "title": "Track Everything",
-      "subtitle": "Simple and quick logging",
-      "description": "Log urination, fluid intake, and any leaks in just a few taps. Build healthy habits with streak tracking."
+      "title": "Easy Logging",
+      "subtitle": "Simple and quick",
+      "description": "Log bathroom visits, drinks and leaks in a few taps. Your streak shows how many days in a row you've logged."
     },
-    "insights": {
-      "title": "Get Insights",
-      "subtitle": "Understand your patterns",
-      "description": "View charts and analytics to share with your healthcare provider. Export reports as PDF, CSV, or JSON."
+    "share": {
+      "title": "Share Your Diary",
+      "subtitle": "See your totals",
+      "description": "See daily totals and simple charts of what you logged, and export your diary as a PDF, CSV or JSON file to share if you choose."
     },
     "getStarted": "Get Started",
     "next": "Next",
-    "skip": "Skip"
+    "skip": "Skip",
+    "acceptance": "By continuing, you accept the {{terms}}. See how your data is handled in the {{privacy}}."
   },
   "pdf": {
     "title": "Bladder Diary",
@@ -355,8 +381,15 @@
     "pain": "Pain",
     "notes": "Notes",
     "dailyTotal": "Daily Total:",
-    "voids": "voids",
-    "leaks": "leaks",
+    "voids": {
+      "one": "void",
+      "other": "voids"
+    },
+    "leaks": {
+      "one": "leak",
+      "other": "leaks"
+    },
+    "withPain": "with pain",
     "fluidTypes": {
       "water": "Water",
       "coffee": "Coffee",
@@ -370,5 +403,17 @@
       "medium": "Medium",
       "large": "Large"
     }
+  },
+  "termsUpdate": {
+    "titleChanged": "The Terms of Use have changed",
+    "titleReview": "Please review the Terms of Use",
+    "body": "Please read the Terms of Use and tap Accept to accept them.",
+    "keepUsing": "You can keep using your diary in the meantime, and you can delete your data at any time with Clear All Data in Settings.",
+    "read": "Read the Terms of Use",
+    "accept": "Accept",
+    "later": "Not now"
+  },
+  "disclaimer": {
+    "text": "Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms."
   }
 }

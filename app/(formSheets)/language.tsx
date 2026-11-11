@@ -18,15 +18,26 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const languageOptions: {
   value: SupportedLocale;
   nativeLabel: string;
-  englishLabel: string;
+  // Name of the language in the app's current language
+  labelKey: string;
   flag: string;
 }[] = [
-  { value: "en", nativeLabel: "English", englishLabel: "English", flag: "🇬🇧" },
-  { value: "es", nativeLabel: "Español", englishLabel: "Spanish", flag: "🇪🇸" },
+  {
+    value: "en",
+    nativeLabel: "English",
+    labelKey: "settings.english",
+    flag: "🇬🇧",
+  },
+  {
+    value: "es",
+    nativeLabel: "Español",
+    labelKey: "settings.spanish",
+    flag: "🇪🇸",
+  },
   {
     value: "pt",
     nativeLabel: "Português",
-    englishLabel: "Portuguese",
+    labelKey: "settings.portuguese",
     flag: "🇵🇹",
   },
 ];
@@ -38,6 +49,7 @@ interface LanguageOptionProps {
 }
 
 function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
+  const { t } = useI18n();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -75,7 +87,7 @@ function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
         >
           {option.nativeLabel}
         </Text>
-        <Text style={styles.englishLabel}>{option.englishLabel}</Text>
+        <Text style={styles.englishLabel}>{t(option.labelKey)}</Text>
       </View>
 
       {/* Radio indicator */}

@@ -1,3 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { TERMS_VERSION } from "@/constants/legal";
 import { useDiaryStore } from "@/lib/store";
 import { act } from "react";
 
@@ -182,10 +185,90 @@ describe("DiaryStore", () => {
       const { hasCompletedOnboarding: completed } = useDiaryStore.getState();
       expect(completed).toBe(true);
     });
+
+    it("starts with no accepted terms", () => {
+      const initial = useDiaryStore.getInitialState();
+      expect(initial.termsAcceptedVersion).toBeNull();
+      expect(initial.termsAcceptedAt).toBeNull();
+    });
+
+    it("records the accepted terms version and date when onboarding completes", () => {
+      act(() => {
+        useDiaryStore.setState({
+          hasCompletedOnboarding: false,
+          termsAcceptedVersion: null,
+          termsAcceptedAt: null,
+        });
+      });
+      const before = Date.now();
+
+      act(() => {
+        useDiaryStore.getState().completeOnboarding();
+      });
+
+      const state = useDiaryStore.getState();
+      expect(state.termsAcceptedVersion).toBe(TERMS_VERSION);
+      expect(state.termsAcceptedAt).not.toBeNull();
+      const acceptedAt = state.termsAcceptedAt as string;
+      expect(new Date(acceptedAt).toISOString()).toBe(acceptedAt);
+      expect(new Date(acceptedAt).getTime()).toBeGreaterThanOrEqual(before);
+      expect(new Date(acceptedAt).getTime()).toBeLessThanOrEqual(Date.now());
+    });
+
+    it("keeps the accepted terms when the tutorial is replayed", () => {
+      act(() => {
+        useDiaryStore.getState().completeOnboarding();
+      });
+      const { termsAcceptedAt } = useDiaryStore.getState();
+
+      act(() => {
+        useDiaryStore.getState().resetOnboarding();
+      });
+
+      const state = useDiaryStore.getState();
+      expect(state.hasCompletedOnboarding).toBe(false);
+      expect(state.termsAcceptedVersion).toBe(TERMS_VERSION);
+      expect(state.termsAcceptedAt).toBe(termsAcceptedAt);
+    });
+
+    it("records the current terms version and date when the terms-update notice is accepted", () => {
+      act(() => {
+        useDiaryStore.setState({
+          hasCompletedOnboarding: true,
+          termsAcceptedVersion: "2000-01-01",
+          termsAcceptedAt: "2000-01-01T00:00:00.000Z",
+        });
+      });
+      const before = Date.now();
+
+      act(() => {
+        useDiaryStore.getState().acceptTerms();
+      });
+
+      const state = useDiaryStore.getState();
+      expect(state.termsAcceptedVersion).toBe(TERMS_VERSION);
+      const acceptedAt = state.termsAcceptedAt as string;
+      expect(new Date(acceptedAt).getTime()).toBeGreaterThanOrEqual(before);
+      // Accepting does not touch onboarding
+      expect(state.hasCompletedOnboarding).toBe(true);
+    });
+
+    it("persists the accepted terms with the rest of the diary", async () => {
+      act(() => {
+        useDiaryStore.getState().completeOnboarding();
+      });
+      const stored = JSON.parse(
+        (await AsyncStorage.getItem("pee-diary-storage")) as string
+      );
+      expect(stored.state.termsAcceptedVersion).toBe(TERMS_VERSION);
+      expect(stored.state.termsAcceptedAt).toBe(
+        useDiaryStore.getState().termsAcceptedAt
+      );
+    });
   });
 
   describe("clearAllData", () => {
-    it("deletes entries, goals, goal history, streak and settings, keeping language and onboarding", () => {
+    it("deletes entries, goals, goal history, streak and settings, keeping language, onboarding and accepted terms", () => {
       const state = useDiaryStore.getState();
       act(() => {
         state.addUrinationEntry({
@@ -207,6 +290,8 @@ describe("DiaryStore", () => {
         state.setLanguage("pt");
         state.completeOnboarding();
       });
+      const { termsAcceptedAt } = useDiaryStore.getState();
+      expect(termsAcceptedAt).not.toBeNull();
 
       act(() => {
         useDiaryStore.getState().clearAllData();
@@ -228,6 +313,9 @@ describe("DiaryStore", () => {
       // Kept, so the app stays in the user's language and on Today
       expect(cleared.language).toBe("pt");
       expect(cleared.hasCompletedOnboarding).toBe(true);
+      // Kept, as the record of which Terms of Use were accepted and when
+      expect(cleared.termsAcceptedVersion).toBe(TERMS_VERSION);
+      expect(cleared.termsAcceptedAt).toBe(termsAcceptedAt);
     });
   });
 

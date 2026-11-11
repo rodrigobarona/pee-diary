@@ -5,9 +5,13 @@ import {
   deleteExportFiles,
   EXPORT_FILE_PREFIX,
   exportAndShare,
+  formatToCSV,
+  generatePDFHTML,
 } from "@/lib/utils/export";
 import { BACKUP_FILENAME, importBackupFile } from "@/lib/utils/backup";
 import type { DiaryEntry } from "@/lib/store/types";
+import en from "@/lib/i18n/locales/en.json";
+import pt from "@/lib/i18n/locales/pt.json";
 
 // In-memory stand-in for the app's folders.
 const mockFiles: Record<string, string[]> = {};
@@ -144,7 +148,112 @@ describe("export files", () => {
     expect(mockFiles["file:///cache/DocumentPicker/"]).toEqual([]);
   });
 
+  it("returns an error code, not English text, when there is nothing to export", async () => {
+    const result = await exportAndShare([], "csv", range);
+    expect(result).toEqual({ success: false, error: "noEntries" });
+  });
+
   it("names the backup file so the cleanup finds it", () => {
     expect(BACKUP_FILENAME.startsWith(EXPORT_FILE_PREFIX)).toBe(true);
+  });
+});
+
+describe("PDF report", () => {
+  it("prints the English medical disclaimer in the page footer by default", () => {
+    const html = generatePDFHTML(entries, range);
+    expect(html).toContain(
+      '<div class="page-disclaimer">Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms.</div>'
+    );
+  });
+
+  it("prints the disclaimer it is given, in the user's language", () => {
+    const html = generatePDFHTML(entries, range, {
+      ...en.pdf,
+      disclaimer: pt.disclaimer.text,
+    });
+    expect(html).toContain(pt.disclaimer.text);
+  });
+});
+
+describe("recorded amounts and neutral styling", () => {
+  const measured: DiaryEntry[] = [
+    {
+      id: "2",
+      type: "urination",
+      timestamp: "2026-11-10T09:00:00.000Z",
+      volume: "medium",
+      volumeMl: 320,
+      urgency: 5,
+      hadLeak: false,
+      hadPain: true,
+    },
+    {
+      id: "3",
+      type: "leak",
+      timestamp: "2026-11-10T10:00:00.000Z",
+      severity: "full",
+      urgency: 5,
+      activity: "coughing",
+    },
+    {
+      id: "4",
+      type: "leak",
+      timestamp: "2026-11-10T11:00:00.000Z",
+      severity: "moderate",
+      urgency: 4,
+    },
+  ];
+
+  it("shows the exact ml in the PDF when the user entered one, and the size otherwise", () => {
+    const html = generatePDFHTML([...entries, ...measured], range);
+    expect(html).toContain("<td>320 ml</td>");
+    expect(html).toContain("<td>Medium</td>");
+  });
+
+  it("exports the exact ml and the leak activity in the CSV", () => {
+    const [header, , measuredRow, leakRow] = formatToCSV([
+      ...entries,
+      ...measured,
+    ]).split("\n");
+    const columns = header.split(",");
+    const cell = (row: string, name: string) =>
+      row.split(",")[columns.indexOf(name)];
+    expect(cell(measuredRow, "Volume")).toBe("medium");
+    expect(cell(measuredRow, "Volume (ml)")).toBe("320");
+    expect(cell(leakRow, "Activity")).toBe("coughing");
+    expect(cell(leakRow, "Severity")).toBe("full");
+  });
+
+  it("marks leaks, pain and high urgency in the PDF without warning colours", () => {
+    const html = generatePDFHTML(measured, range);
+    expect(html).not.toMatch(/has-mark (warning|danger)/);
+    expect(html).not.toContain("highlight-warning");
+    expect(html).not.toMatch(/#FEE2E2|#FEF3C7|#DC2626|#B45309/i);
+  });
+
+  it("uses the singular for one void or leak in the PDF daily total", () => {
+    const html = generatePDFHTML(entries, range);
+    expect(html).toContain(">1 void</td>");
+    expect(html).toContain(">0 leaks</td>");
+    const ptHtml = generatePDFHTML(
+      [measured[1]],
+      range,
+      { ...pt.pdf, disclaimer: pt.disclaimer.text },
+      "pt"
+    );
+    expect(ptHtml).toContain(">1 perda</td>");
+    expect(ptHtml).toContain(">0 micções</td>");
+  });
+});
+
+describe("PDF notes", () => {
+  it("shows notes with < and > as written", () => {
+    const { generatePDFHTML } = jest.requireActual("@/lib/utils/export");
+    const html: string = generatePDFHTML(
+      [{ ...entries[0], notes: "<200 ml & urgent>" }],
+      range
+    );
+    expect(html).toContain("&lt;200 ml &amp; urgent&gt;");
+    expect(html).not.toContain("<200 ml");
   });
 });

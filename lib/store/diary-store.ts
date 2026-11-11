@@ -3,6 +3,8 @@ import { getLocales } from "expo-localization";
 import * as React from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
+import { TERMS_VERSION } from "@/constants/legal";
 import type {
   CreateFluidEntry,
   CreateLeakEntry,
@@ -51,10 +53,11 @@ const createId = (): string => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-// Default daily goals based on medical standards
+// Starting values for the user's own daily targets. They are not medical
+// norms; the user can change them at any time in Daily Goals.
 const DEFAULT_GOALS: DailyGoals = {
   fluidTarget: 2000, // ml
-  voidTarget: 7, // 6-8 voids per day is normal
+  voidTarget: 7, // bathroom visits
 };
 
 // Default reminder settings
@@ -143,6 +146,10 @@ interface DiaryState {
   streak: StreakInfo;
   openAddMenuOnLaunch: boolean;
   hasCompletedOnboarding: boolean;
+  // Version and date (ISO) of the Terms of Use last accepted, at the end of
+  // onboarding or in the terms-update notice; null until first accepted.
+  termsAcceptedVersion: string | null;
+  termsAcceptedAt: string | null;
   reminderSettings: ReminderSettings;
 
   // Actions
@@ -163,6 +170,7 @@ interface DiaryState {
   setOpenAddMenuOnLaunch: (enabled: boolean) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
+  acceptTerms: () => void;
   updateReminderSettings: (settings: Partial<ReminderSettings>) => void;
 }
 
@@ -176,6 +184,8 @@ export const useDiaryStore = create<DiaryState>()(
       streak: { currentStreak: 0, lastActiveDate: null },
       openAddMenuOnLaunch: true,
       hasCompletedOnboarding: false,
+      termsAcceptedVersion: null,
+      termsAcceptedAt: null,
       reminderSettings: DEFAULT_REMINDER_SETTINGS,
 
       addUrinationEntry: (entry) => {
@@ -274,8 +284,9 @@ export const useDiaryStore = create<DiaryState>()(
         })),
 
       // Deletes every diary entry, goal, goal history, streak and setting.
-      // The language and the completed onboarding are kept, so the app stays
-      // in the user's language and on the Today screen.
+      // The language, the completed onboarding and the record of the accepted
+      // Terms of Use are kept, so the app stays in the user's language and on
+      // the Today screen.
       clearAllData: () =>
         set({
           entries: [],
@@ -371,9 +382,23 @@ export const useDiaryStore = create<DiaryState>()(
       setOpenAddMenuOnLaunch: (enabled) =>
         set({ openAddMenuOnLaunch: enabled }),
 
-      completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+      // Completing onboarding (Get Started on the last page) accepts the Terms
+      // of Use shown on that page; record which version and when.
+      completeOnboarding: () =>
+        set({
+          hasCompletedOnboarding: true,
+          termsAcceptedVersion: TERMS_VERSION,
+          termsAcceptedAt: new Date().toISOString(),
+        }),
 
       resetOnboarding: () => set({ hasCompletedOnboarding: false }),
+
+      // Accept in the notice shown at launch when the Terms of Use changed
+      acceptTerms: () =>
+        set({
+          termsAcceptedVersion: TERMS_VERSION,
+          termsAcceptedAt: new Date().toISOString(),
+        }),
 
       updateReminderSettings: (settings) =>
         set((state) => ({

@@ -137,10 +137,10 @@ export default function GoalsScreen() {
         </View>
       </View>
 
-      {/* Medical info */}
+      {/* About these targets */}
       <View style={styles.infoBox}>
         <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
-        <Text style={styles.infoText}>{t('goals.medicalInfo')}</Text>
+        <Text style={styles.infoText}>{t('goals.targetsInfo')}</Text>
       </View>
 
       {/* Goal History Section */}

@@ -32,6 +32,7 @@ import type { DateEntryInfo } from "@/components/diary/calendar-header";
 import type { FilterType } from "@/components/diary/filter-chips";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
+import { dateFormatters } from "@/lib/i18n";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
 
@@ -151,7 +152,7 @@ export default function HistoryScreen() {
     (date: Date): string => {
       if (isToday(date)) return t("history.today");
       if (isYesterday(date)) return t("history.yesterday");
-      return format(date, "EEEE, MMMM d");
+      return dateFormatters.weekdayDayMonth.format(date);
     },
     [t]
   );
@@ -270,7 +271,7 @@ export default function HistoryScreen() {
       <View style={styles.dayHeader}>
         <Text style={styles.dayTitle}>{formatDateHeader(selectedDate)}</Text>
         <Text style={styles.dayDot}>·</Text>
-        <Text style={styles.dayDate}>{format(selectedDate, "MMM d")}</Text>
+        <Text style={styles.dayDate}>{dateFormatters.dayMonth.format(selectedDate)}</Text>
         {selectedDayData.hasAnyEntries ? (
           <>
             <View style={styles.daySpacer} />

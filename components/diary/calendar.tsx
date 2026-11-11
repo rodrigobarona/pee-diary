@@ -13,6 +13,7 @@ import {
   startOfWeek,
   endOfWeek,
 } from 'date-fns';
+import { dateFormatters, getWeekdayShortLabels } from '@/lib/i18n';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@/components/ui/text';
@@ -41,7 +42,7 @@ export function Calendar({
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [currentMonth]);
 
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const weekDays = getWeekdayShortLabels();
 
   const goToPreviousMonth = React.useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -73,7 +74,7 @@ export function Calendar({
           />
         </Pressable>
         <Text className="text-lg font-semibold">
-          {format(currentMonth, 'MMMM yyyy')}
+          {dateFormatters.monthYear.format(currentMonth)}
         </Text>
         <Pressable onPress={goToNextMonth} className="p-2">
           <MaterialCommunityIcons
@@ -86,8 +87,8 @@ export function Calendar({
 
       {/* Week Day Headers */}
       <View className="flex-row mb-2">
-        {weekDays.map((day) => (
-          <View key={day} className="flex-1 items-center py-2">
+        {weekDays.map((day, index) => (
+          <View key={index} className="flex-1 items-center py-2">
             <Text className="text-xs text-muted-foreground font-medium">
               {day}
             </Text>

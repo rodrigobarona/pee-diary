@@ -20,7 +20,7 @@ interface ProgressBarProps {
   color?: string;
   backgroundColor?: string;
   onPress?: () => void;
-  successLabel?: string; // Label to show when target is 0 and value is 0 (e.g., "None" for leaks)
+  successLabel?: string; // Label to show when target is 0 and value is 0 (e.g. t("home.noLeaks"))
 }
 
 export function ProgressBar({
@@ -33,7 +33,7 @@ export function ProgressBar({
   color = colors.primary.DEFAULT,
   backgroundColor = '#E5E7EB',
   onPress,
-  successLabel = 'None',
+  successLabel,
 }: ProgressBarProps) {
   // Clamp progress between 0 and 1
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
@@ -54,9 +54,10 @@ export function ProgressBar({
     width: `${animatedProgress.value * 100}%`,
   }));
 
-  // For leaks (target = 0), show checkmark when 0, count when > 0
+  // For leaks (target = 0), show the empty label when 0, count when > 0
   const isNoTargetMode = target === 0;
-  const showSuccess = isNoTargetMode && value === 0;
+  const showSuccess =
+    isNoTargetMode && value === 0 && successLabel !== undefined;
 
   const content = (
     <View style={styles.container}>
@@ -70,7 +71,6 @@ export function ProgressBar({
         <View style={styles.valueRow}>
           {showSuccess ? (
             <View style={styles.successBadge}>
-              <MaterialCommunityIcons name="check" size={16} color="#10B981" />
               <Text style={styles.successText}>{successLabel}</Text>
             </View>
           ) : isNoTargetMode ? (
@@ -84,8 +84,8 @@ export function ProgressBar({
         </View>
       </View>
       
-      {/* Only show track for items with targets or leaks > 0 */}
-      {(!isNoTargetMode || value > 0) && (
+      {/* Only items with a target have a track; there is nothing to fill otherwise */}
+      {!isNoTargetMode && (
         <View style={[styles.track, { backgroundColor }]}>
           <Animated.View
             style={[
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#6B7280',
   },
   track: {
     height: 8,

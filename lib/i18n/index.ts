@@ -36,71 +36,99 @@ i18n.locale = getInitialLocale();
 i18n.enableFallback = true;
 i18n.defaultLocale = 'en';
 
-// Hoisted Intl formatters - per js-hoist-intl rule
-// These are expensive to instantiate, so we create them once at module scope
-
-// Date formatters
-export const dateFormatters = {
-  short: new Intl.DateTimeFormat(i18n.locale, { dateStyle: 'short' }),
-  medium: new Intl.DateTimeFormat(i18n.locale, { dateStyle: 'medium' }),
-  long: new Intl.DateTimeFormat(i18n.locale, { dateStyle: 'long' }),
-  time: new Intl.DateTimeFormat(i18n.locale, {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }),
-  timeShort: new Intl.DateTimeFormat(i18n.locale, {
-    hour: 'numeric',
-    minute: '2-digit',
-  }),
-  dayMonth: new Intl.DateTimeFormat(i18n.locale, {
-    day: 'numeric',
-    month: 'short',
-  }),
-  weekday: new Intl.DateTimeFormat(i18n.locale, { weekday: 'long' }),
-  weekdayShort: new Intl.DateTimeFormat(i18n.locale, { weekday: 'short' }),
+/**
+ * Locale used for dates, times and numbers. Portuguese and Spanish use the
+ * European conventions (pt-PT, es-ES), as in the Eleva monorepo; bare "pt"
+ * would format dates the Brazilian way.
+ */
+export const intlLocales: Record<SupportedLocale, string> = {
+  en: 'en',
+  es: 'es-ES',
+  pt: 'pt-PT',
 };
 
-// Number formatters
-export const numberFormatters = {
-  decimal: new Intl.NumberFormat(i18n.locale),
-  ml: new Intl.NumberFormat(i18n.locale, {
-    style: 'unit',
-    unit: 'milliliter',
-    unitDisplay: 'short',
-  }),
+export const intlLocale = (locale: string): string =>
+  intlLocales[locale as SupportedLocale] ?? locale;
+
+// Hoisted Intl formatters - per js-hoist-intl rule
+// These are expensive to instantiate, so we create them once per locale
+const buildDateFormatters = (locale: SupportedLocale) => {
+  const l = intlLocale(locale);
+  return {
+    short: new Intl.DateTimeFormat(l, { dateStyle: 'short' }),
+    medium: new Intl.DateTimeFormat(l, { dateStyle: 'medium' }),
+    long: new Intl.DateTimeFormat(l, { dateStyle: 'long' }),
+    // 12-hour clock in English, 24-hour in Spanish and Portuguese
+    time: new Intl.DateTimeFormat(l, {
+      hour: locale === 'en' ? 'numeric' : '2-digit',
+      minute: '2-digit',
+      hour12: locale === 'en',
+    }),
+    timeShort: new Intl.DateTimeFormat(l, {
+      hour: locale === 'en' ? 'numeric' : '2-digit',
+      minute: '2-digit',
+      hour12: locale === 'en',
+    }),
+    dayMonth: new Intl.DateTimeFormat(l, { day: 'numeric', month: 'short' }),
+    dayMonthYear: new Intl.DateTimeFormat(l, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }),
+    weekdayDayMonth: new Intl.DateTimeFormat(l, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }),
+    monthYear: new Intl.DateTimeFormat(l, { month: 'long', year: 'numeric' }),
+    monthShort: new Intl.DateTimeFormat(l, { month: 'short' }),
+    weekday: new Intl.DateTimeFormat(l, { weekday: 'long' }),
+    weekdayShort: new Intl.DateTimeFormat(l, { weekday: 'short' }),
+    weekdayNarrow: new Intl.DateTimeFormat(l, { weekday: 'narrow' }),
+  };
+};
+
+const buildNumberFormatters = (locale: SupportedLocale) => {
+  const l = intlLocale(locale);
+  return {
+    decimal: new Intl.NumberFormat(l),
+    ml: new Intl.NumberFormat(l, {
+      style: 'unit',
+      unit: 'milliliter',
+      unitDisplay: 'short',
+    }),
+  };
+};
+
+export const dateFormatters = buildDateFormatters(i18n.locale as SupportedLocale);
+export const numberFormatters = buildNumberFormatters(i18n.locale as SupportedLocale);
+
+/** Monday-first single-letter weekday labels in the current locale. */
+export const getWeekdayLabels = (): string[] => {
+  // 2 January 2023 was a Monday
+  return Array.from({ length: 7 }, (_, i) =>
+    dateFormatters.weekdayNarrow.format(new Date(2023, 0, 2 + i))
+  );
+};
+
+/**
+ * Monday-first three-letter weekday names in the current locale
+ * (pt-PT "seg, ter…", es-ES "lun, mar…", en "Mon, Tue…").
+ */
+export const getWeekdayShortLabels = (): string[] => {
+  return Array.from({ length: 7 }, (_, i) =>
+    dateFormatters.weekdayShort
+      .format(new Date(2023, 0, 2 + i))
+      .replace('.', '')
+      .slice(0, 3)
+  );
 };
 
 // Helper function to update formatters when locale changes
 export const updateLocale = (locale: SupportedLocale) => {
   i18n.locale = locale;
-
-  // Recreate formatters with new locale
-  dateFormatters.short = new Intl.DateTimeFormat(locale, { dateStyle: 'short' });
-  dateFormatters.medium = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-  dateFormatters.long = new Intl.DateTimeFormat(locale, { dateStyle: 'long' });
-  dateFormatters.time = new Intl.DateTimeFormat(locale, {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-  dateFormatters.timeShort = new Intl.DateTimeFormat(locale, {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-  dateFormatters.dayMonth = new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-  });
-  dateFormatters.weekday = new Intl.DateTimeFormat(locale, { weekday: 'long' });
-  dateFormatters.weekdayShort = new Intl.DateTimeFormat(locale, { weekday: 'short' });
-
-  numberFormatters.decimal = new Intl.NumberFormat(locale);
-  numberFormatters.ml = new Intl.NumberFormat(locale, {
-    style: 'unit',
-    unit: 'milliliter',
-    unitDisplay: 'short',
-  });
+  Object.assign(dateFormatters, buildDateFormatters(locale));
+  Object.assign(numberFormatters, buildNumberFormatters(locale));
 };
 
 export { i18n };

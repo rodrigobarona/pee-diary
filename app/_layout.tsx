@@ -18,10 +18,12 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 import { ErrorBoundary } from "@/components/error-boundary";
+import { TERMS_VERSION } from "@/constants/legal";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
+import { getLaunchAction } from "@/lib/utils/launch";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
@@ -42,34 +44,43 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const isHydrated = useStoreHydrated();
   const hasCheckedLaunchRef = useRef(false);
 
-  // Handle initial routing based on onboarding status
-  // Also auto-open add menu on app launch if preference is enabled
+  // Once per launch, after the stored data has loaded: show onboarding, the
+  // terms-update notice or the add menu (at most one; see getLaunchAction).
   useEffect(() => {
-    if (isHydrated && !hasCheckedLaunchRef.current) {
-      hasCheckedLaunchRef.current = true;
+    if (!isHydrated || hasCheckedLaunchRef.current) return;
 
-      // Remove export and import copies left from the last session
-      deleteExportFiles().catch(() => {});
+    // Read the store directly to avoid reacting to later changes
+    const state = useDiaryStore.getState();
 
-      // Check if onboarding needs to be shown
-      const state = useDiaryStore.getState();
+    // The Stack below is keyed on the locale. Wait until it follows the
+    // stored language, or the remount would drop the screen pushed here.
+    if (locale !== state.language) return;
 
-      if (!state.hasCompletedOnboarding) {
-        // Navigate to onboarding
+    hasCheckedLaunchRef.current = true;
+
+    // Remove export and import copies left from the last session
+    deleteExportFiles().catch(() => {});
+
+    switch (getLaunchAction(state, TERMS_VERSION)) {
+      case "onboarding":
         router.replace("/welcome");
-        return;
-      }
-
-      // Read preference directly from store to avoid reacting to changes
-      const shouldOpen = state.openAddMenuOnLaunch;
-      if (shouldOpen) {
+        break;
+      case "termsUpdate":
+        // Small delay to ensure navigation is ready
+        setTimeout(() => {
+          router.push("/terms-update");
+        }, 100);
+        break;
+      case "addMenu":
         // Small delay to ensure navigation is ready
         setTimeout(() => {
           router.push("/(formSheets)/add-menu");
         }, 100);
-      }
+        break;
+      case "none":
+        break;
     }
-  }, [isHydrated, router]);
+  }, [isHydrated, locale, router]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -101,6 +112,14 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         />
         <Stack.Screen
           name="(modals)/add/leak"
+          options={{
+            presentation: Platform.OS === "web" ? "card" : "modal",
+            headerShown: false,
+            contentStyle: { backgroundColor: "#F9FAFB" },
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/terms-update"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,

@@ -112,8 +112,8 @@ export function FABMenu() {
           pressed && styles.fabPressed,
         ]}
         accessibilityRole="button"
-        accessibilityLabel="Add new entry"
-        accessibilityHint="Opens menu to add urination, fluid intake, or leak entry"
+        accessibilityLabel={t('home.addNew')}
+        accessibilityHint={t('home.addNewHint')}
       >
         <RNText style={styles.fabIconText}>{isOpen ? '×' : '+'}</RNText>
       </Pressable>
