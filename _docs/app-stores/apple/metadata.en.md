@@ -1,6 +1,6 @@
 # Eleva Diary — Apple App Store Metadata (English)
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Character limits:** Name (30), Subtitle (30), Promotional Text (170), Keywords (100), Description (4000)
 
 ---
@@ -72,7 +72,7 @@ EASY EXPORT & SHARING
 
 PRIVACY FIRST
 • All data is stored locally on your device—no account required
-• Optional iCloud backup/restore on iOS (your data stays in your Apple account)
+• Back up to a file you control and restore it on any device
 • No ads, no analytics, no third-party tracking
 • You control when and how your data leaves your device
 
@@ -108,7 +108,7 @@ Welcome to Eleva Diary! Start tracking your bladder health today.
 • Set personalized daily goals
 • View insights with weekly and monthly charts
 • Export reports as PDF, CSV, or JSON
-• Optional iCloud backup for iOS users
+• Back up your data to a file and restore it on any device
 • Available in English, Spanish, and Portuguese
 ```
 
@@ -141,8 +141,7 @@ Welcome to Eleva Diary! Start tracking your bladder health today.
 
 See `app-privacy-answers.md` for detailed guidance.
 
-- **Data Not Collected** (primary stance for most categories)
-- **Health & Fitness Data**: Collected only when user enables optional iCloud backup; linked to user's Apple ID but not used for tracking
+- **Data Not Collected** (all categories, including Health & Fitness)
 
 ---
 

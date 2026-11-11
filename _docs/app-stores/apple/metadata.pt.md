@@ -1,6 +1,6 @@
 # Eleva Diary — Metadados App Store da Apple (Português)
 
-> **Última atualização:** Fevereiro 2026  
+> **Última atualização:** 11 de novembro de 2026  
 > **Limites de caracteres:** Nome (30), Subtítulo (30), Texto Promocional (170), Palavras-chave (100), Descrição (4000)
 
 ---
@@ -72,7 +72,7 @@ EXPORTAÇÃO E COMPARTILHAMENTO
 
 PRIVACIDADE EM PRIMEIRO LUGAR
 • Todos os dados são armazenados localmente no seu dispositivo—não é necessário criar conta
-• Backup opcional no iCloud para iOS (seus dados permanecem na sua conta Apple)
+• Backup em um arquivo que você controla, para restaurar em qualquer dispositivo
 • Sem anúncios, sem análises, sem rastreamento de terceiros
 • Você controla quando e como seus dados saem do seu dispositivo
 
@@ -106,7 +106,7 @@ Bem-vindo ao Eleva Diary! Comece a acompanhar sua saúde da bexiga hoje.
 • Defina metas diárias personalizadas
 • Visualize análises com gráficos semanais e mensais
 • Exporte relatórios como PDF, CSV ou JSON
-• Backup opcional no iCloud para usuários iOS
+• Faça backup dos seus dados em um arquivo e restaure em qualquer dispositivo
 • Disponível em inglês, espanhol e português
 ```
 
@@ -139,8 +139,7 @@ Bem-vindo ao Eleva Diary! Comece a acompanhar sua saúde da bexiga hoje.
 
 Ver `app-privacy-answers.md` para orientação detalhada.
 
-- **Dados Não Coletados** (posição principal para a maioria das categorias)
-- **Dados de Saúde e Fitness**: Coletados apenas quando o usuário ativa o backup opcional no iCloud; vinculados ao Apple ID do usuário, mas não usados para rastreamento
+- **Dados Não Coletados** (todas as categorias, incluindo Dados de Saúde e Fitness)
 
 ---
 

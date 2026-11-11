@@ -1,17 +1,10 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
-const { withSentryConfig } = require("@sentry/react-native/metro");
+const { withNativewind } = require("nativewind/metro");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-// Apply NativeWind configuration
-const nativeWindConfig = withNativeWind(config, {
-  input: "./global.css",
-  inlineRem: 16, // Required for proper rem scaling
-});
-
-// Apply Sentry configuration for source maps and component annotations
-module.exports = withSentryConfig(nativeWindConfig, {
-  annotateReactComponents: true,
+module.exports = withNativewind(config, {
+  // Keep 1rem = 16 on native, as it was under NativeWind 4 (the v5 default is 14).
+  inlineRem: 16,
 });

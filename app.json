@@ -7,15 +7,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "peediary",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "care.eleva.peediary",
       "infoPlist": {
         "CFBundleLocalizations": ["en", "es", "pt"]
-      },
-      "entitlements": {
-        "com.apple.developer.ubiquity-kvstore-identifier": "$(TeamIdentifierPrefix)$(CFBundleIdentifier)"
       }
     },
     "android": {
@@ -25,7 +21,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "care.eleva.peediary",
       "allowBackup": true
@@ -64,15 +59,10 @@
           "color": "#006D77"
         }
       ],
-      "react-native-bottom-tabs",
       "@react-native-community/datetimepicker",
-      [
-        "@sentry/react-native/expo",
-        {
-          "organization": "elevacare",
-          "project": "eleva-diary"
-        }
-      ]
+      "expo-font",
+      "expo-sharing",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

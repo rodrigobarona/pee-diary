@@ -3,9 +3,9 @@ import { act } from "react";
 
 // Reset store before each test
 beforeEach(() => {
-  const { clearAllEntries } = useDiaryStore.getState();
+  const { clearAllData } = useDiaryStore.getState();
   act(() => {
-    clearAllEntries();
+    clearAllData();
   });
 });
 
@@ -181,6 +181,53 @@ describe("DiaryStore", () => {
 
       const { hasCompletedOnboarding: completed } = useDiaryStore.getState();
       expect(completed).toBe(true);
+    });
+  });
+
+  describe("clearAllData", () => {
+    it("deletes entries, goals, goal history, streak and settings, keeping language and onboarding", () => {
+      const state = useDiaryStore.getState();
+      act(() => {
+        state.addUrinationEntry({
+          timestamp: new Date().toISOString(),
+          volume: "medium",
+          urgency: 3,
+          hadLeak: false,
+          hadPain: false,
+        });
+        state.updateGoals({ fluidTarget: 2500, voidTarget: 9 });
+        state.updateReminderSettings({
+          enabled: true,
+          intervalHours: 2,
+          quietHoursEnabled: false,
+          quietHoursStart: "23:00",
+          quietHoursEnd: "06:00",
+        });
+        state.setOpenAddMenuOnLaunch(false);
+        state.setLanguage("pt");
+        state.completeOnboarding();
+      });
+
+      act(() => {
+        useDiaryStore.getState().clearAllData();
+      });
+
+      const cleared = useDiaryStore.getState();
+      expect(cleared.entries).toEqual([]);
+      expect(cleared.goals).toEqual({ fluidTarget: 2000, voidTarget: 7 });
+      expect(cleared.goalHistory).toEqual([]);
+      expect(cleared.streak).toEqual({ currentStreak: 0, lastActiveDate: null });
+      expect(cleared.reminderSettings).toEqual({
+        enabled: false,
+        intervalHours: 3,
+        quietHoursEnabled: true,
+        quietHoursStart: "22:00",
+        quietHoursEnd: "07:00",
+      });
+      expect(cleared.openAddMenuOnLaunch).toBe(true);
+      // Kept, so the app stays in the user's language and on Today
+      expect(cleared.language).toBe("pt");
+      expect(cleared.hasCompletedOnboarding).toBe(true);
     });
   });
 

@@ -154,7 +154,7 @@ interface DiaryState {
     updates: UpdateUrinationEntry | UpdateFluidEntry | UpdateLeakEntry
   ) => void;
   deleteEntry: (id: string) => void;
-  clearAllEntries: () => void;
+  clearAllData: () => void;
   setLanguage: (language: "en" | "es" | "pt") => void;
   getEntryById: (id: string) => DiaryEntry | undefined;
   updateGoals: (goals: Partial<DailyGoals>) => void;
@@ -273,7 +273,18 @@ export const useDiaryStore = create<DiaryState>()(
           entries: state.entries.filter((e) => e.id !== id),
         })),
 
-      clearAllEntries: () => set({ entries: [] }),
+      // Deletes every diary entry, goal, goal history, streak and setting.
+      // The language and the completed onboarding are kept, so the app stays
+      // in the user's language and on the Today screen.
+      clearAllData: () =>
+        set({
+          entries: [],
+          goals: DEFAULT_GOALS,
+          goalHistory: [],
+          streak: { currentStreak: 0, lastActiveDate: null },
+          openAddMenuOnLaunch: true,
+          reminderSettings: DEFAULT_REMINDER_SETTINGS,
+        }),
 
       setLanguage: (language) => set({ language }),
 

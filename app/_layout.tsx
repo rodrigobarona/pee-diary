@@ -1,13 +1,14 @@
 import "../global.css";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useFonts } from "expo-font";
 import {
   DarkTheme,
   DefaultTheme,
+  Stack,
   ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+  useRouter,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
@@ -19,14 +20,10 @@ import "react-native-reanimated";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
-import { initSentry, Sentry, setSentryAppContext } from "@/lib/sentry";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import { deleteExportFiles } from "@/lib/utils/export";
 
-// Initialize Sentry as early as possible
-initSentry();
-
-// Suppress deprecation warning from dependencies (react-native-bottom-tabs)
-// This can be removed once the library updates to use react-native-safe-area-context
+// Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
@@ -51,19 +48,15 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
     if (isHydrated && !hasCheckedLaunchRef.current) {
       hasCheckedLaunchRef.current = true;
 
+      // Remove export and import copies left from the last session
+      deleteExportFiles().catch(() => {});
+
       // Check if onboarding needs to be shown
       const state = useDiaryStore.getState();
 
-      // Set Sentry app context for better debugging
-      setSentryAppContext({
-        language: locale,
-        hasCompletedOnboarding: state.hasCompletedOnboarding,
-        entriesCount: state.entries.length,
-      });
-
       if (!state.hasCompletedOnboarding) {
         // Navigate to onboarding
-        router.replace("/(onboarding)");
+        router.replace("/welcome");
         return;
       }
 
@@ -76,7 +69,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         }, 100);
       }
     }
-  }, [isHydrated, router, locale]);
+  }, [isHydrated, router]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -170,7 +163,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   );
 }
 
-function RootLayout() {
+export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   // Explicitly load MaterialCommunityIcons font to ensure icons render
@@ -207,6 +200,3 @@ function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-
-// Wrap with Sentry for automatic error capturing and performance monitoring
-export default Sentry.wrap(RootLayout);

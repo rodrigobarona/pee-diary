@@ -10,7 +10,7 @@ const Card = React.forwardRef<
   <View
     ref={ref}
     className={cn(
-      'rounded-xl border border-border bg-card shadow-sm',
+      'rounded-xl border border-border bg-card shadow-xs',
       // Modern styling: borderCurve continuous for smooth iOS corners
       className
     )}

@@ -4,7 +4,7 @@ import { useDiaryStore } from '@/lib/store';
 
 interface I18nContextValue {
   locale: SupportedLocale;
-  t: typeof i18n.t;
+  t: (key: string, options?: Record<string, unknown>) => string;
   setLocale: (locale: SupportedLocale) => void;
 }
 

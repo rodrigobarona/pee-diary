@@ -27,11 +27,11 @@ export function AddTabButton({ accessibilityState: _accessibilityState }: AddTab
   }));
 
   const handleMainPressIn = React.useCallback(() => {
-    scale.value = withTiming(0.92, { duration: 100 });
+    scale.set(withTiming(0.92, { duration: 100 }));
   }, [scale]);
 
   const handleMainPressOut = React.useCallback(() => {
-    scale.value = withTiming(1, { duration: 150 });
+    scale.set(withTiming(1, { duration: 150 }));
   }, [scale]);
 
   const handlePress = React.useCallback(() => {

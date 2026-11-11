@@ -1,7 +1,7 @@
 # Opciones de Privacidad y Eliminación de Datos de Eleva Diary
 
-**Fecha de vigencia:** Febrero 2026  
-**Última actualización:** Febrero 2026
+**Fecha de vigencia:** 11 de noviembre de 2026  
+**Última actualización:** 11 de noviembre de 2026
 
 ---
 
@@ -14,7 +14,7 @@ Esta página explica:
 - Cómo se almacenan tus datos
 - Cómo exportar tus datos
 - Cómo eliminar tus datos
-- Cómo gestionar la copia de seguridad en iCloud (iOS)
+- Cómo hacer una copia de seguridad y restaurar tus datos con un archivo de copia de seguridad
 
 ---
 
@@ -24,18 +24,18 @@ Esta página explica:
 
 Todas las entradas del diario, metas y configuraciones se almacenan **localmente en tu dispositivo** usando almacenamiento local seguro. Estos datos:
 
-- Nunca salen de tu dispositivo sin tu acción explícita
+- La app nunca los envía a ningún sitio; solo salen de tu dispositivo si los exportas, o en la copia de seguridad de tu propio dispositivo cuando está activada (en muchos teléfonos lo está por defecto)
 - Están protegidos por la seguridad de tu dispositivo (código/biometría)
 - Se eliminan automáticamente si desinstalas la app
 
-### iCloud (Solo Usuarios de iOS)
+### En Copias de Seguridad del Dispositivo (Según los Ajustes de tu Dispositivo)
 
-Si activas la función opcional de copia de seguridad en iCloud:
+Eleva Diary no sube tus datos a ningún servicio en la nube. Independientemente de la app, el sistema operativo de tu dispositivo puede incluir los datos de la app en sus propias copias de seguridad:
 
-- Una copia de tus datos se almacena en el Almacén de Clave-Valor de iCloud de Apple
-- Esta copia de seguridad está asociada con tu Apple ID
-- Apple encripta estos datos en tránsito y en reposo
-- Eleva Care no tiene acceso a tus datos de iCloud
+- **iOS:** en la Copia de Seguridad de iCloud o en una copia de seguridad en tu ordenador, si las usas
+- **Android:** en la copia de seguridad de Android en tu cuenta de Google, si la copia de seguridad del dispositivo está activada
+
+Estas copias de seguridad las controlas tú a través de los ajustes de tu dispositivo y las gestionan Apple o Google. Eleva Care no tiene acceso a ellas.
 
 ---
 
@@ -75,9 +75,8 @@ Para eliminar permanentemente todos tus datos de la app:
 
 1. Abre Eleva Diary
 2. Ve a **Ajustes** (icono de engranaje)
-3. Desplázate hasta **Gestión de Datos** o **Borrar Datos**
-4. Toca **Borrar Todos los Datos**
-5. Confirma la eliminación cuando se te solicite
+3. En la sección de datos, toca **Borrar todos los datos**
+4. Confirma la eliminación cuando se te solicite
 
 **Advertencia:** Esta acción es permanente y no se puede deshacer. Recomendamos exportar tus datos primero si quieres conservar una copia.
 
@@ -104,47 +103,30 @@ Para eliminar una entrada individual:
 
 ---
 
-## Gestión de Copia de Seguridad en iCloud (Solo iOS)
+## Copia de Seguridad y Restauración de tus Datos
 
-### Verificar si la Copia de Seguridad en iCloud está Activada
-
-1. Abre Eleva Diary
-2. Ve a **Ajustes**
-3. Busca **Sincronización iCloud** o **Copia de Seguridad en la Nube**
-4. El interruptor muestra si la copia de seguridad está activada
-
-### Desactivar Copia de Seguridad en iCloud
+### Exportar un Archivo de Copia de Seguridad
 
 1. Abre Eleva Diary
 2. Ve a **Ajustes**
-3. Encuentra **Sincronización iCloud** o **Copia de Seguridad en la Nube**
-4. Desactívalo
+3. En **Copia Local**, toca **Exportar Copia de Seguridad**
+4. Elige dónde guardar o enviar el archivo (Archivos, email, almacenamiento en la nube, etc.)
 
-Nota: Desactivar la copia de seguridad no elimina automáticamente los datos ya almacenados en iCloud.
+El archivo de copia de seguridad contiene tus entradas del diario, metas, historial de metas, datos de rachas y preferencia de idioma. El archivo no está encriptado; guárdalo en un lugar de tu confianza.
 
-### Eliminar Datos de Copia de Seguridad en iCloud
+### Importar un Archivo de Copia de Seguridad
 
-Para eliminar tus datos de Eleva Diary de iCloud:
+1. Abre Eleva Diary en cualquier dispositivo iOS o Android
+2. Ve a **Ajustes**
+3. En **Copia Local**, toca **Importar Copia de Seguridad**
+4. Confirma y selecciona tu archivo de copia de seguridad
 
-**Método 1: Dentro de la App**
+Nota: Importar un archivo de copia de seguridad reemplaza los datos que hay en la app.
 
-1. Desactiva la Sincronización de iCloud en los ajustes de Eleva Diary
-2. Esto detiene las copias de seguridad futuras pero puede no eliminar los datos existentes
+### Eliminar Archivos de Copia de Seguridad y Copias del Dispositivo
 
-**Método 2: Mediante Ajustes de iOS**
-
-1. Abre **Ajustes** de iOS
-2. Toca tu **Apple ID** en la parte superior
-3. Toca **iCloud**
-4. Toca **Gestionar Almacenamiento** o **Gestionar Almacenamiento de la Cuenta**
-5. Encuentra **Eleva Diary** en la lista de apps
-6. Toca **Eliminar Datos**
-
-**Método 3: Eliminar App + Datos de iCloud**
-
-1. Desinstala Eleva Diary de tu dispositivo
-2. Ve a **Ajustes** de iOS → **Apple ID** → **iCloud** → **Gestionar Almacenamiento**
-3. Encuentra y elimina cualquier dato restante de Eleva Diary
+- **Archivos de copia de seguridad:** Son tus copias. Elimínalos allí donde los guardaste (Archivos, email, almacenamiento en la nube, etc.)
+- **Copias de seguridad del dispositivo:** Para eliminar los datos de la app de una copia de seguridad del dispositivo, gestiona o elimina esa copia en los ajustes de iOS o Android
 
 ---
 
@@ -159,8 +141,8 @@ Cuando desinstalas Eleva Diary:
 
 ### Qué Puede Permanecer
 
-- Datos de copia de seguridad en iCloud (si los activaste) — elimínalos manualmente en Ajustes de iOS
-- Archivos exportados que guardaste en otro lugar (son tus copias para gestionar)
+- Copias de seguridad del dispositivo realizadas por iOS o Android (si las usas) — gestiónalas en los ajustes de tu dispositivo
+- Archivos exportados y archivos de copia de seguridad que guardaste en otro lugar (son tus copias para gestionar)
 
 ---
 
@@ -172,7 +154,7 @@ Eleva Care no retiene ninguno de tus datos de salud. No:
 
 - Almacenamos tus entradas del diario en nuestros servidores
 - Tenemos acceso a tus datos locales
-- Tenemos acceso a tus datos de copia de seguridad en iCloud
+- Tenemos acceso a tus archivos de copia de seguridad ni a las copias de seguridad de tu dispositivo
 
 ### Tu Control
 
@@ -188,12 +170,13 @@ Tú decides cuánto tiempo conservar tus datos:
 
 ### ¿Puede Eleva Care ver mis datos?
 
-**No.** Tus datos se almacenan solo en tu dispositivo (y opcionalmente en tu cuenta personal de iCloud). No tenemos acceso a ellos.
+**No.** Tus datos se almacenan solo en tu dispositivo (y en los archivos de copia de seguridad o copias del dispositivo que elijas hacer). No tenemos acceso a ellos.
 
 ### ¿Qué pasa con mis datos si obtengo un nuevo teléfono?
 
-- **iOS a iOS (con copia de seguridad en iCloud activada):** Puedes restaurar tus datos desde iCloud en tu nuevo dispositivo
-- **Sin copia de seguridad:** Tus datos no se transfieren automáticamente. Exporta tus datos antes de cambiar de dispositivo.
+- **Cualquier dispositivo (iOS o Android):** Exporta un archivo de copia de seguridad en tu teléfono anterior e impórtalo en tu nuevo teléfono
+- **Con una copia de seguridad del dispositivo:** Si la copia de seguridad de tu dispositivo iOS o Android incluye los datos de la app, restaurar esa copia en tu nuevo teléfono también puede restaurar tu diario. Esto depende de los ajustes de tu dispositivo, no de la app.
+- **Sin copia de seguridad:** Tus datos no se transfieren. Exporta un archivo de copia de seguridad antes de cambiar de dispositivo.
 
 ### ¿Puedo solicitar mis datos a Eleva Care?
 
@@ -202,7 +185,7 @@ Dado que no recopilamos tus datos, no tenemos nada que proporcionar. Tus datos y
 ### ¿Están mis datos encriptados?
 
 - **En el dispositivo:** Sí, iOS y Android encriptan los datos de la app en reposo
-- **En iCloud:** Sí, Apple encripta los datos de iCloud
+- **En copias de seguridad del dispositivo:** Las gestionan Apple o Google con sus propias medidas de seguridad y según los ajustes de tu dispositivo
 - **Durante la exportación:** El archivo en sí no está encriptado; tú controlas la seguridad de los archivos exportados
 
 ### ¿Cómo sé que mis datos fueron eliminados?

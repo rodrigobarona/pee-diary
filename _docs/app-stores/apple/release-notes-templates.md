@@ -1,6 +1,6 @@
 # Eleva Diary — Release Notes Templates (Apple App Store)
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Character limit:** 4000 characters per locale
 
 Use these templates for the "What's New" section in App Store Connect. Customize based on actual changes in each release.
@@ -24,7 +24,7 @@ NEW FEATURES:
 
 EXPORT & BACKUP:
 • Export reports as PDF, CSV, or JSON
-• Optional iCloud backup for iOS (keep your data safe)
+• Back up your data to a file and restore it on any device
 
 LANGUAGES:
 • Available in English, Spanish, and Portuguese
@@ -47,7 +47,7 @@ NUEVAS FUNCIONES:
 
 EXPORTACIÓN Y RESPALDO:
 • Exporta informes como PDF, CSV o JSON
-• Copia de seguridad opcional en iCloud para iOS (mantén tus datos seguros)
+• Haz una copia de seguridad en un archivo y restáurala en cualquier dispositivo
 
 IDIOMAS:
 • Disponible en inglés, español y portugués
@@ -70,7 +70,7 @@ NOVOS RECURSOS:
 
 EXPORTAÇÃO E BACKUP:
 • Exporte relatórios como PDF, CSV ou JSON
-• Backup opcional no iCloud para iOS (mantenha seus dados seguros)
+• Faça backup dos seus dados em um arquivo e restaure em qualquer dispositivo
 
 IDIOMAS:
 • Disponível em inglês, espanhol e português

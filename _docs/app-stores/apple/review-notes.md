@@ -1,6 +1,6 @@
 # Eleva Diary — Notes for App Review (Apple)
 
-> **Last updated:** February 2026  
+> **Last updated:** 11 November 2026  
 > **Purpose:** Guidance for App Store Review team to facilitate smooth app review
 
 ---
@@ -31,9 +31,11 @@ A medical disclaimer is displayed in the app description and will be visible in 
 ### 3. Data Privacy
 
 - **Local storage only**: All diary entries are stored on-device
-- **Optional iCloud backup**: Users can choose to back up data to iCloud (iOS only); this uses Apple's iCloud Key-Value Store
+- **No iCloud storage**: The app does not store health data in iCloud (in line with Guideline 5.1.3(ii)) and has no iCloud entitlement
+- **Local backup file**: Users can export a backup file via the OS share sheet and import it again on any device (Settings → Local Backup)
 - **User-controlled export**: Users can export data as PDF, CSV, or JSON via the OS share sheet
 - **No analytics**: No third-party analytics or tracking SDKs are included
+- **No crash reporting**: No crash reporting or performance monitoring SDKs are included
 - **No ads**: The app is ad-free
 
 ### 4. Content Rating
@@ -60,7 +62,7 @@ While the app deals with health topics, the content is clinical/medical logging 
 4. **View history**: Navigate to History tab → See calendar with entry dots → Tap a day to see entries
 5. **View insights**: Navigate to Home tab → See daily progress, weekly chart, streak
 6. **Export data**: Settings → Export → Choose format → Share via share sheet
-7. **iCloud backup** (iOS): Settings → iCloud Sync → Tap "Back Up Now"
+7. **Local backup**: Settings → Local Backup → "Export Backup File" → Save via share sheet; "Import Backup File" → Select the saved file
 8. **Change language**: Settings → Language → Select English/Spanish/Portuguese
 
 ### Demo Credentials
@@ -71,13 +73,11 @@ While the app deals with health topics, the content is clinical/medical logging 
 
 ## Permissions Requested
 
-| Permission    | Purpose | When Prompted |
-| ------------- | ------- | ------------- |
-| None required | —       | —             |
+| Permission    | Purpose                                      | When Prompted                                   |
+| ------------- | -------------------------------------------- | ----------------------------------------------- |
+| Notifications | Local reminders to log entries (no push)     | Only when the user turns on reminders in Settings |
 
-Eleva Diary does not request any special permissions (no camera, location, contacts, etc.).
-
-The iCloud backup feature uses the app's iCloud container entitlement (configured in Xcode) and does not require runtime permission prompts.
+Eleva Diary requests no other permissions (no camera, location, contacts, etc.). Reminders are scheduled on the device; the app does not request or send a push token.
 
 ---
 
@@ -97,8 +97,8 @@ The app automatically detects the device language and falls back to English if t
 
 | Item        | Value                      |
 | ----------- | -------------------------- |
-| Framework   | React Native (Expo SDK 54) |
-| Minimum iOS | 13.4                       |
+| Framework   | React Native (Expo SDK 57) |
+| Minimum iOS | 16.4                       |
 | Bundle ID   | care.eleva.peediary        |
 | Developer   | Buzios e Tartarugas, Lda.  |
 
@@ -122,7 +122,7 @@ No. Eleva Diary is a personal logging tool similar to a paper bladder diary trad
 
 ### "Why does it access Health data?"
 
-Eleva Diary does **not** read from or write to Apple HealthKit. The "Health & Fitness" privacy disclosure relates only to the app's own diary data, which may be backed up to iCloud when the user enables that optional feature.
+Eleva Diary does **not** read from or write to Apple HealthKit. The app keeps its own diary data on the device only and does not send it to iCloud or to any server, so no data is collected.
 
 ### "Are you a healthcare provider?"
 
@@ -131,7 +131,7 @@ The developer (Eleva Care) provides health and wellness tools but is not a licen
 ### "How is data protected?"
 
 - Data at rest: Stored in AsyncStorage (app sandbox, encrypted by iOS)
-- Data in transit (iCloud): Uses Apple's secure iCloud infrastructure
+- Data in transit: None — the app makes no network requests; data leaves the device only when the user exports a report or backup file via the share sheet, or inside the device backup iOS makes under the user's own settings
 - No server-side storage: Eleva Care does not operate servers that store user health data
 
 ---

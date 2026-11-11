@@ -144,7 +144,7 @@ Summary:
 
 - No data shared with third parties
 - Data collected: Health info (only stored locally on device)
-- Data deletion: Users can delete all data via Settings → Clear Data
+- Data deletion: Users can delete all data via Settings → Clear All Data
 
 ---
 

@@ -1,7 +1,7 @@
 # Eleva Diary Privacy Policy
 
-**Effective Date:** February 2026  
-**Last Updated:** February 2026
+**Effective Date:** 11 November 2026  
+**Last Updated:** 11 November 2026
 
 ---
 
@@ -28,7 +28,7 @@ This Privacy Policy explains how we handle information when you use Eleva Diary.
 - ✅ We do **not** collect, transmit, or store your personal health data on our servers
 - ✅ We do **not** use analytics, advertising, or tracking technologies
 - ✅ You have **full control** over your data at all times
-- ✅ Data only leaves your device when **you explicitly choose** to export or back up
+- ✅ The app never sends your data anywhere. It leaves your device only when **you choose** to export it, or in your device's own backup when that is on (on many phones it is on by default)
 
 ---
 
@@ -63,31 +63,35 @@ When you use Eleva Diary, the following data is stored **locally on your device 
 
 ### 2.3 Technical Storage
 
-This data is stored using your device's local storage (AsyncStorage) and is not transmitted to any external servers.
+This data is stored using your device's local storage (AsyncStorage). The app does not transmit it to any external servers. Your device's operating system may include it in device backups under your own settings (see Section 3).
 
 ---
 
-## 3. Optional iCloud Backup (iOS Only)
+## 3. Backing Up Your Data
 
-If you use an iOS device, Eleva Diary offers an **optional** iCloud backup feature:
+Eleva Diary does not upload your data to any cloud service. To keep a copy of your diary or move it to another device, you can use a **local backup file**:
 
-### What happens when you enable iCloud backup:
+### What happens when you export a backup file:
 
-- Your diary data is compressed and stored in Apple's iCloud Key-Value Store
-- This data is associated with your Apple ID
-- The backup is encrypted using Apple's security infrastructure
-- We (Eleva Care) do not have access to your iCloud data
+- The app creates a file on your device containing your diary entries, goals, goal history, streak information and language preference
+- The file is shared through your device's native share functionality, and **you choose** where to save or send it
+- The file is not encrypted by the app; you are responsible for keeping it somewhere you trust
+- We (Eleva Care) do not receive copies of your backup files
 
 ### Your control:
 
-- iCloud backup is **disabled by default**
-- You must explicitly enable it in Settings
-- You can disable it at any time
-- You can restore data from iCloud to a new device
+- A backup file is only created when you tap **Export Backup File** in Settings
+- You can restore data on any iOS or Android device by tapping **Import Backup File** and selecting the file
+- Importing a backup file replaces the data currently in the app
 
-### Apple's Privacy:
+### Device backups by your operating system:
 
-For information about how Apple handles iCloud data, please review [Apple's Privacy Policy](https://www.apple.com/legal/privacy/).
+Separately from the app, your device's operating system may include the app's local data in its own device backups, depending on your settings:
+
+- **iOS:** if you use iCloud Backup or back up your device to a computer, the app's data may be included in that backup
+- **Android:** if device backup is turned on, Android may copy the app's data to your Google account and restore it when you set up a new device
+
+These backups are controlled by you through your device settings and are handled by Apple or Google. We (Eleva Care) do not have access to them. For more information, please review [Apple's Privacy Policy](https://www.apple.com/legal/privacy/) and [Google's Privacy Policy](https://policies.google.com/privacy).
 
 ---
 
@@ -108,7 +112,7 @@ Eleva Diary does **not** integrate with third-party services such as:
 
 - Analytics platforms (Google Analytics, Firebase Analytics, etc.)
 - Advertising networks
-- Crash reporting services that collect personal data
+- Crash reporting or performance monitoring services
 - Social media platforms
 - Third-party authentication providers
 
@@ -141,27 +145,27 @@ You can delete all your data at any time:
 
 1. Open the App
 2. Go to **Settings**
-3. Tap **Clear Data** or **Clear All Data**
+3. Tap **Clear All Data**
 4. Confirm deletion
 
-This permanently removes all diary entries, goals, and settings from your device.
+This permanently removes all diary entries, goals, and settings from your device, and any export or backup files the app saved for sharing. Only your language choice is kept.
 
 ### Uninstalling the App
 
 If you uninstall Eleva Diary, all locally stored data is automatically deleted from your device.
 
-### iCloud Data
+### Backup Files and Device Backups
 
-If you enabled iCloud backup, you can remove that data by:
+Clearing data or uninstalling the app does not delete copies stored outside the app:
 
-- Disabling iCloud backup in the app before uninstalling
-- Manually removing the app's data from iCloud via iOS Settings
+- Backup files and exports you saved elsewhere are your copies; you can delete them wherever you stored them
+- Device backups made by iOS or Android can be managed or deleted in your device or account settings
 
 ---
 
 ## 8. Children's Privacy
 
-Eleva Diary is not directed at children under 13 years of age. We do not knowingly collect information from children. If a parent or guardian becomes aware that their child has been using the app, they can delete all data using the Clear Data function.
+Eleva Diary is not directed at children under 13 years of age. We do not knowingly collect information from children. If a parent or guardian becomes aware that their child has been using the app, they can delete all data using the Clear All Data function.
 
 ---
 
@@ -181,7 +185,7 @@ Depending on your jurisdiction, you may have rights regarding your personal data
 | ----------- | ------------------------------------------------ |
 | Access      | View your data in the app's History and Settings |
 | Correction  | Edit any entry by tapping on it                  |
-| Deletion    | Use Clear Data in Settings                       |
+| Deletion    | Use Clear All Data in Settings                   |
 | Portability | Export your data as CSV or JSON                  |
 | Objection   | Not applicable (no processing by us)             |
 

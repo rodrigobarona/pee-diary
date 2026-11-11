@@ -60,7 +60,7 @@ A complete voiding diary provides physicians with essential data for accurate di
 ### Privacy & Data Control
 
 - **Offline-First**: All data stored locally on your device
-- **iCloud Sync** (iOS): Optional backup to your personal iCloud account
+- **Backup File**: Export a backup file and import it again on any device
 - **No Account Required**: Use immediately without registration
 - **Full Data Ownership**: Export or delete your data anytime
 
@@ -74,23 +74,20 @@ A complete voiding diary provides physicians with essential data for accurate di
 
 | Category                 | Technology                                     |
 | ------------------------ | ---------------------------------------------- |
-| **Framework**            | Expo SDK 54 with React Native 0.81             |
-| **Styling**              | NativeWind v4 (TailwindCSS for React Native)   |
+| **Framework**            | Expo SDK 57 with React Native 0.86             |
+| **Styling**              | NativeWind v5 RC with Tailwind CSS 4           |
 | **State Management**     | Zustand with AsyncStorage persistence          |
-| **Navigation**           | Expo Router with native tab navigation         |
+| **Navigation**           | Expo Router (stack, tabs and form sheets)      |
 | **Animations**           | React Native Reanimated + Gesture Handler      |
-| **Lists**                | LegendList for high-performance virtualization |
-| **Menus**                | Zeego for native dropdown menus                |
 | **Validation**           | Zod schemas for type-safe data                 |
 | **Internationalization** | expo-localization + i18n-js                    |
-| **Cloud Backup**         | expo-icloud-storage (iOS)                      |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- Expo CLI (`npm install -g expo-cli`)
+- Node.js 24+
+- pnpm 11 (`corepack enable`, or see pnpm.io/installation)
 - iOS Simulator (macOS) or Android Emulator
 
 ### Installation
@@ -101,10 +98,10 @@ git clone https://github.com/your-org/pee-diary.git
 cd pee-diary
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npx expo start
+pnpm start
 ```
 
 ### Running the App
@@ -179,7 +176,6 @@ Based on the **Eleva Care** brand identity:
 
 Following React Native best practices for smooth 60fps interactions:
 
-- **LegendList** with `getItemType` for heterogeneous list rendering
 - **Zustand selectors** for granular state subscriptions
 - **GestureDetector** for hardware-accelerated press animations
 - **Memoized components** and hoisted Intl formatters

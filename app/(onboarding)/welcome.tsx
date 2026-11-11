@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -96,7 +97,7 @@ function PageDot({
   scrollX,
 }: {
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
@@ -232,7 +233,7 @@ function OnboardingPageContent({
 }: {
   page: OnboardingPage;
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   const { t } = useI18n();
 

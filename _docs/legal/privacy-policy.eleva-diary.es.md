@@ -1,7 +1,7 @@
 # Política de Privacidad de Eleva Diary
 
-**Fecha de vigencia:** Febrero 2026  
-**Última actualización:** Febrero 2026
+**Fecha de vigencia:** 11 de noviembre de 2026  
+**Última actualización:** 11 de noviembre de 2026
 
 ---
 
@@ -28,7 +28,7 @@ Esta Política de Privacidad explica cómo manejamos la información cuando usas
 - ✅ **No** recopilamos, transmitimos ni almacenamos tus datos de salud personales en nuestros servidores
 - ✅ **No** utilizamos tecnologías de análisis, publicidad ni seguimiento
 - ✅ Tienes **control total** sobre tus datos en todo momento
-- ✅ Los datos solo salen de tu dispositivo cuando **tú eliges explícitamente** exportar o hacer copia de seguridad
+- ✅ La app nunca envía tus datos a ningún sitio. Solo salen de tu dispositivo cuando **tú eliges** exportarlos, o en la copia de seguridad de tu propio dispositivo cuando está activada (en muchos teléfonos lo está por defecto)
 
 ---
 
@@ -63,31 +63,35 @@ Cuando usas Eleva Diary, los siguientes datos se almacenan **localmente solo en 
 
 ### 2.3 Almacenamiento Técnico
 
-Estos datos se almacenan usando el almacenamiento local de tu dispositivo (AsyncStorage) y no se transmiten a ningún servidor externo.
+Estos datos se almacenan usando el almacenamiento local de tu dispositivo (AsyncStorage). La aplicación no los transmite a ningún servidor externo. El sistema operativo de tu dispositivo puede incluirlos en las copias de seguridad del dispositivo según tus propios ajustes (consulta la Sección 3).
 
 ---
 
-## 3. Copia de Seguridad Opcional en iCloud (Solo iOS)
+## 3. Copia de Seguridad de tus Datos
 
-Si usas un dispositivo iOS, Eleva Diary ofrece una función **opcional** de copia de seguridad en iCloud:
+Eleva Diary no sube tus datos a ningún servicio en la nube. Para conservar una copia de tu diario o trasladarlo a otro dispositivo, puedes usar un **archivo de copia de seguridad local**:
 
-### Qué sucede cuando activas la copia de seguridad en iCloud:
+### Qué sucede cuando exportas un archivo de copia de seguridad:
 
-- Tus datos del diario se comprimen y almacenan en el Almacén de Clave-Valor de iCloud de Apple
-- Estos datos están asociados con tu Apple ID
-- La copia de seguridad está encriptada usando la infraestructura de seguridad de Apple
-- Nosotros (Eleva Care) no tenemos acceso a tus datos de iCloud
+- La aplicación crea un archivo en tu dispositivo con tus entradas del diario, metas, historial de metas, datos de rachas y preferencia de idioma
+- El archivo se comparte mediante la función nativa de compartir de tu dispositivo y **tú eliges** dónde guardarlo o enviarlo
+- La aplicación no encripta el archivo; eres responsable de guardarlo en un lugar de tu confianza
+- Nosotros (Eleva Care) no recibimos copias de tus archivos de copia de seguridad
 
 ### Tu control:
 
-- La copia de seguridad en iCloud está **desactivada por defecto**
-- Debes activarla explícitamente en Ajustes
-- Puedes desactivarla en cualquier momento
-- Puedes restaurar datos desde iCloud a un nuevo dispositivo
+- Un archivo de copia de seguridad solo se crea cuando tocas **Exportar Copia de Seguridad** en Ajustes
+- Puedes restaurar los datos en cualquier dispositivo iOS o Android tocando **Importar Copia de Seguridad** y seleccionando el archivo
+- Importar un archivo de copia de seguridad reemplaza los datos que hay en la aplicación
 
-### Privacidad de Apple:
+### Copias de seguridad del dispositivo realizadas por tu sistema operativo:
 
-Para información sobre cómo Apple maneja los datos de iCloud, consulta la [Política de Privacidad de Apple](https://www.apple.com/legal/privacy/).
+Independientemente de la aplicación, el sistema operativo de tu dispositivo puede incluir los datos locales de la aplicación en sus propias copias de seguridad, según tus ajustes:
+
+- **iOS:** si usas la Copia de Seguridad de iCloud o haces una copia de seguridad de tu dispositivo en un ordenador, los datos de la aplicación pueden incluirse en esa copia
+- **Android:** si la copia de seguridad del dispositivo está activada, Android puede copiar los datos de la aplicación en tu cuenta de Google y restaurarlos cuando configures un nuevo dispositivo
+
+Estas copias de seguridad las controlas tú a través de los ajustes de tu dispositivo y las gestionan Apple o Google. Nosotros (Eleva Care) no tenemos acceso a ellas. Para más información, consulta la [Política de Privacidad de Apple](https://www.apple.com/legal/privacy/) y la [Política de Privacidad de Google](https://policies.google.com/privacy).
 
 ---
 
@@ -108,7 +112,7 @@ Eleva Diary **no** se integra con servicios de terceros como:
 
 - Plataformas de análisis (Google Analytics, Firebase Analytics, etc.)
 - Redes publicitarias
-- Servicios de informes de errores que recopilan datos personales
+- Servicios de informes de errores o de monitorización del rendimiento
 - Plataformas de redes sociales
 - Proveedores de autenticación de terceros
 
@@ -141,27 +145,27 @@ Puedes eliminar todos tus datos en cualquier momento:
 
 1. Abre la Aplicación
 2. Ve a **Ajustes**
-3. Toca **Borrar Datos** o **Borrar Todos los Datos**
+3. Toca **Borrar todos los datos**
 4. Confirma la eliminación
 
-Esto elimina permanentemente todas las entradas del diario, metas y configuraciones de tu dispositivo.
+Esto elimina permanentemente todas las entradas del diario, metas y configuraciones de tu dispositivo, y los archivos de exportación o copia de seguridad que la app guardó para compartir. Solo se conserva el idioma elegido.
 
 ### Desinstalar la Aplicación
 
 Si desinstalas Eleva Diary, todos los datos almacenados localmente se eliminan automáticamente de tu dispositivo.
 
-### Datos de iCloud
+### Archivos de Copia de Seguridad y Copias del Dispositivo
 
-Si activaste la copia de seguridad en iCloud, puedes eliminar esos datos:
+Borrar los datos o desinstalar la aplicación no elimina las copias guardadas fuera de la aplicación:
 
-- Desactivando la copia de seguridad en iCloud en la app antes de desinstalar
-- Eliminando manualmente los datos de la app desde iCloud mediante los Ajustes de iOS
+- Los archivos de copia de seguridad y las exportaciones que guardaste en otro lugar son tus copias; puedes eliminarlos allí donde los guardaste
+- Las copias de seguridad del dispositivo realizadas por iOS o Android se pueden gestionar o eliminar en los ajustes de tu dispositivo o de tu cuenta
 
 ---
 
 ## 8. Privacidad de los Niños
 
-Eleva Diary no está dirigido a niños menores de 13 años. No recopilamos conscientemente información de niños. Si un padre o tutor se da cuenta de que su hijo ha estado usando la aplicación, puede eliminar todos los datos usando la función Borrar Datos.
+Eleva Diary no está dirigido a niños menores de 13 años. No recopilamos conscientemente información de niños. Si un padre o tutor se da cuenta de que su hijo ha estado usando la aplicación, puede eliminar todos los datos usando la función Borrar todos los datos.
 
 ---
 
@@ -181,7 +185,7 @@ Dependiendo de tu jurisdicción, puedes tener derechos sobre tus datos personale
 | ------------- | ----------------------------------------------------- |
 | Acceso        | Ver tus datos en el Historial y Ajustes de la app     |
 | Rectificación | Editar cualquier entrada tocándola                    |
-| Supresión     | Usar Borrar Datos en Ajustes                          |
+| Supresión     | Usar Borrar todos los datos en Ajustes                |
 | Portabilidad  | Exportar tus datos como CSV o JSON                    |
 | Oposición     | No aplicable (no hay procesamiento por nuestra parte) |
 
