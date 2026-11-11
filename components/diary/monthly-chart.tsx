@@ -52,7 +52,9 @@ export function MonthlyChart({
 }: MonthlyChartProps) {
   const { t } = useI18n();
   const { width: screenWidth } = useWindowDimensions();
-  const today = new Date();
+  // The data ends on today (see the Today screen), which follows the change
+  // of day; a new Date() here would keep yesterday after midnight.
+  const today = data[data.length - 1]?.date ?? new Date();
   
   // Group data into weeks dynamically (4-5 weeks depending on month)
   const weeklyData = React.useMemo((): WeekData[] => {

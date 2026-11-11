@@ -1,11 +1,7 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
-  format,
   isToday,
-  isValid,
   isYesterday,
-  parse,
-  parseISO,
 } from "date-fns";
 import * as Haptics from "expo-haptics";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -35,6 +31,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { dateFormatters } from "@/lib/i18n";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
+import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
 
 // Enable LayoutAnimation on Android
 if (
@@ -94,9 +91,8 @@ export default function HistoryScreen() {
   useFocusEffect(
     React.useCallback(() => {
       if (params.date) {
-        const parsed = parse(params.date, "yyyy-MM-dd", new Date());
-        if (isValid(parsed)) {
-          setSelectedDate(parsed);
+        if (isDayKey(params.date)) {
+          setSelectedDate(parseDayKey(params.date));
         }
       }
       if (params.filter) {
@@ -162,7 +158,7 @@ export default function HistoryScreen() {
     const dateMap = new Map<string, DateEntryInfo>();
 
     entries.forEach((entry) => {
-      const dateKey = format(parseISO(entry.timestamp), "yyyy-MM-dd");
+      const dateKey = toDayKey(entry.timestamp);
       const existing = dateMap.get(dateKey) || {
         hasUrination: false,
         hasFluid: false,
@@ -192,11 +188,11 @@ export default function HistoryScreen() {
 
   // Get entries for the selected date only
   const selectedDayData = React.useMemo(() => {
-    const dateKey = format(selectedDate, "yyyy-MM-dd");
+    const dateKey = toDayKey(selectedDate);
 
     // Get all entries for this day
     const dayEntries = entries.filter(
-      (entry) => format(parseISO(entry.timestamp), "yyyy-MM-dd") === dateKey
+      (entry) => toDayKey(entry.timestamp) === dateKey
     );
 
     // Apply type filter

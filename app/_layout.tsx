@@ -2,24 +2,18 @@ import "../global.css";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFonts } from "expo-font";
-import {
-  DarkTheme,
-  DefaultTheme,
-  Stack,
-  ThemeProvider,
-  useRouter,
-} from "expo-router";
+import { DefaultTheme, Stack, ThemeProvider, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { LogBox, Platform, type ColorSchemeName } from "react-native";
+import { LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TERMS_VERSION } from "@/constants/legal";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useReminderSync } from "@/hooks/use-reminder-sync";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
@@ -38,11 +32,14 @@ export const unstable_settings = {
 };
 
 // Inner layout that can access I18n context
-function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
+function InnerLayout() {
   const { locale } = useI18n();
   const router = useRouter();
   const isHydrated = useStoreHydrated();
   const hasCheckedLaunchRef = useRef(false);
+
+  // Reschedule reminders at launch, on return to the app and on changes
+  useReminderSync(isHydrated);
 
   // Once per launch, after the stored data has loaded: show onboarding, the
   // terms-update notice or the add menu (at most one; see getLaunchAction).
@@ -83,7 +80,10 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   }, [isHydrated, locale, router]);
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    // The app has only a light appearance for now (app.json
+    // userInterfaceStyle "light"): light navigation colours and dark
+    // status-bar content, even when the phone is in dark mode.
+    <ThemeProvider value={DefaultTheme}>
       <Stack
         key={locale} // Force re-mount on locale change to update all translations
         screenOptions={{
@@ -177,14 +177,12 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
           }}
         />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </ThemeProvider>
   );
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   // Explicitly load MaterialCommunityIcons font to ensure icons render
   const [fontsLoaded, fontError] = useFonts({
     ...MaterialCommunityIcons.font,
@@ -213,7 +211,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ErrorBoundary>
         <I18nProvider>
-          <InnerLayout colorScheme={colorScheme} />
+          <InnerLayout />
         </I18nProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>

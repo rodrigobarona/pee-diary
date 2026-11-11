@@ -49,7 +49,9 @@ export function WeeklyChart({
 }: WeeklyChartProps) {
   const { t } = useI18n();
   const { width: screenWidth } = useWindowDimensions();
-  const today = new Date();
+  // The data ends on today (see the Today screen), which follows the change
+  // of day; a new Date() here would keep yesterday after midnight.
+  const today = data[data.length - 1]?.date ?? new Date();
 
   // Calculate responsive dimensions
   const containerWidth = screenWidth - 72; // Account for padding

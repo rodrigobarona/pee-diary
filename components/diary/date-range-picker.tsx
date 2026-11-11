@@ -9,6 +9,7 @@ import { Text } from "@/components/ui/text";
 import { colors } from "@/lib/theme/colors";
 import { dateFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
+import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
 
 interface DateRangePickerProps {
   startDate: Date;
@@ -86,11 +87,11 @@ export function DateRangePicker({
             <Text style={styles.chipText}>{formattedStartDate}</Text>
             <input
               type="date"
-              value={safeStartDate.toISOString().split("T")[0]}
-              max={safeEndDate.toISOString().split("T")[0]}
+              value={toDayKey(safeStartDate)}
+              max={toDayKey(safeEndDate)}
               onChange={(e) => {
-                const newDate = new Date(e.target.value);
-                onStartDateChange(newDate);
+                if (!isDayKey(e.target.value)) return;
+                onStartDateChange(parseDayKey(e.target.value));
               }}
               style={styles.hiddenInput as React.CSSProperties}
             />
@@ -108,11 +109,14 @@ export function DateRangePicker({
             <Text style={styles.chipText}>{formattedEndDate}</Text>
             <input
               type="date"
-              value={safeEndDate.toISOString().split("T")[0]}
-              min={safeStartDate.toISOString().split("T")[0]}
-              max={safeMaxDate.toISOString().split("T")[0]}
+              value={toDayKey(safeEndDate)}
+              min={toDayKey(safeStartDate)}
+              max={toDayKey(safeMaxDate)}
               onChange={(e) => {
-                const newDate = new Date(e.target.value);
+                if (!isDayKey(e.target.value)) return;
+                // The whole last day is included
+                const newDate = parseDayKey(e.target.value);
+                newDate.setHours(23, 59, 59, 999);
                 onEndDateChange(newDate);
               }}
               style={styles.hiddenInput as React.CSSProperties}

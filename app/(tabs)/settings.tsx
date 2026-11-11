@@ -1,4 +1,6 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Application from "expo-application";
+import Constants from "expo-constants";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as React from "react";
@@ -21,7 +23,11 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
-import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import {
+  REMINDER_INTERVAL_OPTIONS,
+  useDiaryStore,
+  useStoreHydrated,
+} from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import {
   exportBackupFile,
@@ -30,10 +36,16 @@ import {
 import { deleteExportFiles } from "@/lib/utils/export";
 import {
   cancelAllReminders,
-  initializeNotifications,
   requestNotificationPermission,
-  scheduleReminders,
 } from "@/lib/utils/notifications";
+
+// Version and build number of the installed app, e.g. "1.0.0 (12)"
+const APP_VERSION = [
+  Application.nativeApplicationVersion ?? Constants.expoConfig?.version,
+  Application.nativeBuildVersion ? `(${Application.nativeBuildVersion})` : "",
+]
+  .filter(Boolean)
+  .join(" ");
 
 interface SettingRowProps {
   icon: string;
@@ -151,12 +163,6 @@ export default function SettingsScreen() {
   const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
 
-  // Initialize notifications on mount (the Android channel name is shown
-  // in the phone's notification settings, so it follows the app language)
-  React.useEffect(() => {
-    initializeNotifications(t("settings.reminders"));
-  }, [t]);
-
   // Get the confirmation word for the current locale
   const confirmWord = t("settings.clearDataConfirmWord");
   const isDeleteConfirmed =
@@ -221,20 +227,10 @@ export default function SettingsScreen() {
         }
       }
 
-      const newSettings = { ...reminderSettings, enabled: value };
-      updateReminderSettings(newSettings);
-
-      // Schedule or cancel reminders
-      if (value) {
-        await scheduleReminders(newSettings, {
-          title: t("settings.reminderNotificationTitle"),
-          body: t("settings.reminderNotificationBody"),
-        });
-      } else {
-        await cancelAllReminders();
-      }
+      // useReminderSync (app/_layout.tsx) schedules or cancels the reminders
+      updateReminderSettings({ enabled: value });
     },
-    [reminderSettings, updateReminderSettings, t]
+    [updateReminderSettings, t]
   );
 
   // Handle changing reminder interval
@@ -243,7 +239,7 @@ export default function SettingsScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    const intervals = [2, 3, 4, 6];
+    const intervals = REMINDER_INTERVAL_OPTIONS;
     const options = intervals.map((h) =>
       t("settings.everyXHours", { count: h })
     );
@@ -252,20 +248,12 @@ export default function SettingsScreen() {
     Alert.alert(t("settings.reminderInterval"), "", [
       ...intervals.map((hours, index) => ({
         text: options[index],
-        onPress: async () => {
-          const newSettings = { ...reminderSettings, intervalHours: hours };
-          updateReminderSettings(newSettings);
-          if (reminderSettings.enabled) {
-            await scheduleReminders(newSettings, {
-              title: t("settings.reminderNotificationTitle"),
-              body: t("settings.reminderNotificationBody"),
-            });
-          }
-        },
+        // useReminderSync (app/_layout.tsx) reschedules the reminders
+        onPress: () => updateReminderSettings({ intervalHours: hours }),
       })),
       { text: t("common.cancel"), style: "cancel" },
     ]);
-  }, [reminderSettings, updateReminderSettings, t]);
+  }, [updateReminderSettings, t]);
 
   // Handle toggling quiet hours
   const handleToggleQuietHours = React.useCallback(
@@ -274,17 +262,10 @@ export default function SettingsScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
 
-      const newSettings = { ...reminderSettings, quietHoursEnabled: value };
-      updateReminderSettings(newSettings);
-
-      if (reminderSettings.enabled) {
-        await scheduleReminders(newSettings, {
-          title: t("settings.reminderNotificationTitle"),
-          body: t("settings.reminderNotificationBody"),
-        });
-      }
+      // useReminderSync (app/_layout.tsx) reschedules the reminders
+      updateReminderSettings({ quietHoursEnabled: value });
     },
-    [reminderSettings, updateReminderSettings, t]
+    [updateReminderSettings]
   );
 
   const handleOpenGoals = React.useCallback(() => {
@@ -694,7 +675,7 @@ export default function SettingsScreen() {
         <SettingRow
           icon="information"
           label={t("settings.version")}
-          value="1.0.0"
+          value={APP_VERSION}
         />
         <View style={styles.separator} />
         <SettingRow

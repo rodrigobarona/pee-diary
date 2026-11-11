@@ -2,9 +2,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
 import * as React from "react";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 import { TERMS_VERSION } from "@/constants/legal";
+import { addDaysToKey, getTodayKey, isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
+import { createDiaryStorage } from "./diary-storage";
+import {
+  DEFAULT_GOALS,
+  DEFAULT_REMINDER_SETTINGS,
+  migratePersistedState,
+  pickPersistedState,
+  sanitizeGoals,
+  sanitizePersistedState,
+  STORE_NAME,
+  STORE_VERSION,
+  type PersistedDiaryState,
+} from "./persistence";
+
 import type {
   CreateFluidEntry,
   CreateLeakEntry,
@@ -19,6 +33,14 @@ import type {
   UpdateLeakEntry,
   UpdateUrinationEntry,
 } from "./types";
+
+export {
+  DEFAULT_GOALS,
+  DEFAULT_REMINDER_SETTINGS,
+  REMINDER_INTERVAL_OPTIONS,
+  sanitizeGoalHistory,
+  sanitizeGoals,
+} from "./persistence";
 
 // Detect system language on first launch
 const getInitialLanguage = (): "en" | "es" | "pt" => {
@@ -53,137 +75,76 @@ const createId = (): string => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-// Starting value for the user's own daily fluid target. It is not a medical
-// norm; the user can change it at any time in Daily Goals. There is no
-// bathroom-visit target: more visits are not better for many bladder
-// conditions.
-const DEFAULT_GOALS: DailyGoals = {
-  fluidTarget: 2000, // ml
-};
-
 /**
- * Goals as the app uses them now. Earlier versions also stored a visit target
- * (voidTarget) in the goals and their history; this drops it, so old stored
- * data and old backup files still load.
+ * The current streak: the number of consecutive local calendar days, ending
+ * today or yesterday, with at least one entry. Days follow the phone's time
+ * zone, so an entry at 00:30 counts for the day it was made.
  */
-export const sanitizeGoals = (goals: unknown): DailyGoals => {
-  const fluidTarget = (goals as Partial<DailyGoals> | null | undefined)
-    ?.fluidTarget;
-  return {
-    fluidTarget:
-      typeof fluidTarget === "number" && fluidTarget > 0
-        ? fluidTarget
-        : DEFAULT_GOALS.fluidTarget,
-  };
-};
-
-// Keeps only the fluid target changes of a goal history
-export const sanitizeGoalHistory = (history: unknown): GoalHistoryRecord[] => {
-  if (!Array.isArray(history)) return [];
-  return history.flatMap((record: Partial<GoalHistoryRecord> | null) => {
-    const fluidChange = record?.changes?.fluidTarget;
-    if (!record?.changedAt || !fluidChange) return [];
-    return [
-      {
-        changedAt: record.changedAt,
-        goals: sanitizeGoals(record.goals),
-        changes: { fluidTarget: fluidChange },
-      },
-    ];
-  });
-};
-
-// Default reminder settings
-const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
-  enabled: false,
-  intervalHours: 3,
-  quietHoursEnabled: true,
-  quietHoursStart: "22:00",
-  quietHoursEnd: "07:00",
-};
-
-// Helper to get today's date as YYYY-MM-DD
-const getTodayDateString = (): string => {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(now.getDate()).padStart(2, "0")}`;
-};
-
-// Helper to calculate streak from entries
-const calculateStreak = (
-  entries: DiaryEntry[],
-  lastActiveDate: string | null
+export const calculateStreak = (
+  entries: readonly Pick<DiaryEntry, "timestamp">[],
+  now: Date = new Date()
 ): StreakInfo => {
   if (entries.length === 0) {
     return { currentStreak: 0, lastActiveDate: null };
   }
 
-  const today = getTodayDateString();
-
-  // Get unique dates that have entries
   const datesWithEntries = new Set<string>();
-  entries.forEach((entry) => {
-    const date = entry.timestamp.split("T")[0];
-    datesWithEntries.add(date);
-  });
-
-  // Sort dates descending
-  const sortedDates = Array.from(datesWithEntries).sort((a, b) =>
-    b.localeCompare(a)
-  );
-
-  // Check if today or yesterday has entries
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = `${yesterday.getFullYear()}-${String(
-    yesterday.getMonth() + 1
-  ).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
-
-  const hasEntryToday = datesWithEntries.has(today);
-  const hasEntryYesterday = datesWithEntries.has(yesterdayStr);
-
-  // If no entry today or yesterday, streak is broken
-  if (!hasEntryToday && !hasEntryYesterday) {
-    return { currentStreak: 0, lastActiveDate: sortedDates[0] ?? null };
+  let latestDate: string | null = null;
+  for (const entry of entries) {
+    const date = new Date(entry.timestamp);
+    if (Number.isNaN(date.getTime())) continue;
+    const key = toDayKey(date);
+    datesWithEntries.add(key);
+    if (latestDate === null || key > latestDate) latestDate = key;
   }
 
-  // Count consecutive days
+  const today = getTodayKey(now);
+  const yesterday = addDaysToKey(today, -1);
+
+  // No entry today or yesterday: the streak is broken
+  const lastActiveDate = datesWithEntries.has(today)
+    ? today
+    : datesWithEntries.has(yesterday)
+    ? yesterday
+    : null;
+  if (lastActiveDate === null) {
+    return { currentStreak: 0, lastActiveDate: latestDate };
+  }
+
+  // Count consecutive days back from the last active day
   let streak = 0;
-  let checkDate = new Date(hasEntryToday ? today : yesterdayStr);
-
-  while (true) {
-    const dateStr = `${checkDate.getFullYear()}-${String(
-      checkDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(checkDate.getDate()).padStart(2, "0")}`;
-    if (datesWithEntries.has(dateStr)) {
-      streak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    } else {
-      break;
-    }
+  let checkDate = lastActiveDate;
+  while (datesWithEntries.has(checkDate)) {
+    streak++;
+    checkDate = addDaysToKey(checkDate, -1);
   }
 
-  return {
-    currentStreak: streak,
-    lastActiveDate: hasEntryToday ? today : yesterdayStr,
-  };
+  return { currentStreak: streak, lastActiveDate };
 };
 
-interface DiaryState {
-  entries: DiaryEntry[];
-  language: "en" | "es" | "pt";
-  goals: DailyGoals;
-  goalHistory: GoalHistoryRecord[];
-  streak: StreakInfo;
-  openAddMenuOnLaunch: boolean;
-  hasCompletedOnboarding: boolean;
-  // Version and date (ISO) of the Terms of Use last accepted, at the end of
-  // onboarding or in the terms-update notice; null until first accepted.
-  termsAcceptedVersion: string | null;
-  termsAcceptedAt: string | null;
-  reminderSettings: ReminderSettings;
+// The state of a fresh install
+const createInitialState = (): PersistedDiaryState => ({
+  entries: [],
+  language: getInitialLanguage(),
+  goals: DEFAULT_GOALS,
+  goalHistory: [],
+  streak: { currentStreak: 0, lastActiveDate: null },
+  openAddMenuOnLaunch: true,
+  hasCompletedOnboarding: false,
+  termsAcceptedVersion: null,
+  termsAcceptedAt: null,
+  reminderSettings: DEFAULT_REMINDER_SETTINGS,
+});
+
+// Saved data: see diary-storage.ts and persistence.ts
+export const diaryStorage = createDiaryStorage(AsyncStorage);
+
+// PersistedDiaryState holds the saved fields: entries, language, goals,
+// goalHistory, streak, openAddMenuOnLaunch, hasCompletedOnboarding, the
+// version and date (ISO) of the Terms of Use last accepted (at the end of
+// onboarding or in the terms-update notice; null until first accepted) and
+// reminderSettings.
+interface DiaryState extends PersistedDiaryState {
 
   // Actions
   addUrinationEntry: (entry: CreateUrinationEntry) => void;
@@ -210,16 +171,7 @@ interface DiaryState {
 export const useDiaryStore = create<DiaryState>()(
   persist(
     (set, get) => ({
-      entries: [],
-      language: getInitialLanguage(),
-      goals: DEFAULT_GOALS,
-      goalHistory: [],
-      streak: { currentStreak: 0, lastActiveDate: null },
-      openAddMenuOnLaunch: true,
-      hasCompletedOnboarding: false,
-      termsAcceptedVersion: null,
-      termsAcceptedAt: null,
-      reminderSettings: DEFAULT_REMINDER_SETTINGS,
+      ...createInitialState(),
 
       addUrinationEntry: (entry) => {
         const now = new Date().toISOString();
@@ -236,7 +188,7 @@ export const useDiaryStore = create<DiaryState>()(
           ];
           return {
             entries: newEntries,
-            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+            streak: calculateStreak(newEntries),
           };
         });
       },
@@ -256,7 +208,7 @@ export const useDiaryStore = create<DiaryState>()(
           ];
           return {
             entries: newEntries,
-            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+            streak: calculateStreak(newEntries),
           };
         });
       },
@@ -276,14 +228,14 @@ export const useDiaryStore = create<DiaryState>()(
           ];
           return {
             entries: newEntries,
-            streak: calculateStreak(newEntries, state.streak.lastActiveDate),
+            streak: calculateStreak(newEntries),
           };
         });
       },
 
       updateEntry: (id, updates) =>
-        set((state) => ({
-          entries: state.entries.map((entry) => {
+        set((state) => {
+          const entries = state.entries.map((entry) => {
             if (entry.id !== id) return entry;
 
             // Track changes for edit history
@@ -307,20 +259,25 @@ export const useDiaryStore = create<DiaryState>()(
               ...entry,
               ...updates,
               editHistory: [...(entry.editHistory ?? []), editRecord],
-            };
-          }),
-        })),
+            } as DiaryEntry;
+          });
+          // A changed time can move the entry to another day
+          return { entries, streak: calculateStreak(entries) };
+        }),
 
       deleteEntry: (id) =>
-        set((state) => ({
-          entries: state.entries.filter((e) => e.id !== id),
-        })),
+        set((state) => {
+          const entries = state.entries.filter((e) => e.id !== id);
+          return { entries, streak: calculateStreak(entries) };
+        }),
 
-      // Deletes every diary entry, goal, goal history, streak and setting.
+      // Deletes every diary entry, goal, goal history, streak and setting,
+      // and any recovery copy of the saved diary (diary-storage.ts).
       // The language, the completed onboarding and the record of the accepted
       // Terms of Use are kept, so the app stays in the user's language and on
       // the Today screen.
-      clearAllData: () =>
+      clearAllData: () => {
+        diaryStorage.clearRecoveryCopies().catch(() => {});
         set({
           entries: [],
           goals: DEFAULT_GOALS,
@@ -328,7 +285,8 @@ export const useDiaryStore = create<DiaryState>()(
           streak: { currentStreak: 0, lastActiveDate: null },
           openAddMenuOnLaunch: true,
           reminderSettings: DEFAULT_REMINDER_SETTINGS,
-        }),
+        });
+      },
 
       setLanguage: (language) => set({ language }),
 
@@ -375,16 +333,25 @@ export const useDiaryStore = create<DiaryState>()(
           return state.goals;
         }
 
-        // Find the most recent goal change that happened before or on the given date
-        // Goal history is sorted chronologically (oldest first)
-        const targetDate = new Date(date);
+        // A "yyyy-MM-dd" day includes changes made at any time that local
+        // day; any other value is read as a moment.
+        let targetTime: number;
+        if (isDayKey(date)) {
+          const nextDay = parseDayKey(addDaysToKey(date, 1));
+          targetTime = nextDay.getTime() - 1;
+        } else {
+          targetTime = new Date(date).getTime();
+        }
 
-        // Find the last record where changedAt is before or equal to the target date
-        let applicableGoals = DEFAULT_GOALS;
+        // Goal history is sorted chronologically (oldest first). Before the
+        // first change, the goals were that change's starting value.
+        const firstChange = state.goalHistory[0].changes.fluidTarget;
+        let applicableGoals: DailyGoals = firstChange
+          ? { fluidTarget: firstChange.from }
+          : DEFAULT_GOALS;
 
         for (const record of state.goalHistory) {
-          const recordDate = new Date(record.changedAt);
-          if (recordDate <= targetDate) {
+          if (new Date(record.changedAt).getTime() <= targetTime) {
             applicableGoals = record.goals;
           } else {
             break;
@@ -396,10 +363,7 @@ export const useDiaryStore = create<DiaryState>()(
 
       refreshStreak: () => {
         const state = get();
-        const newStreak = calculateStreak(
-          state.entries,
-          state.streak.lastActiveDate
-        );
+        const newStreak = calculateStreak(state.entries);
         set({ streak: newStreak });
       },
 
@@ -430,19 +394,58 @@ export const useDiaryStore = create<DiaryState>()(
         })),
     }),
     {
-      name: "pee-diary-storage",
-      storage: createJSONStorage(() => AsyncStorage),
-      // Stored data from earlier versions may still hold a visit target
+      name: STORE_NAME,
+      version: STORE_VERSION,
+      storage: diaryStorage.storage,
+      // Save the data only, not the actions
+      partialize: (state) => pickPersistedState(state),
+      // Upgrade data saved by an earlier version (see persistence.ts). Data
+      // that cannot be upgraded is kept in a recovery copy, never discarded.
+      migrate: (persisted, version) => {
+        try {
+          const result = migratePersistedState(
+            persisted,
+            version,
+            createInitialState()
+          );
+          if (result.keepFullCopy) {
+            void diaryStorage.saveRecoveryCopy({
+              reason: "newerVersion",
+              version,
+              data: persisted,
+            });
+          } else if (result.rejectedEntries.length > 0) {
+            void diaryStorage.saveRecoveryCopy({
+              reason: "invalidEntries",
+              version,
+              data: result.rejectedEntries,
+            });
+          }
+          return result.state;
+        } catch {
+          void diaryStorage.saveRecoveryCopy({
+            reason: "migrationFailed",
+            version,
+            data: persisted,
+          });
+          return createInitialState();
+        }
+      },
+      // Runs at every launch: fills in missing fields and leaves out entries
+      // that would crash a screen (kept in the recovery copy).
       merge: (persisted, current) => {
-        const stored = (persisted ?? {}) as Partial<DiaryState>;
-        return {
-          ...current,
-          ...stored,
-          goals: sanitizeGoals(stored.goals ?? current.goals),
-          goalHistory: sanitizeGoalHistory(
-            stored.goalHistory ?? current.goalHistory
-          ),
-        };
+        const { state, rejectedEntries } = sanitizePersistedState(
+          persisted,
+          pickPersistedState(current)
+        );
+        if (rejectedEntries.length > 0) {
+          void diaryStorage.saveRecoveryCopy({
+            reason: "invalidEntries",
+            version: STORE_VERSION,
+            data: rejectedEntries,
+          });
+        }
+        return { ...current, ...state };
       },
     }
   )

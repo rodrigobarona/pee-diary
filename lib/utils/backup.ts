@@ -1,8 +1,4 @@
-import {
-  sanitizeGoalHistory,
-  sanitizeGoals,
-  useDiaryStore,
-} from "@/lib/store";
+import { useDiaryStore } from "@/lib/store";
 import type {
   DailyGoals,
   DiaryEntry,
@@ -13,8 +9,12 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
+import {
+  BACKUP_VERSION,
+  buildImportedState,
+  parseBackupFile,
+} from "@/lib/utils/backup-file";
 import { deleteExportFiles, EXPORT_FILE_PREFIX } from "@/lib/utils/export";
-import { Platform } from "react-native";
 
 // Uses the export prefix so deleteExportFiles() removes it.
 export const BACKUP_FILENAME = `${EXPORT_FILE_PREFIX}backup.json`;
@@ -57,7 +57,7 @@ export async function exportBackupFile(options?: {
     const state = useDiaryStore.getState();
 
     const backupData: BackupData = {
-      version: 1,
+      version: BACKUP_VERSION,
       entries: state.entries,
       goals: state.goals,
       goalHistory: state.goalHistory,
@@ -129,49 +129,34 @@ export async function importBackupFile(): Promise<{
       );
     }
 
-    // Parse and validate
-    const backupData: BackupData = JSON.parse(jsonData);
-
-    // Validate backup version
-    if (!backupData.version || backupData.version > 1) {
-      return { success: false, error: "incompatibleVersion" };
+    // Check the whole file before changing anything
+    const parsed = parseBackupFile(jsonData);
+    if (!parsed.ok) {
+      return { success: false, error: parsed.error };
     }
 
-    // Validate required fields
-    if (!Array.isArray(backupData.entries)) {
-      return { success: false, error: "invalidFormat" };
+    // Replace the data in one step. If that fails, put the previous data
+    // back, so the diary is never left half replaced.
+    const previous = useDiaryStore.getState();
+    const imported = buildImportedState(parsed.backup, previous);
+    try {
+      useDiaryStore.setState(imported);
+    } catch {
+      useDiaryStore.setState({
+        entries: previous.entries,
+        goals: previous.goals,
+        goalHistory: previous.goalHistory,
+        language: previous.language,
+        streak: previous.streak,
+      });
+      return { success: false, error: "failed" };
     }
-
-    // Restore data to store
-    const store = useDiaryStore.getState();
-
-    useDiaryStore.setState({
-      entries: backupData.entries ?? [],
-      // Backups from earlier versions may also hold a visit target
-      goals: backupData.goals ? sanitizeGoals(backupData.goals) : store.goals,
-      goalHistory: backupData.goalHistory
-        ? sanitizeGoalHistory(backupData.goalHistory)
-        : store.goalHistory,
-      language: backupData.language ?? store.language,
-      streak: backupData.streak ?? store.streak,
-    });
-
-    // Refresh streak calculation after restore
-    useDiaryStore.getState().refreshStreak();
 
     return {
       success: true,
-      entriesCount: backupData.entries?.length ?? 0,
+      entriesCount: imported.entries.length,
     };
   } catch {
     return { success: false, error: "failed" };
   }
-}
-
-/**
- * Check if local file backup is available
- */
-export function isLocalBackupAvailable(): boolean {
-  // Available on both platforms as a fallback
-  return Platform.OS === "ios" || Platform.OS === "android";
 }

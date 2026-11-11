@@ -1,13 +1,15 @@
 import { z } from "zod";
 
-// Edit history record schema
+// Edit history record schema. "from" or "to" is missing from stored and
+// backup JSON when the field was empty before or after the edit (for example
+// a note added later), because JSON drops undefined values.
 export const editRecordSchema = z.object({
   editedAt: z.string().datetime(),
   changes: z.record(
     z.string(),
     z.object({
-      from: z.unknown(),
-      to: z.unknown(),
+      from: z.unknown().optional(),
+      to: z.unknown().optional(),
     })
   ),
 });
@@ -149,3 +151,34 @@ export interface ReminderSettings {
   quietHoursStart: string; // "22:00" format
   quietHoursEnd: string; // "07:00" format
 }
+
+// ============================================
+// Schemas for stored data and backup files
+// ============================================
+
+export const languageSchema = z.enum(["en", "es", "pt"]);
+
+// Goals as this version stores them, or as earlier versions did, with a visit
+// target (voidTarget) that is no longer used and is dropped when read.
+export const storedGoalsSchema = z.object({
+  fluidTarget: z.number().positive(),
+  voidTarget: z.number().optional(),
+});
+
+const goalChangeSchema = z.object({ from: z.number(), to: z.number() });
+
+// A goal history record, including records of earlier versions that only
+// changed the visit target (dropped when read).
+export const storedGoalHistoryRecordSchema = z.object({
+  changedAt: z.string().datetime(),
+  goals: storedGoalsSchema,
+  changes: z.object({
+    fluidTarget: goalChangeSchema.optional(),
+    voidTarget: goalChangeSchema.optional(),
+  }),
+});
+
+export const streakInfoSchema = z.object({
+  currentStreak: z.number().int().nonnegative(),
+  lastActiveDate: z.string().nullable(),
+});

@@ -1,21 +1,26 @@
 import { startOfWeek, endOfWeek } from 'date-fns';
 import { dateFormatters } from '@/lib/i18n';
+import { isDayKey, parseDayKey } from '@/lib/utils/day';
+
+// A "yyyy-MM-dd" day is read as local midnight, any other string as a moment
+const toDate = (date: Date | string): Date => {
+  if (typeof date !== 'string') return date;
+  return isDayKey(date) ? parseDayKey(date) : new Date(date);
+};
 
 /**
  * Format a date using the hoisted Intl formatter
  * Uses module-level formatters for performance
  */
 export const formatDate = (date: Date | string, style: 'short' | 'medium' | 'long' = 'medium') => {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return dateFormatters[style].format(d);
+  return dateFormatters[style].format(toDate(date));
 };
 
 /**
  * Format time using the hoisted Intl formatter
  */
 export const formatTime = (date: Date | string) => {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return dateFormatters.time.format(d);
+  return dateFormatters.time.format(toDate(date));
 };
 
 /**

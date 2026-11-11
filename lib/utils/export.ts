@@ -12,6 +12,7 @@ import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 
 import { intlLocale } from "@/lib/i18n";
+import { groupByDay, parseDayKey } from "@/lib/utils/day";
 
 // Export files are written to the cache folder, which device backups do not
 // include, and are removed by deleteExportFiles(). Null on web.
@@ -308,15 +309,8 @@ export function generatePDFHTML(
   locale: string = "en",
 ): string {
   const t = translations;
-  // Group entries by date and sort by timestamp within each day
-  const groupedByDate = entries.reduce((acc, entry) => {
-    const dateKey = format(new Date(entry.timestamp), "yyyy-MM-dd");
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
-    acc[dateKey].push(entry);
-    return acc;
-  }, {} as Record<string, DiaryEntry[]>);
+  // Group entries by local calendar day and sort by timestamp within each day
+  const groupedByDate = Object.fromEntries(groupByDay(entries));
 
   // Sort entries within each day by timestamp
   Object.keys(groupedByDate).forEach((date) => {
@@ -329,23 +323,6 @@ export function generatePDFHTML(
   // Get sorted dates
   const sortedDates = Object.keys(groupedByDate).sort();
   const totalPages = sortedDates.length;
-
-  // Calculate overall summary stats
-  const urinationEntries = entries.filter((e) => e.type === "urination");
-  const fluidEntries = entries.filter((e) => e.type === "fluid");
-  const leakEntries = entries.filter((e) => e.type === "leak");
-  const totalFluids = fluidEntries.reduce(
-    (sum, e) => sum + (e.type === "fluid" ? e.amount : 0),
-    0,
-  );
-  const totalDays = sortedDates.length;
-  const avgVoidsPerDay =
-    totalDays > 0 ? (urinationEntries.length / totalDays).toFixed(1) : "0";
-  const avgFluidsPerDay =
-    totalDays > 0 ? Math.round(totalFluids / totalDays) : 0;
-  const totalPainCount = urinationEntries.filter(
-    (e) => e.type === "urination" && e.hadPain,
-  ).length;
 
   const formatLocale = intlLocale(locale);
 
@@ -425,7 +402,9 @@ export function generatePDFHTML(
     dayEntries: DiaryEntry[],
     pageNum: number,
   ): string => {
-    const formattedDate = dateFormatter.format(new Date(date));
+    // The key is a local day: read it as local midnight, not UTC midnight,
+    // or the page shows the previous day west of UTC (the Azores in winter).
+    const formattedDate = dateFormatter.format(parseDayKey(date));
 
     // Calculate day summary
     const dayVoids = dayEntries.filter((e) => e.type === "urination");
@@ -744,6 +723,16 @@ export async function exportAndShare(
   }
 }
 
+/** Time (ms) of the earliest entry. Entries must not be empty. */
+export function getEarliestTimestamp(entries: readonly DiaryEntry[]): number {
+  let earliest = Infinity;
+  for (const entry of entries) {
+    const time = new Date(entry.timestamp).getTime();
+    if (time < earliest) earliest = time;
+  }
+  return earliest;
+}
+
 /**
  * Get date range presets
  */
@@ -778,8 +767,8 @@ export function getDateRangePreset(
         start.setHours(0, 0, 0, 0);
         return { start, end: today };
       }
-      const timestamps = entries.map((e) => new Date(e.timestamp).getTime());
-      const earliest = new Date(Math.min(...timestamps));
+      // A loop, not Math.min(...list), which fails on very long lists
+      const earliest = new Date(getEarliestTimestamp(entries));
       earliest.setHours(0, 0, 0, 0);
       return { start: earliest, end: today };
     }

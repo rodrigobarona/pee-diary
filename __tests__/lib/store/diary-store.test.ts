@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { TERMS_VERSION } from "@/constants/legal";
-import { useDiaryStore } from "@/lib/store";
+import { diaryStorage, useDiaryStore } from "@/lib/store";
 import { act } from "react";
 
 // Reset store before each test
@@ -15,7 +15,7 @@ beforeEach(() => {
 describe("DiaryStore", () => {
   describe("addUrinationEntry", () => {
     it("should add a urination entry to the store", () => {
-      const { addUrinationEntry, entries } = useDiaryStore.getState();
+      const { addUrinationEntry } = useDiaryStore.getState();
 
       act(() => {
         addUrinationEntry({
@@ -315,11 +315,9 @@ describe("DiaryStore", () => {
       act(() => {
         useDiaryStore.getState().completeOnboarding();
       });
-      const stored = JSON.parse(
-        (await AsyncStorage.getItem("pee-diary-storage")) as string
-      );
-      expect(stored.state.termsAcceptedVersion).toBe(TERMS_VERSION);
-      expect(stored.state.termsAcceptedAt).toBe(
+      const stored = await diaryStorage.readSaved();
+      expect(stored?.state.termsAcceptedVersion).toBe(TERMS_VERSION);
+      expect(stored?.state.termsAcceptedAt).toBe(
         useDiaryStore.getState().termsAcceptedAt
       );
     });

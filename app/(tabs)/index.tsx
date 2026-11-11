@@ -1,14 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import {
-  eachDayOfInterval,
-  endOfDay,
-  format,
-  getHours,
-  isWithinInterval,
-  parseISO,
-  startOfDay,
-  subDays,
-} from "date-fns";
+import { eachDayOfInterval, getHours, parseISO, subDays } from "date-fns";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
@@ -34,20 +25,15 @@ import {
   WeeklyChart,
 } from "@/components/diary";
 import { Text } from "@/components/ui/text";
+import { useTodayKey } from "@/hooks/use-today-key";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
 import { colors } from "@/lib/theme/colors";
 import { formatDateHeader } from "@/lib/utils/date";
+import { groupByDay, parseDayKey, toDayKey } from "@/lib/utils/day";
 
-// Helper to check if entry is from today
-const isEntryFromToday = (entry: DiaryEntry) => {
-  const today = new Date();
-  return isWithinInterval(parseISO(entry.timestamp), {
-    start: startOfDay(today),
-    end: endOfDay(today),
-  });
-};
+const NO_ENTRIES: DiaryEntry[] = [];
 
 // Helper to check if an entry is between 21:00 and 05:00, for the count of
 // bathroom visits logged in that time window
@@ -84,15 +70,28 @@ export default function HomeScreen() {
   const streak = useDiaryStore((state) => state.streak);
   const refreshStreak = useDiaryStore((state) => state.refreshStreak);
 
-  // Refresh streak on mount
+  // Today's local day; moves on at midnight and when the app comes back to
+  // the foreground on a new day
+  const todayKey = useTodayKey();
+  const today = React.useMemo(() => parseDayKey(todayKey), [todayKey]);
+
+  // Refresh streak on mount and when the day changes
   React.useEffect(() => {
     refreshStreak();
-  }, [refreshStreak]);
+  }, [refreshStreak, todayKey]);
 
-  // Filter entries for today
-  const todayEntries = React.useMemo(() => {
-    return allEntries.filter(isEntryFromToday);
-  }, [allEntries]);
+  // Entries by local calendar day, worked out once per change of entries
+  const entriesByDay = React.useMemo(
+    () => groupByDay(allEntries),
+    [allEntries]
+  );
+  const getDayEntries = React.useCallback(
+    (day: Date) => entriesByDay.get(toDayKey(day)) ?? NO_ENTRIES,
+    [entriesByDay]
+  );
+
+  // Entries for today
+  const todayEntries = entriesByDay.get(todayKey) ?? NO_ENTRIES;
 
   // Compute summary from filtered entries
   const summary = React.useMemo(() => {
@@ -108,7 +107,6 @@ export default function HomeScreen() {
   const fluidProgress =
     goals.fluidTarget > 0 ? summary.fluids / goals.fluidTarget : 0;
 
-  const today = new Date();
   const dateLabel = formatDateHeader(today);
   const greeting = getGreeting(t);
 
@@ -120,15 +118,7 @@ export default function HomeScreen() {
     });
 
     return days.map((day) => {
-      const dayStart = startOfDay(day);
-      const dayEnd = endOfDay(day);
-
-      const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), {
-          start: dayStart,
-          end: dayEnd,
-        })
-      );
+      const dayEntries = getDayEntries(day);
 
       const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
@@ -138,7 +128,7 @@ export default function HomeScreen() {
 
       return { date: day, voids, fluids, leaks };
     });
-  }, [allEntries, today]);
+  }, [getDayEntries, today]);
 
   // Compute fluid balance data (last 7 days)
   const fluidBalanceData = React.useMemo(() => {
@@ -148,15 +138,7 @@ export default function HomeScreen() {
     });
 
     return days.map((day) => {
-      const dayStart = startOfDay(day);
-      const dayEnd = endOfDay(day);
-
-      const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), {
-          start: dayStart,
-          end: dayEnd,
-        })
-      );
+      const dayEntries = getDayEntries(day);
 
       // Fluid intake
       const fluidIntake = dayEntries
@@ -176,7 +158,7 @@ export default function HomeScreen() {
 
       return { date: day, fluidIntake, urinationOutput };
     });
-  }, [allEntries, today]);
+  }, [getDayEntries, today]);
 
   // Compute weekly stats for insight cards
   const weeklyStats = React.useMemo(() => {
@@ -195,15 +177,7 @@ export default function HomeScreen() {
     });
 
     const lastWeekData = lastWeekDays.map((day) => {
-      const dayStart = startOfDay(day);
-      const dayEnd = endOfDay(day);
-
-      const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), {
-          start: dayStart,
-          end: dayEnd,
-        })
-      );
+      const dayEntries = getDayEntries(day);
 
       const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
@@ -245,14 +219,10 @@ export default function HomeScreen() {
     ).length;
 
     // Count bathroom visits logged between 21:00 and 05:00 this week
-    const weekStart = startOfDay(subDays(today, 6));
-    const weekEnd = endOfDay(today);
-    const weekEntries = allEntries.filter((entry) =>
-      isWithinInterval(parseISO(entry.timestamp), {
-        start: weekStart,
-        end: weekEnd,
-      })
-    );
+    const weekEntries = eachDayOfInterval({
+      start: subDays(today, 6),
+      end: today,
+    }).flatMap(getDayEntries);
     const nightVoidsTotal = weekEntries.filter(
       (e) => e.type === "urination" && isNighttimeEntry(e)
     ).length;
@@ -292,7 +262,7 @@ export default function HomeScreen() {
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
-  }, [weeklyData, allEntries, today, goals]);
+  }, [weeklyData, getDayEntries, today, goals]);
 
   // Compute monthly chart data (last 30 days)
   const monthlyData = React.useMemo(() => {
@@ -302,15 +272,7 @@ export default function HomeScreen() {
     });
 
     return days.map((day) => {
-      const dayStart = startOfDay(day);
-      const dayEnd = endOfDay(day);
-
-      const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), {
-          start: dayStart,
-          end: dayEnd,
-        })
-      );
+      const dayEntries = getDayEntries(day);
 
       const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
@@ -320,7 +282,7 @@ export default function HomeScreen() {
 
       return { date: day, voids, fluids, leaks };
     });
-  }, [allEntries, today]);
+  }, [getDayEntries, today]);
 
   // Compute monthly stats for insight cards
   const monthlyStats = React.useMemo(() => {
@@ -338,15 +300,7 @@ export default function HomeScreen() {
     });
 
     const lastMonthData = lastMonthDays.map((day) => {
-      const dayStart = startOfDay(day);
-      const dayEnd = endOfDay(day);
-
-      const dayEntries = allEntries.filter((entry) =>
-        isWithinInterval(parseISO(entry.timestamp), {
-          start: dayStart,
-          end: dayEnd,
-        })
-      );
+      const dayEntries = getDayEntries(day);
 
       const voids = dayEntries.filter((e) => e.type === "urination").length;
       const fluids = dayEntries
@@ -388,14 +342,10 @@ export default function HomeScreen() {
     ).length;
 
     // Count bathroom visits logged between 21:00 and 05:00 this month
-    const monthStart = startOfDay(subDays(today, 29));
-    const monthEnd = endOfDay(today);
-    const monthEntries = allEntries.filter((entry) =>
-      isWithinInterval(parseISO(entry.timestamp), {
-        start: monthStart,
-        end: monthEnd,
-      })
-    );
+    const monthEntries = eachDayOfInterval({
+      start: subDays(today, 29),
+      end: today,
+    }).flatMap(getDayEntries);
     const nightVoidsTotal = monthEntries.filter(
       (e) => e.type === "urination" && isNighttimeEntry(e)
     ).length;
@@ -435,7 +385,7 @@ export default function HomeScreen() {
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
-  }, [monthlyData, allEntries, today, goals]);
+  }, [monthlyData, getDayEntries, today, goals]);
 
   // Get current period stats based on toggle
   const currentStats = insightsPeriod === "week" ? weeklyStats : monthlyStats;
@@ -447,7 +397,7 @@ export default function HomeScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
 
-      const todayStr = format(today, "yyyy-MM-dd");
+      const todayStr = todayKey;
 
       const options = [
         t("home.viewInHistory"),
@@ -488,7 +438,7 @@ export default function HomeScreen() {
         ]);
       }
     },
-    [router, t, today]
+    [router, t, todayKey]
   );
 
   // Navigate to settings and open goals modal
@@ -509,10 +459,9 @@ export default function HomeScreen() {
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
-      const todayStr = format(today, "yyyy-MM-dd");
-      router.push(`/(tabs)/history?date=${todayStr}&period=${period}`);
+      router.push(`/(tabs)/history?date=${todayKey}&period=${period}`);
     },
-    [router, today]
+    [router, todayKey]
   );
 
   // Handle streak badge press - scroll to insights section
@@ -526,7 +475,7 @@ export default function HomeScreen() {
   // Handle day press in weekly chart
   const handleDayPress = React.useCallback(
     (date: Date) => {
-      const dateStr = format(date, "yyyy-MM-dd");
+      const dateStr = toDayKey(date);
       router.push(`/(tabs)/history?date=${dateStr}`);
     },
     [router]

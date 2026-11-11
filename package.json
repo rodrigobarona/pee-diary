@@ -28,6 +28,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "expo": "~57.0.32",
+    "expo-application": "~57.0.3",
     "expo-blur": "~57.0.3",
     "expo-constants": "~57.0.23",
     "expo-document-picker": "~57.0.3",
@@ -83,6 +84,7 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?[/+].*|@expo-google-fonts[/+].*|react-navigation|@react-navigation[/+].*|@rn-primitives[/+].*|native-base|react-native-svg|nativewind|react-native-css|zustand))"
     ],
+    "testEnvironment": "<rootDir>/jest.environment.js",
     "setupFiles": [
       "<rootDir>/jest.setup.js"
     ],

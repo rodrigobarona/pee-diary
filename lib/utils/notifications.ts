@@ -1,6 +1,12 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
+import type { ReminderSettings } from "@/lib/store/types";
+import {
+  getReminderTimes,
+  reminderIdentifier,
+} from "@/lib/utils/reminder-schedule";
+
 // Configure how notifications are handled when app is in foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -12,21 +18,16 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export interface ReminderSettings {
-  enabled: boolean;
-  intervalHours: number; // How often to remind (e.g., 2, 3, 4 hours)
-  quietHoursEnabled: boolean;
-  quietHoursStart: string; // "22:00" format
-  quietHoursEnd: string; // "07:00" format
-}
+// Android channel for reminders; its name is shown in the phone's settings
+const REMINDER_CHANNEL_ID = "default";
 
-export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
-  enabled: false,
-  intervalHours: 3,
-  quietHoursEnabled: true,
-  quietHoursStart: "22:00",
-  quietHoursEnd: "07:00",
-};
+/** Reminder text in the app's language. Neutral: never what was logged. */
+export interface ReminderTexts {
+  title: string;
+  body: string;
+  // Name of the Android notification channel
+  channelName: string;
+}
 
 // Request permission for notifications
 export async function requestNotificationPermission(): Promise<boolean> {
@@ -46,128 +47,98 @@ export async function hasNotificationPermission(): Promise<boolean> {
   return status === "granted";
 }
 
-// Cancel all scheduled notifications
+// Cancel all scheduled notifications (the app schedules only reminders)
 export async function cancelAllReminders(): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
 }
 
-// Get identifier for reminder notifications
-const REMINDER_IDENTIFIER_PREFIX = "diary-reminder-";
-
-// Schedule reminders based on settings
-export async function scheduleReminders(
-  settings: ReminderSettings,
-  translations: {
-    title: string;
-    body: string;
-  }
-): Promise<void> {
-  // Cancel existing reminders first
-  await cancelAllReminders();
-
-  if (!settings.enabled) {
-    return;
-  }
-
-  // Check permission
-  const hasPermission = await hasNotificationPermission();
-  if (!hasPermission) {
-    return;
-  }
-
-  // Parse quiet hours
-  const [quietStartHour, quietStartMinute] = settings.quietHoursStart
-    .split(":")
-    .map(Number);
-  const [quietEndHour, quietEndMinute] = settings.quietHoursEnd
-    .split(":")
-    .map(Number);
-
-  // Schedule notifications for the next 7 days
-  // This covers typical use patterns while keeping the notification list manageable
-  const now = new Date();
-  const scheduledNotifications: Promise<string>[] = [];
-
-  for (let day = 0; day < 7; day++) {
-    // Schedule multiple reminders throughout the day
-    const hoursInDay = 24;
-    const intervalsPerDay = Math.floor(hoursInDay / settings.intervalHours);
-
-    for (let interval = 0; interval < intervalsPerDay; interval++) {
-      const reminderHour = (interval * settings.intervalHours) % 24;
-      const reminderDate = new Date(now);
-      reminderDate.setDate(reminderDate.getDate() + day);
-      reminderDate.setHours(reminderHour, 0, 0, 0);
-
-      // Skip if in the past
-      if (reminderDate <= now) {
-        continue;
-      }
-
-      // Check if in quiet hours
-      if (settings.quietHoursEnabled) {
-        const hour = reminderDate.getHours();
-        const minute = reminderDate.getMinutes();
-        const currentTimeMinutes = hour * 60 + minute;
-        const quietStartMinutes = quietStartHour * 60 + quietStartMinute;
-        const quietEndMinutes = quietEndHour * 60 + quietEndMinute;
-
-        // Handle overnight quiet hours (e.g., 22:00 to 07:00)
-        const isInQuietHours =
-          quietStartMinutes > quietEndMinutes
-            ? currentTimeMinutes >= quietStartMinutes ||
-              currentTimeMinutes < quietEndMinutes
-            : currentTimeMinutes >= quietStartMinutes &&
-              currentTimeMinutes < quietEndMinutes;
-
-        if (isInQuietHours) {
-          continue;
-        }
-      }
-
-      // Schedule the notification
-      const trigger: Notifications.NotificationTriggerInput = {
-        type: Notifications.SchedulableTriggerInputTypes.DATE,
-        date: reminderDate,
-      };
-
-      scheduledNotifications.push(
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: translations.title,
-            body: translations.body,
-            sound: "default",
-            priority: Notifications.AndroidNotificationPriority.DEFAULT,
-          },
-          trigger,
-          identifier: `${REMINDER_IDENTIFIER_PREFIX}${reminderDate.getTime()}`,
-        })
-      );
-    }
-  }
-
-  await Promise.all(scheduledNotifications);
-}
-
-// Get count of scheduled reminders (for debugging/display)
-export async function getScheduledReminderCount(): Promise<number> {
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  return scheduled.filter((n) =>
-    n.identifier.startsWith(REMINDER_IDENTIFIER_PREFIX)
-  ).length;
-}
-
-// Initialize notifications on app start
+/**
+ * Creates or renames the Android notification channel. The channel name is
+ * shown in the phone's notification settings, so it follows the app language.
+ */
 export async function initializeNotifications(
-  // Channel name shown in Android's notification settings, translated
   channelName: string
 ): Promise<void> {
   if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
+    await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {
       name: channelName,
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#006D77",
     });
+  }
+}
+
+/** The notifications to schedule for these settings, all on the phone. */
+export function buildReminderRequests(
+  settings: ReminderSettings,
+  texts: Pick<ReminderTexts, "title" | "body">
+): Notifications.NotificationRequestInput[] {
+  return getReminderTimes(settings).map((time) => ({
+    identifier: reminderIdentifier(time),
+    content: {
+      title: texts.title,
+      body: texts.body,
+      sound: "default",
+      priority: Notifications.AndroidNotificationPriority.DEFAULT,
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: time.hour,
+      minute: time.minute,
+      channelId: REMINDER_CHANNEL_ID,
+    },
+  }));
+}
+
+// Runs one update at a time, so two quick changes cannot interleave and
+// leave the reminders of both settings scheduled.
+let updateQueue: Promise<void> = Promise.resolve();
+
+/**
+ * Makes the scheduled reminders match the settings: repeating daily
+ * reminders when they are on and notifications are allowed, none otherwise.
+ * Safe to call often (at launch, when the app returns to the foreground,
+ * after a settings or language change): it changes nothing when the right
+ * reminders are already scheduled.
+ */
+export function scheduleReminders(
+  settings: ReminderSettings,
+  texts: ReminderTexts
+): Promise<void> {
+  const run = updateQueue.then(() => applyReminders(settings, texts));
+  updateQueue = run.catch(() => {});
+  return run;
+}
+
+async function applyReminders(
+  settings: ReminderSettings,
+  texts: ReminderTexts
+): Promise<void> {
+  const requests =
+    settings.enabled && (await hasNotificationPermission())
+      ? buildReminderRequests(settings, texts)
+      : [];
+
+  if (requests.length > 0) {
+    await initializeNotifications(texts.channelName);
+  }
+
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  const alreadyScheduled =
+    scheduled.length === requests.length &&
+    requests.every((request) =>
+      scheduled.some(
+        (existing) =>
+          existing.identifier === request.identifier &&
+          existing.content.title === request.content.title &&
+          existing.content.body === request.content.body
+      )
+    );
+  if (alreadyScheduled) return;
+
+  await cancelAllReminders();
+  for (const request of requests) {
+    await Notifications.scheduleNotificationAsync(request);
   }
 }

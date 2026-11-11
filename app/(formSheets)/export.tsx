@@ -29,6 +29,7 @@ import { colors } from "@/lib/theme/colors";
 import {
   exportAndShare,
   filterEntriesByDateRange,
+  getEarliestTimestamp,
   getDateRangePreset,
   type ExportFormat,
   type PDFTranslations,
@@ -147,8 +148,7 @@ export default function ExportScreen() {
   // Get earliest entry date
   const minDate = React.useMemo(() => {
     if (entries.length === 0) return undefined;
-    const timestamps = entries.map((e) => new Date(e.timestamp).getTime());
-    return new Date(Math.min(...timestamps));
+    return new Date(getEarliestTimestamp(entries));
   }, [entries]);
 
   // Handle preset selection
