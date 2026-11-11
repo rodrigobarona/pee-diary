@@ -89,7 +89,7 @@ Per Apple's definition, "collect" means transmitting data off the device in read
 
 - Health diary data (urination, fluid, leak entries) stays in AsyncStorage on the device
 - The app makes no network requests and does not write to iCloud
-- Data leaves the device only through user-initiated exports and backup files (see below)
+- Data leaves the device only through user-initiated exports and backup files (see below), or inside the device backup the operating system makes under the user's own settings
 
 Result: "Data Not Collected" for all categories. iOS device backups (iCloud Backup or a computer backup) may include the app's local data under the user's own settings; these are made by iOS, not by the app.
 

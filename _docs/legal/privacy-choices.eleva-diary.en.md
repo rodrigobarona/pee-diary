@@ -24,7 +24,7 @@ This page explains:
 
 All diary entries, goals, and settings are stored **locally on your device** using secure local storage. This data:
 
-- Is never sent anywhere by the app; it leaves your device only if you export it, or in your device's own backup if you have turned that on
+- Is never sent anywhere by the app; it leaves your device only if you export it, or in your device's own backup when that is on (on many phones it is on by default)
 - Is protected by your device's security (passcode/biometrics)
 - Is automatically deleted if you uninstall the app
 
@@ -75,9 +75,8 @@ To permanently delete all your data from the app:
 
 1. Open Eleva Diary
 2. Go to **Settings** (gear icon)
-3. Scroll to **Data Management** or **Clear Data**
-4. Tap **Clear All Data**
-5. Confirm the deletion when prompted
+3. In the **Data** section, tap **Clear All Data**
+4. Confirm the deletion when prompted
 
 **Warning:** This action is permanent and cannot be undone. We recommend exporting your data first if you want to keep a copy.
 

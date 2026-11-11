@@ -131,7 +131,7 @@ The developer (Eleva Care) provides health and wellness tools but is not a licen
 ### "How is data protected?"
 
 - Data at rest: Stored in AsyncStorage (app sandbox, encrypted by iOS)
-- Data in transit: None — the app makes no network requests; data leaves the device only when the user exports a report or backup file via the share sheet
+- Data in transit: None — the app makes no network requests; data leaves the device only when the user exports a report or backup file via the share sheet, or inside the device backup iOS makes under the user's own settings
 - No server-side storage: Eleva Care does not operate servers that store user health data
 
 ---

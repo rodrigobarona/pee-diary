@@ -50,7 +50,7 @@ The app has no network code, no analytics, crash reporting or advertising SDKs, 
 
 **Selection:** ❌ **None**
 
-The app does not transmit any data off the device itself. Diary data leaves the device only when the user exports a report or a backup file and chooses the destination in the OS share sheet (see "User-Initiated Exports" below).
+The app does not transmit any data off the device itself. Diary data leaves the device only when the user exports a report or a backup file and chooses the destination in the OS share sheet (see "User-Initiated Exports" below), or inside the device backup that iOS makes under the user's own settings (see "Device backups" below).
 
 ---
 

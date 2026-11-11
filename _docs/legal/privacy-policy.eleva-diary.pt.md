@@ -28,7 +28,7 @@ Esta Política de Privacidade explica como lidamos com as informações quando v
 - ✅ **Não** coletamos, transmitimos ou armazenamos seus dados de saúde pessoais em nossos servidores
 - ✅ **Não** utilizamos tecnologias de análise, publicidade ou rastreamento
 - ✅ Você tem **controle total** sobre seus dados em todos os momentos
-- ✅ O app nunca envia seus dados para lugar nenhum. Eles só saem do seu dispositivo quando **você escolhe** exportá-los, ou no backup do seu próprio dispositivo, se você o tiver ativado
+- ✅ O app nunca envia seus dados para lugar nenhum. Eles só saem do seu dispositivo quando **você escolhe** exportá-los, ou no backup do seu próprio dispositivo, quando ele estiver ativado (em muitos telefones ele vem ativado por padrão)
 
 ---
 
@@ -148,7 +148,7 @@ Você pode excluir todos os seus dados a qualquer momento:
 3. Toque em **Apagar todos os dados**
 4. Confirme a exclusão
 
-Isso remove permanentemente todas as entradas do diário, metas e configurações do seu dispositivo.
+Isso remove permanentemente todas as entradas do diário, metas e configurações do seu dispositivo, e os arquivos de exportação ou backup que o app salvou para compartilhar. Apenas o idioma escolhido é mantido.
 
 ### Desinstalar o Aplicativo
 

@@ -24,7 +24,7 @@ Esta página explica:
 
 Todas as entradas do diário, metas e configurações são armazenadas **localmente no seu dispositivo** usando armazenamento local seguro. Esses dados:
 
-- O app nunca os envia para lugar nenhum; eles só saem do seu dispositivo se você os exportar, ou no backup do seu próprio dispositivo, se você o tiver ativado
+- O app nunca os envia para lugar nenhum; eles só saem do seu dispositivo se você os exportar, ou no backup do seu próprio dispositivo, quando ele estiver ativado (em muitos telefones ele vem ativado por padrão)
 - São protegidos pela segurança do seu dispositivo (código/biometria)
 - São automaticamente excluídos se você desinstalar o app
 
@@ -98,7 +98,7 @@ Para excluir uma entrada individual:
 1. Vá para a aba **Histórico**
 2. Encontre a entrada que deseja excluir
 3. Toque na entrada para abrir os detalhes
-4. Toque no botão **Excluir** ou deslize para excluir
+4. Toque no botão **Eliminar** ou deslize para excluir
 5. Confirme a exclusão
 
 ---

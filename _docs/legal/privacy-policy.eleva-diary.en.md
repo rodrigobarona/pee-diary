@@ -28,7 +28,7 @@ This Privacy Policy explains how we handle information when you use Eleva Diary.
 - ✅ We do **not** collect, transmit, or store your personal health data on our servers
 - ✅ We do **not** use analytics, advertising, or tracking technologies
 - ✅ You have **full control** over your data at all times
-- ✅ The app never sends your data anywhere. It leaves your device only when **you choose** to export it, or in your device's own backup if you have turned that on
+- ✅ The app never sends your data anywhere. It leaves your device only when **you choose** to export it, or in your device's own backup when that is on (on many phones it is on by default)
 
 ---
 
@@ -145,10 +145,10 @@ You can delete all your data at any time:
 
 1. Open the App
 2. Go to **Settings**
-3. Tap **Clear Data** or **Clear All Data**
+3. Tap **Clear All Data**
 4. Confirm deletion
 
-This permanently removes all diary entries, goals, and settings from your device.
+This permanently removes all diary entries, goals, and settings from your device, and any export or backup files the app saved for sharing. Only your language choice is kept.
 
 ### Uninstalling the App
 
@@ -185,7 +185,7 @@ Depending on your jurisdiction, you may have rights regarding your personal data
 | ----------- | ------------------------------------------------ |
 | Access      | View your data in the app's History and Settings |
 | Correction  | Edit any entry by tapping on it                  |
-| Deletion    | Use Clear Data in Settings                       |
+| Deletion    | Use Clear All Data in Settings                   |
 | Portability | Export your data as CSV or JSON                  |
 | Objection   | Not applicable (no processing by us)             |
 

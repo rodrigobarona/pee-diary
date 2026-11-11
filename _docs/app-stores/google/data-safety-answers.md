@@ -112,9 +112,9 @@ For all other data categories, answer **"Not collected"**:
 **How users delete data:**
 
 1. Open Settings in the app
-2. Tap "Clear Data" / "Clear All Data"
+2. Tap "Clear All Data"
 3. Confirm deletion
-4. All diary entries, goals, and settings are permanently deleted from the device
+4. All diary entries, goals, settings and export or backup files the app saved are permanently deleted from the device (the language choice is kept)
 
 **Data deletion URL (optional):** Include link to privacy choices page once published:
 `https://eleva.care/privacy-choices`
@@ -136,7 +136,7 @@ For all other data categories, answer **"Not collected"**:
 If you prefer, you could argue that:
 
 - Data stored only on-device is "not collected" per Google's definition
-- No data leaves the device without explicit user action
+- The app sends no data off the device; data leaves it only through user exports or Android's own device backup (allowBackup is true; see the open Auto Backup question above)
 - Therefore: **No data collected, no data shared**
 
 This would result in a "Data not collected" badge. However, health apps often receive extra scrutiny, so the conservative approach (disclosing Health info) is recommended.

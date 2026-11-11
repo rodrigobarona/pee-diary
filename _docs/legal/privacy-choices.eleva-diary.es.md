@@ -24,7 +24,7 @@ Esta página explica:
 
 Todas las entradas del diario, metas y configuraciones se almacenan **localmente en tu dispositivo** usando almacenamiento local seguro. Estos datos:
 
-- La app nunca los envía a ningún sitio; solo salen de tu dispositivo si los exportas, o en la copia de seguridad de tu propio dispositivo si la tienes activada
+- La app nunca los envía a ningún sitio; solo salen de tu dispositivo si los exportas, o en la copia de seguridad de tu propio dispositivo cuando está activada (en muchos teléfonos lo está por defecto)
 - Están protegidos por la seguridad de tu dispositivo (código/biometría)
 - Se eliminan automáticamente si desinstalas la app
 
@@ -75,9 +75,8 @@ Para eliminar permanentemente todos tus datos de la app:
 
 1. Abre Eleva Diary
 2. Ve a **Ajustes** (icono de engranaje)
-3. Desplázate hasta **Gestión de Datos** o **Borrar Datos**
-4. Toca **Borrar Todos los Datos**
-5. Confirma la eliminación cuando se te solicite
+3. En la sección de datos, toca **Borrar todos los datos**
+4. Confirma la eliminación cuando se te solicite
 
 **Advertencia:** Esta acción es permanente y no se puede deshacer. Recomendamos exportar tus datos primero si quieres conservar una copia.
 
