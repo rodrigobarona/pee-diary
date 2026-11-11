@@ -662,7 +662,11 @@ export default function HomeScreen() {
                     {...tabA11y(selected)}
                     accessibilityLabel={t(`insights.${period}`)}
                   >
+                    {/* Remounted when the selection changes: on Android a
+                        text whose weight drops from semibold to regular can
+                        keep its old layout and draw nothing */}
                     <Text
+                      key={selected ? "selected" : "unselected"}
                       variant="subheadline"
                       tone={selected ? "primary" : "secondary"}
                       style={selected ? styles.periodTextActive : undefined}
