@@ -26,7 +26,9 @@ import {
 } from "@/components/diary";
 import type { DateEntryInfo } from "@/components/diary/calendar-header";
 import type { FilterType } from "@/components/diary/filter-chips";
+import { AddEntryFab } from "@/components/add-entry-fab";
 import { Text } from "@/components/ui/text";
+import { useTabScreenBottomSpace } from "@/hooks/use-tab-screen-bottom-space";
 import { useI18n } from "@/lib/i18n/context";
 import { dateFormatters } from "@/lib/i18n";
 import { useDiaryStore } from "@/lib/store";
@@ -56,6 +58,7 @@ interface PeriodGroup {
 export default function HistoryScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const bottomSpace = useTabScreenBottomSpace();
   const params = useLocalSearchParams<{
     date?: string;
     filter?: string;
@@ -287,7 +290,10 @@ export default function HistoryScreen() {
           /* Entries List */
           <ScrollView
             style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: bottomSpace },
+            ]}
             showsVerticalScrollIndicator={false}
           >
             {selectedDayData.periods.map((periodGroup) => {
@@ -346,6 +352,7 @@ export default function HistoryScreen() {
                           isFirst={entryIndex === 0}
                           isLast={entryIndex === periodGroup.entries.length - 1}
                           onPress={() => handleEntryPress(entry.id)}
+                          testID={`entry-${entry.id}`}
                         />
                       ))}
                     </View> : null}
@@ -355,7 +362,9 @@ export default function HistoryScreen() {
           </ScrollView>
         ) : (
           /* Empty State - Full height centered */
-          <View style={styles.emptyState}>
+          <View
+            style={[styles.emptyState, { paddingBottom: bottomSpace - 24 }]}
+          >
             <View style={styles.emptyContent}>
               <MaterialCommunityIcons
                 name="calendar-blank-outline"
@@ -383,6 +392,7 @@ export default function HistoryScreen() {
           </View>
         )}
       </View>
+      <AddEntryFab />
     </View>
   );
 }
@@ -426,7 +436,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: 8,
-    paddingBottom: 100,
   },
   entriesList: {
     paddingHorizontal: 8,
@@ -496,8 +505,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   // Handwriting arrow hint
+  // Points down at the "+" in the middle of the tab bar (iOS) or at the
+  // floating action button at the bottom end (Android)
   arrowHint: {
-    alignItems: "center",
+    alignItems: Platform.OS === "android" ? "flex-end" : "center",
     paddingBottom: 20,
   },
   arrowText: {

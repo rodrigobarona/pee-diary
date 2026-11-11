@@ -370,11 +370,12 @@ export function CalendarHeader({
           </Pressable>
         </Modal> : null}
 
-      {/* Native Date Picker for Android */}
+      {/* Material 3 date picker for Android */}
       {Platform.OS === 'android' && showDatePicker ? <DateTimePicker
           value={pickerDate}
           mode="date"
-          display="default"
+          design="material"
+          title={t('time.date')}
           onChange={handleDatePickerChange}
         /> : null}
 

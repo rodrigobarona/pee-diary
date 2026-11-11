@@ -14,7 +14,12 @@
     "yes": "Sim",
     "no": "Não",
     "notesPlaceholder": "Adicione uma nota…",
-    "options": "Opções"
+    "options": "Opções",
+    "close": "Fechar",
+    "discard": "Descartar",
+    "discardChanges": "Descartar alterações",
+    "discardChangesTitle": "Descartar as alterações?",
+    "keepEditing": "Continuar a editar"
   },
   "tabs": {
     "home": "Hoje",

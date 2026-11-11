@@ -2,7 +2,14 @@ import "../global.css";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFonts } from "expo-font";
-import { DefaultTheme, Stack, ThemeProvider, useRouter } from "expo-router";
+import {
+  DefaultTheme,
+  type NativeStackNavigationOptions,
+  Stack,
+  ThemeProvider,
+  useRouter,
+} from "expo-router";
+import { getFocusedRouteNameFromRoute } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
@@ -17,6 +24,7 @@ import { useReminderSync } from "@/hooks/use-reminder-sync";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
+import { stackHeaderOptions } from "@/lib/theme/navigation";
 import { getLaunchAction } from "@/lib/utils/launch";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
@@ -32,8 +40,23 @@ export const unstable_settings = {
 };
 
 // Inner layout that can access I18n context
+const formOptions: NativeStackNavigationOptions = {
+  presentation: Platform.OS === "web" ? "card" : "modal",
+  headerShown: true,
+};
+
+// iOS: form sheet with the system grabber and corner radius. Android: bottom
+// sheet with 28dp top corners; each sheet draws the Material drag handle
+// (SheetHandle).
+const sheetOptions: NativeStackNavigationOptions = {
+  presentation: Platform.OS === "web" ? "card" : "formSheet",
+  headerShown: false,
+  sheetGrabberVisible: Platform.OS === "ios",
+  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+};
+
 function InnerLayout() {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const router = useRouter();
   const isHydrated = useStoreHydrated();
   const hasCheckedLaunchRef = useRef(false);
@@ -86,95 +109,65 @@ function InnerLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack
         key={locale} // Force re-mount on locale change to update all translations
-        screenOptions={{
-          contentStyle: {
-            backgroundColor: "#F9FAFB",
-          },
-        }}
+        screenOptions={stackHeaderOptions}
       >
-        <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {/* No swipe back: onboarding ends only on its last page (welcome.tsx
+            also handles the Android back button page by page) */}
         <Stack.Screen
-          name="(modals)/add/urination"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
-            headerShown: false,
-            contentStyle: { backgroundColor: "#F9FAFB" },
-          }}
+          name="(onboarding)"
+          options={{ headerShown: false, gestureEnabled: false }}
         />
         <Stack.Screen
-          name="(modals)/add/fluid"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
+          name="(tabs)"
+          options={({ route }) => ({
             headerShown: false,
-            contentStyle: { backgroundColor: "#F9FAFB" },
-          }}
+            // Shown by the back button of Settings on iOS ("< Today")
+            title:
+              getFocusedRouteNameFromRoute(route) === "history"
+                ? t("tabs.history")
+                : t("tabs.home"),
+          })}
         />
-        <Stack.Screen
-          name="(modals)/add/leak"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
-            headerShown: false,
-            contentStyle: { backgroundColor: "#F9FAFB" },
-          }}
-        />
+        {/* Pushed from the gear on Today and History: inline title, native
+            back button and swipe back on iOS, arrow back on Android */}
+        <Stack.Screen name="settings" options={{ title: t("tabs.settings") }} />
+        {/* Add and edit forms: a page sheet with a navigation bar on iOS, a
+            full-screen dialog with a top app bar on Android. The title and
+            the bar buttons come from useEntryFormHeader. */}
+        <Stack.Screen name="(modals)/add/urination" options={formOptions} />
+        <Stack.Screen name="(modals)/add/fluid" options={formOptions} />
+        <Stack.Screen name="(modals)/add/leak" options={formOptions} />
+        <Stack.Screen name="(modals)/entry/[id]" options={formOptions} />
         <Stack.Screen
           name="(modals)/terms-update"
           options={{
             presentation: Platform.OS === "web" ? "card" : "modal",
             headerShown: false,
-            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
           name="(formSheets)/add-menu"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
-            headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.6] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
-          }}
+          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
         />
         <Stack.Screen
           name="(formSheets)/goals"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
-            headerShown: false,
+            ...sheetOptions,
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/entry/[id]"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "modal",
-            headerShown: false,
-            contentStyle: { backgroundColor: "#F9FAFB" },
           }}
         />
         <Stack.Screen
           name="(formSheets)/export"
           options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
-            headerShown: false,
+            ...sheetOptions,
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
           }}
         />
         <Stack.Screen
           name="(formSheets)/language"
-          options={{
-            presentation: Platform.OS === "web" ? "card" : "formSheet",
-            headerShown: false,
-            sheetAllowedDetents: Platform.OS === "ios" ? [0.5] : undefined,
-            sheetGrabberVisible: Platform.OS === "ios",
-            sheetCornerRadius: 24,
-          }}
+          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
         />
       </Stack>
       <StatusBar style="dark" />

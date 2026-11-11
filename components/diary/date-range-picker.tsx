@@ -189,11 +189,12 @@ export function DateRangePicker({
         </Pressable>
       </View>
 
-      {/* Android Date Picker Dialogs */}
+      {/* Android: Material 3 date pickers */}
       {showStartPicker ? <DateTimePicker
           value={safeStartDate}
           mode="date"
-          display="default"
+          design="material"
+          title={t("export.startDate")}
           onChange={handleStartDateChange}
           minimumDate={minDate}
           maximumDate={safeEndDate}
@@ -202,7 +203,8 @@ export function DateRangePicker({
       {showEndPicker ? <DateTimePicker
           value={safeEndDate}
           mode="date"
-          display="default"
+          design="material"
+          title={t("export.endDate")}
           onChange={handleEndDateChange}
           minimumDate={safeStartDate}
           maximumDate={safeMaxDate}

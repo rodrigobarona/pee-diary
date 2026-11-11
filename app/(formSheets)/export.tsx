@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { DateRangePicker } from "@/components/diary/date-range-picker";
+import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { dateFormatters } from "@/lib/i18n";
@@ -327,13 +328,15 @@ export default function ExportScreen() {
       contentContainerStyle={[
         styles.scrollContent,
         {
-          paddingBottom:
-            Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 16 : 20,
-          paddingTop: Platform.OS === "ios" ? 50 : 24,
+          // Keeps Export & Share above the home indicator or the Android
+          // gesture / 3-button navigation bar
+          paddingBottom: Math.max(insets.bottom, 16) + 16,
+          paddingTop: Platform.OS === "ios" ? 50 : 0,
         },
       ]}
       showsVerticalScrollIndicator={false}
     >
+      <SheetHandle />
       {/* Header */}
       <Text style={styles.title}>{t("export.title")}</Text>
       <Text style={styles.subtitle}>{t("settings.exportDescription")}</Text>
@@ -415,6 +418,12 @@ export default function ExportScreen() {
         ]}
         onPress={handleExport}
         disabled={filteredEntries.length === 0 || isExporting}
+        accessibilityRole="button"
+        accessibilityState={{
+          disabled: filteredEntries.length === 0 || isExporting,
+          busy: isExporting,
+        }}
+        testID="export-button"
       >
         {isExporting ? (
           <ActivityIndicator size="small" color="#FFFFFF" />

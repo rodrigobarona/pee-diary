@@ -3,18 +3,12 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface AddOptionProps {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -22,47 +16,48 @@ interface AddOptionProps {
   description: string;
   color: string;
   onPress: () => void;
+  testID: string;
 }
 
+// A full-width row: a list item in the iOS grouped list, a Material 3
+// two-line list item on Android. The rows start an action (no chevron).
 function AddOption({
   icon,
   label,
   description,
   color,
   onPress,
+  testID,
 }: AddOptionProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = React.useCallback(() => {
-    scale.set(withTiming(0.97, { duration: 100 }));
-  }, [scale]);
-
-  const handlePressOut = React.useCallback(() => {
-    scale.set(withTiming(1, { duration: 150 }));
-  }, [scale]);
-
   return (
-    <AnimatedPressable
+    <Pressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[styles.optionContainer, animatedStyle]}
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={description}
+      android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+      style={({ pressed }) => [
+        styles.option,
+        Platform.OS === "ios" && pressed ? styles.optionPressedIOS : undefined,
+      ]}
     >
       <View
         style={[styles.optionIconContainer, { backgroundColor: `${color}15` }]}
       >
-        <MaterialCommunityIcons name={icon} size={28} color={color} />
+        <MaterialCommunityIcons
+          name={icon}
+          size={26}
+          color={color}
+          accessible={false}
+          importantForAccessibility="no"
+        />
       </View>
       <View style={styles.optionTextContainer}>
         <Text style={styles.optionLabel}>{label}</Text>
         <Text style={styles.optionDescription}>{description}</Text>
       </View>
-      <MaterialCommunityIcons name="chevron-right" size={24} color="#9CA3AF" />
-    </AnimatedPressable>
+    </Pressable>
   );
 }
 
@@ -91,6 +86,7 @@ export default function AddMenuScreen() {
       description: t("add.urinationDesc"),
       color: colors.primary.DEFAULT,
       route: "/(modals)/add/urination",
+      testID: "add-menu-urination",
     },
     {
       icon: "cup-water" as const,
@@ -98,6 +94,7 @@ export default function AddMenuScreen() {
       description: t("add.fluidDesc"),
       color: colors.secondary.DEFAULT,
       route: "/(modals)/add/fluid",
+      testID: "add-menu-fluid",
     },
     {
       icon: "water-alert" as const,
@@ -105,35 +102,42 @@ export default function AddMenuScreen() {
       description: t("add.leakDesc"),
       color: colors.error,
       route: "/(modals)/add/leak",
+      testID: "add-menu-leak",
     },
   ];
 
   return (
+    // The sheet fits its content (sheetAllowedDetents "fitToContents"), so
+    // the container has no flex and ends above the home indicator or the
+    // Android navigation bar.
     <View
       style={[
         styles.container,
-        {
-          paddingBottom:
-            Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 16 : 0,
-          paddingTop: Platform.OS === "ios" ? 38 : 0,
-        },
+        { paddingBottom: Math.max(insets.bottom, 16) + 8 },
       ]}
     >
-      {/* Title */}
-      <Text style={styles.title}>{t("add.title")}</Text>
+      <SheetHandle />
+
+      <Text style={styles.title} accessibilityRole="header">
+        {t("add.title")}
+      </Text>
       <Text style={styles.subtitle}>{t("add.subtitle")}</Text>
 
-      {/* Options */}
-      <View style={styles.optionsContainer}>
-        {options.map((option) => (
-          <AddOption
-            key={option.route}
-            icon={option.icon}
-            label={option.label}
-            description={option.description}
-            color={option.color}
-            onPress={() => handleOptionPress(option.route)}
-          />
+      <View style={styles.options}>
+        {options.map((option, index) => (
+          <React.Fragment key={option.route}>
+            {index > 0 && Platform.OS === "ios" ? (
+              <View style={styles.separator} />
+            ) : null}
+            <AddOption
+              icon={option.icon}
+              label={option.label}
+              description={option.description}
+              color={option.color}
+              onPress={() => handleOptionPress(option.route)}
+              testID={option.testID}
+            />
+          </React.Fragment>
         ))}
       </View>
     </View>
@@ -141,51 +145,94 @@ export default function AddMenuScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 20,
-    paddingTop: 20,
+  container: Platform.select({
+    ios: {
+      backgroundColor: "#F9FAFB",
+      paddingHorizontal: 16,
+      // Clears the system grabber
+      paddingTop: 28,
+    },
+    default: {
+      backgroundColor: "#F9FAFB",
+    },
+  }),
+  title: Platform.select({
+    ios: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: "#111827",
+      textAlign: "center",
+    },
+    default: {
+      // Material 3 sheet headline, start-aligned
+      fontSize: 22,
+      fontWeight: "500",
+      color: "#111827",
+      paddingHorizontal: 24,
+    },
+  }),
+  subtitle: Platform.select({
+    ios: {
+      fontSize: 15,
+      color: "#6B7280",
+      textAlign: "center",
+      marginTop: 4,
+      marginBottom: 16,
+    },
+    default: {
+      fontSize: 14,
+      color: "#6B7280",
+      paddingHorizontal: 24,
+      marginTop: 4,
+      marginBottom: 8,
+    },
+  }),
+  options: Platform.select({
+    ios: {
+      backgroundColor: "#FFFFFF",
+      borderRadius: 12,
+      borderCurve: "continuous",
+      overflow: "hidden",
+    },
+    default: {},
+  }),
+  option: Platform.select({
+    ios: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      minHeight: 64,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+    },
+    default: {
+      // Material 3 two-line list item (72dp), aligned with the headline
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+      minHeight: 72,
+      paddingVertical: 8,
+      paddingStart: 24,
+      paddingEnd: 24,
+    },
+  }),
+  optionPressedIOS: {
+    backgroundColor: "#E5E5EA",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111827",
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  optionsContainer: {
-    marginBottom: 12,
-  },
-  optionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#C6C6C8",
+    marginStart: 16 + 44 + 12,
   },
   optionIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
   optionTextContainer: {
     flex: 1,
-    marginLeft: 16,
   },
   optionLabel: {
     fontSize: 17,

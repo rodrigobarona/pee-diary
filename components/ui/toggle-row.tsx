@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Switch, StyleSheet, Platform } from 'react-native';
+import { View, Switch, StyleSheet, Platform, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Text } from './text';
@@ -11,11 +11,12 @@ interface ToggleRowProps {
   value: boolean;
   onValueChange: (value: boolean) => void;
   haptic?: boolean;
+  testID?: string;
 }
 
 /**
- * Row with label and toggle switch.
- * Used in settings and form screens.
+ * Row with label and toggle switch. The whole row toggles it and is the one
+ * accessible element (role switch, the label as its name, checked state).
  */
 export function ToggleRow({
   label,
@@ -23,6 +24,7 @@ export function ToggleRow({
   value,
   onValueChange,
   haptic = true,
+  testID,
 }: ToggleRowProps) {
   const handleValueChange = React.useCallback(
     (newValue: boolean) => {
@@ -35,21 +37,37 @@ export function ToggleRow({
   );
 
   return (
-    <View style={styles.row}>
+    <Pressable
+      onPress={() => handleValueChange(!value)}
+      style={styles.row}
+      accessibilityRole="switch"
+      accessibilityLabel={label}
+      accessibilityHint={description}
+      accessibilityState={{ checked: value }}
+      android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
+      testID={testID}
+    >
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         {description ? (
           <Text style={styles.description}>{description}</Text>
         ) : null}
       </View>
-      <Switch
-        value={value}
-        onValueChange={handleValueChange}
-        trackColor={{ false: '#E5E7EB', true: colors.primary.DEFAULT }}
-        thumbColor="#FFFFFF"
-        ios_backgroundColor="#E5E7EB"
-      />
-    </View>
+      {/* Shows the state only; the row takes the touch, so a tap anywhere
+          toggles once */}
+      <View
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <Switch
+          value={value}
+          trackColor={{ false: '#E5E7EB', true: colors.primary.DEFAULT }}
+          thumbColor="#FFFFFF"
+          ios_backgroundColor="#E5E7EB"
+        />
+      </View>
+    </Pressable>
   );
 }
 
@@ -58,6 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: Platform.OS === 'ios' ? 44 : 56,
     paddingVertical: 12,
     paddingHorizontal: 16,
     gap: 12,

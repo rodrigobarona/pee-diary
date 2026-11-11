@@ -47,7 +47,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
+      "predictiveBackGestureEnabled": true,
       "package": "care.eleva.peediary",
       "allowBackup": true,
       "blockedPermissions": [
@@ -114,7 +114,8 @@
       "expo-sharing",
       "expo-status-bar",
       "./plugins/with-android-backup-rules",
-      "./plugins/with-async-storage-size"
+      "./plugins/with-async-storage-size",
+      "./plugins/with-material3-theme"
     ],
     "experiments": {
       "typedRoutes": true,

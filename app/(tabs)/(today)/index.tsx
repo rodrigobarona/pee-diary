@@ -24,7 +24,9 @@ import {
   VOLUME_ESTIMATES,
   WeeklyChart,
 } from "@/components/diary";
+import { AddEntryFab } from "@/components/add-entry-fab";
 import { Text } from "@/components/ui/text";
+import { useTabScreenBottomSpace } from "@/hooks/use-tab-screen-bottom-space";
 import { useTodayKey } from "@/hooks/use-today-key";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
@@ -54,6 +56,7 @@ const getGreeting = (t: (key: string) => string): string => {
 export default function HomeScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  const bottomSpace = useTabScreenBottomSpace();
 
   // Refs for scroll handling
   const scrollViewRef = React.useRef<ScrollView>(null);
@@ -441,9 +444,9 @@ export default function HomeScreen() {
     [router, t, todayKey]
   );
 
-  // Navigate to settings and open goals modal
+  // Open the daily goals sheet
   const handleEditGoals = React.useCallback(() => {
-    router.push("/(tabs)/settings?openGoals=true");
+    router.push("/(formSheets)/goals");
   }, [router]);
 
   // Navigate to export screen
@@ -482,12 +485,17 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <>
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: bottomSpace },
+        ]}
+        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
+        testID="today-scroll"
       >
         {/* Header */}
         <View style={styles.header}>
@@ -709,21 +717,18 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
-    </View>
+      <AddEntryFab />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
-  scrollView: {
-    flex: 1,
-  },
   scrollContent: {
     padding: 20,
-    paddingBottom: 100,
   },
   // Header
   header: {

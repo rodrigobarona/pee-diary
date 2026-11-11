@@ -195,20 +195,22 @@ export function TimePicker({
         </Pressable>
       </View>
 
-      {/* Android Date Picker Dialog */}
+      {/* Android: Material 3 date and time pickers (need the Material 3 app
+          theme from plugins/with-material3-theme) */}
       {showDatePicker ? <DateTimePicker
           value={safeValue}
           mode="date"
-          display="default"
+          design="material"
+          title={t("time.date")}
           onChange={handleDateChange}
           maximumDate={new Date()}
         /> : null}
 
-      {/* Android Time Picker Dialog */}
       {showTimePicker ? <DateTimePicker
           value={safeValue}
           mode="time"
-          display="default"
+          design="material"
+          title={t("time.time")}
           onChange={handleTimeChange}
         /> : null}
     </View>

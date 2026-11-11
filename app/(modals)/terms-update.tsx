@@ -61,7 +61,12 @@ export default function TermsUpdateScreen() {
       style={styles.container}
       contentContainerStyle={[
         styles.content,
-        { paddingBottom: Math.max(insets.bottom, 20) + 8 },
+        {
+          // Android shows this full screen, edge to edge: start below the
+          // status bar (iOS presents it as a page sheet)
+          paddingTop: Platform.OS === "android" ? insets.top + 24 : 40,
+          paddingBottom: Math.max(insets.bottom, 20) + 8,
+        },
       ]}
     >
       <View style={styles.iconContainer}>
@@ -125,7 +130,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 24,
-    paddingTop: 40,
     gap: 16,
   },
   iconContainer: {

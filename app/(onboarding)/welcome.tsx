@@ -1,9 +1,10 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
 import {
+  BackHandler,
   Dimensions,
   Linking,
   Pressable,
@@ -137,10 +138,12 @@ function CTAButton({
   onPress,
   label,
   showArrow,
+  testID,
 }: {
   onPress: () => void;
   label: string;
   showArrow: boolean;
+  testID: string;
 }) {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -158,6 +161,9 @@ function CTAButton({
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      testID={testID}
       style={{
         height: 56,
         backgroundColor: "#006D77",
@@ -190,7 +196,13 @@ function CTAButton({
         {label}
       </RNText>
       {showArrow ? (
-        <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+        <MaterialCommunityIcons
+          name="arrow-right"
+          size={20}
+          color="#FFFFFF"
+          accessible={false}
+          importantForAccessibility="no"
+        />
       ) : null}
     </Pressable>
   );
@@ -494,6 +506,27 @@ export default function OnboardingScreen() {
     }
   }, [currentIndex]);
 
+  // Android back goes to the previous page. On the first page it leaves the
+  // app (as back does on any app's first screen) rather than popping this
+  // screen: the diary may be underneath (View Tutorial, the launch redirect),
+  // and onboarding must only end on the last page, with the terms line.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          if (currentIndex > 0) {
+            handleBack();
+          } else {
+            BackHandler.exitApp();
+          }
+          return true;
+        }
+      );
+      return () => subscription.remove();
+    }, [currentIndex, handleBack])
+  );
+
   const isLastPage = currentIndex === PAGES.length - 1;
   const topPadding = insets.top;
   const bottomPadding = Math.max(insets.bottom, 20);
@@ -511,6 +544,7 @@ export default function OnboardingScreen() {
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               accessibilityRole="button"
               accessibilityLabel={t("common.back")}
+              testID="onboarding-back"
             >
               <MaterialCommunityIcons
                 name="chevron-left"
@@ -530,6 +564,7 @@ export default function OnboardingScreen() {
               onPress={handleSkip}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               accessibilityRole="button"
+              testID="onboarding-skip"
             >
               <RNText style={styles.skipText}>{t("onboarding.skip")}</RNText>
             </Pressable>
@@ -574,6 +609,7 @@ export default function OnboardingScreen() {
           onPress={handleNext}
           label={isLastPage ? t("onboarding.getStarted") : t("onboarding.next")}
           showArrow={!isLastPage}
+          testID={isLastPage ? "onboarding-get-started" : "onboarding-next"}
         />
 
         {isLastPage ? <TermsAcceptance /> : null}

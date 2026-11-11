@@ -5,6 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
 import { useShallow } from 'zustand/shallow';
 
+import { SheetHandle } from '@/components/ui/sheet-handle';
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { useI18n } from '@/lib/i18n/context';
@@ -48,9 +49,14 @@ export default function GoalsScreen() {
   return (
     <ScrollView 
       style={styles.scrollView}
-      contentContainerStyle={[styles.container, { paddingBottom: Math.max(insets.bottom, 20) }]}
+      contentContainerStyle={[
+        styles.container,
+        Platform.OS === 'android' ? styles.containerAndroid : undefined,
+        { paddingBottom: Math.max(insets.bottom, 16) + 16 },
+      ]}
       showsVerticalScrollIndicator={false}
     >
+      <SheetHandle />
       {/* Title */}
       <Text style={styles.title}>{t('goals.title')}</Text>
       <Text style={styles.subtitle}>{t('goals.description')}</Text>
@@ -151,6 +157,10 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingTop: 24,
+  },
+  // The drag handle (SheetHandle) gives the top spacing on Android
+  containerAndroid: {
+    paddingTop: 0,
   },
   title: {
     fontSize: 22,

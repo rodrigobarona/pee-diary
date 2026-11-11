@@ -9,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
@@ -69,6 +70,10 @@ function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      testID={`language-option-${option.value}`}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: isSelected }}
+      accessibilityLabel={option.nativeLabel}
       style={[
         styles.optionContainer,
         isSelected && styles.optionContainerSelected,
@@ -117,16 +122,18 @@ export default function LanguageScreen() {
   );
 
   return (
+    // Fits its content (sheetAllowedDetents "fitToContents") and ends above
+    // the home indicator or the Android navigation bar
     <View
       style={[
         styles.container,
         {
-          paddingBottom:
-            Platform.OS === "ios" ? Math.max(insets.bottom, 16) : 20,
-          paddingTop: Platform.OS === "ios" ? 24 : 16,
+          paddingBottom: Math.max(insets.bottom, 16) + 16,
+          paddingTop: Platform.OS === "ios" ? 24 : 0,
         },
       ]}
     >
+      <SheetHandle />
       {/* Title */}
       <Text style={styles.title}>{t("settings.language")}</Text>
       <Text style={styles.subtitle}>{t("settings.languageSubtitle")}</Text>
@@ -148,7 +155,6 @@ export default function LanguageScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#F9FAFB",
     paddingHorizontal: 20,
   },

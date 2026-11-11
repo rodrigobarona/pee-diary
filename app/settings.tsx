@@ -1,8 +1,7 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import * as Haptics from "expo-haptics";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import * as React from "react";
 import {
   ActivityIndicator,
@@ -13,13 +12,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
-import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { SettingsRow, SettingsSection } from "@/components/ui/settings-list";
 import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
@@ -47,82 +46,6 @@ const APP_VERSION = [
   .filter(Boolean)
   .join(" ");
 
-interface SettingRowProps {
-  icon: string;
-  label: string;
-  description?: string;
-  value?: string;
-  onPress?: () => void;
-  destructive?: boolean;
-  externalLink?: boolean;
-  children?: React.ReactNode;
-}
-
-function SettingRow({
-  icon,
-  label,
-  description,
-  value,
-  onPress,
-  destructive,
-  externalLink,
-  children,
-}: SettingRowProps) {
-  const content = (
-    <View style={styles.settingRow}>
-      <View
-        style={[
-          styles.settingIcon,
-          destructive
-            ? styles.settingIconDestructive
-            : styles.settingIconPrimary,
-        ]}
-      >
-        <MaterialCommunityIcons
-          name={icon as any}
-          size={22}
-          color={destructive ? colors.error : colors.primary.DEFAULT}
-        />
-      </View>
-      <View style={styles.settingContent}>
-        <Text
-          style={[
-            styles.settingLabel,
-            destructive ? styles.settingLabelDestructive : undefined,
-          ]}
-        >
-          {label}
-        </Text>
-        {description ? (
-          <Text style={styles.settingDescription}>{description}</Text>
-        ) : null}
-      </View>
-      {children ? (
-        children
-      ) : value ? (
-        <Text style={styles.settingValue}>{value}</Text>
-      ) : null}
-      {onPress && !children ? (
-        <MaterialCommunityIcons
-          name={externalLink ? "open-in-new" : "chevron-right"}
-          size={externalLink ? 18 : 20}
-          color="#9CA3AF"
-        />
-      ) : null}
-    </View>
-  );
-
-  if (onPress && !children) {
-    return (
-      <AnimatedPressable onPress={onPress} haptic>
-        {content}
-      </AnimatedPressable>
-    );
-  }
-
-  return content;
-}
-
 const languageDisplay: Record<
   SupportedLocale,
   { nativeLabel: string; flag: string }
@@ -135,7 +58,7 @@ const languageDisplay: Record<
 export default function SettingsScreen() {
   const { t, locale } = useI18n();
   const router = useRouter();
-  const params = useLocalSearchParams<{ openGoals?: string }>();
+  const insets = useSafeAreaInsets();
   const isHydrated = useStoreHydrated();
   const entries = useDiaryStore(useShallow((state) => state.entries));
   const goals = useDiaryStore((state) => state.goals);
@@ -167,14 +90,6 @@ export default function SettingsScreen() {
   const confirmWord = t("settings.clearDataConfirmWord");
   const isDeleteConfirmed =
     deleteConfirmText.toUpperCase() === confirmWord.toUpperCase();
-
-  // Open goals screen if navigated with openGoals param
-  React.useEffect(() => {
-    if (params.openGoals === "true") {
-      router.setParams({ openGoals: undefined });
-      router.push("/(formSheets)/goals");
-    }
-  }, [params.openGoals, router]);
 
   const handleOpenLanguage = React.useCallback(() => {
     if (Platform.OS !== "web") {
@@ -456,7 +371,14 @@ export default function SettingsScreen() {
     <ScrollView
       style={styles.container}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[
+        styles.scrollContent,
+        // Android draws edge to edge: end above the navigation bar
+        Platform.OS === "android"
+          ? { paddingBottom: insets.bottom + 24 }
+          : undefined,
+      ]}
+      testID="settings-scroll"
     >
       {/* Delete Confirmation Modal (Android/Web only - iOS uses native Alert.prompt) */}
       {Platform.OS !== "ios" && (
@@ -502,7 +424,7 @@ export default function SettingsScreen() {
                   onPress={handleCloseDeleteConfirm}
                 >
                   <Text style={styles.deleteModalCancelText}>
-                    {t("common.cancel").toUpperCase()}
+                    {t("common.cancel")}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -517,7 +439,7 @@ export default function SettingsScreen() {
                         styles.deleteModalDeleteTextDisabled,
                     ]}
                   >
-                    {t("common.delete").toUpperCase()}
+                    {t("common.delete")}
                   </Text>
                 </Pressable>
               </View>
@@ -526,198 +448,170 @@ export default function SettingsScreen() {
         </Modal>
       )}
 
-      {/* Daily Goals Section */}
-      <Text style={styles.sectionTitle}>{t("goals.title")}</Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("goals.title")}>
+        <SettingsRow
           icon="target"
           label={t("settings.editGoals")}
           description={`${goals.fluidTarget}ml`}
           onPress={handleOpenGoals}
+          accessory="disclosure"
+          testID="settings-row-goals"
         />
-      </View>
+      </SettingsSection>
 
-      {/* General Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.general")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("settings.general")}>
+        <SettingsRow
           icon="translate"
           label={t("settings.language")}
-          onPress={handleOpenLanguage}
           value={currentLanguageLabel}
+          onPress={handleOpenLanguage}
+          accessory="disclosure"
+          testID="settings-row-language"
         />
-        <View style={styles.separator} />
-        <SettingRow
+        <SettingsRow
           icon="plus-circle"
           label={t("settings.openAddMenuOnLaunch")}
           description={t("settings.openAddMenuOnLaunchDescription")}
-        >
-          <Switch
-            value={openAddMenuOnLaunch}
-            onValueChange={handleToggleOpenAddMenu}
-            trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
-            thumbColor="#FFFFFF"
-            ios_backgroundColor="#E2E8F0"
-          />
-        </SettingRow>
-        <View style={styles.separator} />
-        <SettingRow
+          switchValue={openAddMenuOnLaunch}
+          onSwitchChange={handleToggleOpenAddMenu}
+          testID="settings-row-open-add-menu"
+        />
+        <SettingsRow
           icon="school"
           label={t("settings.viewTutorial")}
           description={t("settings.viewTutorialDescription")}
           onPress={handleViewTutorial}
+          accessory="disclosure"
+          testID="settings-row-tutorial"
         />
-      </View>
+      </SettingsSection>
 
-      {/* Reminders Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.reminders")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("settings.reminders")}>
+        <SettingsRow
           icon="bell"
           label={t("settings.remindersEnabled")}
           description={t("settings.remindersEnabledDescription")}
-        >
-          <Switch
-            value={reminderSettings.enabled}
-            onValueChange={handleToggleReminders}
-            trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
-            thumbColor="#FFFFFF"
-            ios_backgroundColor="#E2E8F0"
-          />
-        </SettingRow>
+          switchValue={reminderSettings.enabled}
+          onSwitchChange={handleToggleReminders}
+          testID="settings-row-reminders"
+        />
         {reminderSettings.enabled ? (
-          <>
-            <View style={styles.separator} />
-            <SettingRow
-              icon="clock-outline"
-              label={t("settings.reminderInterval")}
-              value={t("settings.everyXHours", {
-                count: reminderSettings.intervalHours,
-              })}
-              onPress={handleChangeInterval}
-            />
-            <View style={styles.separator} />
-            <SettingRow
-              icon="moon-waning-crescent"
-              label={t("settings.quietHoursEnabled")}
-              description={
-                reminderSettings.quietHoursEnabled
-                  ? `${reminderSettings.quietHoursStart} - ${reminderSettings.quietHoursEnd}`
-                  : t("settings.quietHoursEnabledDescription")
-              }
-            >
-              <Switch
-                value={reminderSettings.quietHoursEnabled}
-                onValueChange={handleToggleQuietHours}
-                trackColor={{ false: "#E2E8F0", true: colors.primary.DEFAULT }}
-                thumbColor="#FFFFFF"
-                ios_backgroundColor="#E2E8F0"
-              />
-            </SettingRow>
-          </>
+          <SettingsRow
+            icon="clock-outline"
+            label={t("settings.reminderInterval")}
+            value={t("settings.everyXHours", {
+              count: reminderSettings.intervalHours,
+            })}
+            onPress={handleChangeInterval}
+            testID="settings-row-reminder-interval"
+          />
         ) : null}
-      </View>
+        {reminderSettings.enabled ? (
+          <SettingsRow
+            icon="moon-waning-crescent"
+            label={t("settings.quietHoursEnabled")}
+            description={
+              reminderSettings.quietHoursEnabled
+                ? `${reminderSettings.quietHoursStart} - ${reminderSettings.quietHoursEnd}`
+                : t("settings.quietHoursEnabledDescription")
+            }
+            switchValue={reminderSettings.quietHoursEnabled}
+            onSwitchChange={handleToggleQuietHours}
+            testID="settings-row-quiet-hours"
+          />
+        ) : null}
+      </SettingsSection>
 
-      {/* Data Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.data")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("settings.data")}>
+        <SettingsRow
           icon="download"
           label={t("settings.export")}
           description={t("settings.exportDescription")}
           onPress={handleExport}
+          accessory="disclosure"
+          testID="settings-row-export"
         />
-        <View style={styles.separator} />
-        <SettingRow
+      </SettingsSection>
+
+      {/* Local backup: a file the user exports and imports themselves */}
+      <SettingsSection title={t("settings.localBackup")}>
+        <SettingsRow
+          icon="file-export"
+          label={t("settings.exportBackup")}
+          description={t("settings.exportBackupDescription")}
+          onPress={handleExportBackup}
+          trailing={
+            isSyncing ? (
+              <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+            ) : null
+          }
+          testID="settings-row-export-backup"
+        />
+        <SettingsRow
+          icon="file-import"
+          label={t("settings.importBackup")}
+          description={t("settings.importBackupDescription")}
+          onPress={handleImportBackup}
+          testID="settings-row-import-backup"
+        />
+      </SettingsSection>
+
+      {/* Destructive action in its own group, after the data groups */}
+      <SettingsSection>
+        <SettingsRow
           icon="delete"
           label={t("settings.clearData")}
           description={t("settings.clearDataDescription")}
           onPress={handleOpenDeleteConfirm}
           destructive
+          testID="settings-row-clear-data"
         />
-      </View>
+      </SettingsSection>
 
-      {/* Local backup: a file the user exports and imports themselves */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.localBackup")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
-          icon="file-export"
-          label={t("settings.exportBackup")}
-          description={t("settings.exportBackupDescription")}
-          onPress={handleExportBackup}
-        >
-          {isSyncing ? (
-            <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
-          ) : null}
-        </SettingRow>
-        <View style={styles.separator} />
-        <SettingRow
-          icon="file-import"
-          label={t("settings.importBackup")}
-          description={t("settings.importBackupDescription")}
-          onPress={handleImportBackup}
-        />
-      </View>
-
-      {/* About Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.about")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("settings.about")}>
+        <SettingsRow
           icon="information"
           label={t("settings.version")}
           value={APP_VERSION}
+          testID="settings-row-version"
         />
-        <View style={styles.separator} />
-        <SettingRow
+        <SettingsRow
           icon="information-outline"
           label={t("settings.medicalInfo")}
           onPress={handleShowMedicalInfo}
+          testID="settings-row-medical-info"
         />
-        <View style={styles.separator} />
-        <SettingRow
+        <SettingsRow
           icon="heart"
           label={t("settings.madeWithCare")}
           description={t("settings.byElevaCare")}
         />
-      </View>
+      </SettingsSection>
 
-      {/* Legal Section */}
-      <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-        {t("settings.legal")}
-      </Text>
-      <View style={styles.card}>
-        <SettingRow
+      <SettingsSection title={t("settings.legal")}>
+        <SettingsRow
           icon="shield-lock"
           label={t("settings.privacyPolicy")}
           onPress={() => handleOpenLink(legalUrl("privacy", locale))}
-          externalLink
+          accessory="external"
+          testID="settings-row-privacy-policy"
         />
-        <View style={styles.separator} />
-        <SettingRow
+        <SettingsRow
           icon="file-document"
           label={t("settings.terms")}
           onPress={() => handleOpenLink(legalUrl("terms", locale))}
-          externalLink
+          accessory="external"
+          testID="settings-row-terms"
         />
-        <View style={styles.separator} />
-        <SettingRow
+        <SettingsRow
           icon="delete-circle"
           label={t("settings.privacyChoices")}
           description={t("settings.privacyChoicesDescription")}
           onPress={() => handleOpenLink(legalUrl("privacyChoices", locale))}
-          externalLink
+          accessory="external"
+          testID="settings-row-privacy-choices"
         />
-      </View>
+      </SettingsSection>
 
       {/* Stats */}
       <View style={styles.statsContainer}>
@@ -736,73 +630,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
-  scrollContent: {
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#6B7280",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
-  sectionTitleMargin: {
-    marginTop: 24,
-  },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderCurve: "continuous",
-    paddingHorizontal: 16,
-    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-  },
-  separator: {
-    height: 1,
-    backgroundColor: "#F3F4F6",
-    marginLeft: 56,
-  },
-  settingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    paddingVertical: 16,
-  },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 12,
-    borderCurve: "continuous",
-  },
-  settingIconPrimary: {
-    backgroundColor: "rgba(0, 109, 119, 0.1)",
-  },
-  settingIconDestructive: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
-  },
-  settingContent: {
-    flex: 1,
-  },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#374151",
-  },
-  settingLabelDestructive: {
-    color: colors.error,
-  },
-  settingDescription: {
-    fontSize: 13,
-    color: "#6B7280",
-    marginTop: 2,
-  },
-  settingValue: {
-    fontSize: 15,
-    color: "#6B7280",
-  },
+  scrollContent: Platform.select({
+    // Inset grouped list on iOS; full-width Material list on Android
+    ios: { paddingHorizontal: 16, paddingBottom: 24 },
+    default: { paddingBottom: 24 },
+  }),
   statsContainer: {
     marginTop: 24,
     alignItems: "center",

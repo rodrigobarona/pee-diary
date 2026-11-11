@@ -1,27 +1,18 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
 import * as React from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform, StyleSheet, View } from "react-native";
 
 import { TimePicker, UrgencyScale } from "@/components/diary";
 import {
   AnimatedPressable,
   FormCard,
-  ScreenHeader,
+  FormScrollView,
   SectionTitle,
 } from "@/components/ui";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
+import { useEntryFormHeader } from "@/hooks/use-entry-form-header";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type {
@@ -72,36 +63,29 @@ const activityOptions: {
   { value: "other", icon: "dots-horizontal" },
 ];
 
-// Offset to scroll input into view above keyboard
-const SCROLL_OFFSET = 120;
+const INITIAL_SEVERITY: LeakSeverity = "drops";
+const INITIAL_URGENCY: UrgencyLevel = 3;
 
 export default function LeakScreen() {
   const { t } = useI18n();
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
   const addLeakEntry = useDiaryStore((state) => state.addLeakEntry);
 
-  // Refs
-  const scrollViewRef = React.useRef<ScrollView>(null);
-  const notesLayoutY = React.useRef<number>(0);
-
-  const [timestamp, setTimestamp] = React.useState(() => new Date());
-  const [severity, setSeverity] = React.useState<LeakSeverity>("drops");
-  const [urgency, setUrgency] = React.useState<UrgencyLevel>(3);
+  const [initialTimestamp] = React.useState(() => new Date());
+  const [timestamp, setTimestamp] = React.useState(initialTimestamp);
+  const [severity, setSeverity] =
+    React.useState<LeakSeverity>(INITIAL_SEVERITY);
+  const [urgency, setUrgency] = React.useState<UrgencyLevel>(INITIAL_URGENCY);
   const [activity, setActivity] = React.useState<LeakActivity | undefined>(
     undefined
   );
   const [notes, setNotes] = React.useState("");
 
-  // Scroll to notes when focused
-  const handleNotesFocus = React.useCallback(() => {
-    setTimeout(() => {
-      scrollViewRef.current?.scrollTo({
-        y: notesLayoutY.current - SCROLL_OFFSET,
-        animated: true,
-      });
-    }, 100);
-  }, []);
+  const isDirty =
+    timestamp.getTime() !== initialTimestamp.getTime() ||
+    severity !== INITIAL_SEVERITY ||
+    urgency !== INITIAL_URGENCY ||
+    activity !== undefined ||
+    notes.trim() !== "";
 
   const handleSave = React.useCallback(() => {
     addLeakEntry({
@@ -114,8 +98,15 @@ export default function LeakScreen() {
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-    router.back();
-  }, [addLeakEntry, severity, urgency, activity, notes, timestamp, router]);
+    return true;
+  }, [addLeakEntry, severity, urgency, activity, notes, timestamp]);
+
+  useEntryFormHeader({
+    title: t("leak.title"),
+    saveLabel: t("common.save"),
+    onSave: handleSave,
+    isDirty,
+  });
 
   const handleSeveritySelect = React.useCallback((value: LeakSeverity) => {
     if (Platform.OS !== "web") {
@@ -133,189 +124,124 @@ export default function LeakScreen() {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-    >
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: Platform.OS === "ios" ? 24 : 16 },
-        ]}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-        scrollEnabled={true}
-        bounces={true}
-      >
-        {/* Header */}
-        <ScreenHeader title={t("leak.title")} subtitle={t("leak.subtitle")} />
+    <FormScrollView>
+      {/* Time */}
+      <TimePicker value={timestamp} onChange={setTimestamp} />
 
-        {/* Time */}
-        <TimePicker value={timestamp} onChange={setTimestamp} />
-
-        {/* Severity */}
-        <View style={styles.section}>
-          <SectionTitle>{t("leak.severity")}</SectionTitle>
-          <View style={styles.severityOptions}>
-            {severityOptions.map((option) => {
-              const isSelected = severity === option.value;
-              return (
-                <AnimatedPressable
-                  key={option.value}
-                  onPress={() => handleSeveritySelect(option.value)}
-                  haptic={false}
+      {/* Severity */}
+      <View style={styles.section}>
+        <SectionTitle>{t("leak.severity")}</SectionTitle>
+        <View style={styles.severityOptions}>
+          {severityOptions.map((option) => {
+            const isSelected = severity === option.value;
+            return (
+              <AnimatedPressable
+                key={option.value}
+                onPress={() => handleSeveritySelect(option.value)}
+                haptic={false}
+                style={[
+                  styles.severityOption,
+                  isSelected
+                    ? styles.severityOptionSelected
+                    : styles.severityOptionUnselected,
+                ]}
+              >
+                <View
                   style={[
-                    styles.severityOption,
+                    styles.severityIconContainer,
                     isSelected
-                      ? styles.severityOptionSelected
-                      : styles.severityOptionUnselected,
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.severityIconContainer,
-                      isSelected
-                        ? styles.severityIconSelected
-                        : styles.severityIconUnselected,
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name={option.icon as any}
-                      size={24}
-                      color={isSelected ? "#FFFFFF" : colors.error}
-                    />
-                  </View>
-                  <View style={styles.severityTextContainer}>
-                    <Text
-                      style={[
-                        styles.severityLabel,
-                        isSelected ? styles.severityLabelSelected : undefined,
-                      ]}
-                    >
-                      {t(option.labelKey)}
-                    </Text>
-                    <Text style={styles.severityDescription}>
-                      {t(option.descriptionKey)}
-                    </Text>
-                  </View>
-                </AnimatedPressable>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* Urgency */}
-        <View style={styles.section}>
-          <SectionTitle>{t("leak.urgency")}</SectionTitle>
-          <UrgencyScale value={urgency} onChange={setUrgency} />
-        </View>
-
-        {/* Activity */}
-        <View style={styles.section}>
-          <SectionTitle>{t("leak.activity")}</SectionTitle>
-          <View style={styles.activityGrid}>
-            {activityOptions.map((option) => {
-              const isSelected = activity === option.value;
-              return (
-                <AnimatedPressable
-                  key={option.value}
-                  onPress={() => handleActivitySelect(option.value)}
-                  haptic={false}
-                  style={[
-                    styles.activityChip,
-                    isSelected && styles.activityChipSelected,
+                      ? styles.severityIconSelected
+                      : styles.severityIconUnselected,
                   ]}
                 >
                   <MaterialCommunityIcons
-                    name={option.icon}
-                    size={18}
-                    color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
+                    name={option.icon as any}
+                    size={24}
+                    color={isSelected ? "#FFFFFF" : colors.error}
                   />
+                </View>
+                <View style={styles.severityTextContainer}>
                   <Text
                     style={[
-                      styles.activityChipText,
-                      isSelected && styles.activityChipTextSelected,
+                      styles.severityLabel,
+                      isSelected ? styles.severityLabelSelected : undefined,
                     ]}
                   >
-                    {t(`leak.activities.${option.value}`)}
+                    {t(option.labelKey)}
                   </Text>
-                </AnimatedPressable>
-              );
-            })}
-          </View>
+                  <Text style={styles.severityDescription}>
+                    {t(option.descriptionKey)}
+                  </Text>
+                </View>
+              </AnimatedPressable>
+            );
+          })}
         </View>
+      </View>
 
-        {/* Notes */}
-        <View
-          style={styles.section}
-          onLayout={(e) => {
-            notesLayoutY.current = e.nativeEvent.layout.y;
-          }}
-        >
-          <SectionTitle>{t("leak.notes")}</SectionTitle>
-          <FormCard>
-            <Input
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t("common.notesPlaceholder")}
-              multiline
-              numberOfLines={3}
-              className="bg-transparent border-0 px-4 py-3 h-auto"
-              style={styles.notesInput}
-              textAlignVertical="top"
-              onFocus={handleNotesFocus}
-            />
-          </FormCard>
-        </View>
-      </ScrollView>
+      {/* Urgency */}
+      <View style={styles.section}>
+        <SectionTitle>{t("leak.urgency")}</SectionTitle>
+        <UrgencyScale value={urgency} onChange={setUrgency} />
+      </View>
 
-      {/* Sticky Save Button */}
-      {Platform.OS === "ios" ? (
-        <BlurView intensity={80} tint="light" style={styles.footerBlur}>
-          <View
-            style={[
-              styles.footerContent,
-              { paddingBottom: Math.max(insets.bottom, 16) },
-            ]}
-          >
-            <Button onPress={handleSave} size="lg" style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>{t("common.save")}</Text>
-            </Button>
-          </View>
-        </BlurView>
-      ) : (
-        <View
-          style={[
-            styles.footer,
-            { paddingBottom: Math.max(insets.bottom, 16) },
-          ]}
-        >
-          <Button onPress={handleSave} size="lg" style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>{t("common.save")}</Text>
-          </Button>
+      {/* Activity */}
+      <View style={styles.section}>
+        <SectionTitle>{t("leak.activity")}</SectionTitle>
+        <View style={styles.activityGrid}>
+          {activityOptions.map((option) => {
+            const isSelected = activity === option.value;
+            return (
+              <AnimatedPressable
+                key={option.value}
+                onPress={() => handleActivitySelect(option.value)}
+                haptic={false}
+                style={[
+                  styles.activityChip,
+                  isSelected && styles.activityChipSelected,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={option.icon}
+                  size={18}
+                  color={isSelected ? "#FFFFFF" : colors.primary.DEFAULT}
+                />
+                <Text
+                  style={[
+                    styles.activityChipText,
+                    isSelected && styles.activityChipTextSelected,
+                  ]}
+                >
+                  {t(`leak.activities.${option.value}`)}
+                </Text>
+              </AnimatedPressable>
+            );
+          })}
         </View>
-      )}
-    </KeyboardAvoidingView>
+      </View>
+
+      {/* Notes */}
+      <View style={styles.section}>
+        <SectionTitle>{t("leak.notes")}</SectionTitle>
+        <FormCard>
+          <Input
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t("common.notesPlaceholder")}
+            multiline
+            numberOfLines={3}
+            className="bg-transparent border-0 px-4 py-3 h-auto"
+            style={styles.notesInput}
+            textAlignVertical="top"
+            testID="form-notes"
+          />
+        </FormCard>
+      </View>
+    </FormScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-    gap: 20,
-  },
   section: {
     gap: 12,
   },
@@ -398,28 +324,5 @@ const styles = StyleSheet.create({
   },
   activityChipTextSelected: {
     color: "#FFFFFF",
-  },
-  footer: {
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-  },
-  footerBlur: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(0, 0, 0, 0.1)",
-  },
-  footerContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  saveButton: {
-    width: "100%",
-  },
-  saveButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    fontSize: 17,
   },
 });

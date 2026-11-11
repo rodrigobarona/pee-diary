@@ -16,6 +16,7 @@ interface TimelineEntryProps {
   isFirst?: boolean;
   showTime?: boolean;
   onPress?: () => void;
+  testID?: string;
 }
 
 const entryConfig = {
@@ -42,6 +43,7 @@ export function TimelineEntry({
   isFirst = false,
   showTime = true,
   onPress,
+  testID,
 }: TimelineEntryProps) {
   const { t } = useI18n();
   const config = entryConfig[entry.type];
@@ -131,7 +133,7 @@ export function TimelineEntry({
       </View>
 
       {/* Content */}
-      <Pressable onPress={handlePress} style={styles.content}>
+      <Pressable onPress={handlePress} style={styles.content} testID={testID}>
         <View style={styles.contentInner}>
           {/* Icon */}
           <View
