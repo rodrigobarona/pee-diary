@@ -120,9 +120,10 @@ export type UpdateLeakEntry = Partial<
 >;
 
 // Daily Goals
+// Only a fluid target: a daily bathroom-visit target was removed because more
+// visits are not better for many bladder conditions.
 export interface DailyGoals {
   fluidTarget: number; // Default: 2000ml
-  voidTarget: number; // Default: 7 (6-8 range)
 }
 
 // Goal History - tracks when goals were changed
@@ -131,7 +132,6 @@ export interface GoalHistoryRecord {
   goals: DailyGoals; // The new goals after the change
   changes: {
     fluidTarget?: { from: number; to: number };
-    voidTarget?: { from: number; to: number };
   };
 }
 

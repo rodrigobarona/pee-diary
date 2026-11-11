@@ -19,7 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
-import { LEGAL_URLS } from "@/constants/legal";
+import { legalUrl } from "@/constants/legal";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
@@ -551,9 +551,7 @@ export default function SettingsScreen() {
         <SettingRow
           icon="target"
           label={t("settings.editGoals")}
-          description={`${goals.fluidTarget}ml • ${goals.voidTarget} ${t(
-            "goals.voids"
-          )}`}
+          description={`${goals.fluidTarget}ml`}
           onPress={handleOpenGoals}
         />
       </View>
@@ -720,14 +718,14 @@ export default function SettingsScreen() {
         <SettingRow
           icon="shield-lock"
           label={t("settings.privacyPolicy")}
-          onPress={() => handleOpenLink(LEGAL_URLS.privacy)}
+          onPress={() => handleOpenLink(legalUrl("privacy", locale))}
           externalLink
         />
         <View style={styles.separator} />
         <SettingRow
           icon="file-document"
           label={t("settings.terms")}
-          onPress={() => handleOpenLink(LEGAL_URLS.terms)}
+          onPress={() => handleOpenLink(legalUrl("terms", locale))}
           externalLink
         />
         <View style={styles.separator} />
@@ -735,7 +733,7 @@ export default function SettingsScreen() {
           icon="delete-circle"
           label={t("settings.privacyChoices")}
           description={t("settings.privacyChoicesDescription")}
-          onPress={() => handleOpenLink(LEGAL_URLS.privacyChoices)}
+          onPress={() => handleOpenLink(legalUrl("privacyChoices", locale))}
           externalLink
         />
       </View>

@@ -1,5 +1,5 @@
 import { shareAsync } from "expo-sharing";
-import { moveAsync } from "expo-file-system/legacy";
+import { moveAsync, readAsStringAsync } from "expo-file-system/legacy";
 
 import {
   deleteExportFiles,
@@ -9,6 +9,7 @@ import {
   generatePDFHTML,
 } from "@/lib/utils/export";
 import { BACKUP_FILENAME, importBackupFile } from "@/lib/utils/backup";
+import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
 import en from "@/lib/i18n/locales/en.json";
 import pt from "@/lib/i18n/locales/pt.json";
@@ -146,6 +147,27 @@ describe("export files", () => {
   it("deletes the picker's copy of an imported backup after reading it", async () => {
     await importBackupFile();
     expect(mockFiles["file:///cache/DocumentPicker/"]).toEqual([]);
+  });
+
+  it("imports a backup from an earlier version that has a visit target", async () => {
+    (readAsStringAsync as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({
+        version: 1,
+        entries: [],
+        goals: { fluidTarget: 2400, voidTarget: 8 },
+        goalHistory: [
+          {
+            changedAt: "2026-01-01T10:00:00.000Z",
+            goals: { fluidTarget: 2000, voidTarget: 8 },
+            changes: { voidTarget: { from: 7, to: 8 } },
+          },
+        ],
+      })
+    );
+    const result = await importBackupFile();
+    expect(result).toEqual({ success: true, entriesCount: 0 });
+    expect(useDiaryStore.getState().goals).toEqual({ fluidTarget: 2400 });
+    expect(useDiaryStore.getState().goalHistory).toEqual([]);
   });
 
   it("returns an error code, not English text, when there is nothing to export", async () => {

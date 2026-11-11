@@ -104,11 +104,9 @@ export default function HomeScreen() {
     return { voids, fluids, leaks };
   }, [todayEntries]);
 
-  // Calculate progress
+  // Calculate progress (only fluids have a goal)
   const fluidProgress =
     goals.fluidTarget > 0 ? summary.fluids / goals.fluidTarget : 0;
-  const voidProgress =
-    goals.voidTarget > 0 ? summary.voids / goals.voidTarget : 0;
 
   const today = new Date();
   const dateLabel = formatDateHeader(today);
@@ -241,12 +239,10 @@ export default function HomeScreen() {
           lastWeekDaysWithEntries.length
         : 0;
 
-    // Calculate goal achievement (days that met both goals)
-    const goalsMet = thisWeekDays.filter((d) => {
-      const voidsMet = d.voids >= goals.voidTarget;
-      const fluidsMet = d.fluids >= goals.fluidTarget;
-      return voidsMet && fluidsMet;
-    }).length;
+    // Days on which the fluid goal was reached
+    const fluidGoalDays = thisWeekDays.filter(
+      (d) => d.fluids >= goals.fluidTarget
+    ).length;
 
     // Count bathroom visits logged between 21:00 and 05:00 this week
     const weekStart = startOfDay(subDays(today, 6));
@@ -287,7 +283,7 @@ export default function HomeScreen() {
     return {
       avgVoids: Math.round(thisWeekAvgVoids * 10) / 10,
       avgFluids: Math.round(thisWeekAvgFluids),
-      goalsMet,
+      fluidGoalDays,
       totalDays: 7,
       voidTrend,
       fluidTrend,
@@ -386,12 +382,10 @@ export default function HomeScreen() {
           lastMonthDaysWithEntries.length
         : 0;
 
-    // Calculate goal achievement
-    const goalsMet = thisMonthDays.filter((d) => {
-      const voidsMet = d.voids >= goals.voidTarget;
-      const fluidsMet = d.fluids >= goals.fluidTarget;
-      return voidsMet && fluidsMet;
-    }).length;
+    // Days on which the fluid goal was reached
+    const fluidGoalDays = thisMonthDays.filter(
+      (d) => d.fluids >= goals.fluidTarget
+    ).length;
 
     // Count bathroom visits logged between 21:00 and 05:00 this month
     const monthStart = startOfDay(subDays(today, 29));
@@ -432,7 +426,7 @@ export default function HomeScreen() {
     return {
       avgVoids: Math.round(thisMonthAvgVoids * 10) / 10,
       avgFluids: Math.round(thisMonthAvgFluids),
-      goalsMet,
+      fluidGoalDays,
       totalDays: 30,
       voidTrend,
       fluidTrend,
@@ -579,11 +573,11 @@ export default function HomeScreen() {
             onPress={() => handleStatPress("fluid")}
           />
 
-          {/* Voids Progress */}
+          {/* Voids - no target and no bar, only the count */}
           <ProgressBar
-            progress={voidProgress}
+            progress={0}
             value={summary.voids}
-            target={goals.voidTarget}
+            target={0}
             label={t("home.summary.voids")}
             icon="toilet"
             color={colors.primary.DEFAULT}
@@ -683,7 +677,6 @@ export default function HomeScreen() {
             <WeeklyChart
               data={weeklyData}
               onDayPress={handleDayPress}
-              voidTarget={goals.voidTarget}
               fluidTarget={goals.fluidTarget}
             />
           )}
@@ -693,7 +686,6 @@ export default function HomeScreen() {
             <MonthlyChart
               data={monthlyData}
               onWeekPress={handleDayPress}
-              voidTarget={goals.voidTarget}
               fluidTarget={goals.fluidTarget}
             />
           )}
@@ -717,8 +709,8 @@ export default function HomeScreen() {
               color={colors.primary.DEFAULT}
             />
             <InsightCard
-              title={t("insights.goalsMet")}
-              value={`${currentStats.goalsMet}/${currentStats.totalDays}`}
+              title={t("insights.fluidGoalReached")}
+              value={`${currentStats.fluidGoalDays}/${currentStats.totalDays}`}
               icon="trophy-outline"
               color="#F59E0B"
             />

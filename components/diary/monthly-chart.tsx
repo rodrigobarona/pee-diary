@@ -37,7 +37,6 @@ interface WeekData {
 interface MonthlyChartProps {
   data: DayData[];
   onWeekPress?: (weekStart: Date) => void;
-  voidTarget?: number;
   fluidTarget?: number;
 }
 
@@ -49,7 +48,6 @@ const PADDING = 16;
 export function MonthlyChart({ 
   data, 
   onWeekPress, 
-  voidTarget = 7,
   fluidTarget = 2000,
 }: MonthlyChartProps) {
   const { t } = useI18n();
@@ -102,8 +100,9 @@ export function MonthlyChart({
   const barWidth = Math.min((barGroupWidth - 16) / 2, 24);
   const barGap = 4;
   
-  // Calculate max values for scaling
-  const maxVoids = Math.max(...weeklyData.map(w => w.avgVoids), voidTarget, 1);
+  // Calculate max values for scaling. The visit scale follows the logged
+  // averages only: there is no visit target.
+  const maxVoids = Math.max(...weeklyData.map(w => w.avgVoids), 1);
   const maxFluids = Math.max(...weeklyData.map(w => w.totalFluids), fluidTarget, 1);
   
   // Scale factor for bars

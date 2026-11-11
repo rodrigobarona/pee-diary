@@ -23,7 +23,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui";
-import { LEGAL_URLS } from "@/constants/legal";
+import { legalUrl } from "@/constants/legal";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { spacing } from "@/lib/theme";
@@ -403,7 +403,7 @@ function OnboardingPageContent({
 // (Skip leads there too). Body-size, dark text: this line incorporates the
 // Terms, so it must be easy to read.
 function TermsAcceptance() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const parts = t("onboarding.acceptance", {
     terms: "{terms}",
     privacy: "{privacy}",
@@ -421,7 +421,7 @@ function TermsAcceptance() {
               accessibilityRole="link"
               onPress={() =>
                 Linking.openURL(
-                  isTerms ? LEGAL_URLS.terms : LEGAL_URLS.privacy
+                  legalUrl(isTerms ? "terms" : "privacy", locale)
                 )
               }
             >

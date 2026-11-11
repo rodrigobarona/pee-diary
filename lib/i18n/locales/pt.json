@@ -49,7 +49,7 @@
     "title": "Resumo",
     "avgFluids": "Média de líquidos",
     "avgVoids": "Média de micções",
-    "goalsMet": "Objetivos atingidos",
+    "fluidGoalReached": "Objetivo de líquidos atingido",
     "vsLastWeek": "face à semana passada",
     "thisWeek": "Esta semana",
     "week": "Semana",
@@ -69,19 +69,14 @@
   },
   "goals": {
     "title": "Objetivos diários",
-    "description": "Defina os seus próprios objetivos diários, por exemplo os que o seu profissional de saúde indicou. Servem apenas de referência.",
+    "description": "Defina o seu próprio objetivo diário de líquidos, por exemplo o que o seu profissional de saúde indicou. Serve apenas de referência.",
     "fluidTarget": "Ingestão de líquidos",
     "fluidDescription": "O seu objetivo diário de líquidos",
-    "voidTarget": "Idas à casa de banho",
-    "voidDescription": "O seu próprio número diário, se quiser definir um",
-    "perDay": "por dia",
-    "voids": "micções",
-    "targetsInfo": "Os seus objetivos servem para o seu próprio registo. Pergunte ao seu profissional de saúde o que é adequado para si.",
+    "targetsInfo": "O seu objetivo serve para o seu próprio registo. Pergunte ao seu profissional de saúde o que é adequado para si.",
     "history": "Histórico de objetivos",
     "historyEmpty": "Ainda não há alterações",
     "changedTo": "Alterado para",
-    "fluids": "Líquidos",
-    "visits": "Idas à casa de banho"
+    "fluids": "Líquidos"
   },
   "streak": {
     "day": "dia",

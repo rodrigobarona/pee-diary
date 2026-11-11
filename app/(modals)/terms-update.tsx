@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LEGAL_URLS } from "@/constants/legal";
+import { legalUrl } from "@/constants/legal";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
@@ -25,7 +25,7 @@ import { colors } from "@/lib/theme/colors";
  * until the user accepts.
  */
 export default function TermsUpdateScreen() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const acceptTerms = useDiaryStore((state) => state.acceptTerms);
@@ -45,8 +45,8 @@ export default function TermsUpdateScreen() {
   }, [router]);
 
   const handleRead = React.useCallback(() => {
-    Linking.openURL(LEGAL_URLS.terms);
-  }, []);
+    Linking.openURL(legalUrl("terms", locale));
+  }, [locale]);
 
   const handleAccept = React.useCallback(() => {
     if (Platform.OS !== "web") {

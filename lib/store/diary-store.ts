@@ -53,11 +53,44 @@ const createId = (): string => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-// Starting values for the user's own daily targets. They are not medical
-// norms; the user can change them at any time in Daily Goals.
+// Starting value for the user's own daily fluid target. It is not a medical
+// norm; the user can change it at any time in Daily Goals. There is no
+// bathroom-visit target: more visits are not better for many bladder
+// conditions.
 const DEFAULT_GOALS: DailyGoals = {
   fluidTarget: 2000, // ml
-  voidTarget: 7, // bathroom visits
+};
+
+/**
+ * Goals as the app uses them now. Earlier versions also stored a visit target
+ * (voidTarget) in the goals and their history; this drops it, so old stored
+ * data and old backup files still load.
+ */
+export const sanitizeGoals = (goals: unknown): DailyGoals => {
+  const fluidTarget = (goals as Partial<DailyGoals> | null | undefined)
+    ?.fluidTarget;
+  return {
+    fluidTarget:
+      typeof fluidTarget === "number" && fluidTarget > 0
+        ? fluidTarget
+        : DEFAULT_GOALS.fluidTarget,
+  };
+};
+
+// Keeps only the fluid target changes of a goal history
+export const sanitizeGoalHistory = (history: unknown): GoalHistoryRecord[] => {
+  if (!Array.isArray(history)) return [];
+  return history.flatMap((record: Partial<GoalHistoryRecord> | null) => {
+    const fluidChange = record?.changes?.fluidTarget;
+    if (!record?.changedAt || !fluidChange) return [];
+    return [
+      {
+        changedAt: record.changedAt,
+        goals: sanitizeGoals(record.goals),
+        changes: { fluidTarget: fluidChange },
+      },
+    ];
+  });
 };
 
 // Default reminder settings
@@ -315,22 +348,13 @@ export const useDiaryStore = create<DiaryState>()(
               to: newGoals.fluidTarget,
             };
           }
-          if (
-            newGoals.voidTarget !== undefined &&
-            newGoals.voidTarget !== state.goals.voidTarget
-          ) {
-            changes.voidTarget = {
-              from: state.goals.voidTarget,
-              to: newGoals.voidTarget,
-            };
-          }
 
           // Only add history record if there were actual changes
           if (Object.keys(changes).length === 0) {
             return state;
           }
 
-          const updatedGoals = { ...state.goals, ...newGoals };
+          const updatedGoals = sanitizeGoals({ ...state.goals, ...newGoals });
           const historyRecord: GoalHistoryRecord = {
             changedAt: new Date().toISOString(),
             goals: updatedGoals,
@@ -408,6 +432,18 @@ export const useDiaryStore = create<DiaryState>()(
     {
       name: "pee-diary-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      // Stored data from earlier versions may still hold a visit target
+      merge: (persisted, current) => {
+        const stored = (persisted ?? {}) as Partial<DiaryState>;
+        return {
+          ...current,
+          ...stored,
+          goals: sanitizeGoals(stored.goals ?? current.goals),
+          goalHistory: sanitizeGoalHistory(
+            stored.goalHistory ?? current.goalHistory
+          ),
+        };
+      },
     }
   )
 );

@@ -1,4 +1,8 @@
-import { useDiaryStore } from "@/lib/store";
+import {
+  sanitizeGoalHistory,
+  sanitizeGoals,
+  useDiaryStore,
+} from "@/lib/store";
 import type {
   DailyGoals,
   DiaryEntry,
@@ -143,8 +147,11 @@ export async function importBackupFile(): Promise<{
 
     useDiaryStore.setState({
       entries: backupData.entries ?? [],
-      goals: backupData.goals ?? store.goals,
-      goalHistory: backupData.goalHistory ?? store.goalHistory,
+      // Backups from earlier versions may also hold a visit target
+      goals: backupData.goals ? sanitizeGoals(backupData.goals) : store.goals,
+      goalHistory: backupData.goalHistory
+        ? sanitizeGoalHistory(backupData.goalHistory)
+        : store.goalHistory,
       language: backupData.language ?? store.language,
       streak: backupData.streak ?? store.streak,
     });

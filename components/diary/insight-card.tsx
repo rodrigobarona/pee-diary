@@ -63,8 +63,8 @@ export function InsightCard({
         {value}
       </Text>
 
-      {/* Title */}
-      <Text style={styles.title} numberOfLines={1}>
+      {/* Title - up to two lines, for longer labels in Spanish and Portuguese */}
+      <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>
 
@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     alignItems: "center",
     minHeight: 100,
+    // Fill the row height, so cards in a row match when a title wraps
+    flexGrow: 1,
   },
   iconContainer: {
     width: 32,

@@ -110,8 +110,13 @@ describe("DiaryStore", () => {
       });
 
       const { goals: updatedGoals } = useDiaryStore.getState();
-      expect(updatedGoals.fluidTarget).toBe(2500);
-      expect(updatedGoals.voidTarget).toBe(7); // unchanged
+      expect(updatedGoals).toEqual({ fluidTarget: 2500 });
+    });
+
+    it("has only a fluid goal, with no bathroom-visit target", () => {
+      expect(useDiaryStore.getInitialState().goals).toEqual({
+        fluidTarget: 2000,
+      });
     });
 
     it("should track goal history", () => {
@@ -128,6 +133,59 @@ describe("DiaryStore", () => {
         from: 2000,
         to: 2500,
       });
+    });
+  });
+
+  describe("data from earlier versions with a visit target", () => {
+    it("loads stored goals and goal history, dropping the visit target", async () => {
+      const goalHistory = [
+        {
+          changedAt: "2026-01-01T10:00:00.000Z",
+          goals: { fluidTarget: 2000, voidTarget: 8 },
+          changes: { voidTarget: { from: 7, to: 8 } },
+        },
+        {
+          changedAt: "2026-01-02T10:00:00.000Z",
+          goals: { fluidTarget: 2500, voidTarget: 8 },
+          changes: { fluidTarget: { from: 2000, to: 2500 } },
+        },
+      ];
+      await AsyncStorage.setItem(
+        "pee-diary-storage",
+        JSON.stringify({
+          state: { goals: { fluidTarget: 2500, voidTarget: 8 }, goalHistory },
+          version: 0,
+        })
+      );
+
+      await act(async () => {
+        await useDiaryStore.persist.rehydrate();
+      });
+
+      const state = useDiaryStore.getState();
+      expect(state.goals).toEqual({ fluidTarget: 2500 });
+      expect(state.goalHistory).toEqual([
+        {
+          changedAt: "2026-01-02T10:00:00.000Z",
+          goals: { fluidTarget: 2500 },
+          changes: { fluidTarget: { from: 2000, to: 2500 } },
+        },
+      ]);
+      expect(state.getGoalsForDate("2026-01-03T00:00:00.000Z")).toEqual({
+        fluidTarget: 2500,
+      });
+    });
+
+    it("ignores a visit target passed to updateGoals", () => {
+      act(() => {
+        useDiaryStore
+          .getState()
+          .updateGoals({ voidTarget: 9 } as unknown as { fluidTarget: number });
+      });
+
+      const state = useDiaryStore.getState();
+      expect(state.goals).toEqual({ fluidTarget: 2000 });
+      expect(state.goalHistory).toEqual([]);
     });
   });
 
@@ -278,7 +336,7 @@ describe("DiaryStore", () => {
           hadLeak: false,
           hadPain: false,
         });
-        state.updateGoals({ fluidTarget: 2500, voidTarget: 9 });
+        state.updateGoals({ fluidTarget: 2500 });
         state.updateReminderSettings({
           enabled: true,
           intervalHours: 2,
@@ -299,7 +357,7 @@ describe("DiaryStore", () => {
 
       const cleared = useDiaryStore.getState();
       expect(cleared.entries).toEqual([]);
-      expect(cleared.goals).toEqual({ fluidTarget: 2000, voidTarget: 7 });
+      expect(cleared.goals).toEqual({ fluidTarget: 2000 });
       expect(cleared.goalHistory).toEqual([]);
       expect(cleared.streak).toEqual({ currentStreak: 0, lastActiveDate: null });
       expect(cleared.reminderSettings).toEqual({

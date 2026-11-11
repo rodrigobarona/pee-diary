@@ -49,7 +49,7 @@
     "title": "Summary",
     "avgFluids": "Avg Fluids",
     "avgVoids": "Avg Voids",
-    "goalsMet": "Goals Met",
+    "fluidGoalReached": "Fluid goal reached",
     "vsLastWeek": "vs last week",
     "thisWeek": "This Week",
     "week": "Week",
@@ -69,19 +69,14 @@
   },
   "goals": {
     "title": "Daily Goals",
-    "description": "Set your own daily targets, for example ones your health professional gave you. They are for your own reference.",
+    "description": "Set your own daily fluid target, for example one your health professional gave you. It is for your own reference.",
     "fluidTarget": "Fluid Intake",
     "fluidDescription": "Your daily fluid target",
-    "voidTarget": "Bathroom Visits",
-    "voidDescription": "Your own daily number, if you want one",
-    "perDay": "per day",
-    "voids": "voids",
-    "targetsInfo": "Your targets are for your own record. Ask your health professional what is right for you.",
+    "targetsInfo": "Your target is for your own record. Ask your health professional what is right for you.",
     "history": "Goal History",
     "historyEmpty": "No changes yet",
     "changedTo": "Changed to",
-    "fluids": "Fluids",
-    "visits": "Visits"
+    "fluids": "Fluids"
   },
   "streak": {
     "day": "day",

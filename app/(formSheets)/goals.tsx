@@ -36,24 +36,12 @@ export default function GoalsScreen() {
     }
   };
 
-  const adjustVoidGoal = (delta: number) => {
-    const newValue = Math.max(3, Math.min(15, goals.voidTarget + delta));
-    if (newValue !== goals.voidTarget) {
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      updateGoals({ voidTarget: newValue });
-    }
-  };
-
   const isFluidMin = goals.fluidTarget <= 500;
   const isFluidMax = goals.fluidTarget >= 5000;
-  const isVoidMin = goals.voidTarget <= 3;
-  const isVoidMax = goals.voidTarget >= 15;
 
-  // Reverse history to show most recent first
-  const sortedHistory = React.useMemo(() => 
-    [...goalHistory].reverse(),
+  // Fluid target changes only, most recent first
+  const sortedHistory = React.useMemo(() =>
+    goalHistory.filter((record) => record.changes.fluidTarget).reverse(),
     [goalHistory]
   );
 
@@ -102,41 +90,6 @@ export default function GoalsScreen() {
         </View>
       </View>
 
-      {/* Void Goal Card */}
-      <View style={styles.goalCard}>
-        <View style={styles.goalHeader}>
-          <View style={[styles.iconContainer, { backgroundColor: `${colors.primary.DEFAULT}15` }]}>
-            <MaterialCommunityIcons name="toilet" size={24} color={colors.primary.DEFAULT} />
-          </View>
-          <View style={styles.labelContainer}>
-            <Text style={styles.goalLabel}>{t('goals.voidTarget')}</Text>
-            <Text style={styles.goalDesc}>{t('goals.voidDescription')}</Text>
-          </View>
-        </View>
-        <View style={styles.stepperRow}>
-          <TouchableOpacity
-            onPress={() => adjustVoidGoal(-1)}
-            disabled={isVoidMin}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonPrimary, isVoidMin && styles.stepperButtonDisabled]}
-          >
-            <MaterialCommunityIcons name="minus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.valueContainer}>
-            <Text style={styles.valueText}>{goals.voidTarget}</Text>
-            <Text style={styles.unitText}>{t('goals.perDay')}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => adjustVoidGoal(1)}
-            disabled={isVoidMax}
-            activeOpacity={0.7}
-            style={[styles.stepperButtonPrimary, isVoidMax && styles.stepperButtonDisabled]}
-          >
-            <MaterialCommunityIcons name="plus" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
       {/* About these targets */}
       <View style={styles.infoBox}>
         <MaterialCommunityIcons name="information-outline" size={16} color="#6B7280" />
@@ -176,14 +129,6 @@ export default function GoalsScreen() {
                         <MaterialCommunityIcons name="cup-water" size={14} color={colors.secondary.DEFAULT} />
                         <Text style={styles.historyChangeText}>
                           {t('goals.fluids')}: {record.changes.fluidTarget.from}ml → {record.changes.fluidTarget.to}ml
-                        </Text>
-                      </View>
-                    ) : null}
-                    {record.changes.voidTarget ? (
-                      <View style={styles.historyChange}>
-                        <MaterialCommunityIcons name="toilet" size={14} color={colors.primary.DEFAULT} />
-                        <Text style={styles.historyChangeText}>
-                          {t('goals.visits')}: {record.changes.voidTarget.from} → {record.changes.voidTarget.to}
                         </Text>
                       </View>
                     ) : null}
@@ -263,14 +208,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 20,
-  },
-  stepperButtonPrimary: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: colors.primary.DEFAULT,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   stepperButtonSecondary: {
     width: 56,

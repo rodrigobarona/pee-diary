@@ -34,7 +34,6 @@ interface DayData {
 interface WeeklyChartProps {
   data: DayData[];
   onDayPress?: (date: Date) => void;
-  voidTarget?: number;
   fluidTarget?: number;
 }
 
@@ -46,7 +45,6 @@ const PADDING = 8;
 export function WeeklyChart({
   data,
   onDayPress,
-  voidTarget = 7,
   fluidTarget = 2000,
 }: WeeklyChartProps) {
   const { t } = useI18n();
@@ -60,8 +58,9 @@ export function WeeklyChart({
   const barWidth = Math.min((barGroupWidth - 8) / 2, 16); // Max 16px per bar
   const barGap = 2;
 
-  // Calculate max values for scaling
-  const maxVoids = Math.max(...data.map((d) => d.voids), voidTarget, 1);
+  // Calculate max values for scaling. The visit scale follows the logged
+  // counts only: there is no visit target.
+  const maxVoids = Math.max(...data.map((d) => d.voids), 1);
   const maxFluids = Math.max(...data.map((d) => d.fluids), fluidTarget, 1);
 
   // Scale factor for bars
