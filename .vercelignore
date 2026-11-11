@@ -1,0 +1,8 @@
+node_modules
+.expo
+dist
+site/dist
+ios
+android
+research_notes
+reports
