@@ -5,13 +5,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedProps,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from "react-native-reanimated";
 import Svg, {
   Defs,
   G,
@@ -30,7 +23,6 @@ import { colors } from "@/lib/theme/colors";
 import { cardStyle, spacing } from "@/lib/theme/styles";
 import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
 
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 interface DayData {
   date: Date;
@@ -246,7 +238,7 @@ export function FluidBalanceChart({
                         />
                       ) : null}
 
-                      <AnimatedBar
+                      <Bar
                         x={intakeBarX}
                         y={intakeY}
                         width={barWidth}
@@ -256,7 +248,7 @@ export function FluidBalanceChart({
                         chartHeight={CHART_HEIGHT}
                       />
 
-                      <AnimatedBar
+                      <Bar
                         x={outputBarX}
                         y={outputY}
                         width={barWidth}
@@ -349,8 +341,8 @@ export function FluidBalanceChart({
   );
 }
 
-// Animated bar component
-interface AnimatedBarProps {
+// Bar component
+interface BarProps {
   x: number;
   y: number;
   width: number;
@@ -360,47 +352,13 @@ interface AnimatedBarProps {
   chartHeight: number;
 }
 
-function AnimatedBar({
-  x,
-  y,
-  width,
-  height,
-  fill,
-  delay,
-  chartHeight,
-}: AnimatedBarProps) {
-  const animatedHeight = useSharedValue(0);
-  const animatedY = useSharedValue(chartHeight);
-
-  React.useEffect(() => {
-    animatedHeight.set(
-      withDelay(
-        delay,
-        withTiming(height, { duration: 300, easing: Easing.out(Easing.cubic) })
-      )
-    );
-    animatedY.set(
-      withDelay(
-        delay,
-        withTiming(y, { duration: 300, easing: Easing.out(Easing.cubic) })
-      )
-    );
-  }, [height, y, delay, animatedHeight, animatedY]);
-
-  const animatedProps = useAnimatedProps(() => ({
-    height: animatedHeight.get(),
-    y: animatedY.get(),
-  }));
-
+/**
+ * One bar, drawn at its size. (Bars used to grow in with Reanimated animated
+ * props, which left them at zero height on some mounts.)
+ */
+function Bar({ x, y, width, height, fill }: BarProps) {
   return (
-    <AnimatedRect
-      x={x}
-      width={width}
-      fill={fill}
-      rx={4}
-      ry={4}
-      animatedProps={animatedProps}
-    />
+    <Rect x={x} y={y} width={width} height={height} fill={fill} rx={3} ry={3} />
   );
 }
 

@@ -42,7 +42,11 @@ export const stackHeaderOptions: NativeStackNavigationOptions = {
  */
 export const tabStackHeaderOptions: NativeStackNavigationOptions = {
   ...stackHeaderOptions,
-  headerLargeStyle: { backgroundColor: colors.background },
+  // A transparent large-title bar (UIKit's scroll edge appearance): the
+  // large title sits on the screen background. An opaque one hides the
+  // large title on iOS 26 with react-native-screens 4.26 (fixed in 4.30,
+  // which Expo SDK 57 does not use yet)
+  headerLargeStyle: { backgroundColor: 'transparent' },
   headerLargeTitleShadowVisible: false,
   headerLargeTitleStyle: { color: colors.text },
 };

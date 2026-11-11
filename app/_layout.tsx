@@ -161,8 +161,9 @@ function InnerLayout() {
           name="(formSheets)/export"
           options={{
             ...sheetOptions,
-            sheetAllowedDetents:
-              Platform.OS === "ios" ? [0.85, 1.0] : undefined,
+            // Large detent only: the range, the format and the button do
+            // not fit a shorter sheet
+            sheetAllowedDetents: Platform.OS === "ios" ? [1.0] : undefined,
           }}
         />
         <Stack.Screen
