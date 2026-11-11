@@ -210,7 +210,7 @@
     "exportError": "Failed to export data. Please try again.",
     "clearData": "Clear All Data",
     "clearDataDescription": "This action cannot be undone",
-    "clearDataConfirm": "Are you sure you want to delete all your diary entries? This action cannot be undone.",
+    "clearDataConfirm": "Are you sure you want to delete all your diary entries, goals and settings? This action cannot be undone.",
     "clearDataTypeConfirm": "Type \"DELETE\" to confirm",
     "clearDataConfirmWord": "DELETE",
     "clearDataPlaceholder": "DELETE",

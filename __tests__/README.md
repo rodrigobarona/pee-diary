@@ -4,9 +4,7 @@ This project uses Jest with jest-expo for testing.
 
 ## Current Status
 
-There is a known compatibility issue between jest-expo and Expo SDK 54's winter runtime that causes tests to fail. See [expo/expo#37261](https://github.com/expo/expo/issues/37261) for updates.
-
-Once this is resolved, the testing infrastructure is ready:
+Tests run with Jest 29 and jest-expo 57 (Expo SDK 57). Run them with `pnpm test`.
 
 ## Running Tests
 
@@ -38,7 +36,7 @@ import { act } from "react";
 describe("DiaryStore", () => {
   beforeEach(() => {
     act(() => {
-      useDiaryStore.getState().clearAllEntries();
+      useDiaryStore.getState().clearAllData();
     });
   });
 

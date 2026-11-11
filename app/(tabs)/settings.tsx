@@ -26,6 +26,7 @@ import {
   exportBackupFile,
   importBackupFile,
 } from "@/lib/utils/backup";
+import { deleteExportFiles } from "@/lib/utils/export";
 import {
   cancelAllReminders,
   initializeNotifications,
@@ -137,7 +138,15 @@ export default function SettingsScreen() {
   const setOpenAddMenuOnLaunch = useDiaryStore(
     (state) => state.setOpenAddMenuOnLaunch
   );
-  const clearAllEntries = useDiaryStore((state) => state.clearAllEntries);
+  const clearAllData = useDiaryStore((state) => state.clearAllData);
+
+  // Deletes everything "Clear All Data" promises: stored data, scheduled
+  // reminders and any export or backup files the app has written.
+  const clearEverything = React.useCallback(() => {
+    clearAllData();
+    cancelAllReminders().catch(() => {});
+    deleteExportFiles().catch(() => {});
+  }, [clearAllData]);
   const resetOnboarding = useDiaryStore((state) => state.resetOnboarding);
   const reminderSettings = useDiaryStore((state) => state.reminderSettings);
   const updateReminderSettings = useDiaryStore(
@@ -337,7 +346,7 @@ export default function SettingsScreen() {
             style: "destructive",
             onPress: (value?: string) => {
               if (value?.toUpperCase() === confirmWord.toUpperCase()) {
-                clearAllEntries();
+                clearEverything();
                 Haptics.notificationAsync(
                   Haptics.NotificationFeedbackType.Success
                 );
@@ -360,7 +369,7 @@ export default function SettingsScreen() {
       setDeleteConfirmText("");
       setShowDeleteConfirm(true);
     }
-  }, [t, confirmWord, clearAllEntries]);
+  }, [t, confirmWord, clearEverything]);
 
   const handleCloseDeleteConfirm = React.useCallback(() => {
     setShowDeleteConfirm(false);
@@ -370,14 +379,14 @@ export default function SettingsScreen() {
   const handleConfirmDelete = React.useCallback(() => {
     if (!isDeleteConfirmed) return;
 
-    clearAllEntries();
+    clearEverything();
     setShowDeleteConfirm(false);
     setDeleteConfirmText("");
 
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [clearAllEntries, isDeleteConfirmed]);
+  }, [clearEverything, isDeleteConfirmed]);
 
   // Handle local file backup export
   const handleExportBackup = React.useCallback(async () => {

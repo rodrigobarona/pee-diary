@@ -3,9 +3,9 @@ import { act } from "react";
 
 // Reset store before each test
 beforeEach(() => {
-  const { clearAllEntries } = useDiaryStore.getState();
+  const { clearAllData } = useDiaryStore.getState();
   act(() => {
-    clearAllEntries();
+    clearAllData();
   });
 });
 
@@ -181,6 +181,36 @@ describe("DiaryStore", () => {
 
       const { hasCompletedOnboarding: completed } = useDiaryStore.getState();
       expect(completed).toBe(true);
+    });
+  });
+
+  describe("clearAllData", () => {
+    it("deletes entries, goals, goal history, streak and settings", () => {
+      const state = useDiaryStore.getState();
+      act(() => {
+        state.addUrinationEntry({
+          timestamp: new Date().toISOString(),
+          volume: "medium",
+          urgency: 3,
+          hadLeak: false,
+          hadPain: false,
+        });
+        state.updateGoals({ fluidTarget: 2500 });
+        state.updateReminderSettings({ enabled: true, intervalHours: 2 });
+        state.setOpenAddMenuOnLaunch(false);
+      });
+
+      act(() => {
+        useDiaryStore.getState().clearAllData();
+      });
+
+      const cleared = useDiaryStore.getState();
+      expect(cleared.entries).toEqual([]);
+      expect(cleared.goals.fluidTarget).toBe(2000);
+      expect(cleared.goalHistory).toEqual([]);
+      expect(cleared.streak).toEqual({ currentStreak: 0, lastActiveDate: null });
+      expect(cleared.reminderSettings.enabled).toBe(false);
+      expect(cleared.openAddMenuOnLaunch).toBe(true);
     });
   });
 

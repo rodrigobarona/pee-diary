@@ -210,7 +210,7 @@
     "exportError": "Error al exportar los datos. Inténtalo de nuevo.",
     "clearData": "Borrar todos los datos",
     "clearDataDescription": "Esta acción no se puede deshacer",
-    "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros? Esta acción no se puede deshacer.",
+    "clearDataConfirm": "¿Estás seguro de que quieres eliminar todos tus registros, objetivos y ajustes? Esta acción no se puede deshacer.",
     "clearDataTypeConfirm": "Escribe \"BORRAR\" para confirmar",
     "clearDataConfirmWord": "BORRAR",
     "clearDataPlaceholder": "BORRAR",

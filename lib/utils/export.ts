@@ -2,14 +2,44 @@ import type { DiaryEntry } from "@/lib/store/types";
 import { format } from "date-fns";
 import {
   cacheDirectory,
+  deleteAsync,
   documentDirectory,
+  moveAsync,
+  readDirectoryAsync,
   writeAsStringAsync,
 } from "expo-file-system/legacy";
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 
-// Get available directory for file operations (null on web)
-const getFileDirectory = () => documentDirectory || cacheDirectory;
+// Export files are written to the cache folder, which device backups do not
+// include, and are removed by deleteExportFiles(). Null on web.
+const getFileDirectory = () => cacheDirectory;
+
+// Every file the app writes for sharing starts with this prefix.
+export const EXPORT_FILE_PREFIX = "eleva-diary-";
+
+/**
+ * Delete every export and backup file the app has written for sharing.
+ * Runs before each new export and when the user clears all data. Files are
+ * not deleted straight after sharing, because on Android the receiving app
+ * may still be reading the file when the share sheet closes.
+ */
+export async function deleteExportFiles(): Promise<void> {
+  // documentDirectory is included for files left by earlier builds.
+  for (const dir of [cacheDirectory, documentDirectory]) {
+    if (!dir) continue;
+    try {
+      const names = await readDirectoryAsync(dir);
+      await Promise.all(
+        names
+          .filter((name) => name.startsWith(EXPORT_FILE_PREFIX))
+          .map((name) => deleteAsync(`${dir}${name}`, { idempotent: true }))
+      );
+    } catch {
+      // A missing or unreadable folder leaves nothing to delete.
+    }
+  }
+}
 
 /**
  * Filter entries by date range (inclusive)
@@ -613,7 +643,19 @@ export async function exportAndShare(
   }
 
   try {
-    let filePath: string;
+    const fileDir = getFileDirectory();
+    if (!fileDir) {
+      return { success: false, error: "File system not available" };
+    }
+
+    // Remove files from earlier exports before writing a new one
+    await deleteExportFiles();
+
+    // Generate filename with date range info
+    const startStr = format(dateRange.start, "MMM-d");
+    const endStr = format(dateRange.end, "MMM-d-yyyy");
+    const filename = `${EXPORT_FILE_PREFIX}${startStr}-to-${endStr}.${exportFormat}`;
+    let filePath = `${fileDir}${filename}`;
     let mimeType: string;
     let uti: string;
 
@@ -621,24 +663,19 @@ export async function exportAndShare(
       // Generate PDF using expo-print with translations
       const html = generatePDFHTML(entries, dateRange, pdfTranslations, locale);
       const { uri } = await printToFileAsync({ html });
-      filePath = uri;
+      // Move the PDF next to the other exports so it gets a readable name and
+      // deleteExportFiles() can find it.
+      try {
+        await moveAsync({ from: uri, to: filePath });
+      } catch {
+        filePath = uri;
+      }
       mimeType = "application/pdf";
       uti = "com.adobe.pdf";
     } else {
-      const fileDir = getFileDirectory();
-      if (!fileDir) {
-        return { success: false, error: "File system not available" };
-      }
-
       // Generate file content
       const content =
         exportFormat === "csv" ? formatToCSV(entries) : formatToJSON(entries);
-
-      // Generate filename with date range info
-      const startStr = format(dateRange.start, "MMM-d");
-      const endStr = format(dateRange.end, "MMM-d-yyyy");
-      const filename = `eleva-diary-${startStr}-to-${endStr}.${exportFormat}`;
-      filePath = `${fileDir}${filename}`;
 
       // Write file
       await writeAsStringAsync(filePath, content);

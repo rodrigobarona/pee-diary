@@ -10,6 +10,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
 
+// Shares the "eleva-diary-" prefix so deleteExportFiles() removes it.
 const BACKUP_FILENAME = "eleva-diary-backup.json";
 
 // Backup data structure
