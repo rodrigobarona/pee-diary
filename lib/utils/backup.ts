@@ -8,10 +8,12 @@ import type {
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
+
+import { EXPORT_FILE_PREFIX } from "@/lib/utils/export";
 import { Platform } from "react-native";
 
-// Shares the "eleva-diary-" prefix so deleteExportFiles() removes it.
-const BACKUP_FILENAME = "eleva-diary-backup.json";
+// Uses the export prefix so deleteExportFiles() removes it.
+export const BACKUP_FILENAME = `${EXPORT_FILE_PREFIX}backup.json`;
 
 // Backup data structure
 interface BackupData {
@@ -102,10 +104,17 @@ export async function importBackupFile(): Promise<{
 
     const fileUri = result.assets[0].uri;
 
-    // Read file contents
-    const jsonData = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
+    // Read file contents, then delete the picker's cached copy of it
+    let jsonData: string;
+    try {
+      jsonData = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+    } finally {
+      await FileSystem.deleteAsync(fileUri, { idempotent: true }).catch(
+        () => {}
+      );
+    }
 
     // Parse and validate
     const backupData: BackupData = JSON.parse(jsonData);

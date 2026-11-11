@@ -21,6 +21,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import { deleteExportFiles } from "@/lib/utils/export";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
@@ -46,6 +47,9 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   useEffect(() => {
     if (isHydrated && !hasCheckedLaunchRef.current) {
       hasCheckedLaunchRef.current = true;
+
+      // Remove export and import copies left from the last session
+      deleteExportFiles().catch(() => {});
 
       // Check if onboarding needs to be shown
       const state = useDiaryStore.getState();

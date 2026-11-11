@@ -18,13 +18,27 @@ const getFileDirectory = () => cacheDirectory;
 // Every file the app writes for sharing starts with this prefix.
 export const EXPORT_FILE_PREFIX = "eleva-diary-";
 
+// Cache subfolders where expo-print writes PDFs and expo-document-picker
+// copies picked files. Both can hold a full copy of the diary.
+const CACHE_SUBFOLDERS = ["Print/", "DocumentPicker/"];
+
 /**
- * Delete every export and backup file the app has written for sharing.
- * Runs before each new export and when the user clears all data. Files are
- * not deleted straight after sharing, because on Android the receiving app
- * may still be reading the file when the share sheet closes.
+ * Delete every file the app has written or copied for sharing, exporting
+ * or importing. Runs at launch, before each new export and when the user
+ * clears all data. Files are not deleted straight after sharing, because on
+ * Android the receiving app may still be reading the file when the share
+ * sheet closes.
  */
 export async function deleteExportFiles(): Promise<void> {
+  if (cacheDirectory) {
+    await Promise.all(
+      CACHE_SUBFOLDERS.map((folder) =>
+        deleteAsync(`${cacheDirectory}${folder}`, { idempotent: true }).catch(
+          () => {}
+        )
+      )
+    );
+  }
   // documentDirectory is included for files left by earlier builds.
   for (const dir of [cacheDirectory, documentDirectory]) {
     if (!dir) continue;

@@ -185,7 +185,7 @@ describe("DiaryStore", () => {
   });
 
   describe("clearAllData", () => {
-    it("deletes entries, goals, goal history, streak and settings", () => {
+    it("deletes entries, goals, goal history, streak and settings, keeping language and onboarding", () => {
       const state = useDiaryStore.getState();
       act(() => {
         state.addUrinationEntry({
@@ -198,6 +198,8 @@ describe("DiaryStore", () => {
         state.updateGoals({ fluidTarget: 2500 });
         state.updateReminderSettings({ enabled: true, intervalHours: 2 });
         state.setOpenAddMenuOnLaunch(false);
+        state.setLanguage("pt");
+        state.completeOnboarding();
       });
 
       act(() => {
@@ -206,11 +208,20 @@ describe("DiaryStore", () => {
 
       const cleared = useDiaryStore.getState();
       expect(cleared.entries).toEqual([]);
-      expect(cleared.goals.fluidTarget).toBe(2000);
+      expect(cleared.goals).toEqual({ fluidTarget: 2000, voidTarget: 7 });
       expect(cleared.goalHistory).toEqual([]);
       expect(cleared.streak).toEqual({ currentStreak: 0, lastActiveDate: null });
-      expect(cleared.reminderSettings.enabled).toBe(false);
+      expect(cleared.reminderSettings).toEqual({
+        enabled: false,
+        intervalHours: 3,
+        quietHoursEnabled: true,
+        quietHoursStart: "22:00",
+        quietHoursEnd: "07:00",
+      });
       expect(cleared.openAddMenuOnLaunch).toBe(true);
+      // Kept, so the app stays in the user's language and on Today
+      expect(cleared.language).toBe("pt");
+      expect(cleared.hasCompletedOnboarding).toBe(true);
     });
   });
 

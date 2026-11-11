@@ -274,11 +274,11 @@ export const useDiaryStore = create<DiaryState>()(
         })),
 
       // Deletes every diary entry, goal, goal history, streak and setting.
-      // Only the completed onboarding is kept, so the user stays in the app.
+      // The language and the completed onboarding are kept, so the app stays
+      // in the user's language and on the Today screen.
       clearAllData: () =>
         set({
           entries: [],
-          language: getInitialLanguage(),
           goals: DEFAULT_GOALS,
           goalHistory: [],
           streak: { currentStreak: 0, lastActiveDate: null },
