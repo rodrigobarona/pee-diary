@@ -77,10 +77,9 @@ A complete voiding diary provides physicians with essential data for accurate di
 | **Framework**            | Expo SDK 57 with React Native 0.86             |
 | **Styling**              | NativeWind v5 RC with Tailwind CSS 4           |
 | **State Management**     | Zustand with AsyncStorage persistence          |
-| **Navigation**           | Expo Router with native tab navigation         |
+| **Navigation**           | Expo Router (stack, tabs and form sheets)      |
 | **Animations**           | React Native Reanimated + Gesture Handler      |
 | **Lists**                | LegendList for high-performance virtualization |
-| **Menus**                | Zeego for native dropdown menus                |
 | **Validation**           | Zod schemas for type-safe data                 |
 | **Internationalization** | expo-localization + i18n-js                    |
 

@@ -221,8 +221,6 @@
     "editGoals": "Editar objetivos",
     "goalsDescription": "Establece tus objetivos diarios",
     "restore": "Restaurar",
-    "autoBackup": "Copia de seguridad automática",
-    "autoBackupDescription": "Tus datos se guardan automáticamente en Google Drive",
     "localBackup": "Copia Local",
     "exportBackup": "Exportar Copia de Seguridad",
     "exportBackupDescription": "Guardar una copia de tus datos en un archivo",

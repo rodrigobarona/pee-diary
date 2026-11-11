@@ -9,13 +9,19 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
-      }
+      },
+      "node": "24.15.0",
+      "pnpm": "11.1.2"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "24.15.0",
+      "pnpm": "11.1.2"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "node": "24.15.0",
+      "pnpm": "11.1.2"
     }
   },
   "submit": {

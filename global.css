@@ -1,8 +1,14 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 /* Utilities stay unlayered so React Native Web defaults cannot override them. */
-@import "tailwindcss/utilities.css";
+@import "tailwindcss/utilities.css" source(none);
 @import "nativewind/theme";
+
+/* Scan only app code for class names, not notes, docs or reports. */
+@source "./app";
+@source "./components";
+@source "./hooks";
+@source "./lib";
 
 /* Eleva Care brand tokens. Keep in step with lib/theme/colors.ts. */
 @theme {
@@ -40,5 +46,9 @@
   --color-ring: #006d77;
 
 
-  /* Radius needs no override: the old lg, md and sm (8, 6 and 4px) equal the Tailwind 4 defaults. */
+  /* Not carried over from tailwind.config.js, on purpose:
+     - radius: the old lg, md and sm (8, 6 and 4px) equal the Tailwind 4 defaults;
+     - fontFamily.sans "System": nativewind/theme already maps sans to the system font on iOS and Android;
+     - darkMode "class": NativeWind 5 follows the system appearance and no dark: classes are used;
+     - tailwindcss-animate: no animate-* classes are used. */
 }

@@ -12,7 +12,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
+    "lint": "eslint .",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -33,7 +33,6 @@
     "expo-file-system": "~57.0.7",
     "expo-font": "~57.0.4",
     "expo-haptics": "~57.0.3",
-    "expo-image": "~57.0.5",
     "expo-linear-gradient": "~57.0.2",
     "expo-linking": "~57.0.13",
     "expo-localization": "~57.0.2",
@@ -43,9 +42,7 @@
     "expo-sharing": "~57.0.25",
     "expo-splash-screen": "~57.0.11",
     "expo-status-bar": "~57.0.1",
-    "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
-    "expo-web-browser": "~57.0.3",
     "i18n-js": "^4.5.4",
     "nativewind": "5.0.0-rc.1",
     "react": "19.2.3",
@@ -53,7 +50,7 @@
     "react-native": "0.86.3",
     "react-native-css": "3.1.0-rc.1",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-reanimated": "~4.5.1",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.2",
     "react-native-svg": "15.15.4",
@@ -81,7 +78,7 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@rn-primitives/.*|native-base|react-native-svg|nativewind|react-native-css|zustand))"
+      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?[/+].*|@expo-google-fonts[/+].*|react-navigation|@react-navigation[/+].*|@rn-primitives[/+].*|native-base|react-native-svg|nativewind|react-native-css|zustand))"
     ],
     "setupFiles": [
       "<rootDir>/jest.setup.js"

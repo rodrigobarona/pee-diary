@@ -11,11 +11,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "care.eleva.peediary",
       "infoPlist": {
-        "CFBundleLocalizations": [
-          "en",
-          "es",
-          "pt"
-        ]
+        "CFBundleLocalizations": ["en", "es", "pt"]
       }
     },
     "android": {
@@ -51,16 +47,8 @@
         "expo-localization",
         {
           "supportedLocales": {
-            "ios": [
-              "en",
-              "es",
-              "pt"
-            ],
-            "android": [
-              "en",
-              "es",
-              "pt"
-            ]
+            "ios": ["en", "es", "pt"],
+            "android": ["en", "es", "pt"]
           }
         }
       ],
@@ -73,8 +61,6 @@
       ],
       "@react-native-community/datetimepicker",
       "expo-font",
-      "expo-web-browser",
-      "expo-image",
       "expo-sharing",
       "expo-status-bar"
     ],
