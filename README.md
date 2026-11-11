@@ -79,7 +79,6 @@ A complete voiding diary provides physicians with essential data for accurate di
 | **State Management**     | Zustand with AsyncStorage persistence          |
 | **Navigation**           | Expo Router (stack, tabs and form sheets)      |
 | **Animations**           | React Native Reanimated + Gesture Handler      |
-| **Lists**                | LegendList for high-performance virtualization |
 | **Validation**           | Zod schemas for type-safe data                 |
 | **Internationalization** | expo-localization + i18n-js                    |
 
@@ -177,7 +176,6 @@ Based on the **Eleva Care** brand identity:
 
 Following React Native best practices for smooth 60fps interactions:
 
-- **LegendList** with `getItemType` for heterogeneous list rendering
 - **Zustand selectors** for granular state subscriptions
 - **GestureDetector** for hardware-accelerated press animations
 - **Memoized components** and hoisted Intl formatters

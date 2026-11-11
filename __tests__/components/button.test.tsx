@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 
-// Renders a NativeWind-styled component so the Jest setup is exercised on
-// the styling stack, not only on the store.
+// Smoke test: a component written with className renders under Jest.
+// NativeWind does not compile styles in Jest, so no style is asserted here.
 describe("Button", () => {
   it("renders its label", () => {
     render(
