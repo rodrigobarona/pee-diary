@@ -196,7 +196,7 @@ export default function SettingsScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     resetOnboarding();
-    router.replace("/(onboarding)");
+    router.replace("/welcome");
   }, [resetOnboarding, router]);
 
   // Handle toggling reminders

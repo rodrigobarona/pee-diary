@@ -52,7 +52,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
       if (!state.hasCompletedOnboarding) {
         // Navigate to onboarding
-        router.replace("/(onboarding)");
+        router.replace("/welcome");
         return;
       }
 
