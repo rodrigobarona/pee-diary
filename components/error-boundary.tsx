@@ -1,5 +1,4 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Sentry from "@sentry/react-native";
 import * as React from "react";
 import {
   Platform,
@@ -38,14 +37,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ errorInfo });
     this.props.onError?.(error, errorInfo);
 
-    // Report to Sentry
-    Sentry.captureException(error, {
-      extra: {
-        componentStack: errorInfo.componentStack,
-      },
-    });
-
-    // Also log in development
+    // Errors stay on the device: the diary sends nothing to third parties.
     if (__DEV__) {
       console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
@@ -185,13 +177,6 @@ export function ScreenErrorBoundary({
 }: ScreenErrorBoundaryProps) {
   const handleError = React.useCallback(
     (error: Error, errorInfo: React.ErrorInfo) => {
-      // Report to Sentry with screen context
-      Sentry.withScope((scope) => {
-        scope.setTag("screen", screenName ?? "unknown");
-        scope.setExtra("componentStack", errorInfo.componentStack);
-        Sentry.captureException(error);
-      });
-
       if (__DEV__) {
         console.error(`Error in screen ${screenName}:`, error, errorInfo);
       }

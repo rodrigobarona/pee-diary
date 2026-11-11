@@ -15,10 +15,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_SENTRY_DSN": "@sentry-dsn"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {

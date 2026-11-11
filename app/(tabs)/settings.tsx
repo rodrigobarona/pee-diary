@@ -25,9 +25,6 @@ import { colors } from "@/lib/theme/colors";
 import {
   exportBackupFile,
   importBackupFile,
-  isCloudAvailable,
-  restoreFromCloud,
-  syncToCloud,
 } from "@/lib/utils/backup";
 import {
   cancelAllReminders,
@@ -149,7 +146,6 @@ export default function SettingsScreen() {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = React.useState("");
   const [isSyncing, setIsSyncing] = React.useState(false);
-  const cloudAvailable = isCloudAvailable();
 
   // Initialize notifications on mount
   React.useEffect(() => {
@@ -382,77 +378,6 @@ export default function SettingsScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   }, [clearAllEntries, isDeleteConfirmed]);
-
-  const handleSyncToCloud = React.useCallback(async () => {
-    if (isSyncing) return;
-
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
-    setIsSyncing(true);
-    try {
-      const result = await syncToCloud();
-      if (result.success) {
-        if (Platform.OS !== "web") {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        Alert.alert(t("settings.iCloudSync"), t("settings.syncSuccess"));
-      } else {
-        Alert.alert(t("common.error"), result.error ?? t("settings.syncError"));
-      }
-    } catch {
-      Alert.alert(t("common.error"), t("settings.syncError"));
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [isSyncing, t]);
-
-  const handleRestoreFromCloud = React.useCallback(async () => {
-    if (isSyncing) return;
-
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
-    Alert.alert(t("settings.restoreFromCloud"), t("settings.restoreConfirm"), [
-      {
-        text: t("common.cancel"),
-        style: "cancel",
-      },
-      {
-        text: t("settings.restore"),
-        onPress: async () => {
-          setIsSyncing(true);
-          try {
-            const result = await restoreFromCloud();
-            if (result.success) {
-              if (Platform.OS !== "web") {
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                );
-              }
-              Alert.alert(
-                t("settings.restoreFromCloud"),
-                t("settings.restoreSuccess", {
-                  count: result.entriesCount ?? 0,
-                })
-              );
-            } else {
-              Alert.alert(
-                t("common.error"),
-                result.error ?? t("settings.restoreError")
-              );
-            }
-          } catch {
-            Alert.alert(t("common.error"), t("settings.restoreError"));
-          } finally {
-            setIsSyncing(false);
-          }
-        },
-      },
-    ]);
-  }, [isSyncing, t]);
 
   // Handle local file backup export
   const handleExportBackup = React.useCallback(async () => {
@@ -719,42 +644,7 @@ export default function SettingsScreen() {
         />
       </View>
 
-      {/* Cloud Sync Section - iOS only */}
-      {Platform.OS === "ios" ? (
-        <>
-          <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
-            {t("settings.cloudSync")}
-          </Text>
-          <View style={styles.card}>
-            <SettingRow
-              icon="cloud-sync"
-              label={t("settings.iCloudSync")}
-              description={
-                cloudAvailable
-                  ? t("settings.iCloudSyncDescription")
-                  : t("settings.iCloudNotAvailable")
-              }
-              onPress={cloudAvailable ? handleSyncToCloud : undefined}
-            >
-              {isSyncing ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.primary.DEFAULT}
-                />
-              ) : null}
-            </SettingRow>
-            <View style={styles.separator} />
-            <SettingRow
-              icon="cloud-download"
-              label={t("settings.restoreFromCloud")}
-              description={t("settings.restoreDescription")}
-              onPress={cloudAvailable ? handleRestoreFromCloud : undefined}
-            />
-          </View>
-        </>
-      ) : null}
-
-      {/* Local Backup Section - for Android (primary) and iOS (fallback) */}
+      {/* Local backup: a file the user exports and imports themselves */}
       <Text style={[styles.sectionTitle, styles.sectionTitleMargin]}>
         {t("settings.localBackup")}
       </Text>

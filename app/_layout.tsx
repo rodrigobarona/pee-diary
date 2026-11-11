@@ -19,11 +19,7 @@ import "react-native-reanimated";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
-import { initSentry, Sentry, setSentryAppContext } from "@/lib/sentry";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
-
-// Initialize Sentry as early as possible
-initSentry();
 
 // Suppress deprecation warning from dependencies (react-native-bottom-tabs)
 // This can be removed once the library updates to use react-native-safe-area-context
@@ -54,13 +50,6 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
       // Check if onboarding needs to be shown
       const state = useDiaryStore.getState();
 
-      // Set Sentry app context for better debugging
-      setSentryAppContext({
-        language: locale,
-        hasCompletedOnboarding: state.hasCompletedOnboarding,
-        entriesCount: state.entries.length,
-      });
-
       if (!state.hasCompletedOnboarding) {
         // Navigate to onboarding
         router.replace("/(onboarding)");
@@ -76,7 +65,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
         }, 100);
       }
     }
-  }, [isHydrated, router, locale]);
+  }, [isHydrated, router]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -170,7 +159,7 @@ function InnerLayout({ colorScheme }: { colorScheme: ColorSchemeName }) {
   );
 }
 
-function RootLayout() {
+export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   // Explicitly load MaterialCommunityIcons font to ensure icons render
@@ -207,6 +196,3 @@ function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-
-// Wrap with Sentry for automatic error capturing and performance monitoring
-export default Sentry.wrap(RootLayout);

@@ -13,9 +13,6 @@
       "bundleIdentifier": "care.eleva.peediary",
       "infoPlist": {
         "CFBundleLocalizations": ["en", "es", "pt"]
-      },
-      "entitlements": {
-        "com.apple.developer.ubiquity-kvstore-identifier": "$(TeamIdentifierPrefix)$(CFBundleIdentifier)"
       }
     },
     "android": {
@@ -65,14 +62,7 @@
         }
       ],
       "react-native-bottom-tabs",
-      "@react-native-community/datetimepicker",
-      [
-        "@sentry/react-native/expo",
-        {
-          "organization": "elevacare",
-          "project": "eleva-diary"
-        }
-      ]
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

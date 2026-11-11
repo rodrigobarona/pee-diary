@@ -60,7 +60,7 @@ A complete voiding diary provides physicians with essential data for accurate di
 ### Privacy & Data Control
 
 - **Offline-First**: All data stored locally on your device
-- **iCloud Sync** (iOS): Optional backup to your personal iCloud account
+- **Backup File**: Export a backup file and import it again on any device
 - **No Account Required**: Use immediately without registration
 - **Full Data Ownership**: Export or delete your data anytime
 
@@ -83,7 +83,6 @@ A complete voiding diary provides physicians with essential data for accurate di
 | **Menus**                | Zeego for native dropdown menus                |
 | **Validation**           | Zod schemas for type-safe data                 |
 | **Internationalization** | expo-localization + i18n-js                    |
-| **Cloud Backup**         | expo-icloud-storage (iOS)                      |
 
 ## Getting Started
 
