@@ -6,7 +6,7 @@ import {
   EXPORT_FILE_PREFIX,
   exportAndShare,
 } from "@/lib/utils/export";
-import { BACKUP_FILENAME } from "@/lib/utils/backup";
+import { BACKUP_FILENAME, importBackupFile } from "@/lib/utils/backup";
 import type { DiaryEntry } from "@/lib/store/types";
 
 // In-memory stand-in for the app's folders.
@@ -36,8 +36,14 @@ jest.mock("expo-file-system/legacy", () => ({
     const [dir, name] = split(uri);
     mockFiles[dir] = [...(mockFiles[dir] ?? []), name];
   }),
+  readAsStringAsync: jest.fn(async () =>
+    JSON.stringify({ version: 1, entries: [], goals: { fluidTarget: 2000, voidTarget: 7 } })
+  ),
   moveAsync: jest.fn(async ({ from, to }: { from: string; to: string }) => {
     const [fromDir, fromName] = split(from);
+    if (!(mockFiles[fromDir] ?? []).includes(fromName)) {
+      throw new Error(`File '${from}' could not be moved.`);
+    }
     mockFiles[fromDir] = (mockFiles[fromDir] ?? []).filter((f) => f !== fromName);
     const [dir, name] = split(to);
     mockFiles[dir] = [...(mockFiles[dir] ?? []), name];
@@ -50,7 +56,15 @@ jest.mock("expo-print", () => ({
   }),
 }));
 jest.mock("expo-sharing", () => ({ shareAsync: jest.fn(async () => undefined) }));
-jest.mock("expo-document-picker", () => ({ getDocumentAsync: jest.fn() }));
+jest.mock("expo-document-picker", () => ({
+  getDocumentAsync: jest.fn(async () => {
+    mockFiles["file:///cache/DocumentPicker/"] = ["picked.json"];
+    return {
+      canceled: false,
+      assets: [{ uri: "file:///cache/DocumentPicker/picked.json" }],
+    };
+  }),
+}));
 
 const entries: DiaryEntry[] = [
   {
@@ -123,6 +137,11 @@ describe("export files", () => {
       "file:///cache/DocumentPicker/",
       "file:///cache/Print/",
     ]);
+  });
+
+  it("deletes the picker's copy of an imported backup after reading it", async () => {
+    await importBackupFile();
+    expect(mockFiles["file:///cache/DocumentPicker/"]).toEqual([]);
   });
 
   it("names the backup file so the cleanup finds it", () => {

@@ -171,7 +171,7 @@ Before submitting, verify:
 - [ ] No crash reporting or performance monitoring SDKs (e.g., Sentry, Crashlytics)
 - [ ] No ad SDKs
 - [ ] No third-party auth providers
-- [ ] Clear Data functionality works correctly
+- [ ] Clear All Data functionality works correctly
 - [ ] Export and local backup file use Android share sheet (user controls destination)
 - [ ] Decision on Android Auto Backup (`android.allowBackup`) confirmed (see note in App Behavior Summary)
 

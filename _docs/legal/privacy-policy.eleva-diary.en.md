@@ -165,7 +165,7 @@ Clearing data or uninstalling the app does not delete copies stored outside the 
 
 ## 8. Children's Privacy
 
-Eleva Diary is not directed at children under 13 years of age. We do not knowingly collect information from children. If a parent or guardian becomes aware that their child has been using the app, they can delete all data using the Clear Data function.
+Eleva Diary is not directed at children under 13 years of age. We do not knowingly collect information from children. If a parent or guardian becomes aware that their child has been using the app, they can delete all data using the Clear All Data function.
 
 ---
 

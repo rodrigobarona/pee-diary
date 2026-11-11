@@ -165,7 +165,7 @@ Limpar os dados ou desinstalar o aplicativo não exclui as cópias armazenadas f
 
 ## 8. Privacidade de Crianças
 
-O Eleva Diary não é direcionado a crianças menores de 13 anos. Não coletamos conscientemente informações de crianças. Se um pai ou responsável perceber que seu filho está usando o aplicativo, pode excluir todos os dados usando a função Limpar Dados.
+O Eleva Diary não é direcionado a crianças menores de 13 anos. Não coletamos conscientemente informações de crianças. Se um pai ou responsável perceber que seu filho está usando o aplicativo, pode excluir todos os dados usando a função Apagar todos os dados.
 
 ---
 

@@ -144,7 +144,7 @@ Our PDF/CSV/JSON exports and the local backup file meet both criteria → **Not 
 | Practice                  | Answer    | Implementation                                    |
 | ------------------------- | --------- | ------------------------------------------------- |
 | Data encrypted in transit | Yes (N/A) | No server transmission; OS handles export sharing |
-| Data deletion available   | Yes       | Settings → Clear Data                             |
+| Data deletion available   | Yes       | Settings → Clear All Data                         |
 
 ### Health Apps Declaration
 
@@ -169,7 +169,7 @@ Our PDF/CSV/JSON exports and the local backup file meet both criteria → **Not 
 | Third-party sharing       | None                                      | Section 5    |
 | User rights               | Access, correction, deletion, portability | Section 10   |
 | Data retention            | User-controlled                           | Section 7    |
-| Deletion method           | Clear Data in Settings                    | Section 7    |
+| Deletion method           | Clear All Data in Settings                    | Section 7    |
 | Children's data           | Not directed at under-13                  | Section 8    |
 | International transfers   | None (local storage)                      | Section 9    |
 
@@ -189,7 +189,7 @@ Our PDF/CSV/JSON exports and the local backup file meet both criteria → **Not 
 | Requirement        | Implementation                  | Section          |
 | ------------------ | ------------------------------- | ---------------- |
 | How to access data | View in app, export             | Export section   |
-| How to delete data | Clear Data in Settings          | Deletion section |
+| How to delete data | Clear All Data in Settings          | Deletion section |
 | Backup and restore | Export/import backup file       | Backup section   |
 | Account deletion   | N/A (no accounts)               | —                |
 
@@ -236,7 +236,7 @@ Before each app submission, verify:
 
 - [ ] Local backup file export and import work on iOS and Android
 - [ ] Android Auto Backup (`android.allowBackup`) and its disclosure reviewed
-- [ ] Clear Data function works correctly
+- [ ] Clear All Data function works correctly
 - [ ] Export generates files locally before sharing
 - [ ] No automatic data transmission on app launch
 

@@ -195,8 +195,14 @@ describe("DiaryStore", () => {
           hadLeak: false,
           hadPain: false,
         });
-        state.updateGoals({ fluidTarget: 2500 });
-        state.updateReminderSettings({ enabled: true, intervalHours: 2 });
+        state.updateGoals({ fluidTarget: 2500, voidTarget: 9 });
+        state.updateReminderSettings({
+          enabled: true,
+          intervalHours: 2,
+          quietHoursEnabled: false,
+          quietHoursStart: "23:00",
+          quietHoursEnd: "06:00",
+        });
         state.setOpenAddMenuOnLaunch(false);
         state.setLanguage("pt");
         state.completeOnboarding();

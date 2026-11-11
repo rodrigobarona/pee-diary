@@ -165,7 +165,7 @@ Borrar los datos o desinstalar la aplicación no elimina las copias guardadas fu
 
 ## 8. Privacidad de los Niños
 
-Eleva Diary no está dirigido a niños menores de 13 años. No recopilamos conscientemente información de niños. Si un padre o tutor se da cuenta de que su hijo ha estado usando la aplicación, puede eliminar todos los datos usando la función Borrar Datos.
+Eleva Diary no está dirigido a niños menores de 13 años. No recopilamos conscientemente información de niños. Si un padre o tutor se da cuenta de que su hijo ha estado usando la aplicación, puede eliminar todos los datos usando la función Borrar todos los datos.
 
 ---
 
