@@ -1,8 +1,15 @@
-node_modules
-.expo
-dist
-site/dist
-ios
-android
-research_notes
-reports
+# The legal website needs only these files (allowlist). Everything else,
+# including the app source and the large design images, is not uploaded.
+/*
+!/site
+!/_docs
+/_docs/*
+!/_docs/legal
+!/assets
+/assets/*
+!/assets/images
+!/package.json
+!/pnpm-lock.yaml
+!/pnpm-workspace.yaml
+!/vercel.json
+/site/dist
