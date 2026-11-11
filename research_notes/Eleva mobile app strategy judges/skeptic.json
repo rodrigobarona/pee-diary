@@ -1,0 +1,212 @@
+{
+  "judge": "Founder economics and risk (skeptic)",
+  "scores": {
+    "A": {
+      "discovery": {
+        "score": 7,
+        "why": "A standalone listing can put 'Diário Miccional' in the title and is the only form outside clinicians can hand out without endorsing a marketplace (growth notes s1, s6). The ceiling is low whatever the structure: the category leader has 50K+ Android installs after about a decade and PT volume is estimated at tens to low hundreds of installs a month."
+      },
+      "cross_sell": {
+        "score": 3,
+        "why": "As defined, booking lives in the second app, and the only adjacent benchmarks say a second install loses 25-60% of the people who tap (growth notes s2); Foursquare got only a third of users onto both apps even with a forced migration. No measured tracker-to-care conversion exists anywhere in the notes."
+      },
+      "experience": {
+        "score": 4,
+        "why": "The diary app is focused, but the Care app mixes members, experts, academy, video and messaging in one binary, the combined-roles shape that founders in the AVC thread unwound. The same consumer also ends up managing two Eleva apps, which the health precedents (Flo, Clue, Hinge, Sword) avoid."
+      },
+      "privacy_trust": {
+        "score": 6,
+        "why": "The diary default is no account and local storage, which is what Mozilla and Privacy International reward. But A's diary includes optional sign-in and sync, so it cannot show 'Data Not Collected' (regulatory notes s5), and consent, deletion and login state must be kept consistent across two apps."
+      },
+      "regulatory": {
+        "score": 4,
+        "why": "The diary is isolated from the review blast radius and from accidental device drift, but the Care app still carries everything B carries (1:1 payments beside academy content, 1.4.1 and 5.1.1(ix) scrutiny). A adds a small 4.3(a)/4.2.2 exposure and account deletion built twice."
+      },
+      "build_cost": {
+        "score": 1,
+        "why": "Four native binaries in parallel (two apps times Swift and Kotlin), plus cross-app sign-on that has no first-class mechanism on Android, plus native call UI, chat and lecture playback written twice each, all while invoicing, clinic admin and the Academy do not yet exist on the web. This is the structure Maven, Doctolib and Booksy run, and they are far larger companies."
+      },
+      "maintenance": {
+        "score": 1,
+        "why": "Four listings, four privacy declarations, four review tracks and four crash dashboards; Sharetribe's point that every feature must work on web and mobile and pass both store reviews applies four times. Headspace shows that unwinding two apps takes years (announced 2022, incomplete in late 2025)."
+      },
+      "optionality": {
+        "score": 2,
+        "why": "Building everything in parallel spends the most before learning anything, so every later change of course writes off the most work. Merging back is slow (Headspace) and the base rate for satellite apps surviving is poor (portfolio notes s1)."
+      },
+      "platform_fit": {
+        "score": 2,
+        "why": "Better Auth has no Swift or Kotlin SDK, so A needs two OAuth clients, four accepted audiences and cross-app session sharing on top of an API whose web client is still pre-launch. The native apps would chase contracts (academy, messaging, clinic) that the earlier spec says must stabilise before any mobile work is merged."
+      }
+    },
+    "B": {
+      "discovery": {
+        "score": 4,
+        "why": "On iOS the name, subtitle and icon stay 'Eleva Care' on every custom product page, so B never gets title-weight relevance for diary terms, and outside clinicians have a conflict in handing out a marketplace app (growth notes s1, s6). Custom pages, Play custom listings and roughly 1 USD installs in Portugal narrow but do not close the gap."
+      },
+      "cross_sell": {
+        "score": 6,
+        "why": "Booking is a tab away with no second install, and the user is still inside the product when the 3-7 day diary episode ends (growth notes s4). I cap this at 6 because no conversion data exists and the best-converting prompt (result-based referral from diary entries) needs explicit Article 9 consent and risks medical-device qualification (regulatory notes s8)."
+      },
+      "experience": {
+        "score": 3,
+        "why": "Three roles, two payment regimes, video, chat, lectures and a diary in one binary; the diary becomes a section among many and every diary-only user receives the WebRTC framework and camera and microphone permission strings. Comparable companies keep expert tools on a separate surface (marketplace notes s1)."
+      },
+      "privacy_trust": {
+        "score": 3,
+        "why": "One long privacy label covering health, contact, payment, messages and diagnostics; 'Data Not Collected' is impossible. Diary data sits beside commerce and CRM, which makes accidental health-based targeting easy and hard to disprove (regulatory notes s3, s8)."
+      },
+      "regulatory": {
+        "score": 3,
+        "why": "One rejection on payments, health claims or account deletion blocks every feature for every audience. If the diary module ever becomes a device, the whole listing carries the medical-device status and the shared shell enters its change control (MDCG 2019-11 Rev.1 s7-8)."
+      },
+      "build_cost": {
+        "score": 2,
+        "why": "Only two codebases, but the first release as defined needs native call UI, chat, lecture playback, expert tools and both payment regimes before anything ships. Several of those features are not yet built on the web, so the native apps would be specified against moving targets."
+      },
+      "maintenance": {
+        "score": 4,
+        "why": "One listing and one release train per platform is cheaper than A, but every web feature for three roles must be mirrored twice natively and re-pass review. Maven's provider-only app (6 ratings, 171.5 MB, monthly releases) shows the standing cost of native expert tooling for a tiny audience."
+      },
+      "optionality": {
+        "score": 3,
+        "why": "Maximum scope is committed before any usage data exists. Splitting later means forcing a second download, the Messenger and Swarm pattern, and a burst of one-star reviews weighs far more on a small publisher's listing."
+      },
+      "platform_fit": {
+        "score": 3,
+        "why": "One OAuth client and one identity is clean, but B depends on invoicing, clinic admin, staff console and Academy contracts that are still ahead on the web. The earlier internal spec named the diary, not an all-in-one app, as the first mobile surface."
+      }
+    },
+    "C": {
+      "discovery": {
+        "score": 7,
+        "why": "Same listing advantage as A: title-level relevance for 'diário miccional' where the Play results are padded with generic journaling apps, and a neutral tool outside clinicians can hand out. Same low ceiling: the notes estimate hundreds to low thousands of organic installs a year, so the clinician and web-PDF channels matter more than store search."
+      },
+      "cross_sell": {
+        "score": 5,
+        "why": "Handing booking to the responsive web removes the second-install loss, which the growth notes say matters more than the one-versus-two-apps choice. Against that, a no-account app has no email, no remarketing, and is most likely to be deleted exactly when the diary episode ends; no conversion figure exists for this funnel."
+      },
+      "experience": {
+        "score": 7,
+        "why": "A focused, account-free diary matches what the diary research supports (about 90% completion over 3 days with reminders, 88% preferring app to paper). The seam is the hop to the browser for booking, which Portuguese users already accept (SNS 24 joins by app, portal or SMS link); there is no evidence either way on discretion preferences."
+      },
+      "privacy_trust": {
+        "score": 8,
+        "why": "Stage one can be strictly local with zero telemetry and so earn 'Data Not Collected', the property Mozilla's 2026 ranking rewarded. Not higher because that posture also removes the instrumentation needed to measure the funnel, and the later member app embedding the same module inherits B's long label."
+      },
+      "regulatory": {
+        "score": 7,
+        "why": "The first release has no payments, no mandatory login and sits outside the ERS telemedicine perimeter, so it is the simplest review profile on offer. I deduct for stage two: keeping the standalone while embedding the same diary in the member app is the duplication the regulatory notes warn about under guideline 4.3(a), and a funnel-looking diary risks 4.2.2."
+      },
+      "build_cost": {
+        "score": 8,
+        "why": "The first useful release is a small offline app with no backend dependency, no auth, no video and no payments, so it does not compete with the web launch for API work. It is still two native rewrites of an Expo proof of concept that already works, which is spend that buys no new information about demand."
+      },
+      "maintenance": {
+        "score": 5,
+        "why": "Two small binaries at first, but the full plan ends with four store binaries and a standalone kept alive indefinitely for an audience that may be tens of installs a month. Shared Swift package and Gradle module reduce code duplication, not listings, reviews and release attention."
+      },
+      "optionality": {
+        "score": 8,
+        "why": "The smallest irreversible step: the architecture notes say a diary module built as a package can be repackaged into one app or two later without a rewrite. Stage two can be cancelled, delayed, or folded into the same listing if the evidence is weak; the risk is that a shipped diary becomes a sunk-cost argument for building the member app regardless."
+      },
+      "platform_fit": {
+        "score": 7,
+        "why": "Matches the earlier spec's choice of Eleva Diary as the first mobile app and its rule not to start mobile before platform contracts stabilise, because a local-only diary needs none of them. It deviates from that spec's 'synced to account' default, and stage two brings the cross-app sign-on cost that has no clean Android answer."
+      }
+    },
+    "D": {
+      "discovery": {
+        "score": 5,
+        "why": "Custom product pages and keyword-targeted Play listings let one app show a diary page for diary searches, and about 70% of Portuguese phones are Android where the long description is indexed. It still loses title relevance and the neutral hand-out: an outside urologist is being asked to recommend a marketplace."
+      },
+      "cross_sell": {
+        "score": 6,
+        "why": "The guest diary user is already inside the app that books, with no second install and no browser hop, and the app survives the end of the diary episode as the care app. Capped at 6 for the same reasons as B: no measured conversion, and data-driven prompts are legally constrained."
+      },
+      "experience": {
+        "score": 7,
+        "why": "One member-only home, which is what Hinge, Sword, Flo and Clue do, and 'Eleva Care' is a discreet home-screen label. The cost is at first contact: someone told to keep a 3-day diary downloads an app whose identity is expert booking."
+      },
+      "privacy_trust": {
+        "score": 5,
+        "why": "Guest mode can keep the diary local before sign-in, but the label is the whole app's and cannot say 'Data Not Collected'. Proving that analytics and CRM never touch diary use inside one binary is harder than shipping a binary without them."
+      },
+      "regulatory": {
+        "score": 5,
+        "why": "No duplicate-app exposure and no academy payments if those stay on the web. But the diary shares a review, a label and a medical-device declaration with booking and video, and diary data sitting beside booking logic raises the chance of drifting into individualised recommendations."
+      },
+      "build_cost": {
+        "score": 5,
+        "why": "Two codebases and no expert tools, but the first release as defined is a member app, which needs native auth against Better Auth (no official SDK), booking and session join before it is coherent. It could be staged diary-first, in which case it costs the same as C's first stage; as written it does not say so."
+      },
+      "maintenance": {
+        "score": 7,
+        "why": "One listing, one label, one release train per platform and no cross-app sign-on, handoff or deferred deep links. Still two native codebases that must track every member-facing web change."
+      },
+      "optionality": {
+        "score": 6,
+        "why": "Leaves experts and Academy on the web, which is the reversible choice. It gives up the neutral standalone surface, and adding one later means either a second download for existing users or a new listing starting from zero ratings."
+      },
+      "platform_fit": {
+        "score": 6,
+        "why": "One identity and one OAuth client fits the 'no second identity model' rule in the earlier spec. It needs stable booking, session and notification contracts from an API whose web client has not launched, so native work would churn with it."
+      }
+    }
+  },
+  "ranking": ["C", "D", "B", "A"],
+  "verdict": "I back C, but only its first stage is a commitment; the member app is an option to be earned, not a plan. The decisive reason is economic: C's first release is the only one on the table that needs no backend, no auth and no marketplace liquidity, so it does not compete with the web launch, and it is the cheapest irreversible step that still produces real evidence. Every option rests on the same unmeasured belief, that diary users become paying members, and the notes offer no conversion figure for it and a store-search ceiling of tens to low hundreds of installs a month in Portugal. A and B commit four or two full-scope native codebases to that belief before the web marketplace has a single paid session, so they rank last. The honest answer to 'are native apps the best use of the next two quarters' is no: launching the web marketplace is, and the diary should be sized so that it cannot delay it.",
+  "strongest_objection_to_own_pick": "The diary may be a poor funnel by construction: the channel that actually distributes bladder diaries is clinicians, and people sent by a clinician already have one, while organic store demand is worth roughly 200 USD a month in paid-install equivalents at Portuguese prices. If that is right, C spends weeks of two native rewrites on an asset a web page with a printable PDF and a few hundred euros of ads could have tested, and then leaves a second listing to maintain forever. D, or no native work at all until the marketplace has liquidity, would then have been the better use of the time.",
+  "would_change_mind_if": [
+    "Search popularity for 'diário miccional', 'diario miccional' and 'bladder diary' sits at or near the floor of the index in the PT and ES storefronts, and fewer than 8 of 20 interviewed clinicians would hand out a diary QR card: the standalone listing then has no discovery edge and I would move to D, or to a web-only diary.",
+    "Outside clinicians say they would hand out an 'Eleva Care' app as readily as an 'Eleva Diary' app (at least 7 of 10): the neutral-tool argument for a separate listing disappears and D wins on maintenance.",
+    "Eleva's own web analytics after launch show at least 60% of bookings and session joins on phones and a median rebooking interval of two weeks or less: a native member app is justified sooner and I would bring D forward.",
+    "A pilot shows fewer than 1% of diary users who do not already have a clinician go on to open an expert page: the funnel premise fails and no native diary should be built for acquisition reasons.",
+    "A lawyer or INFARMED advises that a local-only diary still makes Eleva a controller of health data, or that the planned charts and trend indicators are a medical device: C's privacy and regulatory lead over D mostly disappears.",
+    "The native diary on both platforms is estimated at more than 10 working weeks even with coding agents: I would ship the web diary page and PDF only until the marketplace is live."
+  ],
+  "plan_advice": [
+    "Make the public launch of the web marketplace with paying sessions the gate for any native member-app work, and cap native diary work at a fixed share of engineering time (I suggest no more than a quarter) until that launch has happened.",
+    "Publish an eleva.care 'diário miccional' page now with a free printable PDF in PT, ES and EN that carries a QR code and link back to Eleva, because the notes suggest the printable form is a larger and cheaper funnel than store search.",
+    "Before writing Swift or Kotlin, collect the three missing numbers: keyword popularity in the PT, ES and BR storefronts, web search volume for the same terms, and how many diaries a month 20 Portuguese clinicians actually hand out.",
+    "Put the existing Expo proof of concept in front of 30 to 50 real patients through TestFlight and a Play closed test as a measuring instrument only, after removing iCloud backup and Sentry, so demand and completion are observed before the native rewrite is paid for.",
+    "If those gates pass, build only the native diary as a self-contained Swift package and Gradle module: local storage, no account, no telemetry, PDF export, and one static link to eleva.care with a campaign tag, time-boxed to about ten weeks for both platforms.",
+    "Choose a neutral bundle and package identifier for the diary (not one containing 'diary') so the same listing can later be renamed and grown into the member app instead of forcing a second install; this is my judgment, not something the notes test.",
+    "Decide stage two on a fixed date about 180 days after the diary launch using the kill criteria below, and default to growing the existing listing into the member app unless the clinician channel has proved that a neutral standalone is worth a second listing.",
+    "Buy the three cheap opinions before stage two, not after: an INFARMED advice query on intended purpose, a lawyer's view on who is the ERS responsible entity in a Stripe Connect marketplace, and confirmation of the local-only controller position."
+  ],
+  "experiments": [
+    "Web PDF page: publish the 'diário miccional' page with printable PDF and QR and measure organic visits and clicks through to expert pages for 8 weeks; proceed if it reaches at least 300 visits a month and at least 3% click through to an expert or booking page, and treat fewer than 100 visits a month as a sign demand is too thin for a dedicated app.",
+    "Clinician demand: interview 20 clinicians in Portugal (10 Eleva experts, 10 outside urologists, urogynaecologists or public-sector physiotherapists) and count who hands out diaries and how many; proceed with a standalone listing if at least 10 hand out 4 or more a month and at least 6 of the 10 outsiders would hand out an Eleva-branded QR card.",
+    "Keyword demand: read search popularity for the PT, ES and BR diary terms in an ASO tool or Apple Ads and monthly volume in Google Keyword Planner; proceed if at least one Portuguese and one Spanish term score clearly above the index floor (I would use 20 out of 100) or combined Portuguese web searches exceed 500 a month.",
+    "Proof-of-concept pilot: give the Expo build to 30 to 50 people who were asked to keep a diary, half of them without a current pelvic-health clinician, and count through a short follow-up form; the bar is at least 70% completing 3 days, at least 50% exporting the PDF, and at least 5% of those without a clinician opening an Eleva expert page."
+  ],
+  "evidence_cautions": [
+    "There is no keyword volume for any diary term in Portuguese or Spanish; the 'tens to low hundreds of installs a month' figure is inferred from competitor install buckets and rating counts. If real volume is five times higher, discovery for A and C rises by about 2 points and the standalone looks much better; my ranking of C over D would strengthen, not flip.",
+    "No company has published a conversion rate from a free tracker to paid care, so every cross_sell score here is judgment anchored on a 2% freemium median and on 25-31% hand-off rates from US symptom checkers that lead to same-day visits. Those scores could each be wrong by 2 points in either direction, and this is the uncertainty that matters most.",
+    "Build and maintenance costs rest on vendor rules of thumb (15-25% of build cost a year) and on the researcher's own assumed 1.6x to 1.9x multiplier for two native codebases; nothing measures how much coding agents reduce it. The ordering of options on cost is robust, the absolute size is not.",
+    "The clinician-channel evidence is from Ireland, Norway, South Africa and the UK, not Portugal, and nothing shows whether clinician-referred installs ever book on a marketplace. If they do not, C's main structural advantage over D is worth little; the regulatory findings, by contrast, are mostly the same for every option and barely move the ranking."
+  ],
+  "weakest_assumption": {
+    "A": "That a small founder-led team can build and keep releasing four native binaries with cross-app sign-on in parallel while the web marketplace is still unfinished, and that diary users will then install a second app when even Foursquare's forced split got only a third of users onto both.",
+    "B": "That one binary carrying three roles, two payment regimes, video, chat, lectures and a diary can be specified, built twice and passed through review before the underlying web features exist, and that experts want native tools at all when Maven's provider app has 6 ratings.",
+    "C": "That diary users are prospects for paid care: the people who are told to keep a diary mostly already have a clinician, store search is tiny, and 'reusing the module' in stage two still adds a second shell, Android sign-on work and a duplicate-diary question under guideline 4.3(a).",
+    "D": "That a custom product page and a guest mode recover a standalone's reach when the name and icon stay 'Eleva Care' and outside clinicians are asked to recommend a marketplace, and that a native member app is justified before the web marketplace has shown any repeat usage."
+  },
+  "kill_criteria": [
+    "Before any native code: if the web diary page is under 100 organic visits a month after 8 weeks, keyword popularity is at the floor in both PT and ES, and fewer than 8 of 20 clinicians would hand out a QR card, do not build a standalone diary app; keep the web page and PDF only.",
+    "At the planned start of native work: if the web marketplace has fewer than 10 experts with bookable availability in Portugal or fewer than 50 completed paid sessions, pause native work, because a funnel into an empty marketplace cannot convert.",
+    "90 days after the diary launch: if total installs across both stores are under 300, or fewer than 5% of installs produce a tagged arrival on eleva.care, freeze the diary at maintenance only (operating-system compatibility fixes, nothing else).",
+    "180 days after the diary launch: if diary-attributed first bookings are under 30 in total or under 1% of installs once installs exceed 1,000, cancel the separate member app and stop treating the diary as an acquisition channel.",
+    "12 months after the diary launch: if native surfaces account for under 15% of first bookings and browser session joins on phones are working without complaint, freeze native at the diary and keep members, experts and Academy on the responsive web for another year."
+  ],
+  "what_not_to_build": [
+    "Native expert, clinic or staff tools, because the work is desktop-heavy and the audience is tiny (Doctolib and BetterHelp give providers only agenda and messaging on mobile).",
+    "Academy purchase or playback in the apps, because one-to-many sessions and recorded content fall under in-app purchase commission and add a second payment regime to review, and the Academy does not yet exist on the web.",
+    "A native video call screen, because joining a session from a browser link is already normal in Portugal and the native SDKs ship no prebuilt UI, so the call screen would be built twice.",
+    "In-app messaging, because it means two native chat interfaces and either a new processor for health conversations or a self-built realtime stack.",
+    "Any interpretation of diary data, including normal-range colour coding, 'improving or declining' trend labels, personal goals, AI summaries and 'you should see a specialist' prompts, because that is the path to Class IIa medical-device status and to marketing consent under Article 9; the proof of concept already has trend indicators and goals that should not be carried over unreviewed.",
+    "Account sync, cross-app sign-on, third-party analytics or crash SDKs, and iCloud backup in the diary, because each one ends the 'Data Not Collected' position, sync triggers a mandatory impact assessment in Portugal, and Apple forbids personal health information in iCloud; the proof of concept currently ships both Sentry and iCloud storage.",
+    "HealthKit, Health Connect, widgets and watch apps, because the platforms offer only a water-intake type for this use and each adds review surface for no acquisition gain."
+  ]
+}

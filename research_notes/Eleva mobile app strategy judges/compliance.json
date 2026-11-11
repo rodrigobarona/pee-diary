@@ -1,0 +1,207 @@
+{
+  "judge": "Compliance, privacy and trust",
+  "scores": {
+    "A": {
+      "discovery": {
+        "score": 8,
+        "why": "A standalone listing can carry 'Diário Miccional' in the title and is a neutral tool that clinicians outside Eleva can hand out, and Irish physiotherapists rate clear purpose (77%) and data privacy (76%) as very important when choosing an app. The niche is small (the category leader has 50K+ Android installs after about a decade), so the gain is in rank and clinician reach, not volume; this is outside my lens and I rely on the growth and market notes."
+      },
+      "cross_sell": {
+        "score": 5,
+        "why": "A second install sits between diary and booking and adjacent benchmarks put the loss at 25-60% of people who tap; no cross-install rate for a health tracker has been published. From my lens the only clearly lawful prompt is a static, untargeted one, which works the same in every option, so A loses less here than the growth notes imply."
+      },
+      "experience": {
+        "score": 6,
+        "why": "The diary is focused and can be downloaded with no account, which the notes identify as the real discretion feature, but the Care app mixes member and expert roles in one binary, which the marketplace notes associate with role-switch friction. No user research on bladder-diary users exists in the notes, so this is judgment."
+      },
+      "privacy_trust": {
+        "score": 7,
+        "why": "No-account default with account, sync and share as three separate opt-ins is the textbook shape for explicit Article 9 consent, and reviewers such as Mozilla and Privacy International score per app. But A's diary has optional sync from day one, so Apple's label must say 'Health, linked to you' and cannot say 'Data Not Collected', and the Care app puts expert-side client data on phones while a small team is building four binaries at once."
+      },
+      "regulatory": {
+        "score": 6,
+        "why": "The diary lives in one binary only, so the medical-device boundary is clean, there is no duplicate-app exposure under Apple 4.3(a), and a diary fix is never blocked by a payments rejection. The Care app still carries B's problems minus the diary: 1:1 sessions on Stripe beside Academy content that needs in-app purchase, 1.4.1 and 5.1.1(ix) scrutiny, and everything submitted before the ERS and controller-role questions are answered."
+      },
+      "build_cost": {
+        "score": 2,
+        "why": "Four native codebases in parallel plus cross-app sign-on, which Android does not support as a first-class feature; the notes call four codebases the heaviest option on the table for a founder-led team. Compliance work also lands all at once: DPIA, two privacy labels per platform, account deletion in both apps."
+      },
+      "maintenance": {
+        "score": 3,
+        "why": "Four store listings, four privacy or data-safety declarations, two review tracks per platform and a consent and deletion state that must stay consistent across two apps; the regulatory note names consistency errors between two apps as the one risk where a single app is safer. Expert tools and Academy also have to be kept in step with the web apps."
+      },
+      "optionality": {
+        "score": 6,
+        "why": "Good regulatory optionality: if the diary ever becomes a device, only the diary listing carries the status and the Care app ships independently, and the diary is a clean unit for an EHDS label after 2029. Poor strategic optionality: the team has committed to native expert and Academy surfaces before usage proves the need, and merging two apps later is slow (Headspace was still unmerged five years on)."
+      },
+      "platform_fit": {
+        "score": 4,
+        "why": "It rebuilds expert and Academy tools natively when they already exist as responsive web apps, and it needs the cross-app session handoff the architecture note identifies as the largest avoidable auth cost. The three visibility states in the existing spec (private, synced, shared) do map cleanly onto the diary app."
+      }
+    },
+    "B": {
+      "discovery": {
+        "score": 3,
+        "why": "No diary listing, a broad title, and as defined no guest mode or custom product pages; clinicians outside Eleva have an obvious conflict recommending a competitor marketplace's app. Outside my lens; based on the growth notes."
+      },
+      "cross_sell": {
+        "score": 7,
+        "why": "No install hop between diary and booking, which the growth notes treat as the main conversion advantage. I mark it down because the diary sits behind the account and because the high-yield prompt the growth notes describe (a referral based on what the user logged) is the pattern the regulatory notes class as health-data marketing and a possible device feature."
+      },
+      "experience": {
+        "score": 4,
+        "why": "Members, experts, lectures, calls, messaging and diary in one app is the combined shape that founders in the marketplace notes say 'got really messed up', and a person who only wants a diary gets camera and microphone permissions and a marketplace account. Judgment; no user data."
+      },
+      "privacy_trust": {
+        "score": 3,
+        "why": "An account exists by default, so diary entries are attributable to an identified paying customer as soon as they are stored, and one long privacy label covers health, contact, identifiers, purchases, messages and diagnostics. The notes say B must prove internally that analytics, CRM and recommendation systems never touch diary data, which is hard to evidence inside one binary."
+      },
+      "regulatory": {
+        "score": 3,
+        "why": "Every regime attaches to one binary: a rejection on payments, health claims or account deletion blocks diary, booking and video together, two payment regimes must pass one review, and if the diary ever qualifies as device software the whole listing carries the status and the shell enters its change control. Drift risk is highest here because diary data sits beside booking logic and growth experiments; the only gain is zero 4.3 exposure."
+      },
+      "build_cost": {
+        "score": 3,
+        "why": "The largest single scope (three roles, native video, messaging, lecture playback with store billing, diary) on two platforms before anything useful ships. Slightly cheaper than A only because there is one shell and no cross-app sign-on."
+      },
+      "maintenance": {
+        "score": 5,
+        "why": "One listing, one label, one review and one account implementation per platform, which is the launch-effort advantage the regulatory note credits to a single app. Offset by a large multi-role binary where every release goes through the heaviest review profile."
+      },
+      "optionality": {
+        "score": 3,
+        "why": "Splitting later forces a second download on existing users (the Messenger and Swarm pattern), and a future device or EHDS label would attach to a module of a large app. It also commits to native expert tooling before any evidence of need."
+      },
+      "platform_fit": {
+        "score": 5,
+        "why": "One auth client and no cross-app handoff fits Better Auth well, and it matches the existing spec's 'synced to the Eleva account' default. It duplicates the working web apps for experts and Academy natively and discards the spec's diary-first sequencing."
+      }
+    },
+    "C": {
+      "discovery": {
+        "score": 8,
+        "why": "Same standalone listing and clinician hand-out advantages as A, and it reaches the stores sooner because nothing else is being built beside it. Same caveat: the keyword niche is small and unmeasured for Portugal and Spain."
+      },
+      "cross_sell": {
+        "score": 6,
+        "why": "Booking hands off to the existing web flow, which the growth notes say removes the second-install loss, but a web hop is still weaker than an in-app tab. No published conversion figure exists for any of these paths, so the gap to B and D is an estimate."
+      },
+      "experience": {
+        "score": 8,
+        "why": "A focused diary with no account, no camera or microphone permissions and a small binary, followed by a member-only app with no expert clutter. Members who do both get the diary where they already are; evidence is by analogy to period trackers, not from bladder-diary users."
+      },
+      "privacy_trust": {
+        "score": 9,
+        "why": "Version one can be strictly on-device with no telemetry, which is the only configuration that qualifies for Apple's 'Data Not Collected' label and for a credible 'we do not process your data' position; sync and sharing can follow after the DPIA that CNPD's list makes mandatory. One point off because that label ends when optional sync ships and because the later member app places the same diary module inside a commerce app."
+      },
+      "regulatory": {
+        "score": 7,
+        "why": "Stage one has the smallest review surface of any option (no payments, no login, no telehealth, outside the ERS perimeter) and gives time to get INFARMED, ERS and lawyer answers before the regulated surfaces ship; keeping Academy and expert tools on the web avoids the mixed-payment review entirely. It loses points at stage two: keeping the Diary app while embedding the same diary in the member app is the exact case the notes flag for 4.3(a), and it blurs the device boundary A keeps clean."
+      },
+      "build_cost": {
+        "score": 8,
+        "why": "The first release is the smallest possible native scope on two platforms, and the architecture note calls diary-first the lowest-risk sequence because it exercises signing, review and storage with minimal surface. Compliance work is also staged: no DPIA or account deletion is needed until sync is switched on."
+      },
+      "maintenance": {
+        "score": 4,
+        "why": "It ends with four binaries, four labels and two review tracks per platform, and the diary module must behave identically in two shells. Lighter than A because experts and Academy stay on web and the shared module limits duplicated code."
+      },
+      "optionality": {
+        "score": 9,
+        "why": "Each stage is a decision point: Eleva can stop at the diary, add the member app, or fold the diary in later, and the modular package makes the move mostly packaging. The standalone diary keeps the clinician channel, the isolated device boundary and a clean EHDS unit available without committing to them."
+      },
+      "platform_fit": {
+        "score": 9,
+        "why": "It matches the existing spec's premise that the diary is the first mobile app, reuses the responsive web for booking and expert work, and needs only one new API surface at first. The one deviation is deliberate: the spec's 'synced by default' should become 'private on device by default', which the spec lists as an open question."
+      }
+    },
+    "D": {
+      "discovery": {
+        "score": 5,
+        "why": "Since July 2025 a single app can show a diary-specific product page for diary keywords, which narrows the gap, but on iOS the name, subtitle and icon in the result row stay 'Eleva Care'. The clinician-neutrality argument is lost; both effects are reasoning in the notes, not measurements."
+      },
+      "cross_sell": {
+        "score": 8,
+        "why": "Guest mode brings in people who would not register and booking is a tab away, so this is the strongest lawful funnel on paper. The same proximity makes it easy to build diary-driven booking prompts by accident, which need explicit Article 9 consent and risk device status, so the usable upside is smaller than it looks."
+      },
+      "experience": {
+        "score": 7,
+        "why": "A member-only app is coherent and 'Eleva Care' is discreet on a home screen, and Apple 5.1.1(v) favours a diary that works before login. Diary-only users still install a marketplace with video and messaging, and the 'no account, nothing tied to me' signal is weaker inside a commerce brand; judgment, no user data."
+      },
+      "privacy_trust": {
+        "score": 5,
+        "why": "A local-first guest module with separate sync and share consents captures part of the GDPR cleanliness, as the regulatory note's hybrid describes. It gets none of the label benefit ('Data Not Collected' is impossible for the app), crash and analytics tooling for the commerce side runs in the same binary as guest diary use, and outside reviewers judge the whole footprint."
+      },
+      "regulatory": {
+        "score": 5,
+        "why": "No duplicate-app exposure, one declaration and one deletion flow, and experts on web keep the app simpler than B. But the diary shares a review, a listing and a medical-device declaration with a paid medical-services app, drift risk is high because diary data sits next to booking logic, and the option does not say where Academy purchases live."
+      },
+      "build_cost": {
+        "score": 5,
+        "why": "One shell and no cross-app sign-on, but the first useful release needs booking, video and messaging on two platforms unless the team stages it internally. All compliance items (DPIA, long label, account deletion, ERS-relevant consent flows) are due at first submission."
+      },
+      "maintenance": {
+        "score": 7,
+        "why": "One listing, one privacy label, one review track and one account implementation per platform, with experts on web. Custom product pages add some store upkeep but no code."
+      },
+      "optionality": {
+        "score": 5,
+        "why": "A standalone diary could be published later from the same module without forcing anyone to move, so the door is not closed. It gives up the clinician hand-out channel and the isolated device boundary now, and a later device or EHDS label would attach to the whole Eleva Care listing."
+      },
+      "platform_fit": {
+        "score": 7,
+        "why": "One auth client, experts stay on the existing web apps, and guest-to-account activation is already named in the spec. It skips the spec's diary-first step, so the first native submission is the hardest one."
+      }
+    }
+  },
+  "ranking": ["C", "D", "A", "B"],
+  "verdict": "I back C. It is the only option whose first release can be a strictly on-device diary with no account, no telemetry, no payments and no telehealth, which gives the cleanest GDPR position, the only route to an honest 'Data Not Collected' label, and the smallest App Review surface while the open INFARMED, ERS and controller-role questions are still unanswered. Keeping expert tools and Academy on the web removes the mixed-payment review problem that A and B both carry. A is cleaner than D on my two lens criteria, but four binaries built in parallel by a small team is itself the most likely source of compliance mistakes, so I rank D second overall. C's weak point is stage two: embedding the same diary in the member app while the Diary app stays live must be cleared with App Review or replaced by a deep link.",
+  "strongest_objection_to_own_pick": "C's privacy advantage rests on a store label that disappears the day optional sync ships and on a 'not a controller' position no regulator has confirmed, and stage two then recreates inside the member app the diary-beside-booking co-location I penalise in D, plus a 4.3(a) question D never faces. If the category is as small as the notes suggest (hundreds to low thousands of installs a year from store search), Eleva ends up maintaining four binaries and four privacy labels to protect a trust premium nobody has measured. D with a strictly local guest diary would deliver most of the legal cleanliness at half the surface.",
+  "would_change_mind_if": [
+    "App Review states in writing that a standalone diary plus a member app containing the same diary module would be treated as duplicate apps under 4.3(a) and the founder still wants the diary inside the member app: then choose D, or keep C but with the member app deep-linking to the Diary app.",
+    "A network capture of the release build shows the team cannot or will not ship the diary without third-party crash or analytics SDKs: the label and 'no processing' advantage of a separate app is gone and D becomes the better trade.",
+    "Apple Search Ads popularity for 'diário miccional', 'diario miccional' and 'bladder diary' in the PT and ES storefronts is at the floor and ten non-Eleva clinicians say they would hand out an 'Eleva Care' app as readily as a neutral diary: the standalone listing has no job and D wins.",
+    "INFARMED answers that even a plain logging-and-charts bladder diary is a device ('aplicações que acompanham parâmetros de saúde'): keep the diary in its own binary permanently and never embed it, which is A's structure for the diary reached through C's sequencing.",
+    "Eleva's own session logs show a large share of experts already run sessions and write notes from phones: a native expert surface is justified earlier, which moves the end state toward A (but still staged)."
+  ],
+  "plan_advice": [
+    "Write a one-page intended-purpose statement for the diary now ('a personal record to bring to an appointment; it does not diagnose, monitor or treat') with a feature whitelist, and remove from the native scope the proof-of-concept items that interpret data: 'improving/declining' trend labels, void-frequency goals and any 'supports diagnosis' wording.",
+    "Send that statement and feature list to INFARMED's GARC/DPS as a written borderline query, and brief a Portuguese health and data lawyer on the ERS registrant question and controller roles, in parallel with the build, because the stage-one diary sits outside the ERS perimeter and is not blocked by either answer.",
+    "Build Diary v1 as strictly on-device on both platforms: no iCloud or CloudKit, health database excluded from cloud backup until App Review says otherwise, no third-party SDKs that transmit anything, local reminders only, export by PDF through the system share sheet.",
+    "Make the booking prompt static, identical for every user, placed in a clearly separate area, and open eleva.care in the system browser with no diary data attached unless the user chooses to share the PDF.",
+    "Before switching on optional sign-in, sync or expert sharing in a later version, complete the DPIA (CNPD list item 1), processor agreements, in-app account deletion and consent records, ship them as three separate opt-ins (account, sync, share with one named expert for a set period), and change the Apple label to 'Health, linked to you' in the same release.",
+    "File the store declarations to match: Apple regulated-medical-device status 'No', Google Health apps declaration with the 'not a medical device' sentence in the description, a 'check with a clinician' reminder in the app, record-keeping wording only in titles and screenshots, and a neutral home-screen name and lock-screen text.",
+    "Before the member app, get App Review's answer on embedding the diary module and default to a deep link or a read-only view of synced entries unless Apple confirms there is no 4.3 issue; keep Academy purchases on the web, keep sessions strictly 1:1, live and unrecorded, and settle ERS registration before native video ships.",
+    "Add a release gate, enforced in code review and in the instructions given to AI coding agents, that any feature which calculates an index, compares to a normal range, flags, recommends or summarises diary data with AI needs a written medical-device change assessment (MDCG 2019-11 Rev.1 s.8) before it is merged."
+  ],
+  "experiments": [
+    "Email INFARMED GARC/DPS a two-page description (intended purpose, screens, PDF sample) asking whether raw logging, charts and simple averages are outside the device definition and whether named indices or AI summaries would be inside it: if charts or averages are considered a device, strip v1 to a raw record or budget for a Class I/IIa route; if indices are cleared, they can be added later.",
+    "Ask Apple App Review through App Store Connect three questions: does 5.1.3(ii) cover a local health database included in the user's ordinary iCloud device backup, would a standalone diary plus a member app embedding the same diary raise 4.3(a), and how should a multi-function app answer the medical-device declaration: the second answer decides embed versus deep link at stage two and could move the choice to D.",
+    "Book a fixed-fee session with a Portuguese health lawyer on one question, who is the ERS 'entidade responsável' when each expert is merchant of record on Stripe Connect and issues their own receipt: if Eleva must register, budget at least EUR 1,000 plus EUR 500 a year and do it before any app carries video, which reinforces shipping the diary first.",
+    "Run the first native diary build through a network proxy on a clean device in no-account mode and require zero outbound requests: if anything leaves the device, 'Data Not Collected' and the 'no processing' position are both unavailable and the case for a separate diary app weakens toward D."
+  ],
+  "evidence_cautions": [
+    "The feature ladder (which diary features are or are not device software) is the researcher's inference; no authority has ruled on bladder diaries, MDCG 2025-6 was not reviewed, and the Commission's December 2025 MDR reform proposal was not checked, so a change to Rule 11 could shift absolute risk. The ordering of options on regulatory risk holds either way because isolation helps under any classification.",
+    "The 4.3(a) risk for a diary app plus a member app with the same module is inferred from guideline text and forum threads; Apple has published no position and no rejection data exists. This could move C's regulatory score by one or two points in either direction and is the main thing separating C from A on that criterion.",
+    "The claim that a strictly local diary means Eleva is not a controller rests on Recital 18, Apple's own definition and inference; the October 2026 EDPB smart-glasses statement leans the other way and CNIL's mobile-app recommendations were not read. If it fails, the privacy gap between C or A and D narrows by about a point, though the store-label difference remains because it follows Apple's definition, not GDPR.",
+    "The growth notes recommend a 'result-based referral' at diary completion as the highest-yield cross-sell, while the regulatory notes class data-driven prompts as health-data marketing needing explicit consent and as a possible device feature; the two notes were not reconciled. My cross-sell scores for B and D assume only static prompts are safe, and would rise by one or two points if a lawyer and INFARMED clear a non-conditional summary followed by a generic call to action. User trust expectations are also extrapolated from period-tracker reviews, not from bladder-diary users."
+  ],
+  "red_lines": [
+    "No flags, thresholds, normal-range colour coding, 'improving/declining' labels, personalised bladder-training or fluid advice, triage or AI summaries of diary data unless Eleva deliberately takes the CE-marking route, because interpreting an individual's data for a medical purpose makes the module device software and Rule 11 defaults to Class IIa (MDCG 2019-11 Rev.1 s.3-4).",
+    "Store listings, screenshots, onboarding and the README lineage must use record-keeping wording only and never 'monitor', 'detect', 'diagnose' or 'treat' with a condition name, because intended purpose and claims decide device status and a wrong 'No' on Apple's medical-device declaration is a public misstatement (MDR Art. 2(1) and Art. 7; INFARMED Circular 078/CD/100.20.200; Google Play health policy disclaimer).",
+    "Diary entries must not be stored in or synced through iCloud or CloudKit, so the proof of concept's iCloud sync does not carry over, and the health database stays out of cloud backup until App Review confirms otherwise (Apple guideline 5.1.3(ii)).",
+    "In no-account mode nothing leaves the device: no third-party crash, performance, replay, analytics or attribution SDK, which rules out the proof of concept's Sentry setup with screenshots and error replays, because for a bladder diary the fact of use is itself health-revealing (GDPR Art. 9 as read in Lindenapotheke and the Grindr decision; ePrivacy Art. 5(3)).",
+    "The privacy label says 'Data Not Collected' only for a build that transmits nothing; any build with optional sync or server-side sharing declares 'Health, linked to you, for App Functionality', and no diary-derived signal is ever used for marketing (Apple App Privacy Details definitions; Apple 5.1.3(i)).",
+    "Account, sync and sharing with an expert are three separate, explicit, revocable opt-ins; sharing is always with one named expert for a set period, never automatic or 'all experts', and the screen states that revoking stops live access but does not erase what the expert already recorded (GDPR Art. 9(2)(a) and Art. 7(3); EHDS Art. 48 as a model; ERS Alerta 7/2024 on clinical records).",
+    "Promotion of Eleva Care inside the diary is static and the same for everyone; no booking prompt, push, email or CRM segment may be triggered by diary content or by the fact that someone uses the diary, and promotional push needs its own opt-in (GDPR Art. 9 and Art. 21; Lei 41/2004 Art. 13.º-A per CNPD Diretriz 2022/1; Apple 4.2.2 and 4.5.4).",
+    "Paid sessions in any app stay strictly one expert to one member, live and not recorded for replay, with teleconsultation consent and identity checks, and Academy content is not sold or linked for purchase in-app outside the store's own rules (Apple 3.1.3(d) and 3.1.1; Google Play 1:1 and clinical-services carve-outs; ERS Alerta de Supervisão 7/2024)."
+  ],
+  "needs_professional_opinion": [
+    "Regulatory-affairs adviser or INFARMED: are charts, averages, goal progress, named indices (for example nocturnal polyuria index) and AI summaries for experts medical device software, in which class, and has the Commission's MDR reform proposal changed Rule 11?",
+    "Portuguese health lawyer: under Stripe Connect with experts as merchants of record, is each expert or Eleva the ERS registrant for the telemedicine unit, and does the Ordem dos Fisioterapeutas restrict remote first assessments, marketplace advertising by members or fee-splitting with a platform?",
+    "Data-protection lawyer: is Eleva a controller for a strictly local diary; what is the Article 9 basis for sync (explicit consent versus Art. 9(2)(h)); are Eleva and experts independent controllers, joint controllers or controller and processor for shared diary data; is a DPO required; and what do Lei 58/2019 and the Portuguese age of digital consent require if minors use the diary?",
+    "Lawyer reading Attachment 14 of the Apple Developer Program License Agreement and Google's EEA terms, with a tax adviser: are 1:1 session payments outside all store commissions, what is the compliant route for Academy content bought on the web and viewed in-app, and how does VAT treatment interact with who issues the receipt?",
+    "Apple App Review: does 5.1.3(ii) reach ordinary iCloud device backups of a local health database, does a diary module in two apps from one publisher breach 4.3(a), and how should the medical-device declaration be answered for a multi-function app?",
+    "Portuguese lawyer: do in-app push notifications promoting Eleva Care to free diary users count as direct marketing under Lei 41/2004, and which health-advertising rules (ERS regime, Ordem rules) apply to promoting named experts inside the app?"
+  ]
+}

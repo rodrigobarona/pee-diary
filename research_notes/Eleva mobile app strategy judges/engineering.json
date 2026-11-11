@@ -1,0 +1,196 @@
+{
+  "judge": "Engineering and delivery",
+  "scores": {
+    "A": {
+      "discovery": {
+        "score": 8,
+        "why": "A standalone listing can put 'Diário Miccional' in the title on both stores, where title is the heaviest text field, and gives clinicians outside Eleva a neutral no-account tool (Irish physio survey: ease of use 96%, clear purpose 77%). The niche is small by every signal (category leader about 50K Android installs in a decade), so the gain is in rank, not volume."
+      },
+      "cross_sell": {
+        "score": 4,
+        "why": "The diary lives only in the Diary app, so the path to a booking runs through a second install; adjacent benchmarks put that hop at 25-60% loss of users who tap, and Foursquare saw only about a third of users on both apps. Single sign-on and deep links soften this but do not remove the install."
+      },
+      "experience": {
+        "score": 5,
+        "why": "The diary app is focused and discreet, but the companion is one multi-role binary for members, experts and academy, the pattern Fred Wilson and founder anecdotes report as working badly, and Maven's provider-only app alone is 171.5 MB. A member also has to hold two apps for one care relationship."
+      },
+      "privacy_trust": {
+        "score": 8,
+        "why": "No-account default with sync and share as separate opt-ins is the textbook consent shape, and the diary's privacy label stays short; Mozilla and Privacy International score per app and reward local, account-free trackers. 'Data Not Collected' is lost once optional sync exists."
+      },
+      "regulatory": {
+        "score": 5,
+        "why": "The diary app sits outside the ERS perimeter, isolates any future medical-device boundary and does not duplicate the diary in the Care app, so Apple 4.3(a) risk is low. The Care app still carries two payment regimes (Stripe for 1:1 under 3.1.3(d), in-app purchase rules for academy content), 1.4.1 and 5.1.1(ix) scrutiny, and account deletion and 4.8 must be built in both apps."
+      },
+      "build_cost": {
+        "score": 2,
+        "why": "Four native binaries built in parallel, with the larger one covering expert tools, academy playback and purchases, native Daily video (no prebuilt native UI, so the call screen is written twice) and messaging, plus cross-app single sign-on. The marketplace note calls four codebases 'the heaviest option on the table' and the companies that run it (Maven, Doctolib, Booksy) are far larger; my estimate is 6-7x the diary alone (judgment)."
+      },
+      "maintenance": {
+        "score": 2,
+        "why": "Four store listings, privacy labels, signing setups and review tracks, plus native parity for three audiences against a web platform that keeps changing ('every new feature must work on web and mobile and pass both app store reviews'). Android has no first-class cross-app sign-on, so that plumbing is custom and permanent."
+      },
+      "optionality": {
+        "score": 5,
+        "why": "Shared modules make repackaging possible, and the diary stays an independent unit for a future medical-device or EHDS label. But it commits most of the budget to native expert and academy surfaces before any usage proves the need, and Headspace shows re-merging two apps was still unfinished five years on."
+      },
+      "platform_fit": {
+        "score": 4,
+        "why": "Better Auth has no Swift or Kotlin SDK, the server today enables bearer and jwt but not the OAuth provider, one-time-token or Apple sign-in, and two apps double the bundle-ID audiences, associated-domain entries and passkey origins. A native all-in-one Care app also re-implements what already exists as separate web apps (app, expert, team, academy subdomains in the trusted-origins list)."
+      }
+    },
+    "B": {
+      "discovery": {
+        "score": 4,
+        "why": "One listing whose title, subtitle and icon must describe a marketplace; Apple custom product pages change only screenshots, promo text and previews, and keywords must come from the 100-character field. Clinicians outside Eleva's network are unlikely to hand out a competitor marketplace app that also contains expert tools."
+      },
+      "cross_sell": {
+        "score": 7,
+        "why": "No install between diary result and booking, and the user is already inside the product when the 3-7 day episode ends. I mark it below D because the diary competes for navigation space with expert and academy features (Evans: bundles trade app discovery for feature discovery); no measured tracker-to-care rate exists for either."
+      },
+      "experience": {
+        "score": 4,
+        "why": "Members, experts and lectures in one binary means role switching (Airbnb hosts went from one click to four), a heavy download, and camera, microphone and payment surfaces shipped to someone who only wanted a diary. The home-screen name is discreet, which is its one advantage on stigma."
+      },
+      "privacy_trust": {
+        "score": 3,
+        "why": "One label for the whole app lists health, contact, identifiers, purchases, messages and diagnostics, and can never be 'Data Not Collected'. Diary data sits in the same binary and data estate as commerce and CRM, so keeping analytics SDKs away from it is harder to do and to evidence (Grindr and Lindenapotheke logic: mere use is health-revealing)."
+      },
+      "regulatory": {
+        "score": 4,
+        "why": "No 4.3 exposure, but one review covers health data, medical-services scrutiny, account rules and two payment regimes, and one rejection blocks every feature. If the diary ever becomes medical device software the host shell enters its technical file (MDCG 2019-11 Rev.1 s.7) and the whole listing carries the device status."
+      },
+      "build_cost": {
+        "score": 3,
+        "why": "Two binaries and no cross-app sign-on, but the first credible release is the largest single scope on the table: three roles, native video, messaging, academy playback and StoreKit/Play Billing. My estimate is 5.5-6.5x the diary alone (judgment); Sharetribe's guidance is explicitly not to build both sides' apps at launch."
+      },
+      "maintenance": {
+        "score": 4,
+        "why": "One pipeline per platform, one label, one account-deletion flow. Against that, every web feature for three audiences needs native parity twice, diary fixes ride the slowest and most review-sensitive release train, and provider apps earn little usage for their cost (Maven's has 6 ratings yet ships monthly)."
+      },
+      "optionality": {
+        "score": 3,
+        "why": "Splitting later forces a second download and a local-data move, the Messenger and Swarm pattern that produced about 95% one-star reviews in a month; for a small publisher that damage is proportionally larger. It also locks in native expert tooling before demand is shown."
+      },
+      "platform_fit": {
+        "score": 5,
+        "why": "One native client and one session is the simplest fit for Better Auth. But the web platform is deliberately split by audience, the earlier plan names the diary as the first mobile app, and organization-role switching, expert finances and academy purchases would all need native equivalents of web flows."
+      }
+    },
+    "C": {
+      "discovery": {
+        "score": 8,
+        "why": "Same standalone listing and clinician hand-out value as A, and the Diary app stays in the stores after the member app ships. Same caveat: Portuguese and Spanish store results are padded with generic journaling apps, which signals weak competition and low demand."
+      },
+      "cross_sell": {
+        "score": 6,
+        "why": "Routing 'book a specialist' to the existing web flow with the diary attached removes the second-install hop, which the growth note says matters more than the one-versus-two choice itself. It is still a context switch into a browser, and the standalone app is most likely to be deleted exactly when the episode ends."
+      },
+      "experience": {
+        "score": 7,
+        "why": "A focused, no-account diary fits the usage shape (many entries a day for a few days) and joining video by link is already familiar in Portugal (SNS 24 offers app, portal or SMS link). The cost comes later: two member-facing apps that both contain the diary will confuse some users."
+      },
+      "privacy_trust": {
+        "score": 8,
+        "why": "The first release can be strictly local with zero telemetry and so earn 'Data Not Collected'; sync and expert sharing then arrive as separate explicit opt-ins, the cleanest consent shape in the regulatory note. The later member app carries its own longer label without contaminating the diary listing."
+      },
+      "regulatory": {
+        "score": 6,
+        "why": "Stage one is the simplest review profile available (free, no payments, no mandatory login, no care delivered), and keeping academy purchase and expert tools on the web avoids in-app purchase entirely. Stage two deliberately puts the same diary in a second bundle, which is the 4.3(a) exposure the note says to avoid, with no safe harbour from Apple."
+      },
+      "build_cost": {
+        "score": 9,
+        "why": "Smallest first release: one feature module per platform, no video, no chat, no payments, and booking and calls reuse the responsive web that already exists. The architecture note calls diary-first 'the lowest-risk sequence' because it exercises signing, review, auth, sync and crash reporting on minimal scope; the API already publishes an OpenAPI document for generated clients."
+      },
+      "maintenance": {
+        "score": 5,
+        "why": "Two binaries until stage two, then four, and because the diary module sits in both shells every diary fix becomes four store submissions. Cross-app sign-on is free on iOS (shared Keychain group) but on Android needs the same Play app-signing key chosen at first upload or a visible browser step; scope stays member-only, which is why this is not lower."
+      },
+      "optionality": {
+        "score": 9,
+        "why": "Every later shape is still reachable: the Diary bundle can stay standalone, gain a sibling, or be renamed and expanded into the member app with no data migration (store names can change, bundle IDs cannot; this last point is my judgment, not from the notes). Native expert and academy work is deferred until usage data exists."
+      },
+      "platform_fit": {
+        "score": 8,
+        "why": "Matches the existing spec almost line for line: Eleva Diary as the first mobile app, same identity, private by default, consent-gated time-limited sharing (ff.diary_share and the diary:share capability already exist). Gaps are real but bounded: no diary endpoints in the API yet, the spec's Expo push must become direct APNs/FCM, and stage two needs cross-app sign-on that Better Auth does not provide."
+      }
+    },
+    "D": {
+      "discovery": {
+        "score": 5,
+        "why": "Keyword-assigned custom product pages (since July 2025) and Play keyword listings narrow the gap, and at about $1 per install in Portugal diary-intent traffic can simply be bought. iOS still shows the marketplace name and icon in the result row, and the clinician-neutrality argument is lost."
+      },
+      "cross_sell": {
+        "score": 8,
+        "why": "Guest diary to booking is a tab switch inside a member-only app, with the account offered at the moment of value (export or share). Proxy evidence only: Solv 25% and K Health 31% hand-off rates are US symptom checkers, and no tracker-to-care rate is published."
+      },
+      "experience": {
+        "score": 7,
+        "why": "One member app without expert clutter, a discreet home-screen name, and the app stays useful after the diary episode. Diary-only users get a larger binary with camera and microphone permissions once native video lands, and installing a marketplace app is a bigger commitment than installing a diary."
+      },
+      "privacy_trust": {
+        "score": 5,
+        "why": "The regulatory note scores this exact hybrid: it captures part of the two-app consent cleanliness but none of the store-label, review-isolation or device-boundary advantages. The label will list health, contact, identifiers and user content regardless of what the guest diary does."
+      },
+      "regulatory": {
+        "score": 6,
+        "why": "No 4.3 exposure, guest mode satisfies 5.1.1(v), and with experts and academy on the web there is one payment regime (Stripe for 1:1 sessions under 3.1.3(d)). Diary releases share a review with video and payments, and accidental drift toward 'based on your diary, book X' logic is easier when the data sits beside booking code."
+      },
+      "build_cost": {
+        "score": 7,
+        "why": "No second shell, no cross-app sign-on and no cross-app data hand-off ever, so the total path to a member app is the cheapest of the four. The first release is heavier than C's because an app called Eleva Care needs sign-in, account deletion and at least a sessions surface on day one; I estimate 1.5-1.7x the diary alone (judgment)."
+      },
+      "maintenance": {
+        "score": 8,
+        "why": "Two binaries, one pipeline, one privacy label and one account-deletion flow per platform, with experts and academy left on the web. The remaining cost is coupling: a rejection on video or payments holds back a diary fix, and the diary inherits the WebRTC binary size."
+      },
+      "optionality": {
+        "score": 6,
+        "why": "Avoids any forced migration and leaves room for a thin expert companion later (the Doctolib Pro pattern). Spinning the diary out later means a second download plus moving guest data that has no account behind it, which is easy on iOS (App Group) and awkward on Android."
+      },
+      "platform_fit": {
+        "score": 8,
+        "why": "One public client and one session against Better Auth is the least auth work, and member-only scope mirrors the existing app.eleva.care surface while experts stay on expert.eleva.care. It departs from the earlier plan only in naming and placement (the spec's first mobile app is Eleva Diary)."
+      }
+    }
+  },
+  "ranking": ["C", "D", "B", "A"],
+  "verdict": "I back C. It has the smallest first release (one diary module per platform, no video, chat or payments), it reuses the responsive web for booking and calls, and it matches the platform's existing diary plan, so a small team gets a real native app through signing, review, auth and sync before taking on anything hard. It is also the only option that keeps every later shape reachable, including D: the Diary bundle can be expanded into the member app without moving user data, whereas D cannot cheaply become C. D is a close second and wins on long-run maintenance; A and B both commit to native expert tools, academy purchases, video and messaging up front, which I do not think this team can deliver or maintain in two native codebases. My ranking weights delivery criteria above the others: on unweighted totals A edges B, but A is B's scope plus a second app and cross-app sign-on, so I place it last.",
+  "strongest_objection_to_own_pick": "C ends with four store binaries and the same diary in two apps, so every diary fix ships four times, Android needs custom cross-app sign-on, and the duplicate diary is the 4.3(a) pattern Apple warns about. The portfolio evidence says satellite apps mostly get folded back and re-merging takes years, while the diary keyword niche is tiny, so the second listing may buy very little. D delivers nearly the same first release and ends with half the surface to maintain.",
+  "would_change_mind_if": [
+    "Apple Search Ads popularity scores or a two-week paid test on 'diário miccional' and 'diario miccional' in the PT and ES stores show demand so low that a top-3 rank yields fewer than about 100 installs a month, and Eleva's own experts say they would hand out an Eleva Care app just as readily; then the second listing has no acquisition value and D wins.",
+    "The Android cross-app spike fails (no zero-prompt sign-on or diary hand-off between two Play-distributed test apps) or a pre-submission enquiry to App Review indicates the duplicate diary would be treated as 4.3(a); then stage two should expand the Diary bundle instead of adding a second app, which is D.",
+    "The web hand-off spike fails: the existing Daily call UI does not hold a 20-minute session in mobile Safari and Chrome, or more than half of users who tap 'book a specialist' abandon at the browser step; then native booking and video are needed early and a single member app (D) becomes the better first build.",
+    "The agent-porting spike shows the second platform costs under 30% of the first for finished features and a second mobile engineer joins; then the maintenance penalty of extra binaries shrinks and the gap between C and the larger options narrows, though A and B would still need usage evidence for native expert tools."
+  ],
+  "plan_advice": [
+    "Freeze the proof of concept as the behavioural spec (entry schema, flows, PDF layout, EN/PT/ES strings), turn it into shared JSON test vectors and golden PDFs, and drop its iCloud backup because Apple 5.1.3(ii) forbids storing personal health information in iCloud.",
+    "Run the native auth spike against a preview deployment before any app code depends on it, and pin the Better Auth version with contract tests because it shipped six patches in ten days and 1.8 has breaking passkey and OAuth changes.",
+    "Create one mobile repository with thin app shells over DiaryKit and :feature:diary plus auth, generated API client and design modules, with CI building iOS and Android from the first commit since Android is roughly 70% of Portuguese mobile usage.",
+    "Ship Eleva Diary 1.0 on both stores as strictly local with no third-party telemetry, PDF export, logging reminders and one static universal link to web booking, so it earns a 'Data Not Collected' label and proves signing, review and release tooling.",
+    "Add the diary endpoints the API does not yet have (idempotent batch upsert keyed by client UUID, changes-since cursor, share grants behind ff.diary_share), publish them in openapi.json, and replace the spec's Expo push with direct APNs and FCM in the notifications package.",
+    "Ship 1.x with optional sign-in, sync, time-limited sharing with a chosen expert and in-app account deletion, and add Sign in with Apple to the login page because Google and Microsoft sign-in trigger guideline 4.8.",
+    "Treat stage two as a gate with data, not a default: measure diary-to-web-booking conversion and the device mix for session joins, then choose between a second bundle and expanding the Diary bundle into the member app, and settle the Play app-signing key question before any second Android app is first uploaded.",
+    "Keep expert tools and academy purchase on the web, and add native video and messaging only to the member surface as separate modules after the hand-off data show the browser is costing bookings or call quality."
+  ],
+  "experiments": [
+    "Auth spike (3-5 days): enable the OAuth provider plugin on a preview deployment, register a public client, and run Authorization Code with PKCE from a bare Swift app (ASWebAuthenticationSession, HTTPS callback) and a bare Kotlin app (Auth Tab with Custom Tabs fallback). Pass: passkey, magic link, Google and two-factor logins all complete on both platforms with no per-method native code, refresh rotation works, and a revoked token is rejected by the API within the 5-minute cookie-cache window; fail: fall back to web login plus a one-time-token exchange for a bearer session.",
+    "Porting spike (1 week): build one vertical slice (log a void, store locally, render the 3-day PDF) in SwiftUI, then have the coding agent port it to Compose against the same test vectors. Pass: the Kotlin port takes at most half the Swift effort and passes every vector and golden PDF; fail: budget the second platform at 0.8-0.9x of the first and evaluate Kotlin Multiplatform for the logic layer.",
+    "Web hand-off spike (2-3 days): from test builds on a mid-range Android phone and an iPhone, tap 'book a specialist', land in web booking with the diary PDF attached, then join a Daily call in the mobile browser using the existing call UI. Pass: at most one login prompt, and audio and video survive 20 minutes including a 30-second app switch on both devices; fail: native video moves ahead of stage two.",
+    "Android cross-app spike (2-3 days, only if a second app is still on the table): two test apps under one Play app-signing key on the internal testing track, sharing a session and local diary rows through a signature-protected ContentProvider. Pass: the second app opens signed in with the diary present and zero prompts in a Play-delivered build; fail: stage two on Android requires sign-in to move data, which argues for one bundle."
+  ],
+  "evidence_cautions": [
+    "No source gives a cost multiplier for two hand-written native codebases or for agent-assisted porting; the note's 1.6-1.9x is an assumption and every effort multiple I give is judgment. This could move build_cost and maintenance scores by one or two points but not the order, since A and B exceed C and D on scope alone.",
+    "The OAuth provider route is unverified where it matters: custom-scheme or HTTPS redirect handling for native clients, skipping consent for first-party apps, token lifetimes and the plugin's stability label, and there is no official Swift or Kotlin SDK. If the spike fails, auth cost rises for all four options about equally, so dates slip more than rankings change.",
+    "Android cross-app sign-on rests on one vendor document and inference, with no official guidance found, and the 4.3(a) risk for a duplicated diary is a reading of guideline text with no safe harbour. These two unknowns sit behind C's maintenance, regulatory and platform_fit scores and could cost C up to two points each, enough to put D first.",
+    "There is no keyword-volume data and no measured cross-install or tracker-to-care conversion anywhere in the notes; discovery and cross_sell scores for every option rest on mechanism and proxies from other categories. If diary search demand is near zero, C's three-point discovery lead over D disappears."
+  ],
+  "architecture_notes": {
+    "auth": "Use OAuth 2.1 Authorization Code with PKCE in the system browser (ASWebAuthenticationSession on iOS, Auth Tab with Custom Tabs fallback on Android) by adding the Better Auth OAuth provider plugin, registering each native app as a public client with an HTTPS universal-link redirect on an eleva.care host, and verifying JWT access tokens at the API through the JWKS that already exists. The server today enables bearer, jwt (15-minute EdDSA), passkey, magic link, two-factor, Google and Microsoft, requires verified email and refuses unverified sessions, so re-implementing each method natively in two languages against an undocumented wire contract is the expensive route; the browser flow reuses the web login for all of them and gives rotating refresh tokens instead of a 30-day sliding session token. Store refresh tokens in the Keychain (after-first-unlock, this-device-only) and in DataStore encrypted with Tink and an Android Keystore key, add the Apple provider for guideline 4.8, and note that the deployed trusted-origins filter accepts only https eleva.care hosts, so custom-scheme callbacks would need a code change. Fallback if the spike fails: web login in the same browser sheet ending in a one-time token the app exchanges for a bearer session.",
+    "sso_between_apps": "Needed only if a second bundle ships. On iOS put the credential in a shared Keychain access group so the second app starts signed in with no prompt; on Android decide before the second app's first upload whether both apps share one Play app-signing key (signature-protected ContentProvider, zero prompts), otherwise accept a brief Auth Tab sheet against the web session or a passkey prompt. Mint a separate grant per app so revoking one does not sign out the other, and serve AASA and assetlinks.json from the apex with no redirect, listing every app, because the passkey relying party is eleva.care.",
+    "diary_data_and_sync": "Local SQLite on both platforms (Room on Android, a thin SQLite layer or SwiftData on iOS; the notes have no authoritative comparison, so this is judgment) with client-generated UUIDs, a server-assigned version per record, tombstones and an idempotent outbox. In no-account mode rows have no owner, nothing leaves the device, there is no analytics or crash SDK, and backup is by export file rather than iCloud. On first sign-in the app pushes the whole local set through the normal batch endpoint and the server de-duplicates by client UUID, reusing the API's existing Idempotency-Key convention; avoid the Better Auth anonymous plugin, which is not enabled and skips linking when two-factor is pending. Sync is a hand-written REST delta (changes-since cursor, last-write-wins on server version); PowerSync is not justified for a single-user append-mostly diary and would add a processor for health data.",
+    "code_sharing": "One repository, thin app shells, and four shared modules per platform: DiaryKit / :feature:diary, auth, API client and design system, so any shape is a packaging choice rather than a rewrite. Generate the API clients from the existing openapi.json (swift-openapi-generator; Fabrikt or openapi-kmp-gen for Kotlin) and add a CI check that fails when the spec changes without regenerated clients. Skip Kotlin Multiplatform at the start (extra toolchain for a small team); keep the two implementations honest with shared JSON test vectors and golden PDFs for diary calculations, sync and export, and revisit KMP for the sync engine only if the platforms drift.",
+    "video_and_messaging": "First release: open the existing web call (Daily, custom UI in packages/video) in the system browser or a Custom Tab through a universal link, not in a WKWebView. Add the native Daily SDK later, only in the member surface and as its own module so a diary-only binary never links WebRTC; sessions are scheduled 1:1, so skip CallKit and VoIP push and budget for audio-session handling, an Android foreground service, reconnection UI and optional picture-in-picture, written once per platform. Keep messaging on the web until usage shows need; if it goes native, build 1:1 chat on the existing Postgres with SSE or WebSocket and content-free push sent directly through APNs and FCM, rather than adding a chat vendor that processes health conversations.",
+    "relative_effort": "Judgment, not measurement, with the standalone local-only native diary on both platforms as 1.0x. C: 1.0x for the first release, about 1.5x once optional sign-in, sync and sharing are added, about 3.5-4x cumulative after the stage-two member app with native video, messaging and cross-app sign-on. D: about 1.5-1.7x for a first release with guest diary, sign-in and web hand-off for booking and calls, about 3.2-3.5x cumulative at the same member scope. B: about 5.5-6.5x for a first release that honours its scope (three roles, academy playback and store billing, native video, messaging). A: about 6-7x, being B's scope plus a second shell, second release pipeline and cross-app sign-on. Backend work (diary endpoints, OAuth provider, native push) is extra and roughly equal across options."
+  }
+}

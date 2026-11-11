@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Eleva Mobile App Strategy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a decision memo. One reading column (about 68ch) on Eleva's sand ground; score tables and the plan break out to a wider measure. Teal is the only hue; emphasis comes from weight and from one filled bar. */
+:root{
+  --bg:oklch(0.985 0.006 85);
+  --surface:oklch(0.965 0.009 85);
+  --ink:oklch(0.24 0.02 215);
+  --ink-2:oklch(0.42 0.02 215);
+  --ink-3:oklch(0.56 0.018 215);
+  --line:oklch(0.88 0.012 200);
+  --teal:oklch(0.488 0.084 206);
+  --teal-soft:oklch(0.948 0.03 206);
+  --bar:oklch(0.564 0.097 208);
+  --bar-quiet:oklch(0.80 0.03 208);
+  --track:oklch(0.925 0.012 200);
+  --warn:oklch(0.52 0.12 55);
+  --warn-soft:oklch(0.95 0.035 75);
+  --display:"Fraunces",ui-serif,Georgia,serif;
+  --body:"DM Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:oklch(0.19 0.015 215);--surface:oklch(0.235 0.018 215);--ink:oklch(0.95 0.008 200);--ink-2:oklch(0.80 0.012 200);--ink-3:oklch(0.66 0.014 200);--line:oklch(0.34 0.02 212);--teal:oklch(0.78 0.10 206);--teal-soft:oklch(0.30 0.045 210);--bar:oklch(0.70 0.105 206);--bar-quiet:oklch(0.44 0.035 210);--track:oklch(0.28 0.018 212);--warn:oklch(0.80 0.11 70);--warn-soft:oklch(0.30 0.04 70);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:oklch(0.19 0.015 215);--surface:oklch(0.235 0.018 215);--ink:oklch(0.95 0.008 200);--ink-2:oklch(0.80 0.012 200);--ink-3:oklch(0.66 0.014 200);--line:oklch(0.34 0.02 212);--teal:oklch(0.78 0.10 206);--teal-soft:oklch(0.30 0.045 210);--bar:oklch(0.70 0.105 206);--bar-quiet:oklch(0.44 0.035 210);--track:oklch(0.28 0.018 212);--warn:oklch(0.80 0.11 70);--warn-soft:oklch(0.30 0.04 70);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px;display:flex;flex-direction:column;gap:64px}
+section{display:flex;flex-direction:column;gap:20px;min-width:0}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;text-wrap:balance;margin:0;letter-spacing:-0.01em}
+h1{font-size:clamp(2rem,5vw,3.1rem)}
+h2{font-size:clamp(1.5rem,3.2vw,2rem)}
+h3{font-size:1.15rem;font-family:var(--body);font-weight:700;letter-spacing:0;line-height:1.3}
+p,ul,ol{margin:0}
+ul,ol{padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
+a{color:var(--teal);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
+strong{font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.lede{font-size:1.2rem;line-height:1.5;color:var(--ink-2);max-width:62ch}
+.small{font-size:.875rem;color:var(--ink-2)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface);padding:.08em .35em;border-radius:4px;overflow-wrap:anywhere}
+
+header.top{display:flex;flex-direction:column;gap:18px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;padding-block:12px;border-block:1px solid var(--line)}
+nav.toc a{text-decoration:none;color:var(--ink-2)}
+nav.toc a:hover{color:var(--teal);text-decoration:underline}
+
+/* verdict */
+.verdict{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:start}
+.verdict>*{min-width:0}
+.answer{display:flex;flex-direction:column;gap:16px}
+.answer .big{font-family:var(--display);font-size:clamp(1.35rem,2.6vw,1.75rem);line-height:1.25;font-weight:500}
+.qa{display:grid;gap:14px}
+.qa dt{font-weight:700}
+.qa dd{margin:2px 0 0;color:var(--ink-2)}
+
+/* charts */
+.chart{display:flex;flex-direction:column;gap:14px;background:var(--surface);border-radius:14px;padding:22px}
+.chart h3{font-size:1rem}
+.rows{display:flex;flex-direction:column;gap:14px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 3.2em;column-gap:12px;row-gap:5px;align-items:center;cursor:default}
+.row .name{grid-column:1/-1;font-size:.9rem;color:var(--ink-2)}
+.row .name b{color:var(--ink);font-weight:700}
+.track{position:relative;height:18px;background:var(--track);border-radius:0 4px 4px 0}
+.fill{position:absolute;inset:0 auto 0 0;border-radius:0 4px 4px 0;background:var(--bar-quiet)}
+.row.pick .fill{background:var(--bar)}
+.tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55;border-radius:1px}
+.val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right}
+.axis{display:grid;grid-template-columns:minmax(0,1fr) 3.2em;column-gap:12px;font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.axis div{display:flex;justify-content:space-between}
+.key{font-size:.8rem;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap}
+.key i{display:inline-block;vertical-align:middle;margin-right:6px}
+.key .k-bar{width:18px;height:10px;background:var(--bar);border-radius:0 3px 3px 0}
+.key .k-tick{width:2px;height:14px;background:var(--ink);opacity:.55}
+
+/* tables */
+.scroll{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem;color:inherit;font-family:inherit}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--ink-3)}
+tbody th{font-weight:600}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.matrix{min-width:640px}
+.matrix td.cell{width:17%;cursor:default}
+.cell .n{font-family:var(--mono);font-variant-numeric:tabular-nums;display:block}
+.cell.best .n{font-weight:700}
+.mini{display:block;height:6px;background:var(--track);border-radius:0 3px 3px 0;margin-top:5px;position:relative}
+.mini span{position:absolute;inset:0 auto 0 0;background:var(--bar-quiet);border-radius:0 3px 3px 0}
+.cell.best .mini span{background:var(--bar)}
+.matrix tfoot td,.matrix tfoot th{border-top:1px solid var(--ink-3);border-bottom:0;font-weight:700}
+.w{color:var(--ink-3);font-family:var(--mono);font-size:.78rem;font-weight:400}
+
+/* options */
+.options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--ink-3)}
+.opt{padding:18px 18px 18px 0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.opt+.opt{padding-left:18px;border-left:1px solid var(--line)}
+.opt .letter{font-family:var(--display);font-size:2rem;line-height:1;color:var(--ink-3)}
+.opt.pick .letter{color:var(--teal)}
+.opt p{font-size:.92rem;color:var(--ink-2)}
+.tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.opt.pick .tag{color:var(--teal)}
+
+/* evidence */
+.evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 40px}
+.ev{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ev ul{font-size:.94rem;color:var(--ink-2)}
+.missing{font-size:.86rem;color:var(--ink-2);background:var(--warn-soft);padding:8px 12px;border-radius:8px}
+.missing b{color:var(--warn)}
+
+/* plan */
+.plan{display:flex;flex-direction:column;gap:0;counter-reset:ph}
+.phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 28px;padding-block:22px;border-top:1px solid var(--line)}
+.phase:first-child{border-top:1px solid var(--ink-3)}
+.phase .when{display:flex;flex-direction:column;gap:4px}
+.phase .when .n{font-family:var(--display);font-size:1.6rem;line-height:1;color:var(--teal)}
+.phase .when .t{font-family:var(--mono);font-size:.76rem;color:var(--ink-3)}
+.phase .body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.phase ul{font-size:.95rem;color:var(--ink-2)}
+.gate{font-size:.9rem;background:var(--teal-soft);padding:10px 14px;border-radius:8px}
+.gate b{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;margin-right:6px}
+
+/* architecture */
+.arch{display:flex;flex-direction:column;gap:10px;font-size:.88rem}
+.layer{display:grid;gap:10px}
+.layer.l2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.layer.l5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);min-width:0}
+.box b{display:block}
+.box span{color:var(--ink-2);font-size:.84rem}
+.box.now{border-color:var(--teal);background:var(--teal-soft)}
+.box.later{border-style:dashed}
+.layer-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:6px}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 40px}
+.twocol>div{display:flex;flex-direction:column;gap:10px;min-width:0}
+.twocol ul{font-size:.94rem;color:var(--ink-2)}
+
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.8rem;line-height:1.45;padding:8px 10px;border-radius:8px;max-width:260px}
+#tip b{display:block;margin-bottom:2px}
+
+footer{font-size:.85rem;color:var(--ink-3);border-top:1px solid var(--line);padding-top:20px}
+.sources{columns:2;column-gap:40px;font-size:.86rem;padding-left:1.2em;display:block}
+.sources li{margin-bottom:6px;break-inside:avoid}
+
+@media (max-width:820px){
+  .verdict,.evidence,.twocol{grid-template-columns:minmax(0,1fr)}
+  .options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opt:nth-child(3){padding-left:0;border-left:0}
+  .opt:nth-child(n+3){border-top:1px solid var(--line)}
+  .layer.l5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .phase{grid-template-columns:minmax(0,1fr)}
+  .sources{columns:1}
+}
+@media (max-width:480px){
+  .options{grid-template-columns:minmax(0,1fr)}
+  .opt+.opt{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .layer.l2{grid-template-columns:minmax(0,1fr)}
+  .page{gap:48px}
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <span class="eyebrow">Eleva Care · Decision memo · 11 November 2026</span>
+  <h1>One app or two? Start with the diary, and earn the rest.</h1>
+  <p class="lede">Six researchers gathered the evidence. Five judges with different briefs scored four ways to structure Eleva's native apps. All five ranked the same option first.</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#verdict">Verdict</a><a href="#options">Options</a><a href="#scores">Scores</a><a href="#hypotheses">Your two hypotheses</a><a href="#evidence">Evidence</a><a href="#plan">Plan</a><a href="#architecture">Architecture</a><a href="#surfaces">What goes where</a><a href="#rules">Rules and risks</a><a href="#gaps">Gaps and method</a>
+  </nav>
+</header>
+
+<section id="verdict">
+  <div class="verdict">
+    <div class="answer">
+      <span class="eyebrow">Verdict</span>
+      <p class="big">Ship Eleva Diary first as its own small native app. Do not build the all-in-one app. Decide on a member app later, using data from the diary and from the web launch.</p>
+      <dl class="qa">
+        <div><dt>Is it worth having two separate apps?</dt><dd>A standalone diary is worth it. Building two apps at the same time is not. Build the diary as a reusable module so a second app stays a packaging choice, not a rewrite.</dd></div>
+        <div><dt>Should one app carry members, experts, lectures, video, messaging and the diary?</dt><dd>No. Every judge ranked it last or second to last. Expert tools, clinic admin and the Academy stay on the web, which is how comparable platforms run them.</dd></div>
+        <div><dt>What is the catch?</dt><dd>Nobody has published how many free-diary users go on to book paid care. Four cheap tests can tell you before you write Swift or Kotlin. They are in the plan.</dd></div>
+      </dl>
+    </div>
+    <div class="chart" role="group" aria-label="Panel score by option">
+      <h3>Panel score, out of 100</h3>
+      <div class="rows" id="overall"></div>
+      <div class="axis"><div><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div><span></span></div>
+      <div class="key"><span><i class="k-bar"></i>Mean of five judges, weighted</span><span><i class="k-tick"></i>One judge</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="options">
+  <div class="prose">
+    <span class="eyebrow">The options</span>
+    <h2>You asked about two shapes. The panel scored four.</h2>
+    <p>A and B are the two you described. C and D were added because the research showed the choice is less binary than it looks: a diary can work without an account inside a larger app, and a diary built as a module can live in more than one app.</p>
+  </div>
+  <div class="options">
+    <div class="opt"><span class="letter">A</span><span class="tag">Your option 1</span><h3>Two apps, built in parallel</h3><p>Eleva Diary (free, no account needed, optional Eleva sign-in) and Eleva Care (members, experts, Academy, video, messaging). Linked by single sign-on and deep links.</p></div>
+    <div class="opt"><span class="letter">B</span><span class="tag">Your option 2</span><h3>One all-in-one app</h3><p>A single Eleva Care app for members, experts, lectures, video, messaging, with the diary as a section. No standalone diary.</p></div>
+    <div class="opt pick"><span class="letter">C</span><span class="tag">Recommended</span><h3>Diary first, member app later</h3><p>Ship Eleva Diary alone, with a no-account mode. Booking and video open on the existing web. A member app may follow and reuse the same diary module. Experts and Academy stay on web.</p></div>
+    <div class="opt"><span class="letter">D</span><span class="tag">Runner-up</span><h3>One member app with a guest diary</h3><p>A single Eleva Care member app where anyone can use the diary without an account. Diary-specific store pages target diary searches. Experts stay on web.</p></div>
+  </div>
+</section>
+
+<section id="scores">
+  <div class="prose">
+    <span class="eyebrow">Judge panel</span>
+    <h2>C leads on seven of nine criteria. D wins the other two.</h2>
+    <p>Each judge scored every option from 1 to 10 on nine criteria, where 10 is always best for Eleva. The table shows the mean of the five judges. Hover or tap a cell to see each judge's score. The weights are mine; the order of the options does not change with equal weights.</p>
+  </div>
+  <div class="scroll">
+    <table class="matrix" id="matrix">
+      <thead><tr><th>Criterion <span class="w">weight</span></th><th>A · Two in parallel</th><th>B · All-in-one</th><th>C · Diary first</th><th>D · Member app + guest diary</th></tr></thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table>
+  </div>
+  <div class="twocol">
+    <div>
+      <h3>How each judge ranked them</h3>
+      <div class="scroll"><table id="judges"><thead><tr><th>Judge</th><th class="num">A</th><th class="num">B</th><th class="num">C</th><th class="num">D</th><th>Order</th></tr></thead><tbody></tbody></table></div>
+      <p class="small">Weighted score out of 100 per judge.</p>
+    </div>
+    <div>
+      <h3>How firm is the result?</h3>
+      <ul>
+        <li><strong>Weights barely matter.</strong> Doubling growth criteria, doubling cost criteria, or doubling compliance criteria all keep C first by 9 to 14 points.</li>
+        <li><strong>D closes the gap when you look only at the long run.</strong> Ignore build cost and triple maintenance, and C leads 67 to 64. Score only cross-sell and maintenance, and D wins 74 to 54.</li>
+        <li><strong>Two facts could flip C to D:</strong> near-zero search demand for the diary terms together with clinicians who would hand out an "Eleva Care" app just as readily, or Apple treating a diary in two apps as a duplicate.</li>
+        <li><strong>The first step is the same either way.</strong> C and D both begin with a local-first diary module. The engineering judge noted that the Diary listing can later grow into the member app without moving user data.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="hypotheses">
+  <div class="prose">
+    <span class="eyebrow">Your two hypotheses</span>
+    <h2>Both are partly right, for different reasons than expected.</h2>
+  </div>
+  <div class="twocol">
+    <div>
+      <h3>"Two apps help marketing, because people can find the diary without wanting Eleva."</h3>
+      <p><strong>True for clinicians, weak for store search.</strong></p>
+      <ul>
+        <li>App store search for this term is small. The category leader, iUFlow, has 50K+ Android installs after about ten years. On Google Play Portugal, only 3 of the first 12 results for "diário miccional" are bladder apps.</li>
+        <li>People keep a bladder diary because a clinician asks them to. The European urology guideline strongly recommends a diary of at least 3 days.</li>
+        <li>Clinicians hand out single-purpose, easy, private tools. A neutral diary is something a urologist outside Eleva can recommend without endorsing a marketplace. This is reasoning from an Irish survey and the Squeezy precedent in the UK, not a Portuguese measurement.</li>
+        <li>There is a real gap: no free, no-account diary in European Portuguese with a free PDF export. The main multilingual rival charges $1.99 per PDF.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>"One app makes cross-selling easier."</h3>
+      <p><strong>True mechanically, but the loss is avoidable and the gain is smaller than it looks.</strong></p>
+      <ul>
+        <li>Asking someone to install a second app loses roughly a quarter to a half of the people who tap. That is the one measured cost of two apps.</li>
+        <li>You can remove that step. The "book a specialist" button in the diary opens Eleva booking on the web, with the diary PDF attached by the user's choice. No second install sits before the first booking.</li>
+        <li>Prompts based on what the user logged are restricted in any structure. They need explicit consent under GDPR Article 9, Apple limits use of health data for marketing, and personalised prompts push the diary toward medical-device status. Only a static prompt, the same for everyone, is safe. That shrinks the advantage of having everything in one app.</li>
+        <li>Many diary users already have a clinician. The funnel into paid Eleva care may be thin however the apps are arranged. This is the weakest assumption in every option.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="prose">
+    <span class="eyebrow">Research panel</span>
+    <h2>What six researchers found</h2>
+    <p>Each block gives the main findings and what could not be found. Some figures came from search summaries, so check a number at its source before you build on it. The full notes and a cited synthesis are in the repository.</p>
+  </div>
+  <div class="evidence">
+    <div class="ev">
+      <h3>Most satellite apps get folded back</h3>
+      <ul>
+        <li>Of 19 documented cases of a company splitting a feature into its own app, 16 were shut or merged back: <a href="https://www.engadget.com/2015/12/07/dropbox-is-killing-its-carousel-and-mailbox-apps/" target="_blank" rel="noopener">Dropbox Carousel</a>, <a href="https://9to5mac.com/2022/03/07/instagram-discontinues-its-standalone-boomerang-and-hyperlapse-apps/" target="_blank" rel="noopener">Instagram Boomerang</a>, LinkedIn Job Search, Google Duo, and Fitbit into <a href="https://blog.google/products-and-platforms/products/google-health/google-health-app/" target="_blank" rel="noopener">Google Health</a> in 2026.</li>
+        <li>Digital health has consolidated: <a href="https://bhbusiness.com/2022/11/18/a-year-after-3b-mega-merger-headspace-and-ginger-roll-out-unified-behavioral-health-offering/" target="_blank" rel="noopener">Headspace and Ginger</a>, <a href="https://www.fiercehealthcare.com/health-tech/teladoc-unveils-new-app-integrating-services-primary-care-and-mental-health-and-expands" target="_blank" rel="noopener">Teladoc</a>, and <a href="https://hingehealth.com/resources/press-releases/womens-pelvic-health-program-launch" target="_blank" rel="noopener">Hinge Health</a>, which put pelvic care inside its existing app.</li>
+        <li>Where two health apps persist, the split follows who pays or who the audience is, not a feature.</li>
+        <li>Counter-example in this exact field: <a href="https://apps.apple.com/gb/app/id700740791" target="_blank" rel="noopener">Squeezy</a>, a narrow pelvic floor app built by NHS physiotherapists, is the top paid medical app in the UK.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> any small health company that ran a free tracker app to feed a care marketplace and published the results.</p>
+    </div>
+    <div class="ev">
+      <h3>The diary niche is small, weakly served and clinician-driven</h3>
+      <ul>
+        <li><a href="https://apps.apple.com/us/app/id935581221" target="_blank" rel="noopener">iUFlow</a> is English-only and was last updated on iOS in November 2024. <a href="https://apps.apple.com/us/app/id1523268654" target="_blank" rel="noopener">Bladderly</a> has Portuguese and Spanish but sells a $4.99 "3-Day Pass" and rates 3.5 on Google Play.</li>
+        <li>An <a href="https://www.ics.org/2024/abstract/14" target="_blank" rel="noopener">ICS 2024 review</a> of ten diary apps scored them 7.6 out of 19 on average and found none with a second language.</li>
+        <li>App diaries work once prescribed: in a <a href="https://www.ics.org/2018/abstract/132" target="_blank" rel="noopener">Spanish validation</a>, 90.4% of 136 patients completed the app diary and 88.2% would choose it over paper.</li>
+        <li>The need is large: <a href="https://link.springer.com/10.1007/s00345-023-04677-5" target="_blank" rel="noopener">9.9% of adult women in Portugal</a> report urinary incontinence. The <a href="https://uroweb.org/guidelines/non-neurogenic-female-luts/chapter/diagnosis" target="_blank" rel="noopener">EAU guideline</a> strongly recommends a diary of at least 3 days.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> search volume for any diary keyword in Portuguese or Spanish, and how many diaries clinicians hand out each year.</p>
+    </div>
+    <div class="ev">
+      <h3>A second install is the measurable cost of two apps</h3>
+      <ul>
+        <li>The app title carries the most ranking weight in both stores, so a focused app has an edge on its own keyword. Since July 2025 one app can show a <a href="https://developer.apple.com/app-store/custom-product-pages/" target="_blank" rel="noopener">diary-specific store page</a> for diary searches, but the name and icon stay "Eleva Care".</li>
+        <li>Vendor data puts web-to-app completion at <a href="https://linkrunner.io/blog/deep-linking-for-web-to-app-how-to-convert-mobile-web-visitors-into-app-users" target="_blank" rel="noopener">40 to 60%</a> of people who tap. Even brand-search ads convert only <a href="https://www.apptweak.com/en/aso-blog/apple-ads-benchmarks" target="_blank" rel="noopener">73.5%</a> of taps to installs.</li>
+        <li>Among 158 Irish physiotherapists, <a href="https://world.physio/congress-proceeding/exploring-use-mobile-apps-clinical-practice-survey-irish-physiotherapists" target="_blank" rel="noopener">54.5% had prescribed apps</a>. They chose on ease of use (96%), clear purpose (77%) and privacy (76%).</li>
+        <li>A paid install costs about $1.01 in Portugal, so a real demand test costs a few hundred euros.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> any benchmark for how many users of a free companion app install or pay for the publisher's main product.</p>
+    </div>
+    <div class="ev">
+      <h3>The proven split is member versus expert, and experts stay mostly on web</h3>
+      <ul>
+        <li>Doctolib, Doctoralia, knok and Teladoc all ship a separate provider app. None was found merging it back into the customer app.</li>
+        <li>Provider apps are costly for a small audience: Maven's practitioner app has <a href="https://apps.apple.com/us/app/mpractice/id942538862" target="_blank" rel="noopener">6 ratings, 171.5 MB</a> and ships monthly. BetterHelp therapists ran video from a computer.</li>
+        <li><a href="https://www.sharetribe.com/academy/marketplace-mobile-app-why-when-how/" target="_blank" rel="noopener">Sharetribe's 2026 guidance</a>: web first, native for one side after validation, never both sides at launch.</li>
+        <li>Android holds <a href="https://gs.statcounter.com/os-market-share/mobile/portugal" target="_blank" rel="noopener">about 71% of mobile usage in Portugal</a>, so iOS and Android must ship together.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> how many users of an all-in-one health app use its secondary tracker, and what share of sessions on comparable platforms are joined from phones.</p>
+    </div>
+    <div class="ev">
+      <h3>Better Auth has no Swift or Kotlin SDK</h3>
+      <ul>
+        <li>The only official mobile integration is Expo. Two server-supported routes exist: REST with the <a href="https://www.better-auth.com/docs/plugins/bearer" target="_blank" rel="noopener">bearer plugin</a>, or the <a href="https://www.better-auth.com/docs/plugins/oauth-provider" target="_blank" rel="noopener">OAuth 2.1 provider plugin</a> with PKCE in the system browser.</li>
+        <li>Offering Google login on iOS makes Sign in with Apple (or an equivalent) mandatory under guideline 4.8.</li>
+        <li>Sharing a session between two apps is silent on iOS through a <a href="https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps" target="_blank" rel="noopener">shared Keychain group</a>. Android has no clean equivalent.</li>
+        <li>Daily's native SDKs ship no prebuilt call screen, so a native call UI is built twice. App Clips are too limited and Google ended Instant Apps in December 2025, so there is no light substitute for a second listing.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> a neutral figure for the cost of two native codebases, or for how much coding agents reduce it.</p>
+    </div>
+    <div class="ev">
+      <h3>App scope moves the regulatory footprint, not the law</h3>
+      <ul>
+        <li>Under <a href="https://health.ec.europa.eu/document/download/b45335c5-1679-4c71-a91c-fc7a4d37f12b_en?filename=mdcg_2019_11_en.pdf" target="_blank" rel="noopener">MDCG 2019-11 Rev.1</a>, software that only stores and displays data is not a medical device. Software that interprets an individual's data is, usually Class IIa.</li>
+        <li>Apple's "Data Not Collected" label is available only to a diary that sends <a href="https://developer.apple.com/app-store/app-privacy-details/" target="_blank" rel="noopener">nothing off the device</a>. It disappears when optional sync ships.</li>
+        <li>Paid 1:1 live sessions may use your own payments on both stores. Lectures and courses are digital goods: Apple's EU terms from 1 October 2026 charge <a href="https://developer.apple.com/support/dma-and-apps-in-the-eu/" target="_blank" rel="noopener">26% for in-app purchase and 15% for link-outs</a>.</li>
+        <li>In Portugal, remote care must be <a href="https://www.ers.pt/media/2kskt534/manual-do-procedimento-de-registo-2025.pdf" target="_blank" rel="noopener">registered with ERS</a> before operating. This applies to the web platform today and is the same in every option.</li>
+      </ul>
+      <p class="missing"><b>Not found:</b> any ruling on bladder diaries specifically, or an ERS position on marketplaces.</p>
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <div class="prose">
+    <span class="eyebrow">Plan</span>
+    <h2>Five steps, each one earned by the step before</h2>
+    <p>Durations assume the small team you have and heavy use of coding agents. They are estimates. The thresholds come from the judges and are judgment calls, so adjust them, but write them down before you see the data.</p>
+  </div>
+  <div class="plan">
+    <div class="phase">
+      <div class="when"><span class="n">1</span><span class="t">Now · about 4 weeks</span><h3>Measure before native code</h3></div>
+      <div class="body">
+        <ul>
+          <li>Publish a "diário miccional" page on eleva.care in PT, ES and EN with a free printable 3-day diary and a QR code. Give it to your experts as their hand-out. Paper is the real competitor.</li>
+          <li>Pull keyword demand for the diary terms in the PT, ES and BR stores (Apple Ads popularity) and on the web (Keyword Planner). Under €50.</li>
+          <li>Ask 10 Eleva experts and 10 outside clinicians which they would hand out this week: a neutral "Eleva Diary" or an "Eleva Care" app with a diary inside.</li>
+          <li>Put the existing Expo app in front of 30 to 50 real patients through TestFlight and a Play closed test, after removing iCloud storage and Sentry. Use it as a measuring tool only.</li>
+          <li>Send three questions in writing: to INFARMED on whether logging and charts are outside the device definition, to a Portuguese health lawyer on who registers with ERS in a Stripe Connect marketplace, and to App Review on iCloud backup and on the same diary in two apps.</li>
+          <li>Run two technical spikes: sign-in through the system browser against Better Auth, and porting one diary screen from SwiftUI to Compose with a coding agent.</li>
+        </ul>
+        <p class="gate"><b>Gate</b>Go if demand is at least 500 monthly searches in Portugal or at least 5 of 10 outside clinicians pick the neutral diary, and at least 70% of pilot patients complete 3 days. If search is at the floor and clinicians see no difference between the two names, switch to option D. If nothing moves, keep the web page and PDF only.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when"><span class="n">2</span><span class="t">About 10 weeks, time-boxed</span><h3>Eleva Diary 1.0</h3></div>
+      <div class="body">
+        <ul>
+          <li>Native on iOS and Android together. Strictly on the device: no account, no sync, no third-party analytics or crash SDK, local reminders, PDF export through the share sheet.</li>
+          <li>Built as a module on each platform (<code>DiaryKit</code> Swift package, <code>:feature:diary</code> Gradle module) inside a thin app shell.</li>
+          <li>One static link, the same for every user, on the completion and export screens: "Discuss this diary with a pelvic health specialist". It opens Eleva booking on the web. Eleva's name and a booking QR code go on the PDF.</li>
+          <li>Store title carries the literal keyword per language. Home-screen name, icon and lock-screen text stay discreet.</li>
+          <li>Record-keeping wording only. Leave out trend labels, goals against a norm and any "supports diagnosis" claim.</li>
+        </ul>
+        <p class="gate"><b>Gate</b>90 days after launch: under 300 installs across both stores, or under 5% of installs arriving on eleva.care through the tagged link, means the diary goes to maintenance only.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when"><span class="n">3</span><span class="t">After the web marketplace has paid sessions</span><h3>Diary 1.x: sign-in, sync, share</h3></div>
+      <div class="body">
+        <ul>
+          <li>Add diary endpoints to <code>apps/api</code> (batch upsert keyed by client UUID, changes-since cursor, share grants behind <code>ff.diary_share</code>) and publish them in the OpenAPI spec.</li>
+          <li>Optional Eleva sign-in through the system browser, Sign in with Apple, sync, and sharing with one named expert for a set period. Three separate opt-ins.</li>
+          <li>Build the expert's side on the web: request a diary, read the shared diary before the session, ask for a repeat at 6 to 12 weeks.</li>
+          <li>Before this release: complete the data protection impact assessment, add in-app account deletion, and change the Apple privacy label to "Health, linked to you".</li>
+        </ul>
+        <p class="gate"><b>Gate</b>180 days after the diary launch: decide on a member app. Under 30 diary-attributed first bookings, or under 1% of installs once installs pass 1,000, means no member app for acquisition reasons.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when"><span class="n">4</span><span class="t">Conditional</span><h3>Eleva Care member app</h3></div>
+      <div class="body">
+        <ul>
+          <li>Build it when your own analytics show the need: at least 60% of session joins on phones with more than 10% failing or starting late in the mobile browser, or a rebooking interval of two weeks or less.</li>
+          <li>Scope: session reminders, joining a call, messages, rebooking, and the diary module. Nothing for experts.</li>
+          <li>Choose then between a second listing and growing the Diary listing into the member app. Take App Review's answer on duplicate apps into that choice. If the clinician channel has not proved that a neutral standalone earns its place, grow the existing listing.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when"><span class="n">5</span><span class="t">Only on evidence</span><h3>Expert companion, native video</h3></div>
+      <div class="body">
+        <ul>
+          <li>A thin expert app (agenda and new-booking alerts) only if experts ask for it and session logs show they work from phones.</li>
+          <li>Native video only if browser calls are costing bookings or call quality. Academy purchases stay on the web to avoid store commission.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="twocol">
+    <div>
+      <h3>Relative effort of a first release</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>Option</th><th class="num">First release</th><th class="num">With member scope</th></tr></thead>
+        <tbody>
+          <tr><th>C · Diary first</th><td class="num">1.0×</td><td class="num">3.5–4×</td></tr>
+          <tr><th>D · Member app + guest diary</th><td class="num">1.5–1.7×</td><td class="num">3.2–3.5×</td></tr>
+          <tr><th>B · All-in-one</th><td class="num">5.5–6.5×</td><td class="num">same</td></tr>
+          <tr><th>A · Two in parallel</th><td class="num">6–7×</td><td class="num">same</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">The engineering judge's estimate, as multiples of the standalone native diary on both platforms. A judgment, not a measurement. Backend work is extra and about equal across options.</p>
+    </div>
+    <div>
+      <h3>Leave out of native in the first year</h3>
+      <ul>
+        <li>Expert, clinic and staff tools. Desk work, tiny audience.</li>
+        <li>Academy purchase and playback. Store commission and a second payment regime, for a product that does not exist on the web yet.</li>
+        <li>A native call screen and in-app chat. Each is built twice.</li>
+        <li>Any interpretation of diary data: colour-coded normal ranges, "improving" labels, AI summaries, "you should see a specialist".</li>
+        <li>HealthKit, Health Connect, widgets, watch apps. The platforms only have a water-intake type for this use.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="prose">
+    <span class="eyebrow">Architecture</span>
+    <h2>Thin app shells over shared modules</h2>
+    <p>The structure of the code is what keeps the app-count decision reversible. Each app is a thin shell. Everything that matters lives in modules that any shell can include.</p>
+  </div>
+  <div class="arch">
+    <span class="layer-label">App shells, on iOS and Android</span>
+    <div class="layer l2">
+      <div class="box now"><b>Eleva Diary</b><span>Ships first. Includes the diary module only. No WebRTC, no payments.</span></div>
+      <div class="box later"><b>Eleva Care member app</b><span>Later, if the gates pass. Adds reminders, join, messages, rebooking.</span></div>
+    </div>
+    <span class="layer-label">Shared modules per platform (Swift packages, Gradle modules)</span>
+    <div class="layer l5">
+      <div class="box now"><b>Diary</b><span>Local SQLite, entry logic, PDF export, reminders</span></div>
+      <div class="box"><b>Auth</b><span>OAuth 2.1 with PKCE in the system browser</span></div>
+      <div class="box"><b>API client</b><span>Generated from <code>openapi.json</code></span></div>
+      <div class="box"><b>Design system</b><span>Eleva tokens, type, components</span></div>
+      <div class="box later"><b>Video · Messaging</b><span>Separate modules, member app only</span></div>
+    </div>
+    <span class="layer-label">Existing platform</span>
+    <div class="layer l2">
+      <div class="box"><b>api.eleva.care</b><span>Better Auth at <code>/auth/*</code>. To add: OAuth provider plugin, Apple sign-in, diary endpoints, push through APNs and FCM.</span></div>
+      <div class="box"><b>Web apps</b><span>Booking, payment, video join, expert workspace, clinics, Academy. The diary links here.</span></div>
+    </div>
+  </div>
+  <div class="twocol">
+    <div>
+      <h3>Sign-in</h3>
+      <ul>
+        <li>Use the web login inside the system browser sheet (ASWebAuthenticationSession on iOS, Auth Tab on Android). Passkeys, magic link, Google and two-factor all work with no native code per method.</li>
+        <li>Your server already has <code>bearer</code>, <code>jwt</code>, <code>passkey</code>, <code>magicLink</code>, <code>twoFactor</code>, Google and Microsoft. It does not have the OAuth provider plugin or Apple sign-in.</li>
+        <li>Your trusted-origins filter accepts only https eleva.care hosts, so use an https universal-link redirect, not a custom URL scheme.</li>
+        <li>Pin the Better Auth version and add contract tests. It shipped six patches in ten days and 1.8 has breaking changes.</li>
+        <li>If the spike fails: web login ending in a one-time token that the app exchanges for a bearer session.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Diary data and sync</h3>
+      <ul>
+        <li>Local SQLite on both platforms, client-generated UUIDs, a server version per record, deletions kept as tombstones.</li>
+        <li>With no account, rows have no owner and nothing leaves the device. Backup is an export file, not iCloud.</li>
+        <li>On first sign-in the app pushes its local entries through the normal batch endpoint. The server removes duplicates by UUID.</li>
+        <li>Sync is a hand-written REST delta. A sync vendor would add another processor of health data for a single-user, append-mostly diary.</li>
+        <li>Keep iOS and Android honest with shared JSON test vectors and golden PDFs. Revisit Kotlin Multiplatform only if the two drift.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>If a second app ships</h3>
+      <ul>
+        <li>iOS: a shared Keychain access group signs the second app in with no prompt.</li>
+        <li>Android: decide before the second app's first upload whether both share one Play app-signing key. Without it, expect a short browser sheet or a passkey prompt.</li>
+        <li>Serve the passkey association files from the apex <code>eleva.care</code> with no redirect, listing every app.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Changes to your existing plan</h3>
+      <ul>
+        <li><code>docs/eleva-v3/mobile-integration-spec.md</code> assumes Expo and Expo push. Amend ADR-010 for native clients and direct APNs and FCM.</li>
+        <li>The spec's default of "synced to the Eleva account" should become local by default, with sync as an explicit opt-in.</li>
+        <li>The spec's three visibility states, time-boxed sharing and <code>ff.diary_share</code> all still hold.</li>
+        <li>The Android package name shows in the Play URL. Pick a neutral one before the first production upload; it cannot change later.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="surfaces">
+  <div class="prose">
+    <span class="eyebrow">What goes where</span>
+    <h2>Only the diary clearly earns a native app today</h2>
+    <p>The product judge mapped each capability to the surface that fits how often it is used and by whom.</p>
+  </div>
+  <div class="scroll">
+    <table style="min-width:680px">
+      <thead><tr><th>Capability</th><th>How often</th><th>Best surface</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><th>Diary logging and reminders</th><td>8 to 15 entries a day for 3 to 7 days</td><td><strong>Native diary app</strong></td><td>The only high-frequency, on-the-go job. Reminders lifted diary adherence from 70% to 95% in one study.</td></tr>
+        <tr><th>Diary PDF export</th><td>Once per episode</td><td><strong>Native diary app</strong></td><td>A file the user sends herself reaches any clinician and carries Eleva's name.</td></tr>
+        <tr><th>Share diary with an Eleva expert</th><td>Once per episode</td><td>Native diary app, signed in</td><td>An explicit, time-boxed consent at the moment the diary is complete.</td></tr>
+        <tr><th>Find an expert, book, pay</th><td>A few times a year</td><td>Web</td><td>Infrequent and considered. Already built. No second install before the first booking.</td></tr>
+        <tr><th>Join a video session</th><td>Every 1 to 2 weeks</td><td>Email or SMS link to web, native later</td><td>Link-based joining is normal in Portugal (SNS 24). Move to native if phone joins fail.</td></tr>
+        <tr><th>Session reminders</th><td>1 or 2 per session</td><td>Email and SMS</td><td>The measured drop in missed appointments is for SMS.</td></tr>
+        <tr><th>Member and expert messages</th><td>A few between sessions</td><td>Web, native member app later</td><td>Low volume. Messages are health data best kept in your own stack.</td></tr>
+        <tr><th>Expert calendar, records, finance</th><td>Daily, at a desk</td><td>Web</td><td>Every comparable platform keeps detailed provider work on web or desktop.</td></tr>
+        <tr><th>Clinic administration</th><td>Weekly</td><td>Web</td><td>No evidence of a mobile need.</td></tr>
+        <tr><th>Academy lectures</th><td>Occasional, long sittings</td><td>Web</td><td>Group and recorded content sold in an app falls under store commission.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="prose">
+    <span class="eyebrow">Rules and risks</span>
+    <h2>Rules that hold whichever option you choose</h2>
+  </div>
+  <div class="twocol">
+    <div>
+      <h3>Three things in the proof of concept cannot carry over</h3>
+      <ul>
+        <li><strong>iCloud storage.</strong> Apple guideline 5.1.3(ii) says apps may not store personal health information in iCloud.</li>
+        <li><strong>Sentry with screenshots and replays.</strong> For a bladder diary, the fact that someone uses the app is itself health data. Any telemetry ends the "Data Not Collected" label.</li>
+        <li><strong>Trend labels, goals and "support medical diagnosis" wording.</strong> Interpreting an individual's data for a medical purpose is what makes software a medical device.</li>
+      </ul>
+      <h3>Product rules</h3>
+      <ul>
+        <li>No flags, thresholds, normal-range colours, personalised advice or AI summaries of diary data unless you choose the CE-marking route on purpose.</li>
+        <li>Store listings and onboarding use record-keeping words. Never "monitor", "detect", "diagnose" or "treat" next to a condition name.</li>
+        <li>Promotion of Eleva Care inside the diary is static and identical for everyone. Nothing is triggered by what a user logged or by the fact that she uses the diary.</li>
+        <li>Account, sync and sharing are three separate opt-ins. Sharing is with one named expert for a set period.</li>
+        <li>Paid sessions stay one expert to one member, live and unrecorded.</li>
+        <li>Add a release gate, also in the instructions you give coding agents: any feature that calculates an index, compares to a norm, flags or summarises diary data needs a written device assessment before merge.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>The strongest case against the recommendation</h3>
+      <p class="small" style="font-size:.94rem">Every judge was asked to argue against their own pick. They converged on three points.</p>
+      <ul>
+        <li><strong>The prize may be small.</strong> Organic store installs for a new diary are likely hundreds to low thousands a year. A web page with a printable PDF and a few hundred euros of ads might test the same idea for far less.</li>
+        <li><strong>The end state repeats a pattern companies undo.</strong> A diary in two apps means four store binaries, every diary fix shipped four times, and a possible duplicate-app question from Apple. Headspace was still merging two apps years after deciding to.</li>
+        <li><strong>The privacy advantage is partly temporary.</strong> The "Data Not Collected" label disappears the day optional sync ships.</li>
+      </ul>
+      <p class="small" style="font-size:.94rem">The skeptic's conclusion: commit only to steps 1 and 2, and size the diary so it cannot delay the web marketplace launch, which is the better use of the next two quarters.</p>
+      <h3>Questions that need a professional answer</h3>
+      <ul>
+        <li>INFARMED or a regulatory adviser: are charts, averages and goal progress outside the device definition?</li>
+        <li>Portuguese health lawyer: under Stripe Connect, who registers with ERS, Eleva or each expert?</li>
+        <li>Data protection lawyer: is Eleva a controller for a strictly local diary, and what are the roles between Eleva and experts for shared diaries?</li>
+        <li>App Review: does 5.1.3(ii) cover ordinary iCloud device backups, and is the same diary module in two apps a duplicate under 4.3(a)?</li>
+        <li>Lawyer and tax adviser: are 1:1 session payments outside all store commissions in the EU?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="prose">
+    <span class="eyebrow">Gaps and method</span>
+    <h2>What this report cannot tell you</h2>
+    <ul>
+      <li><strong>Tracker-to-care conversion.</strong> No company has published it. The nearest figures are a 2.18% median for freemium apps and 25 to 31% for US symptom checkers that lead to same-day visits. Neither is your case.</li>
+      <li><strong>Keyword demand.</strong> No volume for any diary term in Portuguese or Spanish was accessible. You can pull it yourself in an afternoon.</li>
+      <li><strong>Clinician behaviour in Portugal.</strong> The evidence is from Ireland, the UK, Norway and Spain.</li>
+      <li><strong>Native cost.</strong> Every effort figure here is a judge's estimate.</li>
+    </ul>
+    <h3>How the panel worked</h3>
+    <p>Six research agents each covered one topic with web sources: app portfolio precedents, the bladder diary market, growth and store mechanics, marketplace and telehealth app structures, native architecture with Better Auth, and EU regulation and store policy. They produced about 50,000 words of sourced notes. Five judge agents then read all the notes, plus your existing mobile spec and the proof-of-concept README, and scored the options without seeing each other's work: growth, engineering, compliance, product, and a designated skeptic.</p>
+    <p>Read the agreement with care. The judges are AI reviewers reading the same evidence, so five matching rankings are less independent than five people would be. Options C and D were written by me when briefing the panel. The scores are structured judgment, not measurement. The tests in step 1 are what turn this from an argued position into a measured one.</p>
+    <h3>Files</h3>
+    <ul>
+      <li>Cited evidence synthesis: <code>reports/Eleva mobile app strategy.md</code></li>
+      <li>Research notes: <code>research_notes/Eleva mobile app strategy/</code> (six files)</li>
+      <li>Judge verdicts with a rationale for every score: <code>research_notes/Eleva mobile app strategy judges/</code> (five JSON files)</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style="margin-bottom:12px">Selected sources</h3>
+    <ol class="sources">
+      <li><a href="https://developer.apple.com/app-store/review/guidelines/" target="_blank" rel="noopener">Apple App Review Guidelines</a> (4.3, 4.8, 3.1.3(d), 5.1.1(v), 5.1.3)</li>
+      <li><a href="https://developer.apple.com/app-store/app-privacy-details/" target="_blank" rel="noopener">Apple App Privacy Details</a></li>
+      <li><a href="https://developer.apple.com/support/dma-and-apps-in-the-eu/" target="_blank" rel="noopener">Apple: DMA and apps in the EU</a></li>
+      <li><a href="https://support.google.com/googleplay/android-developer/answer/10281818?hl=en" target="_blank" rel="noopener">Google Play payments policy</a></li>
+      <li><a href="https://health.ec.europa.eu/document/download/b45335c5-1679-4c71-a91c-fc7a4d37f12b_en?filename=mdcg_2019_11_en.pdf" target="_blank" rel="noopener">MDCG 2019-11 Rev.1</a> on software qualification</li>
+      <li><a href="https://www.infarmed.pt/documents/15786/12277909/Solu%C3%A7%C3%B5es+digitais+em+sa%C3%BAde+enquanto+dispositivos+m%C3%A9dicos/287ef796-f7d5-ff11-1f48-403825ec9378" target="_blank" rel="noopener">INFARMED circular on digital health solutions</a></li>
+      <li><a href="https://www.ers.pt/media/2kskt534/manual-do-procedimento-de-registo-2025.pdf" target="_blank" rel="noopener">ERS registration manual 2025</a></li>
+      <li><a href="https://omcentro.com/ficheiros/docs/r_798_2018.pdf" target="_blank" rel="noopener">CNPD Regulamento 798/2018</a> (impact assessment list)</li>
+      <li><a href="https://uroweb.org/guidelines/non-neurogenic-female-luts/chapter/diagnosis" target="_blank" rel="noopener">EAU guideline, female LUTS diagnosis</a></li>
+      <li><a href="https://www.ics.org/2024/abstract/14" target="_blank" rel="noopener">ICS 2024: review of bladder diary apps</a></li>
+      <li><a href="https://www.ics.org/2018/abstract/132" target="_blank" rel="noopener">ICS 2018: Spanish app diary validation</a></li>
+      <li><a href="https://link.springer.com/10.1007/s00345-023-04677-5" target="_blank" rel="noopener">World J Urol 2023: incontinence in Portugal</a></li>
+      <li><a href="https://world.physio/congress-proceeding/exploring-use-mobile-apps-clinical-practice-survey-irish-physiotherapists" target="_blank" rel="noopener">World Physiotherapy: Irish app survey</a></li>
+      <li><a href="https://www.better-auth.com/docs/plugins/oauth-provider" target="_blank" rel="noopener">Better Auth OAuth provider plugin</a></li>
+      <li><a href="https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession" target="_blank" rel="noopener">ASWebAuthenticationSession</a> and <a href="https://developer.chrome.com/docs/android/custom-tabs/guide-auth-tab" target="_blank" rel="noopener">Auth Tab</a></li>
+      <li><a href="https://developer.apple.com/app-store/custom-product-pages/" target="_blank" rel="noopener">Apple custom product pages</a></li>
+      <li><a href="https://www.apptweak.com/en/aso-blog/apple-ads-benchmarks" target="_blank" rel="noopener">AppTweak Apple Ads benchmarks</a></li>
+      <li><a href="https://www.revenuecat.com/state-of-subscription-apps-2025/" target="_blank" rel="noopener">RevenueCat State of Subscription Apps 2025</a></li>
+      <li><a href="https://www.sharetribe.com/academy/marketplace-mobile-app-why-when-how/" target="_blank" rel="noopener">Sharetribe: marketplace mobile apps</a></li>
+      <li><a href="https://gs.statcounter.com/os-market-share/mobile/portugal" target="_blank" rel="noopener">Statcounter: mobile OS share, Portugal</a></li>
+      <li><a href="https://ben-evans.com/benedictevans/2014/8/1/app-unbundling-search-and-discovery" target="_blank" rel="noopener">Benedict Evans on app unbundling</a></li>
+      <li><a href="https://www.forrester.com/blogs/the-super-app-window-has-closed/" target="_blank" rel="noopener">Forrester on super apps</a></li>
+    </ol>
+  </div>
+</section>
+
+<footer>Prepared for Rodrigo Barona on 11 November 2026. Research for decision-making, not legal advice. The cited synthesis holds 126 source links.</footer>
+</div>
+
+<div id="tip" hidden></div>
+
+<script>
+(function(){
+  var JUDGES=["Compliance","Engineering","Growth","Product","Skeptic"];
+  var OPTS=["A","B","C","D"];
+  var NAMES={A:"Two apps in parallel",B:"One all-in-one app",C:"Diary first, member app later",D:"Member app with guest diary"};
+  var CRIT=[
+    ["discovery","Discovery and acquisition",15],
+    ["cross_sell","Cross-sell into paid care",15],
+    ["build_cost","Build cost and time to first release",15],
+    ["experience","Member experience and discretion",10],
+    ["privacy_trust","Privacy and trust",10],
+    ["regulatory","Regulatory and store-review risk",10],
+    ["maintenance","Ongoing maintenance",10],
+    ["optionality","Strategic optionality and brand",10],
+    ["platform_fit","Fit with the existing platform",5]
+  ];
+  /* raw scores per judge, in JUDGES order */
+  var S={
+    discovery:{A:[8,8,7,7,7],B:[3,4,3,3,4],C:[8,8,8,8,7],D:[5,5,5,5,5]},
+    cross_sell:{A:[5,4,4,4,3],B:[7,7,7,7,6],C:[6,6,6,6,5],D:[8,8,8,8,6]},
+    experience:{A:[6,5,5,5,4],B:[4,4,3,3,3],C:[8,7,7,8,7],D:[7,7,7,7,7]},
+    privacy_trust:{A:[7,8,8,7,6],B:[3,3,3,3,3],C:[9,8,9,9,8],D:[5,5,5,5,5]},
+    regulatory:{A:[6,5,6,6,4],B:[3,4,4,3,3],C:[7,6,7,7,7],D:[5,6,6,6,5]},
+    build_cost:{A:[2,2,2,1,1],B:[3,3,3,3,2],C:[8,9,8,8,8],D:[5,7,5,5,5]},
+    maintenance:{A:[3,2,2,2,1],B:[5,4,5,4,4],C:[4,5,6,5,5],D:[7,8,7,7,7]},
+    optionality:{A:[6,5,3,4,2],B:[3,3,3,2,3],C:[9,9,8,8,8],D:[5,6,6,6,6]},
+    platform_fit:{A:[4,4,4,4,2],B:[5,5,4,4,3],C:[9,8,8,9,7],D:[7,8,6,6,6]}
+  };
+  var RANK={Compliance:"C, D, A, B",Engineering:"C, D, B, A",Growth:"C, D, A, B",Product:"C, D, A, B",Skeptic:"C, D, B, A"};
+  function mean(a){return a.reduce(function(x,y){return x+y},0)/a.length}
+  function judgeTotal(o,j){var t=0;CRIT.forEach(function(c){t+=S[c[0]][o][j]*c[2]});return t/10}
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+
+  /* overall bars */
+  var overall=document.getElementById("overall");
+  var totals={};
+  OPTS.forEach(function(o){totals[o]=JUDGES.map(function(_,j){return judgeTotal(o,j)})});
+  ["C","D","A","B"].forEach(function(o){
+    var m=mean(totals[o]);
+    var row=el("div","row"+(o==="C"?" pick":""));
+    row.tabIndex=0;
+    row.appendChild(el("div","name","<b>"+o+"</b> · "+NAMES[o]));
+    var track=el("div","track");
+    var fill=el("div","fill");fill.style.width=m+"%";track.appendChild(fill);
+    totals[o].forEach(function(v){var t=el("i","tick");t.style.left="calc("+v+"% - 1px)";track.appendChild(t)});
+    row.appendChild(track);
+    row.appendChild(el("div","val",m.toFixed(0)));
+    row.dataset.tip="<b>"+o+" · "+NAMES[o]+"</b>"+JUDGES.map(function(n,j){return n+" "+totals[o][j].toFixed(1)}).join("<br>");
+    overall.appendChild(row);
+  });
+
+  /* matrix */
+  var tb=document.querySelector("#matrix tbody");
+  CRIT.forEach(function(c){
+    var tr=el("tr");
+    tr.appendChild(el("th",null,c[1]+' <span class="w">'+c[2]+"</span>"));
+    var means=OPTS.map(function(o){return mean(S[c[0]][o])});
+    var best=Math.max.apply(null,means);
+    OPTS.forEach(function(o,i){
+      var td=el("td","cell"+(means[i]===best?" best":""));
+      td.tabIndex=0;
+      td.innerHTML='<span class="n">'+means[i].toFixed(1)+'</span><span class="mini"><span style="width:'+(means[i]*10)+'%"></span></span>';
+      td.dataset.tip="<b>"+c[1]+" · "+o+"</b>"+JUDGES.map(function(n,j){return n+" "+S[c[0]][o][j]}).join("<br>");
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  var tf=document.querySelector("#matrix tfoot");
+  var fr=el("tr");fr.appendChild(el("th",null,'Weighted total <span class="w">of 100</span>'));
+  OPTS.forEach(function(o){fr.appendChild(el("td","num",mean(totals[o]).toFixed(1)))});
+  tf.appendChild(fr);
+  Array.prototype.forEach.call(fr.querySelectorAll("td"),function(td){td.style.textAlign="left"});
+
+  /* judges table */
+  var jb=document.querySelector("#judges tbody");
+  JUDGES.forEach(function(n,j){
+    var tr=el("tr");tr.appendChild(el("th",null,n));
+    OPTS.forEach(function(o){tr.appendChild(el("td","num",totals[o][j].toFixed(1)))});
+    tr.appendChild(el("td",null,RANK[n]));
+    jb.appendChild(tr);
+  });
+
+  /* tooltip */
+  var tip=document.getElementById("tip");
+  function show(e){
+    var t=e.currentTarget;tip.innerHTML=t.dataset.tip;tip.hidden=false;
+    var r=t.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
+    var x=Math.min(Math.max(8,r.left+r.width/2-w/2),window.innerWidth-w-8);
+    var y=r.top-h-8;if(y<8)y=r.bottom+8;
+    tip.style.left=x+"px";tip.style.top=y+"px";
+  }
+  function hide(){tip.hidden=true}
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tip]"),function(n){
+    n.addEventListener("mouseenter",show);n.addEventListener("focus",show);
+    n.addEventListener("mouseleave",hide);n.addEventListener("blur",hide);
+  });
+  window.addEventListener("scroll",hide,{passive:true});
+})();
+</script>
+</body>
+</html>
