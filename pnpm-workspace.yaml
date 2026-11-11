@@ -1,0 +1,6 @@
+# Mirrors the Eleva monorepo's pnpm settings so this app can move into it later.
+autoInstallPeers: true
+
+allowBuilds:
+  "@sentry/cli": true
+  unrs-resolver: true

@@ -89,8 +89,8 @@ A complete voiding diary provides physicians with essential data for accurate di
 
 ### Prerequisites
 
-- Node.js 18+
-- Expo CLI (`npm install -g expo-cli`)
+- Node.js 24+
+- pnpm 11 (`corepack enable`, or see pnpm.io/installation)
 - iOS Simulator (macOS) or Android Emulator
 
 ### Installation
@@ -101,10 +101,10 @@ git clone https://github.com/your-org/pee-diary.git
 cd pee-diary
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npx expo start
+pnpm start
 ```
 
 ### Running the App

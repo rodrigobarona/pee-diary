@@ -2,6 +2,10 @@
   "name": "pee-diary",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -23,6 +27,7 @@
     "@react-navigation/native": "^7.1.8",
     "@rn-primitives/portal": "^1.3.0",
     "@rn-primitives/slot": "^1.2.0",
+    "@rn-primitives/types": "^1.5.2",
     "@sentry/react-native": "^7.12.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -79,7 +84,7 @@
     "eslint-config-expo": "~10.0.0",
     "eslint-plugin-react": "^7.37.5",
     "jest": "^30.2.0",
-    "jest-expo": "^55.0.6",
+    "jest-expo": "~54.0.17",
     "react-test-renderer": "^19.1.0",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.2"
@@ -87,7 +92,7 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@rn-primitives/.*|native-base|react-native-svg|nativewind|zustand)"
+      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@rn-primitives/.*|native-base|react-native-svg|nativewind|react-native-css-interop|zustand))"
     ],
     "setupFiles": [
       "<rootDir>/jest.setup.js"
