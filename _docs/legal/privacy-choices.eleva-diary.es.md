@@ -26,7 +26,7 @@ La aplicación no cifra el archivo. Una vez que lo guardas o lo envías, el arch
 1. En **Ajustes**, en la sección **Copia local**, toca **Exportar copia de seguridad**.
 2. En el menú de compartir, elige dónde guardar el archivo o a dónde enviarlo.
 
-El archivo contiene todos tus registros (con las notas, las fechas de creación y el historial de ediciones), tus objetivos y su historial, tu racha y tu idioma. No está cifrado: guárdalo en un lugar de confianza.
+El archivo contiene todos tus registros (con las notas, las fechas de creación y el historial de ediciones), tu objetivo de líquidos y su historial, tu racha y tu idioma. No está cifrado: guárdalo en un lugar de confianza.
 
 En el iPhone, tu diario no entra en las copias de seguridad del móvil (sección 6). Este archivo es la forma de guardar una copia y de llevar tu diario a un móvil nuevo.
 
@@ -36,7 +36,7 @@ En el iPhone, tu diario no entra en las copias de seguridad del móvil (sección
 2. En la sección **Copia local**, toca **Importar copia de seguridad**.
 3. Confirma y elige el archivo.
 
-La importación sustituye los registros, los objetivos, el historial de objetivos, la racha y el idioma que hay en la aplicación.
+La importación sustituye los registros, el objetivo de líquidos y su historial, la racha y el idioma que hay en la aplicación.
 
 ## 3. Eliminar un registro
 
@@ -57,7 +57,7 @@ Si quieres conservar una copia, exporta tu diario antes (secciones 1 y 2). Esta 
 **Qué se elimina:**
 
 - todos los registros de idas al baño, bebidas y pérdidas de orina, con sus notas y su historial de ediciones;
-- tus objetivos y su historial (los objetivos vuelven a sus valores iniciales);
+- tu objetivo de líquidos y su historial (el objetivo vuelve a su valor inicial);
 - tu racha;
 - los ajustes de recordatorios (los recordatorios se desactivan y se cancelan los que estaban programados);
 - la preferencia del menú al iniciar;

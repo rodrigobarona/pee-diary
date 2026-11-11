@@ -42,7 +42,7 @@ QUÉ PUEDES REGISTRAR
 TU DIARIO DE UN VISTAZO
 • Totales diarios de bebidas, idas al baño y pérdidas
 • Gráficos semanales y mensuales sencillos de lo que has registrado
-• Tus propios objetivos diarios, si quieres fijarlos
+• Un objetivo diario de líquidos que fijas tú, si lo quieres
 • Una racha que muestra cuántos días seguidos has registrado
 • Recordatorios opcionales para actualizar tu diario
 

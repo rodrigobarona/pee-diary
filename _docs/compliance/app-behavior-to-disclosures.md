@@ -20,7 +20,10 @@ Covers: the Apple App Store and Google Play declarations (`_docs/app-stores/**`)
 | Data protection officer | Being appointed; no name or address published yet; privacy@eleva.care meanwhile |
 | Supervisory authority | CNPD, Comissão Nacional de Proteção de Dados, Av. D. Carlos I, 134, 1.º, 1200-651 Lisboa, https://www.cnpd.pt |
 | Legal URLs (the only ones to use) | https://diary.eleva.care/privacy · https://diary.eleva.care/terms · https://diary.eleva.care/privacy-choices |
-| Website | https://diary.eleva.care (App Store Marketing URL, Google Play website) |
+| Website | https://diary.eleva.care (App Store Marketing URL, Google Play website): a short product page and the legal pages in PT, EN and ES at language paths (`/pt/privacy`, `/en/terms`, `/es/privacy-choices`…); the paths without a language redirect by the browser's language; the app opens `/{en,es,pt}/{page}` in its own language (`constants/legal.ts`) |
+| Website hosting | Vercel Inc., Eleva team account, served from Vercel's global edge network; processor under Vercel's DPA; transfers: EU-US DPF (Vercel certified, verified on the DPF list 11 Nov 2026) + SCCs. No cookies, analytics, tracking, forms, or third-party scripts or fonts. Vercel request logs (IP address, user agent, URL, time) kept up to 30 days (3 days by default on Enterprise, up to 30 with extended observability). A short-lived security cookie only if Vercel's attack protection challenges a visitor (strictly necessary, Lei 41/2004 art. 5) |
+| Mailboxes | support@, privacy@ and legal@eleva.care on Apple iCloud Mail (MX `mx01.mail.icloud.com`, `mx02.mail.icloud.com`; SPF `include:icloud.com`). iCloud is provided in the EU by Apple Distribution International Ltd. (Ireland); Apple's privacy policy says its EEA transfers are governed by SCCs; Apple Inc. is not on the DPF list. No processor agreement claimed (see owner actions) |
+| Automated email | Resend (Plus Five Five, Inc.), sending domain notifications.eleva.care, region eu-west-1 (Ireland) with primary processing in the US; processor under Resend's DPA; EU-US DPF + SCCs. Eleva Diary sends no automated emails |
 
 Never use diary@eleva.care, dpo@eleva.care, or the marketplace's eleva.care/privacy and eleva.care/terms as the diary's documents.
 
@@ -34,7 +37,7 @@ The store answers below hold only for a build that includes all of them.
 | - | -------- | ----------------- |
 | 1 | Fluid Balance card keeps only neutral totals: fluid intake and estimated output. No ratio, no "Normal/Low/High", no traffic-light colours. | Needed for "not a medical device" (Apple declaration "No", Google "Health and fitness"); no interpretation of physiological data against thresholds. |
 | 2 | Trend arrows are neutral (no green/red value judgement). | Same. |
-| 3 | Goals are the user's own targets. 2000 ml / 7 visits stay as editable starting values; no text calls them medical norms or guidelines. | Same; terms and policy describe goals as the user's own targets. |
+| 3 | The only goal is a daily fluid goal the user sets themselves; 2000 ml stays as the editable starting value; no text calls it a medical norm or guideline. The summary's goal stat is "Fluid goal reached" / "Objetivo de líquidos alcanzado" / "Objetivo de líquidos atingido" (days on which the fluid goal was reached). | Same; terms, policy and store listings describe it as a daily fluid goal the user sets themselves. |
 | 4 | Onboarding and store wording are neutral: a personal bladder diary to keep a record and share it with a health professional. No "insights", "improve your bladder health", "healthy habits", no named conditions in descriptions. | Store listings, release notes, screenshots and website follow it. Keywords may keep search terms. |
 | 5 | Medical disclaimer in onboarding, in Settings > Medical information (About section), under the charts, and in the PDF footer. Exact text below. | Apple 1.4.1; Google Health Content and Services policy; review notes list the four places. |
 | 6 | Onboarding's last page shows the acceptance line with links to both documents. It has no "have read" statement (DL 446/85 art. 21(e)): EN "By continuing, you accept the Terms of Use. See how your data is handled in the Privacy Policy." ES "Al continuar, aceptas los Términos de uso. Consulta cómo se tratan tus datos en la Política de privacidad." PT "Ao continuar, aceita os Termos de Utilização. Veja como os seus dados são tratados na Política de Privacidade." Skip leads to the last page; acceptance happens only with that page's main button (Get Started / Empezar / Começar). The app stores the accepted terms version and date on the device. When `TERMS_VERSION` changes, the app shows a prompt on launch with a link to the Terms and an Accept button; until the user accepts, the previous version applies. | Terms are presented before use; Terms §3 and §12 and privacy policy §3 and §15 describe this; the stored version and date is device data listed in the privacy policy. |
@@ -87,7 +90,7 @@ All in AsyncStorage (key `pee-diary-storage`) in the app's private storage. The 
 | Drinks | Date and time, type, amount, notes | Same |
 | Leaks | Date and time, amount (severity), urgency, activity (optional), notes | Same |
 | Edit history | For each edit, the previous and new value of every changed field, notes included | Same; included in JSON exports and backup files |
-| Goals and goal history | The user's own daily targets and their changes | Same |
+| Fluid goal and its history | The daily fluid goal the user sets themselves, and its changes | Same |
 | Streak | Days in a row with entries | Same |
 | Reminder settings | On/off, interval, quiet hours | Same |
 | Preferences | Language, onboarding completed, open add menu on launch | Same |
@@ -100,7 +103,7 @@ All in AsyncStorage (key `pee-diary-storage`) in the app's private storage. The 
 | Today | Daily totals of drinks, bathroom visits and leaks; fluid card with intake and estimated output totals only; streak |
 | Charts | Simple weekly and monthly charts of logged entries, neutral trend arrows, disclaimer line underneath |
 | History | Calendar with entries; open an entry to edit it or tap Delete |
-| Goals | The user's own targets |
+| Goal | A daily fluid goal the user sets themselves; the summary shows on how many days it was reached ("Fluid goal reached") |
 | Medical information | Settings > About > Medical information shows the disclaimer |
 
 ### Exports and backup files (user-initiated)
@@ -108,7 +111,7 @@ All in AsyncStorage (key `pee-diary-storage`) in the app's private storage. The 
 | Feature | Format | Destination | Notes |
 | ------- | ------ | ----------- | ----- |
 | Export Data | PDF, CSV, JSON | Share sheet, user chooses | PDF footer carries the disclaimer; JSON includes edit history |
-| Export Backup File | JSON | Share sheet, user chooses | Entries (with edit history), goals, goal history, streak, language |
+| Export Backup File | JSON | Share sheet, user chooses | Entries (with edit history), fluid goal and its history, streak, language |
 | Import Backup File | JSON | From a file the user picks | Replaces the current data after confirmation |
 
 Export and backup files are written to the app's cache folder and deleted at launch, before each export and by Clear All Data. Files the user has already sent elsewhere are outside the app's control and are not encrypted.
@@ -122,7 +125,7 @@ Local notifications scheduled on the device. The app asks for notification permi
 | Action | Effect |
 | ------ | ------ |
 | Delete an entry | Open the entry, tap Delete, confirm |
-| Clear All Data | Deletes entries, goals, goal history, streak, reminder settings, the launch preference and export/backup files; cancels reminders. Keeps the language and the completed onboarding. Confirm by typing DELETE. |
+| Clear All Data | Deletes entries, the fluid goal and its history, the streak, reminder settings, the launch preference and export/backup files; cancels reminders. Keeps the language and the completed onboarding. Confirm by typing DELETE. |
 | Uninstall | Removes the app's data from the phone. On Android, the last backup stays in the user's Google account until the user deletes it there or Google removes it under its own rules, and reinstalling can restore the diary from it. On iOS, no device backup holds the diary; only an exported backup file can bring it back |
 
 ### Operating-system backups (not app features)
@@ -151,11 +154,12 @@ Eleva cannot see or delete these backups.
 
 ## What Eleva receives (outside the app)
 
-The app sends nothing to Eleva. Eleva does receive the following, which the privacy policy covers with a full Article 13 GDPR notice:
+The app sends nothing to Eleva. Eleva does receive or process the following, which the privacy policy covers with a full Article 13 GDPR notice:
 
 | Source | Data | Purpose and legal basis | Retention |
 | ------ | ---- | ----------------------- | --------- |
-| Emails to support@, privacy@ or legal@ | Email address, name if given, message content. The policy asks users not to send health details and promises that any it receives are seen only by the people handling the request and deleted from the mailbox once the matter is resolved (an operational procedure is needed; Art. 9(2) condition pending lawyer) | Answering the user: legitimate interest (Art. 6(1)(f)); data protection requests: legal obligation (Art. 6(1)(c), Art. 12) | 3 years after the last contact, unless longer is needed to defend a claim |
+| Emails to support@, privacy@ or legal@ (received and stored in Apple iCloud Mail; Eleva's automated emails, none from the diary, go through Resend) | Email address, name if given, message content. The policy asks users not to send health details and promises that any it receives are seen only by the people handling the request and deleted from the mailbox once the matter is resolved (an operational procedure is needed; Art. 9(2) condition pending lawyer) | Answering the user: legitimate interest (Art. 6(1)(f)); data protection requests: legal obligation (Art. 6(1)(c), Art. 12) | 3 years after the last contact, unless longer is needed to defend a claim |
+| Website diary.eleva.care (Vercel) | IP address, user agent, requested URL and time in Vercel's request logs; a short-lived security cookie only when Vercel's attack protection challenges the visitor | Delivering and securing the site: legitimate interest (Art. 6(1)(f)); Vercel as processor (DPA; DPF + SCCs); the security cookie is strictly necessary (Lei 41/2004 art. 5) | Up to 30 days |
 | Apple and Google | Aggregated statistics; crash reports from users who agreed to share them with developers; store reviews and the name they are posted under | Fixing problems and replying to reviews: legitimate interest (Art. 6(1)(f)); Apple and Google act as independent controllers | Held by Apple and Google under their terms |
 
 ---
@@ -189,7 +193,8 @@ Listing localisations: English, Spanish (Spain) and Portuguese (Portugal) on bot
 | Topic | Position |
 | ----- | -------- |
 | Role | Follow the GDPR expert's wording: the diary is processed only on the user's phone, by the user and for the user (household use); Eleva does not receive or access it and cannot see, change or delete it. Do not say "GDPR does not apply" or "we are the controller of your health data". Eleva is responsible only for what it receives (above). *Lawyer sign-off pending.* |
-| Article 13 notice | Full notice for emails and store data: who we are, DPO status, purposes, legal bases, recipients (email provider as processor; Apple and Google as independent controllers), transfers, retention (3 years after last contact), rights, CNPD complaint, no automated decisions |
+| Article 13 notice | Full notice for emails, store data and the website (§11): who we are, DPO status, purposes, legal bases, recipients (mailboxes on Apple iCloud Mail, provided in the EU by Apple Distribution International Ltd., with no processor claim; Resend as processor for Eleva's automated emails, which the diary does not send; Vercel as processor hosting the website; Apple and Google as independent controllers for store data), transfers (Apple: SCCs according to Apple's privacy policy; Resend and Vercel: EU-US DPF + SCCs), retention (emails 3 years after last contact; website logs up to 30 days), rights, CNPD complaint, no automated decisions |
+| Website | Policy §11.3: no cookies, analytics, tracking, forms, or third-party scripts or fonts; Vercel request logs for delivery and security, legitimate interest, up to 30 days; the security cookie only under Vercel's attack protection, strictly necessary (Lei 41/2004 art. 5); retention table row in §12 |
 | Data on the device | The complete inventory above, including edit history, accepted terms version and date, and reminder settings |
 | Security | The app adds no encryption; the phone's own encryption protects it when a screen lock is set; export and backup files are not encrypted. Never "secure local storage" or an unqualified "encrypted" |
 | Exports and backups | User-initiated; the user chooses the destination; JSON exports and backup files include edit history |
@@ -264,7 +269,8 @@ Listing localisations: English, Spanish (Spain) and Portuguese (Portugal) on bot
 
 ### Pages and listings
 
-- [ ] https://diary.eleva.care, /privacy, /terms and /privacy-choices are live in EN, ES and PT
+- [ ] https://diary.eleva.care, /privacy, /terms and /privacy-choices are live in EN, ES and PT (`/pt/…`, `/en/…`, `/es/…`; the paths without a language redirect by browser language)
+- [ ] The site sets no cookies and loads nothing from third parties (check the response headers and the browser's network panel), and Vercel log retention on the Eleva team is at most 30 days
 - [ ] support@, privacy@ and legal@eleva.care are monitored
 - [ ] Store descriptions carry the disclaimer; screenshots show the current build
 - [ ] Store declarations match the table above
@@ -275,10 +281,9 @@ Listing localisations: English, Spanish (Spain) and Portuguese (Portugal) on bot
 
 - Commission a short written intended-purpose and MDR qualification note, signed off by a regulatory adviser, once the product changes ship, and keep it on file.
 - Have a Portuguese lawyer sign off the role wording, the liability clause and the governing-law and courts clause.
-- Confirm the email provider for the eleva.care mailboxes (location and transfer safeguards) for the privacy policy.
-- Confirm what diary.eleva.care logs and whether it sets cookies.
+- Apple iCloud Mail for support@, privacy@ and legal@: the iCloud terms say the service is "designed and intended for personal use on an individual basis" and offer no processor terms; Apple's processor terms (Article 28 GDPR) are in the Apple Business terms of service for its Managed Services, which include email. Check which one the eleva.care mailboxes use and, with a lawyer, either move them under Apple Business terms (or another provider with a GDPR processor agreement) or confirm the current setup. The privacy policy names iCloud Mail without claiming a processor contract; update §11.1 if the setup changes.
 - Confirm the EU/EEA country list and provide a company phone number for the stores' trader details.
-- Publish each version of the Terms at a permanent address (Terms §12 promises that earlier versions stay available at https://diary.eleva.care/terms, each with its date), and decide whether the app should open a version- and language-specific URL.
+- Publish each version of the Terms at a permanent address (Terms §12 promises that earlier versions stay available at https://diary.eleva.care/terms, each with its date), and decide whether the app should open a version-specific URL (it already opens the page in its own language).
 - Decide whether to bundle the Terms and Privacy Policy as offline in-app screens (incorporation when the phone is offline at first launch).
 - Set up the procedure that deletes health details received by email once a matter is resolved (privacy policy §4).
 - Decide on a custom Apple EULA (with a published phone number) instead of the Standard EULA plus the precedence wording in Terms §5.
@@ -295,6 +300,7 @@ When app features change, update this document and review every disclosure it af
 | 11 Nov 2026 | Removed optional iCloud backup/restore (Guideline 5.1.3(ii)) and Sentry crash reporting, performance tracing and session replay; local backup file kept | Apple label: Data Not Collected; legal documents and store texts updated; Android Auto Backup flagged for review |
 | 11 Nov 2026 | Legal review decisions adopted: product decisions 1–11 (neutral fluid totals and trend arrows, user's own goals, neutral wording, disclaimer in four places, terms acceptance in onboarding, encrypted-only Android cloud backup, app name "Eleva Diary", neutral reminder text, edit history disclosed, exact labels); diary-specific URLs and verified contacts; pt-PT and Spain Spanish texts | Apple: Data Not Collected; regulated medical device "No" for every region; no secondary category. Google: Data safety "No data collected / No data shared" (replaces the "Health info collected" proposal); Health apps declaration "Health and fitness". Store listings, review notes, release notes and screenshots rewritten in neutral wording with the disclaimer; privacy policy gains an Article 13 notice for emails and store data; terms rewritten to consumer-compliant wording |
 | 11 Nov 2026 | Second review: iOS diary confirmed excluded from iCloud and computer backups (AsyncStorage default, kept); Android 7–8.1 excluded from backup and transfer; acceptance line without "have read", Skip leads to the last page, acceptance only with Get Started; Terms update prompt with Accept button | Privacy policy, privacy choices and terms rewritten on backups, moving phones, uninstalling, acceptance and changes; Terms §5 states the Terms prevail over Apple's Standard EULA between user and Eleva; Apple App Privacy, review notes, Data safety and health declaration notes updated |
+| 11 Nov 2026 | Website facts (Vercel hosting, request logs up to 30 days, no cookies apart from Vercel's security cookie under attack protection, language paths); email facts (mailboxes on Apple iCloud Mail, Eleva's automated emails through Resend); goals reduced to a single daily fluid goal the user sets themselves, with the "Fluid goal reached" stat | Privacy policy: website section §11.3 (old §11.3 now §11.4), summary, intro, rights and retention table cover the website; §11.1 names iCloud Mail and Resend with their transfer bases. Goals described as a daily fluid goal the user sets themselves in the policy, privacy choices, terms, store listings, review notes, Data safety and App Privacy notes, health declaration notes and this file |
 | (Future) | [Feature] | [Impact assessment] |
 
 ---

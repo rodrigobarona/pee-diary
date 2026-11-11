@@ -12,7 +12,7 @@ Eleva Diary is separate from the Eleva.care platform. That platform's terms and 
 
 ## 2. What Eleva Diary is
 
-Eleva Diary is a free, personal bladder diary. On your phone, you can record your bathroom visits, what you drink and any urine leaks, see daily totals and simple charts of what you recorded, set your own daily goals, get reminders if you turn them on, and export your diary as a PDF, CSV or JSON file.
+Eleva Diary is a free, personal bladder diary. On your phone, you can record your bathroom visits, what you drink and any urine leaks, see daily totals and simple charts of what you recorded, set a daily fluid goal for yourself, get reminders if you turn them on, and export your diary as a PDF, CSV or JSON file.
 
 **What it is for.** Eleva Diary is for keeping a personal record that you can bring to an appointment and share with a health professional. It is not intended to diagnose, monitor, treat or prevent any condition or to give medical advice, and it is not a medical device within the meaning of Regulation (EU) 2017/745.
 
@@ -21,7 +21,7 @@ Eleva Diary is a free, personal bladder diary. On your phone, you can record you
 The app shows this notice on the last onboarding screen, in Settings under "Medical information", below the charts and in the footer of PDF reports.
 
 - The app shows what you record without assessing it: it does not tell you whether your figures are normal. The volumes you choose by size (small, medium or large) are estimates. The app does not check your entries.
-- Your daily goals are your own. The starting values are only a starting point that you can change, and they are not medical recommendations. If you have been told to limit or increase how much you drink, follow your health professional's advice.
+- The daily fluid goal is one you set yourself. The starting value is only a starting point that you can change, and it is not a medical recommendation. If you have been told to limit or increase how much you drink, follow your health professional's advice.
 - A health professional, not the app, assesses what your diary means for your care.
 - In an emergency, call 112 or the emergency number of the country you are in.
 

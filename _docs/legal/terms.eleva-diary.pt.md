@@ -12,7 +12,7 @@ O Eleva Diary é independente da plataforma Eleva.care. Os termos e a política 
 
 ## 2. O que é o Eleva Diary
 
-O Eleva Diary é um diário miccional pessoal e gratuito. No seu telemóvel, pode registar as idas à casa de banho, o que bebe e as perdas de urina, ver totais diários e gráficos simples do que registou, definir os seus próprios objetivos diários, receber lembretes, se os ativar, e exportar o diário em PDF, CSV ou JSON.
+O Eleva Diary é um diário miccional pessoal e gratuito. No seu telemóvel, pode registar as idas à casa de banho, o que bebe e as perdas de urina, ver totais diários e gráficos simples do que registou, definir um objetivo diário de líquidos para si, receber lembretes, se os ativar, e exportar o diário em PDF, CSV ou JSON.
 
 **Para que serve.** O Eleva Diary serve para manter um registo pessoal que pode levar a uma consulta e partilhar com um profissional de saúde. Não se destina a diagnosticar, monitorizar, tratar ou prevenir qualquer doença, nem a dar conselhos médicos, e não é um dispositivo médico na aceção do Regulamento (UE) 2017/745.
 
@@ -21,7 +21,7 @@ O Eleva Diary é um diário miccional pessoal e gratuito. No seu telemóvel, pod
 A aplicação mostra este aviso no último ecrã da apresentação inicial, em Definições, na opção "Informação médica", por baixo dos gráficos e no rodapé dos relatórios em PDF.
 
 - A aplicação mostra o que regista, sem o avaliar: não lhe diz se os seus valores são normais. Os volumes que escolhe por tamanho (pequeno, médio ou grande) são estimativas. A aplicação não verifica os seus registos.
-- Os objetivos diários são seus. Os valores iniciais são apenas um ponto de partida, que pode alterar, e não são recomendações médicas. Se lhe disseram para limitar ou aumentar o que bebe, siga a indicação do seu profissional de saúde.
+- O objetivo diário de líquidos é definido por si. O valor inicial é apenas um ponto de partida, que pode alterar, e não é uma recomendação médica. Se lhe disseram para limitar ou aumentar o que bebe, siga a indicação do seu profissional de saúde.
 - É o profissional de saúde, e não a aplicação, quem avalia o que o seu diário significa para os seus cuidados.
 - Em caso de emergência, ligue 112 ou o número de emergência do país onde estiver.
 

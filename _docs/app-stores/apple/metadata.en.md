@@ -67,7 +67,7 @@ WHAT YOU CAN RECORD
 YOUR DIARY AT A GLANCE
 • Daily totals of drinks, bathroom visits and leaks
 • Simple weekly and monthly charts of what you logged
-• Your own daily targets, if you want to set them
+• A daily fluid goal you set yourself, if you want one
 • A streak showing how many days in a row you have logged
 • Optional reminders to update your diary
 
@@ -120,7 +120,7 @@ Apple requires apps available in the EU/EEA, UK or US whose primary or secondary
 
 **Answer: No, for every region listed (EU/EEA, UK, US).**
 
-This answer holds because the build being submitted includes the product changes in `_docs/compliance/app-behavior-to-disclosures.md` ("Product decisions"): the Fluid Balance card shows only neutral totals (no ratio, no "Normal/Low/High", no traffic-light colours), trend arrows are neutral, goals are the user's own targets with no claim that they are medical norms, onboarding and store wording describe a personal diary, and the medical disclaimer appears on the last onboarding page (which Skip leads to), Settings > Medical information, under the charts and in the PDF footer. Do not submit a build that still has the output ratio or the "medical guidelines" goal text: with those features the "No" answer is not defensible under MDCG 2019-11 Rev.1.
+This answer holds because the build being submitted includes the product changes in `_docs/compliance/app-behavior-to-disclosures.md` ("Product decisions"): the Fluid Balance card shows only neutral totals (no ratio, no "Normal/Low/High", no traffic-light colours), trend arrows are neutral, the only goal is a daily fluid goal the user sets themselves, with no claim that it is a medical norm, onboarding and store wording describe a personal diary, and the medical disclaimer appears on the last onboarding page (which Skip leads to), Settings > Medical information, under the charts and in the PDF footer. Do not submit a build that still has the output ratio or the "medical guidelines" goal text: with those features the "No" answer is not defensible under MDCG 2019-11 Rev.1.
 
 Source: [Declare regulated medical device status](https://developer.apple.com/help/app-store-connect/manage-app-information/declare-regulated-medical-device-status).
 

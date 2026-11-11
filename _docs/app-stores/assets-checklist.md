@@ -16,12 +16,14 @@ All pages must be public (no login), not geofenced, not PDFs, and available in E
 | Terms of Use | https://diary.eleva.care/terms | Settings > Terms of Use; onboarding acceptance | ⬜ Publish |
 | Privacy Choices | https://diary.eleva.care/privacy-choices | App Store Support URL; Google Play optional data deletion link; Settings > Privacy Choices | ⬜ Publish |
 
+Each page is published in Portuguese, English and Spanish at a language path (for example https://diary.eleva.care/pt/privacy or https://diary.eleva.care/en/terms); the addresses without a language redirect by the browser's language. The app opens the page in its own language. The site is hosted on Vercel (Eleva team account).
+
 What each page must contain:
 
 - **Home page:** the same neutral description as the store listings (a personal bladder diary to keep a record and share it with a health professional), the medical disclaimer, support@eleva.care, the company identification (BÚZIOS E TARTARUGAS - LDA, brand Eleva.care, NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal) and links to the three legal pages. No named conditions, "insights", "trends" or health-benefit claims.
 - **Privacy Choices:** how to export, back up and delete the diary, how to deal with device backups, and support@eleva.care for anything else (it doubles as the App Store Support URL).
 - **Privacy Policy / Terms of Use:** the texts in `_docs/legal/`, with "Last updated: 11 November 2026".
-- If diary.eleva.care keeps server logs or sets cookies, the privacy policy must say so before the site goes live; non-essential cookies or analytics would need consent.
+- **The site itself:** no cookies, analytics, tracking, forms, or third-party scripts or fonts. Vercel's request logs (IP address, user agent, URL, time; kept up to 30 days) and the short-lived security cookie Vercel may set only when its attack protection challenges a visitor are disclosed in privacy policy §11.3. Adding analytics, non-essential cookies, forms or third-party scripts or fonts requires updating the privacy policy first, and consent for anything not strictly necessary.
 
 ## Email addresses to set up
 

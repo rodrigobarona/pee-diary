@@ -2,13 +2,13 @@
 
 **Last updated:** 11 November 2026
 
-This policy explains what happens to data in Eleva Diary, a personal bladder diary for iOS and Android. It applies from its publication at [diary.eleva.care/privacy](https://diary.eleva.care/privacy).
+This policy explains what happens to data in Eleva Diary, a personal bladder diary for iOS and Android, and on the diary.eleva.care website, where it is published. It applies from its publication at [diary.eleva.care/privacy](https://diary.eleva.care/privacy).
 
 ## In short
 
 - **Your diary stays on your phone.** The app has no account, does not connect to the internet and sends us nothing. Eleva does not receive or see what you log.
 - **Your diary leaves your phone only when you decide**, when you export or share a file, or, on Android, if your phone's backup made by Google includes the app's data. On iPhone, your diary is not included in iCloud backups or in backups made on a computer.
-- **In connection with the app, Eleva only processes** the emails you send us and the information the App Store and Google Play make available to us (reviews, statistics and crash reports).
+- **In connection with the app and the website, Eleva only processes** the emails you send us, the information the App Store and Google Play make available to us (reviews, statistics and crash reports) and the technical access logs of the diary.eleva.care website, which our hosting provider keeps for up to 30 days.
 - **You have rights over that data** and you can complain to the Portuguese data protection authority, the Comissão Nacional de Proteção de Dados (CNPD).
 
 ## 1. Who we are
@@ -22,7 +22,7 @@ Eleva Diary is published by **BÚZIOS E TARTARUGAS - LDA** ("Eleva"), a sociedad
 
 ## 2. Your diary is yours
 
-Everything you log in Eleva Diary is kept on your phone, by you and for you, and leaves it only in the cases described in sections 7 and 8. The app has no account or sign-in, makes no internet connections and contains no analytics, advertising, tracking or crash-reporting tools. We do not receive what you write. When you tap a link to this policy or to the Terms of Use, the page opens in your phone's browser.
+Everything you log in Eleva Diary is kept on your phone, by you and for you, and leaves it only in the cases described in sections 7 and 8. The app has no account or sign-in, makes no internet connections and contains no analytics, advertising, tracking or crash-reporting tools. We do not receive what you write. When you tap a link to this policy or to the Terms of Use, the page opens in your phone's browser, on the diary.eleva.care website (section 11.3).
 
 That is why Eleva is not the controller of the data in your diary and cannot see, change or delete it. Eleva is the controller only of the data described in section 11, "What Eleva receives".
 
@@ -34,7 +34,7 @@ The app keeps this data in its private storage on your phone:
 - **Drinks:** date and time, type of drink, amount and notes.
 - **Leaks:** date and time, amount, urgency (1 to 5), what you were doing (optional) and notes.
 - **In every entry:** an identifier the app creates, the date and time you created the entry, and its edit history.
-- **Daily goals:** your fluid and bathroom-visit goals, and the history of changes to them, with dates.
+- **Daily goal:** the daily fluid goal you set yourself, and the history of changes to it, with dates.
 - **Streak:** how many days in a row you have logged and the last day with entries.
 - **Reminders:** whether they are on, the interval and the quiet hours.
 - **Preferences:** your language, whether the menu for adding entries opens when you start the app, and whether you have seen the welcome screens.
@@ -60,14 +60,14 @@ You can turn reminders off in **Settings** > **Reminders**, or withdraw the noti
 
 ## 6. Storage on your phone
 
-The app stores on your phone only what is strictly necessary for the diary you chose to keep: your entries, goals, reminder settings and preferences. It uses no cookies, advertising identifiers or other identifiers to follow you. Because this storage is strictly necessary for the service you asked for, it does not need your consent (Article 5 of Portuguese Law No. 41/2004 of 18 August).
+The app stores on your phone only what is strictly necessary for the diary you chose to keep: your entries, fluid goal, reminder settings and preferences. It uses no cookies, advertising identifiers or other identifiers to follow you. Because this storage is strictly necessary for the service you asked for, it does not need your consent (Article 5 of Portuguese Law No. 41/2004 of 18 August).
 
 ## 7. Export and backup files
 
 Your diary leaves the app only when you decide:
 
 - **Export Data** creates a PDF report, a CSV spreadsheet or a JSON file with the entries for the period you choose. The JSON file includes everything the app stores about each entry, including its creation date and edit history.
-- **Export Backup File** creates a file with all your entries (with notes, creation dates and edit history), your goals and their history, your streak and your language.
+- **Export Backup File** creates a file with all your entries (with notes, creation dates and edit history), your fluid goal and its history, your streak and your language.
 
 In both cases, the app opens your phone's share sheet. That is where you decide where to save or send the file, for example the Files app, email or a cloud storage service. Eleva does not receive any copy. From then on, the file is subject to the terms and privacy policy of the service you chose.
 
@@ -75,7 +75,7 @@ The app does not encrypt these files. Keep them somewhere you trust and delete c
 
 To share them, the app first saves the files in its own temporary folder on your phone. It deletes them the next time you open the app, before each new export and when you use **Clear All Data**.
 
-**Import Backup File** reads a file you choose and replaces the entries, goals, goal history, streak and language currently in the app. The app deletes its temporary copy of the file right after reading it.
+**Import Backup File** reads a file you choose and replaces the entries, fluid goal and its history, streak and language currently in the app. The app deletes its temporary copy of the file right after reading it.
 
 ## 8. Phone backups
 
@@ -97,7 +97,7 @@ To avoid this, you can turn off your phone's backup or delete the backup in your
 ## 9. Deleting your data
 
 - **One entry:** in the **History** tab, tap the entry, then the bin icon, and confirm with **Delete**.
-- **All data:** in **Settings**, tap **Clear All Data** and confirm. The app deletes your entries (with notes and edit history), goals and goal history, streak, reminder settings and the launch menu preference, and cancels scheduled reminders. It also deletes any export and backup files in its temporary folder. Goals and settings go back to their starting values. Only your language, the fact that you have seen the welcome screens, and the version and date of the Terms of Use you accepted are kept. This cannot be undone.
+- **All data:** in **Settings**, tap **Clear All Data** and confirm. The app deletes your entries (with notes and edit history), fluid goal and its history, streak, reminder settings and the launch menu preference, and cancels scheduled reminders. It also deletes any export and backup files in its temporary folder. The fluid goal and settings go back to their starting values. Only your language, the fact that you have seen the welcome screens, and the version and date of the Terms of Use you accepted are kept. This cannot be undone.
 - **Uninstalling:** removes all the app's data from your phone. On Android, if there is a backup in your Google account, reinstalling the app may restore it (section 8). On iPhone, your phone's backups do not include your diary: after uninstalling, you can only recover it from a backup file you exported.
 - **Copies outside the app:** **Clear All Data** and uninstalling do not delete files you exported or shared, or Android backups in your Google account. Delete the files where you saved them, and the backup in your Google account settings.
 
@@ -118,8 +118,9 @@ If you write to [support@eleva.care](mailto:support@eleva.care), [privacy@eleva.
 - **Data:** your email address, your name if you give it, and what you write, including attachments.
 - **Purpose:** to answer you and keep a record of the exchange.
 - **Legal basis:** our legitimate interest in answering the messages we receive (GDPR, Article 6(1)(f)). For requests to exercise your rights, compliance with a legal obligation (GDPR, Article 6(1)(c) and Article 12).
-- **Recipients:** our email provider stores the messages on our behalf, as our processor, under a contract that meets Article 28 GDPR.
-- **International transfers:** if the provider processes the messages outside the European Economic Area, the transfer relies on a European Commission adequacy decision or on standard contractual clauses approved by the Commission. You can ask us about these safeguards at [privacy@eleva.care](mailto:privacy@eleva.care).
+- **Recipients:** our mailboxes run on Apple's iCloud Mail service, which receives and stores the messages you send us and our replies. In the European Union, Apple provides iCloud through Apple Distribution International Ltd., in Ireland.
+- **Automated emails:** Eleva Diary sends no automated emails, and we answer your messages from our mailboxes. Eleva's automated emails are sent by Resend (Plus Five Five, Inc.), from the notifications.eleva.care domain, as our processor, under a contract that meets Article 28 GDPR.
+- **International transfers:** Apple may process the messages outside the European Economic Area. According to Apple's privacy policy, its international transfers of the personal data it processes from the European Economic Area are governed by standard contractual clauses approved by the European Commission. Resend sends emails from Ireland but processes the data mainly in the United States; that transfer relies on the EU-US Data Privacy Framework, under which Resend is certified, and on standard contractual clauses approved by the European Commission. You can ask us about these safeguards at [privacy@eleva.care](mailto:privacy@eleva.care).
 - **Retention:** 3 years after the last contact. If needed to establish, exercise or defend a legal claim, we keep them longer, for as long as that need lasts.
 
 ### 11.2 Information from the app stores
@@ -132,7 +133,19 @@ Apple (App Store) and Google (Google Play) run their stores as independent contr
 
 This information does not include the content of your diary. We use it to fix errors, check that the app works well and reply to reviews, based on our legitimate interest (GDPR, Article 6(1)(f)). It stays in Apple's and Google's tools for the period they set.
 
-### 11.3 What else you should know
+### 11.3 The diary.eleva.care website
+
+The [diary.eleva.care](https://diary.eleva.care) website presents Eleva Diary and publishes this policy, the Terms of Use and Privacy Choices, in Portuguese, English and Spanish. It uses no analytics or tracking tools, has no forms and loads no third-party scripts or fonts. It uses no cookies, with the single exception described below.
+
+- **Data:** when you open a page, Vercel, which hosts the site, logs the request: your IP address, your browser identification (user agent), the page requested and the date and time.
+- **Purpose:** to deliver the pages and protect the site from abuse.
+- **Legal basis:** our legitimate interest in keeping the site available and secure (GDPR, Article 6(1)(f)).
+- **Recipients:** Vercel Inc. hosts the site on our behalf, as our processor, under a contract that meets Article 28 GDPR. The pages are served from Vercel's global network.
+- **International transfers:** Vercel is based in the United States and may process these logs outside the European Economic Area. The transfer relies on the EU-US Data Privacy Framework, under which Vercel is certified, and on standard contractual clauses approved by the European Commission.
+- **Retention:** up to 30 days.
+- **Security cookie:** only if Vercel's attack protection is switched on and asks you to pass a security check, Vercel may store a short-lived cookie in your browser showing that you passed the check. This cookie is strictly necessary to protect the site and is not used for anything else, so it does not need your consent (Article 5 of Portuguese Law No. 41/2004 of 18 August).
+
+### 11.4 What else you should know
 
 - **Not required:** you do not need to give us any data to use the app. Writing to us or posting a review is your choice.
 - **No automated decisions:** we make no automated decisions about you and do no profiling. Totals and charts are calculated on your phone and appear only in your app.
@@ -146,16 +159,17 @@ This information does not include the content of your diary. We use it to fix er
 | Temporary export and backup files | In the app's temporary folder | Until you next open the app, make a new export or use **Clear All Data** |
 | Files you exported or shared | Where you saved or sent them | Until you delete them, under that service's terms |
 | Android backups | In your Google account | According to your Google account settings; after you uninstall the app, until you delete the backup or Google removes it under its own rules |
-| Emails sent to Eleva | With our email provider | 3 years after the last contact, or longer while needed to defend a legal claim |
+| Emails sent to Eleva | In Apple's iCloud Mail service | 3 years after the last contact, or longer while needed to defend a legal claim |
+| diary.eleva.care website access logs | With Vercel, which hosts the site | Up to 30 days |
 | Reviews, statistics and crash reports | In Apple's and Google's tools | For the period Apple and Google set |
 
 ## 13. Your rights
 
 **Your diary.** It is in your hands: you can view it in **History**, change or delete any entry, export it, or erase it with **Clear All Data**. Because we do not receive it, we cannot open, correct or delete it for you. We also hold nothing that would let us link the content of the diary to you (GDPR, Article 11).
 
-**The data Eleva processes** (emails and information from the stores): you have the right of access, rectification, erasure, restriction of processing and data portability where it applies.
+**The data Eleva processes** (emails, information from the stores and website access logs): you have the right of access, rectification, erasure, restriction of processing and data portability where it applies.
 
-**Right to object.** You can object at any time to our processing of your emails and of store information based on our legitimate interests. Write to [privacy@eleva.care](mailto:privacy@eleva.care).
+**Right to object.** You can object at any time to our processing of your emails, of store information and of website access logs based on our legitimate interests. Write to [privacy@eleva.care](mailto:privacy@eleva.care).
 
 - To exercise these rights, write to [privacy@eleva.care](mailto:privacy@eleva.care). It is free of charge.
 - We answer within one month. If a request is complex, we may need two more months; in that case we tell you within the first month and explain why.

@@ -42,7 +42,7 @@ WHAT YOU CAN RECORD
 YOUR DIARY AT A GLANCE
 • Daily totals of drinks, bathroom visits and leaks
 • Simple weekly and monthly charts of what you logged
-• Your own daily targets, if you want to set them
+• A daily fluid goal you set yourself, if you want one
 • A streak showing how many days in a row you have logged
 • Optional reminders to update your diary
 

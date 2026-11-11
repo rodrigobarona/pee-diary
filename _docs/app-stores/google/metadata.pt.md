@@ -42,7 +42,7 @@ O QUE PODE REGISTAR
 O SEU DIÁRIO EM RESUMO
 • Totais diários de bebidas, idas à casa de banho e perdas
 • Gráficos semanais e mensais simples do que registou
-• Os seus próprios objetivos diários, se os quiser definir
+• Um objetivo diário de líquidos definido por si, se o quiser
 • Uma sequência que mostra quantos dias seguidos registou
 • Lembretes opcionais para atualizar o diário
 

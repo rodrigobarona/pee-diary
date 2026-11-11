@@ -30,7 +30,7 @@ Privacy policy URL (App content > Privacy policy, required even when nothing is 
 
 ### 1. Diary data on the device: not collected
 
-Entries (with notes and edit history), goals, goal history, streak, reminder settings, language, onboarding and launch preferences, and the accepted terms version and date are stored in the app's local storage. The app has no network code and no analytics, advertising, tracking or crash-reporting SDK. Nothing is sent to Eleva or to a third party.
+Entries (with notes and edit history), the fluid goal and its history, streak, reminder settings, language, onboarding and launch preferences, and the accepted terms version and date are stored in the app's local storage. The app has no network code and no analytics, advertising, tracking or crash-reporting SDK. Nothing is sent to Eleva or to a third party.
 
 ### 2. Reminders: not collected
 
@@ -62,7 +62,7 @@ Emails users choose to send to support@eleva.care, privacy@eleva.care or legal@e
 
 - **Delete account URL:** not applicable; the app has no accounts.
 - **Optional data deletion link:** https://diary.eleva.care/privacy-choices (explains Clear All Data, deleting single entries, deleting export and backup files, and removing Android backups from the Google account).
-- In the app: Settings > Clear All Data > type DELETE to confirm. This deletes entries, goals, goal history, streak, reminder settings, the launch preference and the export/backup files the app saved, and cancels reminders. It keeps the language and the completed onboarding.
+- In the app: Settings > Clear All Data > type DELETE to confirm. This deletes entries, the fluid goal and its history, the streak, reminder settings, the launch preference and the export/backup files the app saved, and cancels reminders. It keeps the language and the completed onboarding.
 
 ---
 

@@ -26,7 +26,7 @@ A aplicação não encripta o ficheiro. Depois de o guardar ou enviar, o ficheir
 1. Em **Definições**, na secção **Cópia local**, toque em **Exportar cópia de segurança**.
 2. No menu de partilha, escolha onde guardar ou para onde enviar o ficheiro.
 
-O ficheiro contém todos os registos (com as notas, as datas de criação e o histórico de edições), os objetivos e o seu histórico, a sequência e o idioma. Não é encriptado: guarde-o num local de confiança.
+O ficheiro contém todos os registos (com as notas, as datas de criação e o histórico de edições), o objetivo de líquidos e o seu histórico, a sequência e o idioma. Não é encriptado: guarde-o num local de confiança.
 
 No iPhone, o diário não entra nas cópias de segurança do telemóvel (secção 6). Este ficheiro é a forma de guardar uma cópia e de levar o diário para um telemóvel novo.
 
@@ -36,7 +36,7 @@ No iPhone, o diário não entra nas cópias de segurança do telemóvel (secçã
 2. Na secção **Cópia local**, toque em **Importar cópia de segurança**.
 3. Confirme e escolha o ficheiro.
 
-A importação substitui os registos, os objetivos, o histórico de objetivos, a sequência e o idioma que estão na aplicação.
+A importação substitui os registos, o objetivo de líquidos e o seu histórico, a sequência e o idioma que estão na aplicação.
 
 ## 3. Eliminar um registo
 
@@ -57,7 +57,7 @@ Se quiser guardar uma cópia, exporte o diário antes (secções 1 e 2). Esta a�
 **O que é eliminado:**
 
 - todos os registos de idas à casa de banho, bebidas e perdas de urina, com as notas e o histórico de edições;
-- os objetivos e o histórico de objetivos (os objetivos voltam aos valores iniciais);
+- o objetivo de líquidos e o seu histórico (o objetivo volta ao valor inicial);
 - a sequência;
 - as definições dos lembretes (os lembretes ficam desligados e os que estavam agendados são cancelados);
 - a preferência do menu ao iniciar;

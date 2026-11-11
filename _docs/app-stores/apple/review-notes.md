@@ -18,7 +18,7 @@ Eleva Diary is a personal bladder diary. Users record bathroom visits, drinks an
 - Permissions: notifications only, requested when the user turns on Settings > Reminders. Reminders are local notifications scheduled on the device ("Time to update your diary"). No push token is requested or sent.
 - Medical disclaimer: shown on the last onboarding page (Skip leads to that page, so every user sees it), in Settings > Medical information (About section), under the charts on the Today screen, and in the footer of every PDF report.
 - The last onboarding page shows "By continuing, you accept the Terms of Use. See how your data is handled in the Privacy Policy.", with links to both. The user accepts by tapping Get Started on that page. When the Terms version changes, the app shows a notice on launch with a link to the new Terms and an Accept button.
-- Legal pages: Settings > Privacy Policy, Terms of Use and Privacy Choices open https://diary.eleva.care/privacy, /terms and /privacy-choices in the browser.
+- Legal pages: Settings > Privacy Policy, Terms of Use and Privacy Choices open the page in the app's language in the browser, for example https://diary.eleva.care/en/privacy, /en/terms and /en/privacy-choices. The website has no analytics, tracking, forms or third-party scripts.
 - Regulated medical device: declared "No" for every region. The app is a record-keeping tool with no diagnostic, monitoring or treatment function.
 - Languages: English, Spanish (Spain) and Portuguese (Portugal).
 - Built with Expo SDK 57 (React Native). Minimum iOS 16.4.
@@ -34,13 +34,13 @@ Contact: support@eleva.care
 2. **Add a bathroom visit:** tap "+" > Urination > choose size or enter ml, urgency, leak/pain, optional note > Save.
 3. **Add a drink:** tap "+" > Fluid Intake > choose type and amount > Save.
 4. **Add a leak:** tap "+" > Leak/Accident > choose amount, urgency, optional activity and note > Save.
-5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the streak, and the disclaimer under the charts.
+5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the number of days the user's own fluid goal was reached ("Fluid goal reached"), the streak, and the disclaimer under the charts.
 6. **History:** open the History tab, pick a day, open an entry, edit it or tap Delete.
 7. **Export Data:** Settings > Export Data > choose PDF, CSV or JSON and dates > share sheet. The PDF footer carries the disclaimer.
 8. **Local Backup:** Settings > Local Backup > Export Backup File (share sheet); Import Backup File (document picker; replaces the current diary after confirmation).
 9. **Reminders:** Settings > Reminders > Enable Reminders. iOS asks for notification permission at this point and not before.
 10. **Medical information:** Settings > About > Medical information.
-11. **Clear All Data:** Settings > Clear All Data > type DELETE to confirm. Deletes entries, goals, goal history, streak, reminder settings, the launch preference and export/backup files, and cancels reminders. Keeps the language, the completed onboarding and the accepted Terms version and date.
+11. **Clear All Data:** Settings > Clear All Data > type DELETE to confirm. Deletes entries, the fluid goal and its history, the streak, reminder settings, the launch preference and export/backup files, and cancels reminders. Keeps the language, the completed onboarding and the accepted Terms version and date.
 12. **Language:** Settings > Language > English, Español or Português.
 
 **Demo account:** not applicable.
@@ -61,7 +61,7 @@ No other permissions (no camera, microphone, location, contacts, photos, HealthK
 
 ### Is this a medical device?
 
-No. Eleva Diary is a personal diary, like a paper bladder diary. It stores what the user enters, shows totals and simple charts of those entries, and exports them. It does not interpret the entries, tell the user whether results are normal, or give health advice. Daily goals are targets the user sets; the starting values (2000 ml, 7 visits) can be changed and are not presented as medical norms. The regulated medical device declaration is "No" for every region (see `metadata.en.md`).
+No. Eleva Diary is a personal diary, like a paper bladder diary. It stores what the user enters, shows totals and simple charts of those entries, and exports them. It does not interpret the entries, tell the user whether results are normal, or give health advice. The only goal is a daily fluid goal the user sets themselves; its starting value (2000 ml) can be changed and is not presented as a medical norm. The regulated medical device declaration is "No" for every region (see `metadata.en.md`).
 
 ### Does the app give health information? (Guideline 1.4.1)
 

@@ -30,7 +30,7 @@ Privacy Policy URL: https://diary.eleva.care/privacy
 | What                                   | Where it is                     | Leaves the device?                                         |
 | -------------------------------------- | ------------------------------- | ---------------------------------------------------------- |
 | Diary entries (with notes and edit history) | App's local storage (AsyncStorage), excluded from iCloud and computer backups | No                    |
-| Goals, goal history, streak            | App's local storage             | No                                                         |
+| Fluid goal and its history, streak     | App's local storage             | No                                                         |
 | Reminder settings, language, onboarding and launch preferences, accepted terms version and date | App's local storage | No                         |
 | Reminders                              | Local notifications on the device | No (no push token, no server)                            |
 | Export (PDF/CSV/JSON) and backup file  | App's cache folder, then the share sheet | Only where the user sends it                      |
@@ -99,7 +99,7 @@ The label must match the release build, not only the source code.
 - [ ] Inspect the release build's entitlements: `expo-notifications` may add `aps-environment`; that is acceptable only because the app never requests a push token (confirm in `lib/utils/notifications.ts`)
 - [ ] Run the release build behind a network proxy for a full session (launch, onboarding, logging, reminders, export, backup, Clear All Data) and confirm there is no traffic, apart from the browser loading diary.eleva.care when a legal link is tapped
 - [ ] Export and backup files use the share sheet; import uses the document picker
-- [ ] Privacy policy at https://diary.eleva.care/privacy is live and says the same (no collection by the app; Article 13 notice for emails and store data)
+- [ ] Privacy policy at https://diary.eleva.care/privacy is live and says the same (no collection by the app; Article 13 notice for emails, store data and the website's access logs)
 
 ---
 

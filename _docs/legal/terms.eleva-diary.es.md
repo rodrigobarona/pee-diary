@@ -12,7 +12,7 @@ Eleva Diary es independiente de la plataforma Eleva.care. Los términos y la pol
 
 ## 2. Qué es Eleva Diary
 
-Eleva Diary es un diario miccional personal y gratuito. En tu móvil puedes registrar tus idas al baño, lo que bebes y las pérdidas de orina, ver totales diarios y gráficos sencillos de lo que has registrado, fijar tus propios objetivos diarios, recibir recordatorios si los activas y exportar el diario en PDF, CSV o JSON.
+Eleva Diary es un diario miccional personal y gratuito. En tu móvil puedes registrar tus idas al baño, lo que bebes y las pérdidas de orina, ver totales diarios y gráficos sencillos de lo que has registrado, fijarte un objetivo diario de líquidos, recibir recordatorios si los activas y exportar el diario en PDF, CSV o JSON.
 
 **Para qué sirve.** Eleva Diary sirve para mantener un registro personal que puedes llevar a una consulta y compartir con un profesional de la salud. No está destinado a diagnosticar, monitorizar, tratar ni prevenir ninguna afección, ni a dar consejo médico, y no es un producto sanitario en el sentido del Reglamento (UE) 2017/745.
 
@@ -21,7 +21,7 @@ Eleva Diary es un diario miccional personal y gratuito. En tu móvil puedes regi
 La aplicación muestra este aviso en la última pantalla de la presentación inicial, en Ajustes, en la opción "Información médica", debajo de los gráficos y en el pie de página de los informes en PDF.
 
 - La aplicación muestra lo que registras sin valorarlo: no te dice si tus valores son normales. Los volúmenes que eliges por tamaño (pequeño, mediano o grande) son estimaciones. La aplicación no comprueba tus registros.
-- Los objetivos diarios son tuyos. Los valores iniciales son solo un punto de partida que puedes cambiar, y no son recomendaciones médicas. Si te han indicado que limites o aumentes lo que bebes, sigue la indicación de tu profesional de la salud.
+- El objetivo diario de líquidos lo fijas tú. El valor inicial es solo un punto de partida que puedes cambiar, y no es una recomendación médica. Si te han indicado que limites o aumentes lo que bebes, sigue la indicación de tu profesional de la salud.
 - Es el profesional de la salud, y no la aplicación, quien valora lo que tu diario significa para tu atención.
 - En caso de emergencia, llama al 112 o al número de emergencias del país en el que estés.
 

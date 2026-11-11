@@ -26,7 +26,7 @@ The app does not encrypt the file. Once you save or send it, the file is subject
 1. In **Settings**, under **Local Backup**, tap **Export Backup File**.
 2. In the share sheet, choose where to save or send the file.
 
-The file contains all your entries (with notes, creation dates and edit history), your goals and their history, your streak and your language. It is not encrypted: keep it somewhere you trust.
+The file contains all your entries (with notes, creation dates and edit history), your fluid goal and its history, your streak and your language. It is not encrypted: keep it somewhere you trust.
 
 On iPhone, your diary is not included in your phone's backups (section 6). This file is how you keep a copy and move your diary to a new phone.
 
@@ -36,7 +36,7 @@ On iPhone, your diary is not included in your phone's backups (section 6). This 
 2. Under **Local Backup**, tap **Import Backup File**.
 3. Confirm and choose the file.
 
-Importing replaces the entries, goals, goal history, streak and language currently in the app.
+Importing replaces the entries, fluid goal and its history, streak and language currently in the app.
 
 ## 3. Delete one entry
 
@@ -57,7 +57,7 @@ If you want to keep a copy, export your diary first (sections 1 and 2). This can
 **What is deleted:**
 
 - all bathroom visit, drink and leak entries, with their notes and edit history;
-- your goals and goal history (goals go back to their starting values);
+- your fluid goal and its history (the goal goes back to its starting value);
 - your streak;
 - your reminder settings (reminders are turned off and scheduled ones are cancelled);
 - the launch menu preference;
