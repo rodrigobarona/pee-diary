@@ -1,222 +1,139 @@
-# Eleva Diary Privacy Choices & Data Deletion
+# Eleva Diary Privacy Choices
 
-**Effective Date:** 11 November 2026  
-**Last Updated:** 11 November 2026
+**Last updated:** 11 November 2026
 
----
+This page explains, step by step, how to export, keep and delete your Eleva Diary data. In the app, you find it under **Settings** > **Privacy Choices** ("How to delete your data"). To learn what the app stores and what Eleva receives, read the [Privacy Policy](https://diary.eleva.care/privacy).
 
-## Overview
+Your diary is kept on your phone. Eleva does not receive it, so we cannot delete it for you: you take every step below yourself, in the app or in your phone's settings.
 
-Eleva Diary is designed with your privacy in mind. All your data is stored locally on your device, and you have full control over it at all times.
+## 1. Export your diary
 
-This page explains:
+1. Open Eleva Diary and tap **Settings**.
+2. Tap **Export Data**.
+3. Choose the date range.
+4. Choose the format:
+   - **PDF:** an easy-to-read report, for example to take to an appointment.
+   - **CSV:** a spreadsheet.
+   - **JSON:** a file with everything the app stores about each entry, including its creation date and edit history.
+5. Tap **Export & Share** and choose, in the share sheet, where to save or send the file.
 
-- How your data is stored
-- How to export your data
-- How to delete your data
-- How to back up and restore your data with a backup file
+The app does not encrypt the file. Once you save or send it, the file is subject to the terms of the service you chose. Eleva does not receive any copy.
 
----
+## 2. Make and restore a backup file
 
-## Where is My Data Stored?
+**Make a backup file**
 
-### On Your Device (All Users)
+1. In **Settings**, under **Local Backup**, tap **Export Backup File**.
+2. In the share sheet, choose where to save or send the file.
 
-All diary entries, goals, and settings are stored **locally on your device** using secure local storage. This data:
+The file contains all your entries (with notes, creation dates and edit history), your goals and their history, your streak and your language. It is not encrypted: keep it somewhere you trust.
 
-- Is never sent anywhere by the app; it leaves your device only if you export it, or in your device's own backup when that is on (on many phones it is on by default)
-- Is protected by your device's security (passcode/biometrics)
-- Is automatically deleted if you uninstall the app
+On iPhone, your diary is not included in your phone's backups (section 6). This file is how you keep a copy and move your diary to a new phone.
 
-### In Device Backups (Depends on Your Device Settings)
+**Restore a backup file** (on any iOS or Android phone)
 
-Eleva Diary does not upload your data to any cloud service. Separately from the app, your device's operating system may include the app's data in its own device backups:
+1. Install and open Eleva Diary and tap **Settings**.
+2. Under **Local Backup**, tap **Import Backup File**.
+3. Confirm and choose the file.
 
-- **iOS:** in iCloud Backup or a backup to your computer, if you use them
-- **Android:** in Android's backup to your Google account, if device backup is turned on
+Importing replaces the entries, goals, goal history, streak and language currently in the app.
 
-These backups are controlled by you through your device settings and are handled by Apple or Google. Eleva Care does not have access to them.
+## 3. Delete one entry
 
----
+1. Open the **History** tab.
+2. Tap the entry you want to delete.
+3. Tap the bin icon and confirm with **Delete**.
 
-## How to Export Your Data
+When you change an entry instead of deleting it, the app keeps the previous value in the entry's edit history. To remove a previous value completely, delete the entry and create it again.
 
-You can export all your diary data at any time in multiple formats:
+## 4. Clear All Data
 
-### Steps to Export
+If you want to keep a copy, export your diary first (sections 1 and 2). This cannot be undone.
 
-1. Open Eleva Diary
-2. Go to **Settings** (gear icon)
-3. Tap **Export Data** or **Export**
-4. Select your preferred format:
-   - **PDF** — Formatted report, ideal for sharing with your doctor
-   - **CSV** — Spreadsheet format, compatible with Excel/Google Sheets
-   - **JSON** — Technical format, for backup or data portability
-5. Select the date range you want to export
-6. Tap **Export**
-7. Choose where to send the file (email, cloud storage, etc.)
+1. Tap **Settings**.
+2. Tap **Clear All Data**.
+3. Confirm. The app asks you to type a word to confirm.
 
-### What's Included in Exports
+**What is deleted:**
 
-Your export will include:
+- all bathroom visit, drink and leak entries, with their notes and edit history;
+- your goals and goal history (goals go back to their starting values);
+- your streak;
+- your reminder settings (reminders are turned off and scheduled ones are cancelled);
+- the launch menu preference;
+- any export and backup files in the app's temporary folder.
 
-- All urination entries (date, time, volume, urgency, leak/pain indicators, notes)
-- All fluid intake entries (date, time, type, amount, notes)
-- All leak entries (date, time, severity, urgency, notes)
-- Summary statistics (for PDF reports)
+**What is kept:** your language, the fact that you have seen the welcome screens, and the version and date of the Terms of Use you accepted.
 
----
+**What the app cannot delete:** files you exported or shared and, on Android, the backup in your Google account. Delete the files where you saved them, and the backup in your Google account (section 6).
 
-## How to Delete Your Data
+To check, open the **History** tab: it should be empty.
 
-### Delete All Data (Complete Reset)
+## 5. Reminders and notifications
 
-To permanently delete all your data from the app:
+- **Turn reminders on or off:** in **Settings** > **Reminders**. When you first turn them on, the app asks for permission to show notifications.
+- **Withdraw the notification permission:**
+  - on iPhone, open your phone's Settings app, tap **Notifications**, then **Eleva Diary**;
+  - on Android, open your phone's settings, tap **Apps**, then **Eleva Diary** and **Notifications**. Menu names may vary by manufacturer.
+- **Lock screen:** reminders show only a general message asking you to update your diary. In your phone's notification settings, you can choose whether they appear on the lock screen.
 
-1. Open Eleva Diary
-2. Go to **Settings** (gear icon)
-3. In the **Data** section, tap **Clear All Data**
-4. Confirm the deletion when prompted
+Reminders are scheduled on the phone itself. Nothing is sent to Eleva.
 
-**Warning:** This action is permanent and cannot be undone. We recommend exporting your data first if you want to keep a copy.
+## 6. Phone backups
 
-### What Gets Deleted
+Apple and Google make these backups under their respective terms, according to your phone's settings. Eleva has no access to them.
 
-When you clear all data:
+**Android**
 
-- ✅ All urination entries
-- ✅ All fluid intake entries
-- ✅ All leak entries
-- ✅ All custom goals
-- ✅ Streak history
-- ✅ App preferences (except language)
+- If your phone's backup is on, Android may copy Eleva Diary's data to your Google account. On Android 9 and later, the app allows this only when the backup is end-to-end encrypted, which requires a screen lock (PIN, pattern or password). On Android 7 to 8.1, the app does not allow your diary to be included in the backup or transferred to another phone.
+- **To stop your diary being copied:** turn off backup in your phone's settings (usually under **Google** > **Backup**; the path may vary by manufacturer). On most phones, you cannot exclude a single app.
+- **To delete an existing backup:** delete your phone's backup in your Google account, for example in the Google One app or in Google Drive, in the backups section. Note: this deletes the backup of the whole phone, not just Eleva Diary's.
+- **Reinstalling:** if there is a backup in your Google account, reinstalling the app may restore your diary automatically.
+- **After using "Clear All Data":** the backup in your Google account may still contain your diary until your phone makes its next backup, normally about once a day.
+- **After uninstalling:** the last copy of the app's data stays in your Google account until you delete it or Google removes it under its own rules.
 
-### Delete Individual Entries
+**iPhone**
 
-To delete a single entry:
+- Eleva Diary does not include your diary in iCloud Backup or in backups made on a computer. You do not need to do anything.
+- Restoring your iPhone from a backup therefore does not bring your diary back, and neither does reinstalling the app. To move phones or keep a copy, use a backup file (section 2).
 
-1. Go to **History** tab
-2. Find the entry you want to delete
-3. Tap on the entry to open details
-4. Tap the **Delete** button or swipe to delete
-5. Confirm deletion
+## 7. Moving to a new phone
 
----
+- **With a backup file:** export it on your old phone and import it on the new one (section 2). This works between iOS and Android, and it is the reliable way to move your diary to a new iPhone.
+- **With your phone's backup or transfer:** on Android 9 or later, if you set up your new phone from the old one or from a backup, your diary may come across with your other data. This depends on your phone's settings, not on the app. On iPhone, your diary does not come across with iCloud Backup or a computer backup, and we cannot guarantee that it comes across in a direct transfer from one iPhone to another: use a backup file.
+- **With neither:** your diary does not move to the new phone.
 
-## Backing Up and Restoring Your Data
+## 8. Uninstalling the app
 
-### Export a Backup File
+Uninstalling Eleva Diary removes all the app's data from your phone, including temporary files.
 
-1. Open Eleva Diary
-2. Go to **Settings**
-3. Under **Local Backup**, tap **Export Backup File**
-4. Choose where to save or send the file (Files, email, cloud storage, etc.)
+What may remain:
 
-The backup file contains your diary entries, goals, goal history, streak information and language preference. The file is not encrypted; keep it somewhere you trust.
+- files you exported or shared, where you saved them;
+- on Android, the backup in your Google account (section 6), until you delete your phone's backup in that account or Google removes it under its own rules. Reinstalling the app may restore your diary from it.
 
-### Import a Backup File
+On iPhone, your phone's backups do not include your diary. If you use the option that removes the app but keeps its documents and data, your diary stays on the phone. To erase it, delete the app.
 
-1. Open Eleva Diary on any iOS or Android device
-2. Go to **Settings**
-3. Under **Local Backup**, tap **Import Backup File**
-4. Confirm, then select your backup file
+## 9. Data Eleva holds about you
 
-Note: Importing a backup file replaces the data currently in the app.
+Eleva does not have your diary. We hold data about you only if you have written to us, or if Apple or Google made a review or crash report available to us.
 
-### Delete Backup Files and Device Backups
+- **If you wrote to us:** we keep your email. You can ask for a copy, correction or erasure, or object to the processing, by writing to [privacy@eleva.care](mailto:privacy@eleva.care). We answer within one month.
+- **Reviews:** you can change or delete them directly in the App Store or Google Play.
 
-- **Backup files:** These are your copies. Delete them wherever you saved them (Files, email, cloud storage, etc.)
-- **Device backups:** To remove the app's data from a device backup, manage or delete that backup in your iOS or Android settings
+## 10. Contact
 
----
+**BÚZIOS E TARTARUGAS - LDA** (Eleva), NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal.
 
-## Uninstalling the App
+- **Data protection:** [privacy@eleva.care](mailto:privacy@eleva.care). We are appointing an external data protection officer. This address will always reach them.
+- **Support and general questions:** [support@eleva.care](mailto:support@eleva.care)
+- **Legal notices and complaints:** [legal@eleva.care](mailto:legal@eleva.care)
 
-When you uninstall Eleva Diary:
+You can complain to the Comissão Nacional de Proteção de Dados (CNPD), Av. D. Carlos I, 134, 1.º, 1200-651 Lisboa, Portugal, [www.cnpd.pt](https://www.cnpd.pt), or to the data protection authority of the European Union country where you live or work.
 
-### What is Automatically Deleted
+## Related documents
 
-- All locally stored data (entries, goals, settings)
-- App cache and temporary files
+- [Privacy Policy](https://diary.eleva.care/privacy)
+- [Terms of Use](https://diary.eleva.care/terms)
 
-### What May Remain
-
-- Device backups made by iOS or Android (if you use them) — manage them in your device settings
-- Exported files and backup files you saved elsewhere (these are your copies to manage)
-
----
-
-## Data Retention
-
-### Our Policy
-
-Eleva Care does not retain any of your health data. We do not:
-
-- Store your diary entries on our servers
-- Have access to your local data
-- Have access to your backup files or device backups
-
-### Your Control
-
-You decide how long to keep your data:
-
-- Keep it indefinitely on your device
-- Export it whenever you want
-- Delete it at any time
-
----
-
-## Frequently Asked Questions
-
-### Can Eleva Care see my data?
-
-**No.** Your data is stored only on your device (and in any backup files or device backups you choose to make). We do not have access to it.
-
-### What happens to my data if I get a new phone?
-
-- **Any device (iOS or Android):** Export a backup file on your old phone and import it on your new phone
-- **With a device backup:** If your iOS or Android device backup includes the app's data, restoring that device backup on your new phone may also restore your diary. This depends on your device settings, not on the app.
-- **Without backup:** Your data does not transfer. Export a backup file before switching devices.
-
-### Can I request my data from Eleva Care?
-
-Since we don't collect your data, we have nothing to provide. Your data is already accessible to you directly in the app. Use the Export feature to get a copy.
-
-### Is my data encrypted?
-
-- **On device:** Yes, iOS and Android encrypt app data at rest
-- **In device backups:** Handled by Apple or Google under their own security measures and your device settings
-- **During export:** The file itself is not encrypted; you control security of exported files
-
-### How do I know my data was deleted?
-
-After clearing data:
-
-1. Close and reopen the app
-2. Go to History — it should be empty
-3. Go to Home — progress should reset to zero
-
----
-
-## Contact Us
-
-If you have questions about your privacy choices or need assistance:
-
-**Buzios e Tartarugas, Lda.**  
-Rua Gil Vicente, 2  
-2775-198 Parede, Portugal
-
-**Privacy inquiries:** privacy@eleva.care  
-**General support:** diary@eleva.care
-
----
-
-## Related Documents
-
-- [Privacy Policy](https://eleva.care/privacy)
-- [Terms of Use](https://eleva.care/terms)
-- [Eleva Care Website](https://eleva.care)
-
----
-
-_This document applies specifically to the Eleva Diary mobile application._
+This page is available in Portuguese, English and Spanish, with the same content. If the language versions differ, the Portuguese version prevails.

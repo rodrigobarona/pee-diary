@@ -1,304 +1,152 @@
 # Eleva Diary Terms of Use
 
-**Effective Date:** 11 November 2026  
-**Last Updated:** 11 November 2026
+**Last updated:** 11 November 2026
 
----
+These Terms of Use ("Terms") are the agreement between you and Eleva for using the Eleva Diary app. This version applies from its publication at [https://diary.eleva.care/terms](https://diary.eleva.care/terms).
 
-## 1. Introduction and Acceptance
+## 1. Who we are
 
-Welcome to Eleva Diary ("the App"), a bladder diary application developed and operated by **Buzios e Tartarugas, Lda.** ("Eleva Care," "we," "us," or "our").
+Eleva Diary is provided by **BÚZIOS E TARTARUGAS - LDA** ("Eleva", "we", "us"), a private limited company (sociedade por quotas) trading as Eleva.care, with its registered office at Rua Gil Vicente 2, 2775-198 Parede, Portugal, registered at the Conservatória do Registo Comercial de Cascais under the single registration and tax number (NIPC) 515001708, with share capital of €200.00. Our contact details are in section 17.
 
-By downloading, installing, or using Eleva Diary, you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, do not use the App.
+Eleva Diary is separate from the Eleva.care platform. That platform's terms and privacy policy do not apply to Eleva Diary, and using the diary does not create an Eleva account.
 
-**Contact Information:**
+## 2. What Eleva Diary is
 
-- **Company:** Buzios e Tartarugas, Lda.
-- **Address:** Rua Gil Vicente, 2 - 2775-198 Parede, Portugal
-- **Tax ID:** PT515001708
-- **Email:** diary@eleva.care
+Eleva Diary is a free, personal bladder diary. On your phone, you can record your bathroom visits, what you drink and any urine leaks, see daily totals and simple charts of what you recorded, set your own daily goals, get reminders if you turn them on, and export your diary as a PDF, CSV or JSON file.
 
----
+**What it is for.** Eleva Diary is for keeping a personal record that you can bring to an appointment and share with a health professional. It is not intended to diagnose, monitor, treat or prevent any condition or to give medical advice, and it is not a medical device within the meaning of Regulation (EU) 2017/745.
 
-## 2. Description of Service
+> Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms.
 
-Eleva Diary is a personal health logging application that allows users to:
+The app shows this notice on the last onboarding screen, in Settings under "Medical information", below the charts and in the footer of PDF reports.
 
-- Record urination events, fluid intake, and leak episodes
-- Set and track daily health goals
-- View insights and patterns through charts and statistics
-- Export health data in various formats (PDF, CSV, JSON)
-- Optionally back up data to a local backup file and restore it on any device
+- The app shows what you record without assessing it: it does not tell you whether your figures are normal. The volumes you choose by size (small, medium or large) are estimates. The app does not check your entries.
+- Your daily goals are your own. The starting values are only a starting point that you can change, and they are not medical recommendations. If you have been told to limit or increase how much you drink, follow your health professional's advice.
+- A health professional, not the app, assesses what your diary means for your care.
+- In an emergency, call 112 or the emergency number of the country you are in.
 
-The App is designed as a personal diary tool to help users track bladder health patterns and share information with healthcare providers.
+## 3. Accepting these Terms
 
----
+When you first open the app, the last onboarding screen shows, with links to these Terms and to the Privacy Policy, the sentence: "By continuing, you accept the Terms of Use. See how your data is handled in the Privacy Policy." If you tap Skip, the app takes you to that last screen. You accept these Terms when you tap Get Started on that screen. The app stores on your phone the version of these Terms you accepted and the date you accepted it. We do not receive this information.
 
-## 3. Medical Disclaimer
+You can read these Terms at any time at [https://diary.eleva.care/terms](https://diary.eleva.care/terms). In the app, Settings > Legal > Terms of Use opens this page in your browser.
 
-**IMPORTANT: PLEASE READ CAREFULLY**
+If you do not agree to these Terms, do not use the app and delete it.
 
-### 3.1 Not a Medical Device
+## 4. Age
 
-Eleva Diary is **NOT** a medical device, diagnostic tool, or treatment system. The App:
+Eleva Diary is meant for adults. If you are under 16, use it with the support of one of your parents or your guardian. Parents or a guardian can also keep a child's diary on their own phone.
 
-- Does not diagnose any medical condition
-- Does not provide medical advice or treatment recommendations
-- Does not replace professional medical consultation
-- Does not claim to cure, treat, or prevent any disease
-- Is not FDA-approved or CE-marked as a medical device
+## 5. Your licence
 
-### 3.2 For Informational Purposes Only
+We give you a free, personal, non-exclusive and non-transferable licence to use Eleva Diary on devices you own or control, for your own non-commercial use, for as long as you keep the app.
 
-All information displayed in the App, including insights, charts, and patterns, is for **informational and personal reference purposes only**. This information should not be used to make medical decisions.
+**App Store.** If you downloaded the app from the App Store, Apple's standard Licensed Application End User License Agreement also applies, available at [https://www.apple.com/legal/internet-services/itunes/dev/stdeula/](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/). These Terms add to that agreement. Between you and Eleva, where that agreement and these Terms differ, these Terms apply: our liability is as set out in section 11, not the exclusion or the USD 50 limit in that agreement, and the app does not collect the technical data that agreement mentions. Neither takes away the rights the law gives you as a consumer.
 
-### 3.3 Consult Healthcare Professionals
+**Google Play.** If you downloaded the app from Google Play, Google Play's terms apply to your use of the store and these Terms apply to the app.
 
-Always consult with a qualified healthcare professional:
+We, not Apple or Google, are responsible for the app and its support.
 
-- Before making any decisions about your health
-- If you have questions about a medical condition
-- If you experience concerning symptoms
-- Before starting, stopping, or changing any treatment
+## 6. Acceptable use
 
-### 3.4 Emergency Situations
+Use Eleva Diary lawfully, for your own diary. If you keep a diary for someone else, for example as a carer, do so with the knowledge of that person or of their legal representative.
 
-Eleva Diary is not designed for emergency situations. If you are experiencing a medical emergency, contact emergency services immediately.
+You may not copy, sell, rent or redistribute the app, remove its copyright notices, or use our name or logos without permission, except as the law expressly allows.
 
----
+## 7. Your data
 
-## 4. User Responsibilities
+Your diary is yours. It is stored on your phone: we do not receive it, we have no access to it and we claim no rights over it. You can export it, share it or delete it whenever you want.
 
-### 4.1 Accurate Information
+Because we have no copy of your diary, we cannot recover it for you. To avoid losing it:
 
-You are responsible for the accuracy of the data you enter into the App. We do not verify or validate your entries.
+- regularly export a copy in Settings > Local Backup > Export Backup File and keep the file somewhere you trust;
+- remember that Import Backup File replaces the data you have in the app;
+- if you lose your phone, delete the app or reset your phone to factory settings, you lose your diary unless you have a backup file or, on Android, a phone backup in your Google account. On iPhone, iCloud backups and backups on a computer do not include your diary: to move to a new iPhone or keep a copy, use Export Backup File and Import Backup File.
 
-### 4.2 Data Backup
+The files you export (Export Data or Export Backup File) go wherever you choose to save or share them, under the terms of that service or of whoever receives them. Backups Android makes in your Google account are subject to Google's terms.
 
-While we provide local backup file and export features, you are ultimately responsible for backing up your own data. We are not responsible for data loss due to:
+Keeping and protecting your copies is in your hands. This does not remove our responsibility if the app itself loses or damages your data because of a defect. If you think that has happened, write to [support@eleva.care](mailto:support@eleva.care) and we will help as far as we can. Your legal rights are not affected.
 
-- Device loss, damage, or theft
-- App uninstallation
-- Software updates or device changes
-- User error
+The [Privacy Policy](https://diary.eleva.care/privacy) explains what data the app stores, where it is kept and what data we process when you contact us. [Privacy Choices](https://diary.eleva.care/privacy-choices) explains how to delete your data. The Privacy Policy is for information and is not part of this agreement.
 
-### 4.3 Appropriate Use
+## 8. Updates and changes to the app
 
-You agree to use the App only for its intended purpose as a personal health diary. You agree not to:
+Updates are free. While the app is available in the stores, we fix errors that affect how it works within a reasonable time, giving priority to security fixes, and we keep it compatible with the iOS and Android versions shown on the store page. To get the fixes, keep the app updated. When an update matters, we say so in the release notes.
 
-- Use the App for any illegal purpose
-- Attempt to reverse engineer or modify the App
-- Use the App in any way that could harm others
-- Misrepresent data generated by the App as medical diagnosis
+We improve the app over time. We only change or remove a feature for a valid reason, such as a change in the law or in Apple's or Google's rules, a security reason, or the need to keep the app working on new versions of iOS and Android. We will never remove your ability to export your diary.
 
----
+If something does not work, write to [support@eleva.care](mailto:support@eleva.care).
 
-## 5. Privacy and Data
+## 9. Availability and withdrawal of the app
 
-### 5.1 Local Data Storage
+Eleva Diary is free and available on the App Store and Google Play. It works without an internet connection. It may not work on very old devices or operating system versions. The store page shows the supported versions.
 
-All diary data is stored locally on your device. We do not collect, transmit, or store your health data on our servers.
+We may stop offering the app. If we do, we will tell you at least 60 days in advance on diary.eleva.care, on the store page and, where possible, in an app update, so that you can export your diary. The installed app and your diary stay on your phone, but we stop releasing updates.
 
-### 5.2 Privacy Policy
+## 10. Intellectual property
 
-Your use of the App is also governed by our Privacy Policy, available at:
+The app, its code, design and texts, and the Eleva and Eleva Diary names and logos belong to BÚZIOS E TARTARUGAS - LDA or its licensors and are protected by law. The app includes open-source components, which are governed by their own licences. These Terms give you no rights in any of this beyond the licence in section 5.
 
-- https://eleva.care/privacy
-- Within the App documentation
+## 11. Liability
 
-### 5.3 Data Portability
+We are responsible to you, as the law provides, for damage caused by our failure to comply with these Terms or the law.
 
-You may export your data at any time using the App's export features. Exported data is under your control and responsibility.
+Nothing in these Terms excludes or limits:
 
----
+- our liability for harm to life, physical or moral integrity or health;
+- our liability for wilful misconduct or gross negligence, ours or of anyone acting on our behalf;
+- liability for defective products;
+- any other liability that the law does not allow to be excluded or limited;
+- your rights as a consumer.
 
-## 6. Intellectual Property
+We are not responsible for damage we did not cause. If you also contributed to the damage, for example by not keeping a backup, compensation may be reduced as the law provides.
 
-### 6.1 Ownership
+## 12. Changes to these Terms
 
-Eleva Diary, including its design, code, features, and content, is owned by Buzios e Tartarugas, Lda. and is protected by intellectual property laws.
+We only change these Terms for a valid reason, such as a change in the law, in the app or in the app stores' rules.
 
-### 6.2 License Grant
+Because the app works without an internet connection, changes reach you with an app update. We describe them in the release notes. When you open the updated version, the app shows you a notice with a link to the new Terms and a button to accept them. We also publish the new version at [https://diary.eleva.care/terms](https://diary.eleva.care/terms), with the date of the update. Earlier versions of these Terms remain available at [https://diary.eleva.care/terms](https://diary.eleva.care/terms), each with its date.
 
-We grant you a limited, non-exclusive, non-transferable, revocable license to use the App for personal, non-commercial purposes in accordance with these Terms.
+The new Terms apply to you only once you accept them in that notice. Until then, the version you accepted before continues to apply. Continuing to use the app does not count as acceptance. If a change is to your disadvantage, we explain what changes at the start of the new Terms, and the change takes effect only once you accept it and never earlier than 30 days after the notice. A change required by law applies from the date the law sets.
 
-### 6.3 Restrictions
+If you do not agree, you can stop using the app and delete it at any time. If you want to keep your diary, export it first.
 
-You may not:
+## 13. Stopping using the app
 
-- Copy, modify, or distribute the App
-- Sell, rent, or sublicense the App
-- Remove any copyright or proprietary notices
-- Use our trademarks without permission
+You can stop using Eleva Diary at any time, at no cost, by deleting the app. You have no account with us, so there is nothing to close. If you want to keep your diary, export a backup first.
 
-### 6.4 Your Data
+To delete your diary without deleting the app, use Settings > Clear All Data.
 
-You retain ownership of the health data you enter into the App. By using the export features, you may use your data as you see fit.
+Deleting the app deletes the diary from your phone, but not the files you exported or, on Android, the backup in your Google account, which may restore it if you install the app again. [Privacy Choices](https://diary.eleva.care/privacy-choices) explains how to delete them.
 
----
+## 14. Governing law and courts
 
-## 7. Third-Party Services
+These Terms are governed by Portuguese law. If you are a consumer, you keep the protection of the mandatory rules of the country where you live, and nothing in these Terms takes it away.
 
-### 7.1 App Stores
+If you are a consumer, you can go to the courts where you are domiciled or to the Portuguese courts. We can only bring a claim against you in the courts where you are domiciled.
 
-The App is distributed through Apple App Store and Google Play Store. Your use of these platforms is subject to their respective terms and conditions.
+## 15. Complaints and dispute resolution
 
-### 7.2 Device Backups (iOS and Android)
+**Complaints.** If something goes wrong, write to [legal@eleva.care](mailto:legal@eleva.care). Give your name, the date of what happened and what you would like us to do. We confirm receipt and reply within 15 working days. If we need more time, we tell you why and when you will hear from us.
 
-If your device's operating system includes the App's data in its device backups (for example, iCloud Backup on iOS or Android's backup to your Google account), those backups are subject to Apple's or Google's terms of service and privacy policies.
+**Electronic complaints book.** You can also make a complaint in the Portuguese electronic complaints book, the [Livro de Reclamações Eletrónico](https://www.livroreclamacoes.pt).
 
-### 7.3 Export Destinations
+**Consumer arbitration.** If you are a consumer and we cannot resolve a dispute together, you can go to a consumer arbitration centre. For disputes worth up to €5,000, we take part in the arbitration whenever the consumer chooses it (Portuguese Law 24/96, Article 14(2)). Above that amount, arbitration requires the agreement of both parties. You can go, among others, to:
 
-When you export data or a backup file, the destination (email, cloud storage, etc.) is subject to that service's terms and privacy policies.
+- **CACCL — Centro de Arbitragem de Conflitos de Consumo de Lisboa**, Rua dos Douradores, 116, 2.º, 1100-207 Lisbon, [www.centroarbitragemlisboa.pt](https://www.centroarbitragemlisboa.pt);
+- **CNIACC — Centro Nacional de Informação e Arbitragem de Conflitos de Consumo**, Rua D. Afonso Henriques, 1, 4700-030 Braga, [www.cniacc.pt](https://www.cniacc.pt).
 
----
+The up-to-date list of consumer arbitration centres is on [gov.pt — consumer arbitration](https://www.gov.pt/servicos/realizar-uma-arbitragem-de-conflitos-de-consumo-atraves-dos-centros-de-arbitragem-apoiados-pelo-ministerio-da-justica). If you live in another EU country, the European Consumer Centre in your country can also advise you ([ECC-Net](https://commission.europa.eu/live-work-travel-eu/consumer-rights-and-complaints/resolve-your-consumer-complaint/european-consumer-centres-network-ecc-net_en)).
 
-## 8. Disclaimer of Warranties
+You can always go to court.
 
-### 8.1 "As Is" Basis
+## 16. Languages
 
-THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+These Terms are available in Portuguese, English and Spanish, and the three versions say the same thing. If the language versions differ, the Portuguese version prevails.
 
-### 8.2 No Guarantee
+## 17. Contact
 
-We do not guarantee that:
-
-- The App will meet your specific requirements
-- The App will be uninterrupted, timely, secure, or error-free
-- Results obtained from the App will be accurate or reliable
-- Any errors in the App will be corrected
-
-### 8.3 Health-Related Disclaimer
-
-We make no warranties regarding the App's suitability for any health-related purpose. The App is not intended to be relied upon for medical decisions.
-
----
-
-## 9. Limitation of Liability
-
-### 9.1 Exclusion of Damages
-
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, ELEVA CARE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO:
-
-- Loss of data
-- Loss of profits
-- Personal injury or health consequences
-- Damages arising from reliance on App information
-- Damages from inability to use the App
-
-### 9.2 Maximum Liability
-
-OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM YOUR USE OF THE APP SHALL NOT EXCEED THE AMOUNT YOU PAID FOR THE APP (IF ANY), OR €50, WHICHEVER IS GREATER.
-
-### 9.3 Essential Purpose
-
-Some jurisdictions do not allow the exclusion of certain warranties or limitation of liability. In such cases, our liability will be limited to the maximum extent permitted by law.
-
----
-
-## 10. Indemnification
-
-You agree to indemnify and hold harmless Eleva Care, its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorney's fees) arising from:
-
-- Your use of the App
-- Your violation of these Terms
-- Your violation of any third-party rights
-- Any medical decisions made based on App data
-
----
-
-## 11. Changes to the App and Terms
-
-### 11.1 App Updates
-
-We may update, modify, or discontinue the App or any features at any time without notice.
-
-### 11.2 Terms Updates
-
-We may update these Terms from time to time. The updated Terms will be effective upon posting. Your continued use of the App after changes constitutes acceptance.
-
-### 11.3 Notification
-
-We will make reasonable efforts to notify users of significant changes through the App or our website.
-
----
-
-## 12. Termination
-
-### 12.1 By You
-
-You may stop using the App at any time by uninstalling it from your device.
-
-### 12.2 By Us
-
-We may terminate or suspend your access to the App at any time, for any reason, without notice.
-
-### 12.3 Effect of Termination
-
-Upon termination, your right to use the App ceases immediately. Data stored locally on your device remains under your control.
-
----
-
-## 13. Governing Law and Disputes
-
-### 13.1 Governing Law
-
-These Terms are governed by the laws of Portugal, without regard to conflict of law principles.
-
-### 13.2 Jurisdiction
-
-Any disputes arising from these Terms or your use of the App shall be subject to the exclusive jurisdiction of the courts of Lisbon, Portugal.
-
-### 13.3 EU Consumers
-
-If you are a consumer in the European Union, you may also have rights under the laws of your country of residence.
-
----
-
-## 14. General Provisions
-
-### 14.1 Entire Agreement
-
-These Terms, together with our Privacy Policy, constitute the entire agreement between you and Eleva Care regarding the App.
-
-### 14.2 Severability
-
-If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in effect.
-
-### 14.3 Waiver
-
-Our failure to enforce any right or provision of these Terms does not constitute a waiver of that right or provision.
-
-### 14.4 Assignment
-
-You may not assign or transfer these Terms without our prior written consent. We may assign these Terms without restriction.
-
-### 14.5 Language
-
-These Terms may be translated into other languages for convenience. In case of conflict, the English version shall prevail.
-
----
-
-## 15. Contact Information
-
-For questions about these Terms, please contact us:
-
-**Buzios e Tartarugas, Lda.**  
-Rua Gil Vicente, 2  
-2775-198 Parede, Portugal
-
-**Email:** diary@eleva.care  
-**Privacy inquiries:** privacy@eleva.care
-
----
-
-## 16. Additional Resources
-
-- **Privacy Policy:** https://eleva.care/privacy
-- **Privacy Choices / Data Deletion:** https://eleva.care/privacy-choices
-- **Support:** https://eleva.care/support
-- **Eleva Care Website:** https://eleva.care
-
----
-
-_These Terms of Use apply specifically to the Eleva Diary mobile application._
+- **Support and questions about the app:** [support@eleva.care](mailto:support@eleva.care)
+- **Legal notices and complaints:** [legal@eleva.care](mailto:legal@eleva.care)
+- **Data protection:** [privacy@eleva.care](mailto:privacy@eleva.care)
+- **Address:** BÚZIOS E TARTARUGAS - LDA, Rua Gil Vicente 2, 2775-198 Parede, Portugal

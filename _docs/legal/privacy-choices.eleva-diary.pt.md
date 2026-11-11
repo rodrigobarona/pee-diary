@@ -1,222 +1,139 @@
-# Opções de Privacidade e Exclusão de Dados do Eleva Diary
+# Escolhas de Privacidade do Eleva Diary
 
-**Data de vigência:** 11 de novembro de 2026  
 **Última atualização:** 11 de novembro de 2026
 
----
+Esta página explica, passo a passo, como exportar, guardar e eliminar os dados do Eleva Diary. Na aplicação, encontra-a em **Definições** > **Escolhas de Privacidade** ("Como eliminar os seus dados"). Para saber o que a aplicação guarda e o que a Eleva recebe, leia a [Política de Privacidade](https://diary.eleva.care/privacy).
 
-## Visão Geral
+O seu diário fica guardado no seu telemóvel. A Eleva não o recebe e, por isso, não o pode eliminar em seu nome: todos os passos abaixo são feitos por si, na aplicação ou nas definições do telemóvel.
 
-O Eleva Diary foi projetado pensando na sua privacidade. Todos os seus dados são armazenados localmente no seu dispositivo, e você tem controle total sobre eles em todos os momentos.
+## 1. Exportar o diário
 
-Esta página explica:
+1. Abra o Eleva Diary e toque em **Definições**.
+2. Toque em **Exportar dados**.
+3. Escolha o período.
+4. Escolha o formato:
+   - **PDF:** um relatório fácil de ler, por exemplo para levar a uma consulta.
+   - **CSV:** uma folha de cálculo.
+   - **JSON:** um ficheiro com tudo o que a aplicação guarda sobre cada registo, incluindo a data de criação e o histórico de edições.
+5. Toque em **Exportar e partilhar** e escolha, no menu de partilha, onde guardar ou para onde enviar o ficheiro.
 
-- Como seus dados são armazenados
-- Como exportar seus dados
-- Como excluir seus dados
-- Como fazer backup e restaurar seus dados com um arquivo de backup
+A aplicação não encripta o ficheiro. Depois de o guardar ou enviar, o ficheiro fica sujeito aos termos do serviço que escolheu. A Eleva não recebe nenhuma cópia.
 
----
+## 2. Fazer e restaurar uma cópia de segurança
 
-## Onde Meus Dados São Armazenados?
+**Fazer uma cópia de segurança**
 
-### No Seu Dispositivo (Todos os Usuários)
+1. Em **Definições**, na secção **Cópia local**, toque em **Exportar cópia de segurança**.
+2. No menu de partilha, escolha onde guardar ou para onde enviar o ficheiro.
 
-Todas as entradas do diário, metas e configurações são armazenadas **localmente no seu dispositivo** usando armazenamento local seguro. Esses dados:
+O ficheiro contém todos os registos (com as notas, as datas de criação e o histórico de edições), os objetivos e o seu histórico, a sequência e o idioma. Não é encriptado: guarde-o num local de confiança.
 
-- O app nunca os envia para lugar nenhum; eles só saem do seu dispositivo se você os exportar, ou no backup do seu próprio dispositivo, quando ele estiver ativado (em muitos telefones ele vem ativado por padrão)
-- São protegidos pela segurança do seu dispositivo (código/biometria)
-- São automaticamente excluídos se você desinstalar o app
+No iPhone, o diário não entra nas cópias de segurança do telemóvel (secção 6). Este ficheiro é a forma de guardar uma cópia e de levar o diário para um telemóvel novo.
 
-### Em Backups do Dispositivo (Depende das Configurações do Seu Dispositivo)
+**Restaurar uma cópia de segurança** (em qualquer telemóvel iOS ou Android)
 
-O Eleva Diary não envia seus dados para nenhum serviço de nuvem. Independentemente do app, o sistema operacional do seu dispositivo pode incluir os dados do app nos seus próprios backups:
+1. Instale e abra o Eleva Diary e toque em **Definições**.
+2. Na secção **Cópia local**, toque em **Importar cópia de segurança**.
+3. Confirme e escolha o ficheiro.
 
-- **iOS:** no Backup do iCloud ou em um backup no seu computador, se você os usa
-- **Android:** no backup do Android na sua Conta do Google, se o backup do dispositivo estiver ativado
+A importação substitui os registos, os objetivos, o histórico de objetivos, a sequência e o idioma que estão na aplicação.
 
-Esses backups são controlados por você nas configurações do seu dispositivo e são gerenciados pela Apple ou pelo Google. A Eleva Care não tem acesso a eles.
+## 3. Eliminar um registo
 
----
+1. Abra o separador **Histórico**.
+2. Toque no registo que quer eliminar.
+3. Toque no ícone do caixote do lixo e confirme com **Eliminar**.
 
-## Como Exportar Seus Dados
+Quando altera um registo em vez de o eliminar, a aplicação guarda o valor anterior no histórico de edições do registo. Para eliminar completamente um valor anterior, elimine o registo e volte a criá-lo.
 
-Você pode exportar todos os seus dados do diário a qualquer momento em múltiplos formatos:
+## 4. Apagar todos os dados
 
-### Passos para Exportar
+Se quiser guardar uma cópia, exporte o diário antes (secções 1 e 2). Esta ação não pode ser desfeita.
 
-1. Abra o Eleva Diary
-2. Vá para **Definições** (ícone de engrenagem)
-3. Toque em **Exportar Dados** ou **Exportar**
-4. Selecione seu formato preferido:
-   - **PDF** — Relatório formatado, ideal para compartilhar com seu médico
-   - **CSV** — Formato de planilha, compatível com Excel/Google Sheets
-   - **JSON** — Formato técnico, para backup ou portabilidade de dados
-5. Selecione o período que deseja exportar
-6. Toque em **Exportar**
-7. Escolha para onde enviar o arquivo (email, armazenamento na nuvem, etc.)
+1. Toque em **Definições**.
+2. Toque em **Apagar todos os dados**.
+3. Confirme. A aplicação pede-lhe que escreva uma palavra para confirmar.
 
-### O Que Está Incluído nas Exportações
+**O que é eliminado:**
 
-Sua exportação incluirá:
+- todos os registos de idas à casa de banho, bebidas e perdas de urina, com as notas e o histórico de edições;
+- os objetivos e o histórico de objetivos (os objetivos voltam aos valores iniciais);
+- a sequência;
+- as definições dos lembretes (os lembretes ficam desligados e os que estavam agendados são cancelados);
+- a preferência do menu ao iniciar;
+- os ficheiros de exportação e de cópia de segurança que estejam na pasta temporária da aplicação.
 
-- Todas as entradas de micção (data, hora, volume, urgência, indicadores de perda/dor, notas)
-- Todas as entradas de ingestão de líquidos (data, hora, tipo, quantidade, notas)
-- Todas as entradas de perdas (data, hora, severidade, urgência, notas)
-- Estatísticas resumidas (para relatórios PDF)
+**O que fica:** o idioma, a indicação de que já viu os ecrãs de boas-vindas e a versão e a data dos Termos de Utilização que aceitou.
 
----
+**O que a aplicação não consegue apagar:** os ficheiros que exportou ou partilhou e, no Android, a cópia de segurança na sua conta Google. Elimine os ficheiros onde os guardou e a cópia de segurança na sua conta Google (secção 6).
 
-## Como Excluir Seus Dados
+Para confirmar, abra o separador **Histórico**: deve estar vazio.
 
-### Excluir Todos os Dados (Reset Completo)
+## 5. Lembretes e notificações
 
-Para excluir permanentemente todos os seus dados do app:
+- **Ligar ou desligar os lembretes:** em **Definições** > **Lembretes**. Quando os liga pela primeira vez, a aplicação pede autorização para mostrar notificações.
+- **Retirar a autorização de notificações:**
+  - no iPhone, abra a aplicação Definições do telemóvel, toque em **Notificações** e depois em **Eleva Diary**;
+  - no Android, abra as definições do telemóvel, toque em **Aplicações**, depois em **Eleva Diary** e em **Notificações**. Os nomes dos menus podem variar consoante o fabricante.
+- **Ecrã de bloqueio:** os lembretes mostram apenas uma mensagem geral a pedir que atualize o diário. Nas definições de notificações do telemóvel, pode escolher se aparecem no ecrã de bloqueio.
 
-1. Abra o Eleva Diary
-2. Vá para **Definições** (ícone de engrenagem)
-3. Toque em **Apagar todos os dados**
-4. Confirme a exclusão quando solicitado
+Os lembretes são agendados no próprio telemóvel. Nada é enviado à Eleva.
 
-**Aviso:** Esta ação é permanente e não pode ser desfeita. Recomendamos exportar seus dados primeiro se quiser manter uma cópia.
+## 6. Cópias de segurança do telemóvel
 
-### O Que É Excluído
+A Apple e a Google fazem estas cópias de acordo com os respetivos termos, segundo as definições do seu telemóvel. A Eleva não tem acesso a elas.
 
-Quando você limpa todos os dados:
+**Android**
 
-- ✅ Todas as entradas de micção
-- ✅ Todas as entradas de ingestão de líquidos
-- ✅ Todas as entradas de perdas
-- ✅ Todas as metas personalizadas
-- ✅ Histórico de sequências
-- ✅ Preferências do app (exceto idioma)
+- Se a cópia de segurança do telemóvel estiver ativada, o Android pode copiar os dados do Eleva Diary para a sua conta Google. No Android 9 e versões posteriores, a aplicação só o permite quando a cópia é encriptada ponto a ponto, o que exige um bloqueio de ecrã (PIN, padrão ou palavra-passe). No Android 7 a 8.1, a aplicação não permite que o diário seja incluído na cópia de segurança nem transferido para outro telemóvel.
+- **Para que o diário não seja copiado:** desligue a cópia de segurança nas definições do telemóvel (normalmente em **Google** > **Cópia de segurança**; o caminho pode variar consoante o fabricante). Na maioria dos telemóveis, não é possível excluir só uma aplicação.
+- **Para eliminar uma cópia existente:** elimine a cópia de segurança do telemóvel na sua conta Google, por exemplo na aplicação Google One ou no Google Drive, na secção de cópias de segurança. Atenção: isto elimina a cópia de todo o telemóvel, não só a do Eleva Diary.
+- **Reinstalar:** se existir uma cópia na sua conta Google, reinstalar a aplicação pode repor o diário automaticamente.
+- **Depois de usar "Apagar todos os dados":** a cópia na sua conta Google pode ainda conter o diário até o telemóvel fazer a cópia seguinte, normalmente cerca de uma vez por dia.
+- **Depois de desinstalar:** a última cópia dos dados da aplicação fica na sua conta Google até a eliminar ou até a Google a remover segundo as suas próprias regras.
 
-### Excluir Entradas Individuais
+**iPhone**
 
-Para excluir uma entrada individual:
+- O Eleva Diary não inclui o diário nas cópias de segurança em iCloud nem nas cópias feitas num computador. Não precisa de fazer nada.
+- Por isso, restaurar o iPhone a partir de uma cópia de segurança não repõe o diário, e reinstalar a aplicação também não. Para mudar de telemóvel ou guardar uma cópia, use um ficheiro de cópia de segurança (secção 2).
 
-1. Vá para a aba **Histórico**
-2. Encontre a entrada que deseja excluir
-3. Toque na entrada para abrir os detalhes
-4. Toque no botão **Eliminar** ou deslize para excluir
-5. Confirme a exclusão
+## 7. Mudar de telemóvel
 
----
+- **Com um ficheiro de cópia de segurança:** exporte-o no telemóvel antigo e importe-o no novo (secção 2). Funciona entre iOS e Android e é a forma fiável de levar o diário para um iPhone novo.
+- **Com a cópia de segurança ou a transferência do telemóvel:** no Android 9 ou posterior, se configurar o telemóvel novo a partir do antigo ou de uma cópia de segurança, o diário pode vir com os outros dados. Isto depende das definições do telemóvel, não da aplicação. No iPhone, o diário não vem com a cópia de segurança em iCloud nem com a de um computador, e não podemos garantir que passe numa transferência direta de um iPhone para outro: use um ficheiro de cópia de segurança.
+- **Sem nenhuma destas opções:** o diário não passa para o telemóvel novo.
 
-## Backup e Restauração dos Seus Dados
+## 8. Desinstalar a aplicação
 
-### Exportar um Arquivo de Backup
+Desinstalar o Eleva Diary apaga do telemóvel todos os dados da aplicação, incluindo os ficheiros temporários.
 
-1. Abra o Eleva Diary
-2. Vá para **Definições**
-3. Em **Cópia Local**, toque em **Exportar Cópia de Segurança**
-4. Escolha onde salvar o arquivo ou para onde enviá-lo (Arquivos, email, armazenamento na nuvem, etc.)
+Podem ficar:
 
-O arquivo de backup contém suas entradas do diário, metas, histórico de metas, dados de sequências e preferência de idioma. O arquivo não é criptografado; guarde-o em um local de sua confiança.
+- os ficheiros que exportou ou partilhou, onde os guardou;
+- no Android, a cópia de segurança na sua conta Google (secção 6), até eliminar a cópia de segurança do telemóvel nessa conta ou até a Google a remover segundo as suas próprias regras. Reinstalar a aplicação pode repor o diário a partir dela.
 
-### Importar um Arquivo de Backup
+No iPhone, as cópias de segurança do telemóvel não incluem o diário. Se usar a opção que remove a aplicação mas mantém os seus documentos e dados, o diário fica no telemóvel. Para o apagar, elimine a aplicação.
 
-1. Abra o Eleva Diary em qualquer dispositivo iOS ou Android
-2. Vá para **Definições**
-3. Em **Cópia Local**, toque em **Importar Cópia de Segurança**
-4. Confirme e selecione seu arquivo de backup
+## 9. Dados que a Eleva tem sobre si
 
-Nota: Importar um arquivo de backup substitui os dados atuais do app.
+A Eleva não tem o seu diário. Só tem dados seus se nos tiver escrito, ou se a Apple ou a Google nos tiverem disponibilizado uma avaliação ou um relatório de falhas.
 
-### Excluir Arquivos de Backup e Backups do Dispositivo
+- **Se nos escreveu:** guardamos o e-mail. Pode pedir uma cópia, a correção ou o apagamento, ou opor-se ao tratamento, escrevendo para [privacy@eleva.care](mailto:privacy@eleva.care). Respondemos no prazo de um mês.
+- **Avaliações:** pode alterá-las ou eliminá-las diretamente na App Store ou no Google Play.
 
-- **Arquivos de backup:** São suas cópias. Exclua-os onde você os salvou (Arquivos, email, armazenamento na nuvem, etc.)
-- **Backups do dispositivo:** Para remover os dados do app de um backup do dispositivo, gerencie ou exclua esse backup nas configurações do iOS ou do Android
+## 10. Contactos
 
----
+**BÚZIOS E TARTARUGAS - LDA** (Eleva), NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal.
 
-## Desinstalar o App
+- **Proteção de dados:** [privacy@eleva.care](mailto:privacy@eleva.care). Estamos a nomear um encarregado da proteção de dados externo. Este endereço chegará sempre até ele.
+- **Apoio e questões gerais:** [support@eleva.care](mailto:support@eleva.care)
+- **Comunicações legais e reclamações:** [legal@eleva.care](mailto:legal@eleva.care)
 
-Quando você desinstala o Eleva Diary:
+Pode apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD), Av. D. Carlos I, 134, 1.º, 1200-651 Lisboa, Portugal, [www.cnpd.pt](https://www.cnpd.pt), ou à autoridade de proteção de dados do país da União Europeia onde vive ou trabalha.
 
-### O Que É Automaticamente Excluído
+## Documentos relacionados
 
-- Todos os dados armazenados localmente (entradas, metas, configurações)
-- Cache do app e arquivos temporários
+- [Política de Privacidade](https://diary.eleva.care/privacy)
+- [Termos de Utilização](https://diary.eleva.care/terms)
 
-### O Que Pode Permanecer
-
-- Backups do dispositivo feitos pelo iOS ou pelo Android (se você os usa) — gerencie-os nas configurações do seu dispositivo
-- Arquivos exportados e arquivos de backup que você salvou em outro lugar (são suas cópias para gerenciar)
-
----
-
-## Retenção de Dados
-
-### Nossa Política
-
-A Eleva Care não retém nenhum dos seus dados de saúde. Não:
-
-- Armazenamos suas entradas do diário em nossos servidores
-- Temos acesso aos seus dados locais
-- Temos acesso aos seus arquivos de backup nem aos backups do seu dispositivo
-
-### Seu Controle
-
-Você decide por quanto tempo manter seus dados:
-
-- Mantenha-os indefinidamente no seu dispositivo
-- Exporte-os quando quiser
-- Exclua-os a qualquer momento
-
----
-
-## Perguntas Frequentes
-
-### A Eleva Care pode ver meus dados?
-
-**Não.** Seus dados são armazenados apenas no seu dispositivo (e nos arquivos de backup ou backups do dispositivo que você escolher fazer). Não temos acesso a eles.
-
-### O que acontece com meus dados se eu trocar de telefone?
-
-- **Qualquer dispositivo (iOS ou Android):** Exporte um arquivo de backup no seu telefone antigo e importe-o no seu novo telefone
-- **Com um backup do dispositivo:** Se o backup do seu dispositivo iOS ou Android incluir os dados do app, restaurar esse backup no seu novo telefone também pode restaurar seu diário. Isso depende das configurações do seu dispositivo, não do app.
-- **Sem backup:** Seus dados não são transferidos. Exporte um arquivo de backup antes de trocar de dispositivo.
-
-### Posso solicitar meus dados à Eleva Care?
-
-Como não coletamos seus dados, não temos nada a fornecer. Seus dados já estão acessíveis para você diretamente no app. Use o recurso de Exportar para obter uma cópia.
-
-### Meus dados estão criptografados?
-
-- **No dispositivo:** Sim, iOS e Android criptografam os dados do app em repouso
-- **Em backups do dispositivo:** São gerenciados pela Apple ou pelo Google com suas próprias medidas de segurança e de acordo com as configurações do seu dispositivo
-- **Durante a exportação:** O arquivo em si não está criptografado; você controla a segurança dos arquivos exportados
-
-### Como sei que meus dados foram excluídos?
-
-Após limpar os dados:
-
-1. Feche e reabra o app
-2. Vá para Histórico — deve estar vazio
-3. Vá para Início — o progresso deve ser resetado para zero
-
----
-
-## Entre em Contato
-
-Se você tiver dúvidas sobre suas opções de privacidade ou precisar de assistência:
-
-**Buzios e Tartarugas, Lda.**  
-Rua Gil Vicente, 2  
-2775-198 Parede, Portugal
-
-**Consultas de privacidade:** privacy@eleva.care  
-**Suporte geral:** diary@eleva.care
-
----
-
-## Documentos Relacionados
-
-- [Política de Privacidade](https://eleva.care/privacy)
-- [Termos de Uso](https://eleva.care/terms)
-- [Site da Eleva Care](https://eleva.care)
-
----
-
-_Este documento se aplica especificamente ao aplicativo móvel Eleva Diary._
+Esta página está disponível em português, inglês e espanhol, com o mesmo conteúdo. Em caso de divergência entre versões linguísticas, prevalece a versão em português.

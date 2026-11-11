@@ -1,237 +1,183 @@
-# Política de Privacidad de Eleva Diary
+# Política de privacidad de Eleva Diary
 
-**Fecha de vigencia:** 11 de noviembre de 2026  
 **Última actualización:** 11 de noviembre de 2026
 
----
+Esta política explica qué ocurre con los datos en Eleva Diary, un diario miccional personal para iOS y Android. Se aplica desde su publicación en [diary.eleva.care/privacy](https://diary.eleva.care/privacy).
 
-## Introducción
+## En resumen
 
-Bienvenido a Eleva Diary ("la Aplicación"), una aplicación de diario de vejiga desarrollada y operada por **Buzios e Tartarugas, Lda.** ("Eleva Care," "nosotros" o "nuestro").
+- **Tu diario se queda en tu móvil.** La aplicación no tiene cuenta, no se conecta a internet y no nos envía nada. Eleva no recibe ni ve lo que registras.
+- **Tu diario solo sale del móvil cuando tú lo decides**, al exportar o compartir un archivo, o, en Android, si la copia de seguridad del móvil hecha por Google incluye los datos de la aplicación. En el iPhone, tu diario no entra en las copias de seguridad de iCloud ni en las hechas en un ordenador.
+- **En relación con la aplicación, Eleva solo trata** los correos electrónicos que nos envías y la información que App Store y Google Play ponen a nuestra disposición (valoraciones, estadísticas e informes de fallos).
+- **Tienes derechos sobre esos datos** y puedes presentar una reclamación ante la autoridad portuguesa de protección de datos, la Comissão Nacional de Proteção de Dados (CNPD).
 
-Esta Política de Privacidad explica cómo manejamos la información cuando usas Eleva Diary. Estamos comprometidos a proteger tu privacidad y asegurar que entiendas cómo se gestionan tus datos.
+## 1. Quiénes somos
 
-**Información de contacto:**
+Eleva Diary lo publica **BÚZIOS E TARTARUGAS - LDA** ("Eleva"), sociedad de responsabilidad limitada portuguesa (sociedade por quotas) que utiliza la marca Eleva.care, NIPC 515001708, con domicilio social en Rua Gil Vicente 2, 2775-198 Parede, Portugal, inscrita en la Conservatória do Registo Comercial de Cascais, con un capital social de 200,00 €.
 
-- **Empresa:** Buzios e Tartarugas, Lda.
-- **Dirección:** Rua Gil Vicente, 2 - 2775-198 Parede, Portugal
-- **NIF:** PT515001708
-- **Email:** privacy@eleva.care
+- **Protección de datos:** [privacy@eleva.care](mailto:privacy@eleva.care)
+- **Soporte y preguntas generales:** [support@eleva.care](mailto:support@eleva.care)
+- **Comunicaciones legales y reclamaciones:** [legal@eleva.care](mailto:legal@eleva.care)
+- **Delegado de protección de datos (DPD):** estamos designando un DPD externo y publicaremos aquí sus datos de contacto en cuanto empiece. Hasta entonces, escribe a [privacy@eleva.care](mailto:privacy@eleva.care). Esta dirección siempre le llegará.
 
----
+## 2. Tu diario es tuyo
 
-## Resumen
+Todo lo que registras en Eleva Diary se guarda en tu móvil, por ti y para ti, y solo sale de él en los casos descritos en las secciones 7 y 8. La aplicación no tiene cuenta ni inicio de sesión, no se conecta a internet y no incluye herramientas de analítica, publicidad, seguimiento ni envío de informes de fallos. No recibimos lo que escribes. Cuando tocas un enlace a esta política o a los Términos de uso, la página se abre en el navegador del móvil.
 
-**Eleva Diary está diseñado con la privacidad como principio fundamental:**
+Por eso, Eleva no es responsable del tratamiento de los datos de tu diario y no puede verlo, cambiarlo ni borrarlo. Eleva es responsable del tratamiento solo de los datos descritos en la sección 11, "Qué recibe Eleva".
 
-- ✅ Todos tus datos del diario se almacenan **localmente en tu dispositivo**
-- ✅ **No** recopilamos, transmitimos ni almacenamos tus datos de salud personales en nuestros servidores
-- ✅ **No** utilizamos tecnologías de análisis, publicidad ni seguimiento
-- ✅ Tienes **control total** sobre tus datos en todo momento
-- ✅ La app nunca envía tus datos a ningún sitio. Solo salen de tu dispositivo cuando **tú eliges** exportarlos, o en la copia de seguridad de tu propio dispositivo cuando está activada (en muchos teléfonos lo está por defecto)
+## 3. Qué guarda la aplicación en tu móvil
 
----
+La aplicación guarda estos datos en su almacenamiento privado, en tu móvil:
 
-## 1. Información que NO Recopilamos
+- **Idas al baño:** fecha y hora, volumen (pequeño, mediano o grande) y, si lo indicas, la cantidad exacta en ml, urgencia (de 1 a 5), si hubo pérdida de orina, si hubo dolor, y notas.
+- **Bebidas:** fecha y hora, tipo de bebida, cantidad y notas.
+- **Pérdidas de orina:** fecha y hora, cantidad, urgencia (de 1 a 5), qué estabas haciendo (opcional) y notas.
+- **En cada registro:** un identificador que crea la aplicación, la fecha y hora en que lo creaste y su historial de ediciones.
+- **Objetivos diarios:** tus objetivos de líquidos y de idas al baño, y el historial de sus cambios, con las fechas.
+- **Racha:** cuántos días seguidos has registrado y el último día con registros.
+- **Recordatorios:** si están activados, el intervalo y las horas de silencio.
+- **Preferencias:** tu idioma, si el menú para añadir registros se abre al iniciar la aplicación y si ya has visto las pantallas de bienvenida.
+- **Aceptación de los Términos de uso:** la versión de los Términos que aceptaste y la fecha de la última aceptación. Los aceptas en la última pantalla de bienvenida, al tocar **Empezar**, y, cuando los Términos cambian, en el aviso que muestra la aplicación para aceptarlos.
 
-Eleva Diary **no** recopila, procesa ni almacena lo siguiente en nuestros servidores:
+**Para qué se usan.** La aplicación usa estos datos solo en tu móvil: para mostrar tu diario, los totales diarios, los gráficos y la racha, para programar los recordatorios y para crear los archivos que pides.
 
-- Información de identificación personal (nombre, email, teléfono)
-- Datos de salud o médicos
-- Datos de ubicación
-- Identificadores de dispositivo o IDs publicitarios
-- Análisis de uso o datos de comportamiento
-- Cualquier información de servicios de terceros
+**Historial de ediciones.** Cuando cambias un registro, la aplicación guarda el valor anterior y el nuevo de cada campo que cambias, notas incluidas, con la fecha del cambio. Puedes ver este historial en la pantalla del registro. Las exportaciones en JSON y las copias de seguridad lo incluyen. Para eliminar por completo un valor anterior, elimina el registro y vuelve a crearlo.
 
----
+## 4. Datos de salud
 
-## 2. Información Almacenada en tu Dispositivo
+Lo que registras, como idas al baño, pérdidas de orina, urgencia y dolor, es información sobre tu salud. La ley la protege de forma especial, como categoría especial de datos (artículo 9 del Reglamento General de Protección de Datos, RGPD). Esta información se queda en tu móvil y Eleva no la recibe.
 
-Cuando usas Eleva Diary, los siguientes datos se almacenan **localmente solo en tu dispositivo**:
+Por favor, no incluyas datos de salud en los correos que nos envías: no los necesitamos para ayudarte a usar la aplicación. Si los incluyes, solo los usamos para responderte, solo los ve el equipo que gestiona tu solicitud y los eliminamos de nuestro buzón cuando el asunto esté resuelto.
 
-### 2.1 Entradas del Diario
+## 5. Recordatorios y notificaciones
 
-- **Eventos de micción:** fecha/hora, volumen, nivel de urgencia, indicador de pérdida, indicador de dolor, notas
-- **Ingesta de líquidos:** fecha/hora, tipo de bebida, cantidad, notas
-- **Episodios de pérdidas:** fecha/hora, severidad, nivel de urgencia, notas
+Los recordatorios están desactivados hasta que los activas. Cuando los activas en **Ajustes** > **Recordatorios**, la aplicación pide permiso al móvil para mostrar notificaciones y programa los recordatorios en el propio móvil. No usa ningún servicio de notificaciones push y no envía nada a Eleva ni a nadie más.
 
-### 2.2 Configuración de la Aplicación
+Los recordatorios solo muestran un mensaje general que te pide actualizar tu diario, nunca lo que has registrado. Pueden aparecer en la pantalla de bloqueo, según los ajustes de notificaciones del móvil.
 
-- Metas diarias (objetivo de líquidos, objetivo de visitas al baño)
-- Preferencia de idioma (inglés, español, portugués)
-- Datos de seguimiento de rachas
+Puedes desactivar los recordatorios en **Ajustes** > **Recordatorios**, o retirar el permiso de notificaciones en los ajustes del móvil. **Borrar todos los datos** también los cancela.
 
-### 2.3 Almacenamiento Técnico
+## 6. Almacenamiento en tu móvil
 
-Estos datos se almacenan usando el almacenamiento local de tu dispositivo (AsyncStorage). La aplicación no los transmite a ningún servidor externo. El sistema operativo de tu dispositivo puede incluirlos en las copias de seguridad del dispositivo según tus propios ajustes (consulta la Sección 3).
+La aplicación guarda en tu móvil solo lo estrictamente necesario para el diario que has decidido llevar: tus registros, objetivos, ajustes de recordatorios y preferencias. No usa cookies, identificadores publicitarios ni otros identificadores para seguirte. Como este almacenamiento es estrictamente necesario para el servicio que has pedido, no necesita tu consentimiento (artículo 5 de la Ley portuguesa n.º 41/2004, de 18 de agosto).
 
----
+## 7. Archivos de exportación y copias de seguridad
 
-## 3. Copia de Seguridad de tus Datos
+Tu diario solo sale de la aplicación cuando tú lo decides:
 
-Eleva Diary no sube tus datos a ningún servicio en la nube. Para conservar una copia de tu diario o trasladarlo a otro dispositivo, puedes usar un **archivo de copia de seguridad local**:
+- **Exportar datos** crea un informe en PDF, una hoja de cálculo en CSV o un archivo JSON con los registros del periodo que elijas. El archivo JSON incluye todo lo que la aplicación guarda sobre cada registro, incluidos la fecha de creación y el historial de ediciones.
+- **Exportar copia de seguridad** crea un archivo con todos tus registros (con las notas, las fechas de creación y el historial de ediciones), tus objetivos y su historial, tu racha y tu idioma.
 
-### Qué sucede cuando exportas un archivo de copia de seguridad:
+En ambos casos, la aplicación abre el menú de compartir del móvil. Ahí decides dónde guardar el archivo o a dónde enviarlo, por ejemplo a la aplicación Archivos, al correo electrónico o a un servicio de almacenamiento en la nube. Eleva no recibe ninguna copia. A partir de ese momento, el archivo queda sujeto a los términos y a la política de privacidad del servicio que hayas elegido.
 
-- La aplicación crea un archivo en tu dispositivo con tus entradas del diario, metas, historial de metas, datos de rachas y preferencia de idioma
-- El archivo se comparte mediante la función nativa de compartir de tu dispositivo y **tú eliges** dónde guardarlo o enviarlo
-- La aplicación no encripta el archivo; eres responsable de guardarlo en un lugar de tu confianza
-- Nosotros (Eleva Care) no recibimos copias de tus archivos de copia de seguridad
+La aplicación no cifra estos archivos. Guárdalos en un lugar de confianza y elimina las copias que ya no necesites.
 
-### Tu control:
+Para compartirlos, la aplicación guarda primero los archivos en una carpeta temporal propia, en tu móvil. Los elimina la próxima vez que abres la aplicación, antes de cada nueva exportación y cuando uses **Borrar todos los datos**.
 
-- Un archivo de copia de seguridad solo se crea cuando tocas **Exportar Copia de Seguridad** en Ajustes
-- Puedes restaurar los datos en cualquier dispositivo iOS o Android tocando **Importar Copia de Seguridad** y seleccionando el archivo
-- Importar un archivo de copia de seguridad reemplaza los datos que hay en la aplicación
+**Importar copia de seguridad** lee un archivo que eliges y sustituye los registros, los objetivos, el historial de objetivos, la racha y el idioma que hay en la aplicación. La aplicación elimina su copia temporal del archivo justo después de leerlo.
 
-### Copias de seguridad del dispositivo realizadas por tu sistema operativo:
+## 8. Copias de seguridad del móvil
 
-Independientemente de la aplicación, el sistema operativo de tu dispositivo puede incluir los datos locales de la aplicación en sus propias copias de seguridad, según tus ajustes:
+El sistema de tu móvil hace sus propias copias de seguridad. Apple y Google te prestan estos servicios según sus respectivos términos. Eleva no tiene acceso a esas copias. Lo que ocurre con tu diario depende del sistema.
 
-- **iOS:** si usas la Copia de Seguridad de iCloud o haces una copia de seguridad de tu dispositivo en un ordenador, los datos de la aplicación pueden incluirse en esa copia
-- **Android:** si la copia de seguridad del dispositivo está activada, Android puede copiar los datos de la aplicación en tu cuenta de Google y restaurarlos cuando configures un nuevo dispositivo
+- **iPhone:** Eleva Diary excluye tu diario de la copia de seguridad de iCloud y de las copias de seguridad hechas en un ordenador. Por eso, restaurar el iPhone o configurar un iPhone nuevo a partir de una copia de seguridad no recupera tu diario. Si configuras un iPhone nuevo transfiriendo los datos directamente desde el antiguo, no podemos garantizar que tu diario pase. Para llevar tu diario a un iPhone nuevo, o para guardar una copia, usa **Exportar copia de seguridad** e **Importar copia de seguridad** (sección 7): es la forma fiable de hacerlo.
+- **Android 9 y versiones posteriores:** si la copia de seguridad del móvil está activada, Android puede copiar los datos de la aplicación en tu cuenta de Google. Eleva Diary solo lo permite cuando la copia está cifrada de extremo a extremo, lo que requiere un bloqueo de pantalla (PIN, patrón o contraseña). Cuando configuras un móvil nuevo a partir del antiguo, Android también puede transferir los datos de la aplicación directamente de uno a otro.
+- **Android 7 a 8.1:** Eleva Diary no permite que tu diario se incluya en la copia de seguridad ni que se transfiera a otro móvil.
 
-Estas copias de seguridad las controlas tú a través de los ajustes de tu dispositivo y las gestionan Apple o Google. Nosotros (Eleva Care) no tenemos acceso a ellas. Para más información, consulta la [Política de Privacidad de Apple](https://www.apple.com/legal/privacy/) y la [Política de Privacidad de Google](https://policies.google.com/privacy).
+En Android, esto tiene dos consecuencias:
 
----
+- **Tu diario puede volver.** Si reinstalas la aplicación o configuras un móvil nuevo a partir del antiguo o de una copia de seguridad, tu diario puede restaurarse. Esto puede ocurrir automáticamente al reinstalar la aplicación, si hay una copia en tu cuenta de Google.
+- **Una copia antigua puede durar más que tu diario.** Después de usar **Borrar todos los datos**, la copia de seguridad de tu cuenta de Google puede seguir conteniendo tu diario hasta que el móvil haga la siguiente copia, normalmente una vez al día, aproximadamente. Si desinstalas la aplicación, la última copia de los datos de la aplicación se queda en tu cuenta de Google hasta que la elimines o hasta que Google la retire según sus propias normas, y puede restaurarse si vuelves a instalar la aplicación.
 
-## 4. Exportación de Datos
+Para evitarlo, puedes desactivar la copia de seguridad del móvil o eliminar la copia de seguridad de tu cuenta de Google. Los pasos están en [Opciones de privacidad](https://diary.eleva.care/privacy-choices).
 
-Eleva Diary te permite exportar tus datos en múltiples formatos (PDF, CSV, JSON):
+<a id="data-deletion"></a>
 
-- Las exportaciones se generan **localmente en tu dispositivo**
-- Los archivos exportados se comparten mediante la función nativa de compartir de tu dispositivo
-- **Tú eliges** dónde enviar los datos exportados (email, almacenamiento en la nube, etc.)
-- No recibimos copias de tus exportaciones
+## 9. Eliminar tus datos
 
----
+- **Un registro:** en la pestaña **Historial**, toca el registro, después el icono de la papelera, y confirma con **Eliminar**.
+- **Todos los datos:** en **Ajustes**, toca **Borrar todos los datos** y confirma. La aplicación elimina tus registros (con las notas y el historial de ediciones), los objetivos y su historial, la racha, los ajustes de recordatorios y la preferencia del menú al iniciar, y cancela los recordatorios programados. También elimina los archivos de exportación y de copia de seguridad que haya en su carpeta temporal. Los objetivos y los ajustes vuelven a sus valores iniciales. Solo se conservan tu idioma, el hecho de que ya has visto las pantallas de bienvenida y la versión y la fecha de los Términos de uso que aceptaste. Esta acción no se puede deshacer.
+- **Desinstalar:** borra del móvil todos los datos de la aplicación. En Android, si hay una copia de seguridad en tu cuenta de Google, reinstalar la aplicación puede restaurarlos (sección 8). En el iPhone, las copias de seguridad del móvil no incluyen tu diario: después de desinstalar, solo puedes recuperarlo con un archivo de copia de seguridad que hayas exportado.
+- **Copias fuera de la aplicación:** **Borrar todos los datos** y la desinstalación no borran los archivos que hayas exportado o compartido ni las copias de seguridad de Android en tu cuenta de Google. Elimina los archivos donde los guardaste y la copia de seguridad en los ajustes de tu cuenta de Google.
 
-## 5. Servicios de Terceros
+Los pasos detallados están en [Opciones de privacidad](https://diary.eleva.care/privacy-choices).
 
-Eleva Diary **no** se integra con servicios de terceros como:
+## 10. Seguridad
 
-- Plataformas de análisis (Google Analytics, Firebase Analytics, etc.)
-- Redes publicitarias
-- Servicios de informes de errores o de monitorización del rendimiento
-- Plataformas de redes sociales
-- Proveedores de autenticación de terceros
+Tu diario se guarda en el almacenamiento privado de la aplicación, que otras aplicaciones no pueden leer. La aplicación no añade un cifrado propio. iOS y Android cifran el almacenamiento del móvil cuando configuras un código o bloqueo de pantalla. Sin bloqueo de pantalla, cualquiera que pueda usar tu móvil puede abrir la aplicación y leer tu diario. Por eso te recomendamos que uses uno.
 
----
+Los archivos de exportación y de copia de seguridad no están cifrados. Guárdalos en un lugar de confianza.
 
-## 6. Seguridad de los Datos
+## 11. Qué recibe Eleva
 
-### Seguridad en el Dispositivo
+### 11.1 Correos electrónicos que nos envías
 
-- Tus datos se almacenan dentro del sandbox seguro de la aplicación
-- iOS y Android proporcionan encriptación para los datos de la aplicación en reposo
-- Los datos están protegidos por el código de acceso/seguridad biométrica de tu dispositivo
+Si escribes a [support@eleva.care](mailto:support@eleva.care), [privacy@eleva.care](mailto:privacy@eleva.care) o [legal@eleva.care](mailto:legal@eleva.care):
 
-### Sin Transmisión a Servidores
+- **Datos:** tu dirección de correo electrónico, tu nombre si lo indicas, y lo que escribas, incluidos los archivos adjuntos.
+- **Finalidad:** responderte y conservar el registro del intercambio.
+- **Base jurídica:** nuestro interés legítimo en responder a los mensajes que recibimos (RGPD, artículo 6.1.f). En las solicitudes para ejercer tus derechos, el cumplimiento de una obligación legal (RGPD, artículo 6.1.c y artículo 12).
+- **Destinatarios:** nuestro proveedor de correo electrónico guarda los mensajes por cuenta nuestra, como encargado del tratamiento, con un contrato conforme al artículo 28 del RGPD.
+- **Transferencias internacionales:** si el proveedor trata los mensajes fuera del Espacio Económico Europeo, la transferencia se basa en una decisión de adecuación de la Comisión Europea o en cláusulas contractuales tipo aprobadas por la Comisión. Puedes pedirnos información sobre estas garantías en [privacy@eleva.care](mailto:privacy@eleva.care).
+- **Conservación:** 3 años después del último contacto. Si es necesario para formular, ejercer o defender reclamaciones, los conservamos más tiempo, mientras dure esa necesidad.
 
-- No operamos servidores que reciban o almacenen tus datos de salud
-- Tus datos nunca pasan por nuestra infraestructura
+### 11.2 Información de las tiendas de aplicaciones
 
----
+Apple (App Store) y Google (Google Play) gestionan sus tiendas como responsables del tratamiento independientes, según sus propias políticas de privacidad. Ponen a nuestra disposición:
 
-## 7. Retención y Eliminación de Datos
+- **Valoraciones:** el texto y la puntuación que publiques en la tienda, con el nombre con el que los publiques, para que podamos leerlos y responder.
+- **Estadísticas:** cifras agregadas, como descargas e instalaciones por país, versión de la aplicación y versión del sistema.
+- **Informes de fallos:** información técnica sobre errores de la aplicación, como el modelo del móvil, las versiones del sistema y de la aplicación y los detalles técnicos del error. Solo los recibimos si has elegido, en los ajustes del móvil, compartir datos de diagnóstico con los desarrolladores.
 
-### Retención
+Esta información no incluye el contenido de tu diario. La usamos para corregir errores, comprobar que la aplicación funciona bien y responder a valoraciones, sobre la base de nuestro interés legítimo (RGPD, artículo 6.1.f). Se queda en las herramientas de Apple y de Google durante el plazo que estas fijan.
 
-Tus datos permanecen en tu dispositivo mientras elijas mantenerlos. No imponemos límites de retención.
+### 11.3 Qué más debes saber
 
-### Eliminación
+- **No es obligatorio:** no necesitas darnos ningún dato para usar la aplicación. Escribirnos o publicar una valoración es decisión tuya.
+- **Sin decisiones automatizadas:** no tomamos decisiones automatizadas sobre ti ni elaboramos perfiles. Los totales y los gráficos se calculan en tu móvil y solo aparecen en tu aplicación.
+- **Sin venta ni publicidad:** no vendemos datos personales ni los usamos para publicidad. Solo los comunicamos a autoridades públicas cuando la ley lo exige.
 
-Puedes eliminar todos tus datos en cualquier momento:
+## 12. Plazos de conservación
 
-1. Abre la Aplicación
-2. Ve a **Ajustes**
-3. Toca **Borrar todos los datos**
-4. Confirma la eliminación
+| Datos | Dónde se guardan | Durante cuánto tiempo |
+| --- | --- | --- |
+| Tu diario y tus ajustes | En tu móvil | Hasta que los elimines (sección 9) |
+| Archivos temporales de exportación y de copia de seguridad | En la carpeta temporal de la aplicación | Hasta que vuelvas a abrir la aplicación, hagas una nueva exportación o uses **Borrar todos los datos** |
+| Archivos que exportaste o compartiste | Donde los guardaste o enviaste | Hasta que los elimines, según los términos de ese servicio |
+| Copias de seguridad de Android | En tu cuenta de Google | Según los ajustes de tu cuenta de Google; después de desinstalar la aplicación, hasta que elimines la copia o Google la retire según sus propias normas |
+| Correos enviados a Eleva | En nuestro proveedor de correo electrónico | 3 años después del último contacto, o más mientras sea necesario para defender una reclamación |
+| Valoraciones, estadísticas e informes de fallos | En las herramientas de Apple y de Google | Durante el plazo que fijan Apple y Google |
 
-Esto elimina permanentemente todas las entradas del diario, metas y configuraciones de tu dispositivo, y los archivos de exportación o copia de seguridad que la app guardó para compartir. Solo se conserva el idioma elegido.
+## 13. Tus derechos
 
-### Desinstalar la Aplicación
+**Tu diario.** Está en tus manos: puedes verlo en **Historial**, cambiar o eliminar cualquier registro, exportarlo o borrarlo con **Borrar todos los datos**. Como no lo recibimos, no podemos abrirlo, corregirlo ni borrarlo por ti. Tampoco guardamos nada que nos permita asociar el contenido del diario contigo (RGPD, artículo 11).
 
-Si desinstalas Eleva Diary, todos los datos almacenados localmente se eliminan automáticamente de tu dispositivo.
+**Los datos que trata Eleva** (correos e información de las tiendas): tienes derecho de acceso, rectificación, supresión, limitación del tratamiento y portabilidad cuando proceda.
 
-### Archivos de Copia de Seguridad y Copias del Dispositivo
+**Derecho de oposición.** Puedes oponerte en cualquier momento al tratamiento de tus correos y de la información de las tiendas que hacemos sobre la base de nuestros intereses legítimos. Escribe a [privacy@eleva.care](mailto:privacy@eleva.care).
 
-Borrar los datos o desinstalar la aplicación no elimina las copias guardadas fuera de la aplicación:
+- Para ejercer estos derechos, escribe a [privacy@eleva.care](mailto:privacy@eleva.care). Es gratuito.
+- Respondemos en el plazo de un mes. Si la solicitud es compleja, podemos necesitar dos meses más; en ese caso, te avisamos dentro del primer mes y te explicamos por qué.
+- Para proteger tus datos, podemos pedirte que confirmes la solicitud desde la dirección de correo con la que nos escribiste.
+- Puedes cambiar o eliminar las valoraciones que hayas publicado directamente en App Store o en Google Play.
+- Puedes presentar una reclamación ante la Comissão Nacional de Proteção de Dados (CNPD), Av. D. Carlos I, 134, 1.º, 1200-651 Lisboa, Portugal, [www.cnpd.pt](https://www.cnpd.pt), o ante la autoridad de protección de datos del país de la Unión Europea donde vives o trabajas (en España, la Agencia Española de Protección de Datos, AEPD).
 
-- Los archivos de copia de seguridad y las exportaciones que guardaste en otro lugar son tus copias; puedes eliminarlos allí donde los guardaste
-- Las copias de seguridad del dispositivo realizadas por iOS o Android se pueden gestionar o eliminar en los ajustes de tu dispositivo o de tu cuenta
+## 14. Menores
 
----
+Eleva Diary está pensado para adultos. Si tienes menos de 16 años, úsalo con tu padre, tu madre o tu tutor. Un padre, una madre o un tutor también pueden llevar el diario de un niño en su propio móvil; el diario se queda en ese móvil y Eleva no lo recibe. Si tienes menos de 16 años y quieres escribirnos, pide ayuda a tu padre, tu madre o tu tutor.
 
-## 8. Privacidad de los Niños
+## 15. Cambios en esta política
 
-Eleva Diary no está dirigido a niños menores de 13 años. No recopilamos conscientemente información de niños. Si un padre o tutor se da cuenta de que su hijo ha estado usando la aplicación, puede eliminar todos los datos usando la función Borrar todos los datos.
+Si cambiamos esta política de forma relevante, por ejemplo si algún tipo de información empieza a salir del móvil o cambian nuestros datos de contacto, publicamos la nueva versión en esta página y la describimos en las notas de la versión de la tienda antes de que el cambio surta efecto. Si el cambio llega con una actualización de la aplicación, la aplicación también te muestra un aviso antes de que el cambio se aplique. Los cambios menores, como correcciones de redacción, aparecen en esta página con una nueva fecha.
 
----
+Los Términos de uso tienen sus propias reglas: cuando cambian, la aplicación te muestra un aviso con un enlace a los nuevos Términos y un botón para aceptarlos, y hasta que los aceptes sigue aplicándose la versión que aceptaste antes (Términos de uso, sección 12).
 
-## 9. Usuarios Internacionales
+**Versiones:** 11 de noviembre de 2026, primera versión.
 
-Eleva Diary está disponible en todo el mundo. Dado que todos los datos se almacenan localmente en tu dispositivo, no hay transferencia internacional de tus datos de salud a nuestros servidores.
+## 16. Otra información
 
-Para usuarios en la Unión Europea, nuestra sede en Portugal asegura el cumplimiento de las regulaciones de protección de datos de la UE aplicables.
-
----
-
-## 10. Tus Derechos
-
-Dependiendo de tu jurisdicción, puedes tener derechos sobre tus datos personales. Dado que Eleva Diary almacena datos localmente y nosotros no los recopilamos, ejerces estos derechos directamente a través de la aplicación:
-
-| Derecho       | Cómo Ejercerlo                                        |
-| ------------- | ----------------------------------------------------- |
-| Acceso        | Ver tus datos en el Historial y Ajustes de la app     |
-| Rectificación | Editar cualquier entrada tocándola                    |
-| Supresión     | Usar Borrar todos los datos en Ajustes                |
-| Portabilidad  | Exportar tus datos como CSV o JSON                    |
-| Oposición     | No aplicable (no hay procesamiento por nuestra parte) |
-
----
-
-## 11. Cambios a esta Política de Privacidad
-
-Podemos actualizar esta Política de Privacidad de vez en cuando. Los cambios se reflejarán en la fecha de "Última actualización" en la parte superior de este documento.
-
-Te animamos a revisar esta Política de Privacidad periódicamente. El uso continuado de Eleva Diary después de los cambios constituye la aceptación de la política actualizada.
-
----
-
-## 12. Contáctanos
-
-Si tienes preguntas sobre esta Política de Privacidad o nuestras prácticas de privacidad, contáctanos:
-
-**Buzios e Tartarugas, Lda.**  
-Rua Gil Vicente, 2  
-2775-198 Parede, Portugal
-
-**Email:** privacy@eleva.care  
-**Consultas generales:** diary@eleva.care
-
----
-
-## 13. Información Adicional
-
-### Plataforma Eleva Care
-
-Eleva Diary es parte de la plataforma Eleva Care. Para información sobre otros servicios de Eleva Care, visita:
-
-- Sitio web: https://eleva.care
-- Política de Privacidad general: https://eleva.care/privacy
-- Términos de uso: https://eleva.care/terms
-
-### Cumplimiento Normativo
-
-Esta Política de Privacidad está diseñada para cumplir con:
-
-- Reglamento General de Protección de Datos (RGPD) - Unión Europea
-- Lei Geral de Proteção de Dados (LGPD) - Brasil
-- California Consumer Privacy Act (CCPA) - Estados Unidos
-- Directrices de la App Store de Apple
-- Políticas de Google Play Store
-
----
-
-_Esta Política de Privacidad se aplica específicamente a la aplicación móvil Eleva Diary._
+- **Eleva Diary y Eleva.care:** Eleva Diary es una aplicación independiente de la plataforma Eleva.care, en eleva.care. Nada de lo que registras en el diario se comparte con la plataforma, y usar el diario no crea una cuenta de Eleva. La plataforma tiene sus propios términos y política de privacidad, que no se aplican a Eleva Diary.
+- **Ley aplicable:** Eleva está establecida en Portugal. A los datos que recibimos se les aplican el RGPD (Reglamento (UE) 2016/679) y la Ley portuguesa n.º 58/2019, de 8 de agosto. La CNPD es nuestra autoridad de control.
+- **Documentos relacionados:** [Términos de uso](https://diary.eleva.care/terms) y [Opciones de privacidad](https://diary.eleva.care/privacy-choices).
+- **Idiomas:** esta política está disponible en portugués, inglés y español, con el mismo contenido. En caso de discrepancia entre versiones lingüísticas, prevalece la versión en portugués.
