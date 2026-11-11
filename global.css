@@ -1,33 +1,44 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+/* Utilities stay unlayered so React Native Web defaults cannot override them. */
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";
 
-/* Eleva Care Brand Colors as CSS Variables */
-:root {
+/* Eleva Care brand tokens. Keep in step with lib/theme/colors.ts. */
+@theme {
   /* Primary - Deep Teal (calming, medical, trustworthy) */
-  --color-primary: 0 109 119;
-  --color-primary-light: 131 197 190;
-  --color-primary-dark: 0 77 84;
+  --color-primary: #006d77;
+  --color-primary-light: #83c5be;
+  --color-primary-dark: #004d54;
 
   /* Secondary - Soft Coral (warm, approachable) */
-  --color-secondary: 226 149 120;
-  --color-secondary-light: 255 221 210;
+  --color-secondary: #e29578;
+  --color-secondary-light: #ffddd2;
 
   /* Accent - Pale Lavender (fresh, clean) */
-  --color-accent: 224 251 252;
+  --color-accent: #e0fbfc;
 
   /* Neutrals */
-  --color-background: 249 250 251;
-  --color-surface: 255 255 255;
-  --color-text: 51 51 51;
-  --color-text-muted: 107 114 128;
-  --color-border: 226 232 240;
+  --color-background: #f9fafb;
+  --color-surface: #ffffff;
+  --color-foreground: #333333;
+  --color-muted: #6b7280;
+  --color-muted-foreground: #6b7280;
+  --color-border: #e2e8f0;
 
   /* Status */
-  --color-success: 34 197 94;
-  --color-warning: 245 158 11;
-  --color-error: 239 68 68;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-destructive: #ef4444;
 
-  /* Radius */
-  --radius: 0.5rem;
+  /* Aliases used by the react-native-reusables components */
+  --color-card: #ffffff;
+  --color-card-foreground: #333333;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #333333;
+  --color-input: #e2e8f0;
+  --color-ring: #006d77;
+
+
+  /* Radius needs no override: the old lg, md and sm (8, 6 and 4px) equal the Tailwind 4 defaults. */
 }

@@ -47,10 +47,11 @@
     "expo-system-ui": "~57.0.4",
     "expo-web-browser": "~57.0.3",
     "i18n-js": "^4.5.4",
-    "nativewind": "^4.2.7",
+    "nativewind": "5.0.0-rc.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-css": "3.1.0-rc.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "~4.5.1",
     "react-native-safe-area-context": "~5.7.0",
@@ -59,11 +60,11 @@
     "react-native-web": "~0.21.4",
     "react-native-worklets": "0.10.1",
     "tailwind-merge": "^3.7.0",
-    "tailwindcss-animate": "^1.0.7",
     "zod": "^4.6.7",
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "4.1.12",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.2.18",
@@ -72,14 +73,15 @@
     "eslint-plugin-react": "^7.37.5",
     "jest": "^29.7.0",
     "jest-expo": "~57.0.6",
+    "postcss": "8.5.6",
     "react-test-renderer": "19.2.3",
-    "tailwindcss": "^3.4.19",
+    "tailwindcss": "4.1.12",
     "typescript": "~6.0.3"
   },
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@rn-primitives/.*|native-base|react-native-svg|nativewind|react-native-css-interop|zustand))"
+      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@rn-primitives/.*|native-base|react-native-svg|nativewind|react-native-css|zustand))"
     ],
     "setupFiles": [
       "<rootDir>/jest.setup.js"

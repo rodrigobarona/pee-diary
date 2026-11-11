@@ -75,7 +75,7 @@ A complete voiding diary provides physicians with essential data for accurate di
 | Category                 | Technology                                     |
 | ------------------------ | ---------------------------------------------- |
 | **Framework**            | Expo SDK 57 with React Native 0.86             |
-| **Styling**              | NativeWind v4 (TailwindCSS for React Native)   |
+| **Styling**              | NativeWind v5 RC with Tailwind CSS 4           |
 | **State Management**     | Zustand with AsyncStorage persistence          |
 | **Navigation**           | Expo Router with native tab navigation         |
 | **Animations**           | React Native Reanimated + Gesture Handler      |
