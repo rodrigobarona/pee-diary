@@ -1,7 +1,10 @@
 # Eleva Diary — Apple App Store Metadata (English)
 
-> **Last updated:** 11 November 2026  
-> **Character limits:** Name (30), Subtitle (30), Promotional Text (170), Keywords (100), Description (4000)
+> **Last updated:** 11 November 2026
+> **Character limits:** Name (30), Subtitle (30), Promotional Text (170), Keywords (100), Description (4000), What's New (4000)
+> **Counts below:** characters as App Store Connect counts them. Keywords are also given in UTF-8 bytes, because App Store Connect can reject a keyword field over 100 bytes even when it is under 100 characters.
+
+Wording rules for every field (see `_docs/compliance/app-behavior-to-disclosures.md`): describe a personal bladder diary that keeps a record the user can share with a health professional. No named conditions in the name, subtitle, promotional text or description. Never use "insights", "analyse/analyze", "trends", "patterns", "personalised", "improve your health" or "healthy habits".
 
 ---
 
@@ -13,15 +16,17 @@ Eleva Diary
 
 **Character count:** 11
 
+The installed app shows the same name under its icon ("Eleva Diary", product decision 8), as Guideline 2.3.8 expects.
+
 ---
 
 ## Subtitle (30 characters max)
 
 ```
-Bladder & Fluid Tracker
+Your private bladder diary
 ```
 
-**Character count:** 23
+**Character count:** 26
 
 ---
 
@@ -30,121 +35,154 @@ Bladder & Fluid Tracker
 > This text can be updated at any time without app review.
 
 ```
-Track your bladder health effortlessly. Log urination, fluid intake, and leaks to understand your patterns and share meaningful reports with your healthcare provider.
+Keep a private bladder diary: log bathroom visits, drinks and leaks, and export a report to share with your health professional.
 ```
 
-**Character count:** 168
+**Character count:** 128
 
 ---
 
 ## Keywords (100 characters max, comma-separated)
 
 ```
-bladder diary,voiding log,urination tracker,fluid intake,pelvic health,incontinence,leak tracker
+voiding log,bladder,urination,toilet,fluid intake,drinks,leaks,incontinence,pelvic floor,journal
 ```
 
-**Character count:** 98
+**Character count:** 96 (96 bytes)
+
+Keywords are search terms only and are not shown to users. They may include words people search for, such as "incontinence", even though the description names no condition. Do not repeat "Eleva" or "Diary": the app name is already indexed.
 
 ---
 
 ## Description (4000 characters max)
 
 ```
-Eleva Diary is a private, easy-to-use bladder diary designed to help you track your urinary health. Whether you're preparing for a medical appointment or simply want to understand your body better, Eleva Diary gives you the tools to log, analyze, and share your data—all on your terms.
+Eleva Diary is a simple, private bladder diary. Write down when you go to the toilet, what you drink and any leaks, then share the record with your doctor, nurse or physiotherapist if you choose.
 
-WHAT YOU CAN TRACK
-• Urination events with volume (small/medium/large) and urgency level (1-5 scale)
-• Fluid intake by type (water, coffee, tea, juice, alcohol, other) and amount in ml
-• Leak episodes with severity (drops/moderate/full) and urgency
-• Optional notes for any entry
-• Pain or discomfort indicators
+WHAT YOU CAN RECORD
+• Bathroom visits: time, size (small, medium or large) or an exact amount in ml, urgency from 1 to 5, whether there was a leak or pain, and notes
+• Drinks: time, type (water, coffee, tea, juice, alcohol or other) and amount
+• Leaks: time, amount, urgency, what you were doing and notes
 
-INSIGHTS & PROGRESS
-• Daily progress toward personalized fluid and bathroom goals
-• Weekly and monthly charts to visualize trends
-• Streak tracking to encourage consistent logging
-• Time-of-day patterns (morning, afternoon, evening, night)
+YOUR DIARY AT A GLANCE
+• Daily totals of drinks, bathroom visits and leaks
+• Simple weekly and monthly charts of what you logged
+• Your own daily targets, if you want to set them
+• A streak showing how many days in a row you have logged
+• Optional reminders to update your diary
 
-EASY EXPORT & SHARING
-• Export your data as PDF, CSV, or JSON for sharing with your doctor
-• Beautiful PDF reports summarizing your entries by date range
-• Share directly via email, messaging, or cloud storage
+SHARE IT WHEN YOU CHOOSE
+• Export your diary as a PDF, CSV or JSON file for the dates you pick
+• Send it with your phone's share options: by email, in a messaging app or to a storage service you choose
+• Save a backup file and import it again later, on the same phone or a new one
 
-PRIVACY FIRST
-• All data is stored locally on your device—no account required
-• Back up to a file you control and restore it on any device
-• No ads, no analytics, no third-party tracking
-• You control when and how your data leaves your device
+KEPT ON YOUR PHONE
+• Your diary is stored on your phone. No account and no sign-in
+• No ads, no analytics, no tracking
+• Works offline
+• Delete your diary at any time with Clear All Data in Settings
 
-DESIGNED FOR REAL LIFE
-• Quick entry with smart defaults and intuitive controls
-• Dark mode support for comfortable nighttime logging
-• Available in English, Spanish, and Portuguese
-• Works offline—no internet connection needed
+WHO IT IS FOR
+Anyone who has been asked to keep a bladder diary, or who wants a simple record of bathroom visits and drinks to take to an appointment. Carers and parents can keep a diary for the person they look after.
 
-WHO IS IT FOR?
-Eleva Diary is ideal for anyone managing bladder health, including those experiencing overactive bladder (OAB), urinary incontinence, interstitial cystitis, or those recovering from pelvic surgery. It's also helpful for caregivers tracking on behalf of a family member.
+Available in English, Spanish and Portuguese. Free, with no in-app purchases.
 
-MEDICAL DISCLAIMER
-Eleva Diary is a personal logging tool, not a medical device. It does not diagnose, treat, or prevent any condition. Always consult a qualified healthcare professional for medical advice.
+IMPORTANT
+Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. Talk to a health professional about your symptoms.
 
-Part of Eleva Care — empowering you to take control of your health journey.
+Made by Eleva.care. Questions? support@eleva.care
 ```
 
-**Character count:** ~1,870
+**Character count:** 1,806
+
+The disclaimer paragraph uses Google's required wording ("not a medical device and does not diagnose, treat, cure, or prevent any medical condition") so that both stores carry the same text. It differs from the in-app disclaimer only by the words "medical" and the serial comma.
 
 ---
 
 ## What's New (Release Notes)
 
-> Use for each version update. Keep under 4000 characters.
-
-### Version 1.0.0 (Initial Release)
-
-```
-Welcome to Eleva Diary! Start tracking your bladder health today.
-
-• Log urination, fluid intake, and leak events
-• Set personalized daily goals
-• View insights with weekly and monthly charts
-• Export reports as PDF, CSV, or JSON
-• Back up your data to a file and restore it on any device
-• Available in English, Spanish, and Portuguese
-```
+App Store Connect does not show a "What's New" field for the first version of an app. Use `release-notes-templates.md` from version 1.0.1 onwards.
 
 ---
 
 ## Category
 
-**Primary:** Health & Fitness  
-**Secondary:** Medical
+**Primary:** Health & Fitness
+**Secondary:** None
+
+Why no secondary category: Health & Fitness already describes a bladder diary, and a second category adds little discoverability for this app. "Medical" must not be used: it signals a medical purpose, which the app does not have, and it would contradict the "not a regulated medical device" declaration below. If the owner later wants a secondary category, use **Lifestyle**, never Medical.
+
+---
+
+## App Store Regulations & Permits — Regulated Medical Device
+
+Apple requires apps available in the EU/EEA, UK or US whose primary or secondary category is Health & Fitness or Medical to declare whether they are a regulated medical device in each region (App Store Connect > the app > General > App Information > App Store Regulations & Permits > Declare Regulated Medical Device; Account Holder or Admin role). The answer is shown on the product page.
+
+**Answer: No, for every region listed (EU/EEA, UK, US).**
+
+This answer holds because the build being submitted includes the product changes in `_docs/compliance/app-behavior-to-disclosures.md` ("Product decisions"): the Fluid Balance card shows only neutral totals (no ratio, no "Normal/Low/High", no traffic-light colours), trend arrows are neutral, goals are the user's own targets with no claim that they are medical norms, onboarding and store wording describe a personal diary, and the medical disclaimer appears on the last onboarding page (which Skip leads to), Settings > Medical information, under the charts and in the PDF footer. Do not submit a build that still has the output ratio or the "medical guidelines" goal text: with those features the "No" answer is not defensible under MDCG 2019-11 Rev.1.
+
+Source: [Declare regulated medical device status](https://developer.apple.com/help/app-store-connect/manage-app-information/declare-regulated-medical-device-status).
 
 ---
 
 ## Age Rating
 
-**4+** — No objectionable content
+**4+.** Answer the questionnaire as follows: no violence, sexual content, profanity, gambling or user-generated content shared with others. If asked about medical or treatment information, answer **None**: the app records what the user enters and gives no medical or treatment information. (Answering "Frequent" would also be inaccurate.) If the questionnaire has a separate item on health or wellness topics, answer it truthfully (**Yes**: a bladder diary deals with a health topic); this does not change medical or treatment information, which stays **None**. Check the live questionnaire in App Store Connect when submitting, and record the answers given here (Guideline 2.3.6).
+
+The age rating describes content. The Terms of Use say who the app is for: adults, and people under 16 with a parent or guardian, who can keep the diary for a child.
+
+---
+
+## Availability
+
+Distribute in EU/EEA storefronts (owner to confirm the exact list). The legal texts are written for the EU/EEA under Portuguese law; do not make the app available worldwide without reviewing them first.
+
+**EU Digital Services Act trader status:** declare BÚZIOS E TARTARUGAS - LDA as a trader in App Store Connect (Business section, Digital Services Act compliance). Apple shows the trader's address, phone number and email on the product page in the EU. Use the registered office (Rua Gil Vicente 2, 2775-198 Parede, Portugal), support@eleva.care and a company phone number the owner provides.
 
 ---
 
 ## Required URLs
 
-| Field          | URL                        |
-| -------------- | -------------------------- |
-| Privacy Policy | https://eleva.care/privacy |
-| Support URL    | https://eleva.care/support |
-| Marketing URL  | https://eleva.care/diary   |
+| Field          | Value                                     |
+| -------------- | ----------------------------------------- |
+| Privacy Policy | https://diary.eleva.care/privacy          |
+| Support URL    | https://diary.eleva.care/privacy-choices  |
+| Marketing URL  | https://diary.eleva.care                  |
+
+- **Support URL:** the Privacy Choices page explains how to export, back up and delete the diary, and must give support@eleva.care for anything else. Apple needs a web page here, not an email address.
+- **Marketing URL:** the diary's home page. It must describe the app in the same neutral terms as this listing, show the medical disclaimer, give support@eleva.care and link to the three legal pages.
+- All three pages must be live, public, not geofenced and not PDFs before submission. See `assets-checklist.md` for the full list of pages and addresses to publish.
+
+---
+
+## License Agreement
+
+Leave Apple's Standard EULA in place (no custom EULA for now). The Terms of Use at https://diary.eleva.care/terms add to it, and section 5 of the Terms states that, between the user and Eleva, the Terms apply where the two differ (liability as in Terms section 11, not the Standard EULA's exclusion or USD 50 cap; the app does not collect the technical data the Standard EULA mentions). A custom EULA (these Terms plus Apple's minimum terms) remains the cleaner option; see the compliance mapping, owner actions.
+
+---
+
+## Localisations
+
+| App Store Connect localisation | File                |
+| ------------------------------ | ------------------- |
+| English (U.K.)                 | `metadata.en.md`    |
+| Spanish (Spain)                | `metadata.es.md`    |
+| Portuguese (Portugal)          | `metadata.pt.md`    |
+
+Use the Portugal and Spain localisations, not Portuguese (Brazil) or Spanish (Mexico): the texts are written in European Portuguese and Spain Spanish.
 
 ---
 
 ## App Privacy (Summary)
 
-See `app-privacy-answers.md` for detailed guidance.
+See `app-privacy-answers.md`.
 
-- **Data Not Collected** (all categories, including Health & Fitness)
+- **Data Not Collected** (every category, Health & Fitness included)
+- Privacy Policy URL: https://diary.eleva.care/privacy
 
 ---
 
 ## Notes for Review
 
-See `review-notes.md` for detailed reviewer guidance.
+See `review-notes.md`.

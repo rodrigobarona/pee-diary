@@ -1,11 +1,13 @@
 # Eleva Diary — Google Play Store Metadata (English)
 
-> **Last updated:** February 2026  
-> **Character limits:** Title (30), Short Description (80), Full Description (4000)
+> **Last updated:** 11 November 2026
+> **Character limits:** App name (30), Short description (80), Full description (4000)
+
+Wording rules for every field (see `_docs/compliance/app-behavior-to-disclosures.md`): describe a personal bladder diary that keeps a record the user can share with a health professional. No named conditions in the listing text. Never use "insights", "analyse/analyze", "trends", "patterns", "personalised", "improve your health" or "healthy habits". Google's Health Content and Services policy requires the full description of a health app that is not a medical device to state that it is "not a medical device and does not diagnose, treat, cure, or prevent any medical condition"; the "IMPORTANT" paragraph does this.
 
 ---
 
-## App Title (30 characters max)
+## App Name (30 characters max)
 
 ```
 Eleva Diary
@@ -13,157 +15,152 @@ Eleva Diary
 
 **Character count:** 11
 
+The installed app shows the same name under its icon ("Eleva Diary", product decision 8).
+
 ---
 
 ## Short Description (80 characters max)
 
 ```
-Private bladder diary. Track urination, fluids & leaks. Export reports for your doctor.
+A private bladder diary: log bathroom visits, drinks and leaks, export a report.
 ```
 
-**Character count:** 79
+**Character count:** 80
 
 ---
 
 ## Full Description (4000 characters max)
 
 ```
-Eleva Diary is a private, easy-to-use bladder diary designed to help you track your urinary health. Whether you're preparing for a medical appointment or simply want to understand your body better, Eleva Diary gives you the tools to log, analyze, and share your data—all on your terms.
+Eleva Diary is a simple, private bladder diary. Write down when you go to the toilet, what you drink and any leaks, then share the record with your doctor, nurse or physiotherapist if you choose.
 
-▶ WHAT YOU CAN TRACK
+WHAT YOU CAN RECORD
+• Bathroom visits: time, size (small, medium or large) or an exact amount in ml, urgency from 1 to 5, whether there was a leak or pain, and notes
+• Drinks: time, type (water, coffee, tea, juice, alcohol or other) and amount
+• Leaks: time, amount, urgency, what you were doing and notes
 
-• Urination events with volume (small/medium/large) and urgency level (1-5 scale)
-• Fluid intake by type (water, coffee, tea, juice, alcohol, other) and amount in ml
-• Leak episodes with severity (drops/moderate/full) and urgency
-• Optional notes for any entry
-• Pain or discomfort indicators
+YOUR DIARY AT A GLANCE
+• Daily totals of drinks, bathroom visits and leaks
+• Simple weekly and monthly charts of what you logged
+• Your own daily targets, if you want to set them
+• A streak showing how many days in a row you have logged
+• Optional reminders to update your diary
 
-▶ INSIGHTS & PROGRESS
+SHARE IT WHEN YOU CHOOSE
+• Export your diary as a PDF, CSV or JSON file for the dates you pick
+• Send it with your phone's share options: by email, in a messaging app or to a storage service you choose
+• Save a backup file and import it again later, on the same phone or a new one
 
-• Daily progress toward personalized fluid and bathroom goals
-• Weekly and monthly charts to visualize trends
-• Streak tracking to encourage consistent logging
-• Time-of-day patterns (morning, afternoon, evening, night)
+KEPT ON YOUR PHONE
+• Your diary is stored on your phone. No account and no sign-in
+• No ads, no analytics, no tracking
+• Works offline
+• Delete your diary at any time with Clear All Data in Settings
 
-▶ EASY EXPORT & SHARING
+WHO IT IS FOR
+Anyone who has been asked to keep a bladder diary, or who wants a simple record of bathroom visits and drinks to take to an appointment. Carers and parents can keep a diary for the person they look after.
 
-• Export your data as PDF, CSV, or JSON for sharing with your doctor
-• Beautiful PDF reports summarizing your entries by date range
-• Share directly via email, messaging, or cloud storage
+Available in English, Spanish and Portuguese. Free, with no in-app purchases.
 
-▶ PRIVACY FIRST
+IMPORTANT
+Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. Talk to a health professional about your symptoms.
 
-• All data is stored locally on your device—no account required
-• No ads, no analytics, no third-party tracking
-• You control when and how your data leaves your device
-• Delete all data anytime from Settings
-
-▶ DESIGNED FOR REAL LIFE
-
-• Quick entry with smart defaults and intuitive controls
-• Dark mode support for comfortable nighttime logging
-• Available in English, Spanish, and Portuguese
-• Works offline—no internet connection needed
-
-▶ WHO IS IT FOR?
-
-Eleva Diary is ideal for anyone managing bladder health, including those experiencing:
-• Overactive bladder (OAB)
-• Urinary incontinence
-• Interstitial cystitis
-• Post-surgical recovery
-
-It's also helpful for caregivers tracking on behalf of a family member.
-
-▶ MEDICAL DISCLAIMER
-
-Eleva Diary is a personal logging tool, not a medical device. It does not diagnose, treat, or prevent any condition. Always consult a qualified healthcare professional for medical advice.
-
-Part of Eleva Care — empowering you to take control of your health journey.
-
-Questions? Contact us at diary@eleva.care
+Made by Eleva.care. Questions? support@eleva.care
 ```
 
-**Character count:** ~1,750
+**Character count:** 1,806
+
+Same text as the App Store description, so both stores say the same thing.
 
 ---
 
-## Category
+## Category and Tags
 
-**Primary:** Health & Fitness  
-**Secondary:** Medical
+**App category:** Health & Fitness (Google Play has one category; there is no secondary category).
 
----
-
-## Content Rating
-
-**Everyone** — Suitable for all ages
-
-Complete the IARC rating questionnaire honestly:
-
-- No violence, fear, sexuality, or profanity
-- No user-generated content shared publicly
-- Health-related content is clinical/educational
-
----
-
-## Contact Details (Required)
-
-| Field              | Value                      |
-| ------------------ | -------------------------- |
-| Developer Email    | diary@eleva.care           |
-| Privacy Policy URL | https://eleva.care/privacy |
-| Website            | https://eleva.care/diary   |
-
----
-
-## Tags/Categories
-
-Select relevant tags in Play Console:
+**Tags** (Store settings): choose from Google's list the closest to:
 
 - Health tracker
 - Diary
-- Medical log
-- Wellness
 - Health journal
+
+Do not choose medical tags such as "Medical log": they work against the position that the app has no medical purpose.
+
+---
+
+## Content Rating (IARC questionnaire)
+
+Answer honestly: no violence, fear, sexuality, profanity, gambling or controlled substances; no user-generated content shared with other users; no location sharing; no purchases. Health topics are discussed in plain, non-graphic terms (bathroom visits, drinks, leaks). Expected rating: Everyone / PEGI 3.
+
+---
+
+## Target Audience and Content
+
+Select **18 and over** only. The app is for adults; the Terms of Use allow someone under 16 to use it with a parent or guardian, who can keep the diary for a child. The app is not designed for or aimed at children, so it is outside the Families programme.
+
+---
+
+## Store Listing Contact Details
+
+| Field              | Value                            |
+| ------------------ | -------------------------------- |
+| Email              | support@eleva.care               |
+| Website            | https://diary.eleva.care         |
+| Phone (optional)   | company phone, if the owner wants to show one |
+| Privacy policy URL | https://diary.eleva.care/privacy (App content > Privacy policy) |
+
+The website must describe the app in the same neutral terms as this listing, show the medical disclaimer, give support@eleva.care and link to https://diary.eleva.care/privacy, https://diary.eleva.care/terms and https://diary.eleva.care/privacy-choices.
+
+---
+
+## Developer Account (public developer page)
+
+| Field          | Value                                                        |
+| -------------- | ------------------------------------------------------------ |
+| Developer name | Eleva.care (legal name: BÚZIOS E TARTARUGAS - LDA)           |
+| Address        | Rua Gil Vicente 2, 2775-198 Parede, Portugal                 |
+| Contact email  | support@eleva.care                                           |
+
+**EU Digital Services Act trader status:** declare the account as a trader in Play Console (developer account settings). Google shows the trader's name, address, email and phone number on the store listing in the EU. Use the details above and a company phone number the owner provides.
+
+---
+
+## Countries
+
+Publish in EU/EEA countries (owner to confirm the list). The legal texts are written for the EU/EEA under Portuguese law; do not publish worldwide without reviewing them first.
+
+---
+
+## Store Listings (translations)
+
+| Play Console language | File              |
+| --------------------- | ----------------- |
+| English (United Kingdom) – en-GB, default | `metadata.en.md` |
+| Spanish (Spain) – es-ES                   | `metadata.es.md` |
+| Portuguese (Portugal) – pt-PT             | `metadata.pt.md` |
+
+Use pt-PT and es-ES, not pt-BR or es-419: the texts are written in European Portuguese and Spain Spanish.
 
 ---
 
 ## App Access
 
-**No special access required**  
-The app does not require login or registration. Reviewers can access all features immediately.
+All features are available without login or registration. Choose "All functionality is available without special access".
 
 ---
 
-## Data Safety Section
+## Data Safety (Summary)
 
-See `data-safety-answers.md` for detailed guidance on completing the Data Safety form.
+See `data-safety-answers.md`.
 
-Summary:
-
-- No data shared with third parties
-- Data collected: Health info (only stored locally on device)
-- Data deletion: Users can delete all data via Settings → Clear All Data
+- "Does your app collect or share any of the required user data types?" **No**
+- Label: **No data collected** / **No data shared with third parties**
 
 ---
 
-## Health Apps Policy
+## Health Apps Declaration (Summary)
 
-See `health-apps-declaration-notes.md` for guidance on the Health apps declaration.
+See `health-apps-declaration-notes.md`.
 
-Summary:
-
-- Eleva Diary is a health logging tool, not a medical device
-- Complete the "Health" declaration in Play Console
-- Include appropriate disclaimers in the app and store listing
-
----
-
-## Developer Account
-
-| Field          | Value                                           |
-| -------------- | ----------------------------------------------- |
-| Developer Name | Buzios e Tartarugas, Lda.                       |
-| Address        | Rua Gil Vicente, 2 - 2775-198 Parede (Portugal) |
-| Contact Email  | diary@eleva.care                                |
+- Type: **Health and fitness** (the user records their own health information)
+- Not a medical app; not Software as a Medical Device; not a regulated medical device

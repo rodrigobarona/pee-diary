@@ -1,11 +1,15 @@
-# Eleva Diary — Metadatos Google Play Store (Español)
+# Eleva Diary — Metadatos de Google Play (español de España, es-ES)
 
-> **Última actualización:** Febrero 2026  
-> **Límites de caracteres:** Título (30), Descripción corta (80), Descripción completa (4000)
+> **Última actualización:** 11 de noviembre de 2026
+> **Límites de caracteres:** Nombre de la aplicación (30), Descripción breve (80), Descripción completa (4000)
+
+Reglas de redacción (ver `_docs/compliance/app-behavior-to-disclosures.md`): un diario miccional personal para llevar un registro y compartirlo con un profesional de la salud. Sin nombres de enfermedades. No usar «análisis», «analizar», «tendencias», «patrones», «personalizado», «mejorar tu salud», «hábitos saludables» ni «controlar tu salud». La política de Google sobre contenidos y servicios de salud exige que la descripción diga que la app no es un producto sanitario y no diagnostica, trata, cura ni previene ninguna afección: lo hace el párrafo «IMPORTANTE», con el aviso médico de la app.
+
+Categoría, etiquetas, clasificación de contenido, público objetivo, datos de contacto, cuenta de desarrollador, países, seguridad de los datos y declaración de apps de salud: son comunes a todos los idiomas; ver `metadata.en.md`.
 
 ---
 
-## Título de la App (máx. 30 caracteres)
+## Nombre de la aplicación (máx. 30 caracteres)
 
 ```
 Eleva Diary
@@ -15,106 +19,65 @@ Eleva Diary
 
 ---
 
-## Descripción Corta (máx. 80 caracteres)
+## Descripción breve (máx. 80 caracteres)
 
 ```
-Diario de vejiga privado. Registra micciones, líquidos y pérdidas. Exporta informes.
+Diario miccional privado: apunta idas al baño, bebidas y pérdidas y compártelo.
 ```
 
-**Caracteres:** 76
+**Caracteres:** 79
 
 ---
 
-## Descripción Completa (máx. 4000 caracteres)
+## Descripción completa (máx. 4000 caracteres)
 
 ```
-Eleva Diary es un diario de vejiga privado y fácil de usar, diseñado para ayudarte a controlar tu salud urinaria. Ya sea que te estés preparando para una cita médica o simplemente quieras entender mejor tu cuerpo, Eleva Diary te da las herramientas para registrar, analizar y compartir tus datos—todo bajo tu control.
+Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, tu enfermera o tu fisioterapeuta si quieres.
 
-▶ QUÉ PUEDES REGISTRAR
+QUÉ PUEDES REGISTRAR
+• Idas al baño: hora, volumen (pequeño, mediano o grande) o una cantidad exacta en ml, urgencia del 1 al 5, si hubo pérdida o dolor, y notas
+• Bebidas: hora, tipo (agua, café, té, zumo, alcohol u otra) y cantidad
+• Pérdidas: hora, cantidad, urgencia, qué estabas haciendo y notas
 
-• Eventos de micción con volumen (pequeño/mediano/grande) y nivel de urgencia (escala 1-5)
-• Ingesta de líquidos por tipo (agua, café, té, zumo, alcohol, otros) y cantidad en ml
-• Episodios de pérdidas con severidad (gotas/moderado/completo) y urgencia
-• Notas opcionales para cualquier entrada
-• Indicadores de dolor o molestia
+TU DIARIO DE UN VISTAZO
+• Totales diarios de bebidas, idas al baño y pérdidas
+• Gráficos semanales y mensuales sencillos de lo que has registrado
+• Tus propios objetivos diarios, si quieres fijarlos
+• Una racha que muestra cuántos días seguidos has registrado
+• Recordatorios opcionales para actualizar tu diario
 
-▶ ANÁLISIS Y PROGRESO
+COMPÁRTELO CUANDO QUIERAS
+• Exporta tu diario en PDF, CSV o JSON para las fechas que elijas
+• Envíalo con las opciones de compartir de tu teléfono: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
+• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo teléfono o en uno nuevo
 
-• Progreso diario hacia metas personalizadas de líquidos y visitas al baño
-• Gráficos semanales y mensuales para visualizar tendencias
-• Seguimiento de rachas para fomentar el registro constante
-• Patrones por momento del día (mañana, tarde, noche)
+GUARDADO EN TU TELÉFONO
+• Tu diario se guarda en tu teléfono. Sin cuenta y sin iniciar sesión
+• Sin anuncios, sin analíticas y sin rastreo
+• Funciona sin conexión
+• Borra tu diario cuando quieras con «Borrar todos los datos» en Ajustes
 
-▶ EXPORTACIÓN Y COMPARTIR
+PARA QUIÉN ES
+Para cualquier persona a la que le hayan pedido llevar un diario miccional, o que quiera un registro sencillo de sus idas al baño y de lo que bebe para llevarlo a una consulta. Cuidadores, padres y madres pueden llevar el diario de la persona a la que cuidan.
 
-• Exporta tus datos como PDF, CSV o JSON para compartir con tu médico
-• Informes PDF atractivos que resumen tus entradas por rango de fechas
-• Comparte directamente por correo, mensajería o almacenamiento en la nube
+Disponible en español, inglés y portugués. Gratis y sin compras dentro de la app.
 
-▶ PRIVACIDAD PRIMERO
+IMPORTANTE
+Eleva Diary es un diario personal. No es un producto sanitario y no diagnostica, trata, cura ni previene ninguna afección. Consulta a un profesional de la salud sobre tus síntomas.
 
-• Todos los datos se almacenan localmente en tu dispositivo—no se requiere cuenta
-• Sin anuncios, sin analíticas, sin rastreo de terceros
-• Tú controlas cuándo y cómo salen tus datos de tu dispositivo
-• Elimina todos los datos en cualquier momento desde Ajustes
-
-▶ DISEÑADO PARA LA VIDA REAL
-
-• Entrada rápida con valores predeterminados inteligentes y controles intuitivos
-• Soporte para modo oscuro para registro nocturno cómodo
-• Disponible en inglés, español y portugués
-• Funciona sin conexión—no se necesita internet
-
-▶ ¿PARA QUIÉN ES?
-
-Eleva Diary es ideal para cualquier persona que gestione su salud vesical, incluyendo quienes experimentan:
-• Vejiga hiperactiva (VH)
-• Incontinencia urinaria
-• Cistitis intersticial
-• Recuperación postquirúrgica
-
-También es útil para cuidadores que registran en nombre de un familiar.
-
-▶ AVISO MÉDICO
-
-Eleva Diary es una herramienta de registro personal, no un dispositivo médico. No diagnostica, trata ni previene ninguna condición. Consulta siempre con un profesional de salud cualificado para consejos médicos.
-
-Parte de Eleva Care — empoderándote para tomar control de tu viaje de salud.
-
-¿Preguntas? Contáctanos en diary@eleva.care
+Una app de Eleva.care. ¿Dudas? support@eleva.care
 ```
 
-**Caracteres:** ~1,850
+**Caracteres:** 1998
+
+Mismo texto que la descripción del App Store.
 
 ---
 
-## Categoría
+## Datos de contacto de la ficha
 
-**Principal:** Salud y bienestar  
-**Secundaria:** Medicina
-
----
-
-## Clasificación de Contenido
-
-**Para todos** — Apto para todas las edades
-
----
-
-## Datos de Contacto (Requeridos)
-
-| Campo                         | Valor                      |
-| ----------------------------- | -------------------------- |
-| Email del desarrollador       | diary@eleva.care           |
-| URL de Política de Privacidad | https://eleva.care/privacy |
-| Sitio web                     | https://eleva.care/diary   |
-
----
-
-## Cuenta de Desarrollador
-
-| Campo                    | Valor                                           |
-| ------------------------ | ----------------------------------------------- |
-| Nombre del desarrollador | Buzios e Tartarugas, Lda.                       |
-| Dirección                | Rua Gil Vicente, 2 - 2775-198 Parede (Portugal) |
-| Email de contacto        | diary@eleva.care                                |
+| Campo                         | Valor                            |
+| ----------------------------- | -------------------------------- |
+| Correo electrónico            | support@eleva.care               |
+| Sitio web                     | https://diary.eleva.care         |
+| URL de la política de privacidad | https://diary.eleva.care/privacy |

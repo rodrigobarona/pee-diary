@@ -1,195 +1,144 @@
-# Eleva Diary — Release Notes Templates (Apple App Store)
+# Eleva Diary — Release Notes Templates
 
-> **Last updated:** 11 November 2026  
-> **Character limit:** 4000 characters per locale
+> **Last updated:** 11 November 2026
+> **Limits:** App Store "What's New" 4000 characters per localisation; Google Play "Release notes" 500 characters per language.
 
-Use these templates for the "What's New" section in App Store Connect. Customize based on actual changes in each release.
+Use these for App Store Connect "What's New" and Google Play release notes. App Store Connect has no "What's New" field for the first version, so the 1.0.0 text is for Google Play (and for the website if wanted).
+
+Rules (see `_docs/compliance/app-behavior-to-disclosures.md`): describe what changed in the diary in plain, neutral words. No named conditions, no "insights", "analyse/analyze", "trends", "patterns", "personalised", "improve your health" or "healthy habits". Contact address: support@eleva.care only. Portuguese in pt-PT, Spanish in Spain Spanish.
 
 ---
 
-## Version 1.0.0 — Initial Release
+## Version 1.0.0 — first release (Google Play)
+
+### English (181 characters)
+
+```
+Welcome to Eleva Diary, a private bladder diary.
+• Log bathroom visits, drinks and leaks
+• See daily totals and simple charts
+• Export a PDF, CSV or JSON report
+• Save a backup file
+```
+
+### Español (228 caracteres)
+
+```
+Te damos la bienvenida a Eleva Diary, un diario miccional privado.
+• Apunta idas al baño, bebidas y pérdidas
+• Consulta totales diarios y gráficos sencillos
+• Exporta un informe en PDF, CSV o JSON
+• Guarda una copia de seguridad
+```
+
+### Português (238 caracteres)
+
+```
+Damos-lhe as boas-vindas ao Eleva Diary, um diário miccional privado.
+• Registe idas à casa de banho, bebidas e perdas
+• Consulte totais diários e gráficos simples
+• Exporte um relatório em PDF, CSV ou JSON
+• Guarde uma cópia de segurança
+```
+
+---
+
+## Version 1.x — feature update
 
 ### English
 
 ```
-Welcome to Eleva Diary! Your private bladder diary is here.
+What's new in this version:
+• [What changed, in plain words]
+• [What changed, in plain words]
 
-NEW FEATURES:
-• Log urination events with volume and urgency levels
-• Track fluid intake by type and amount
-• Record leak episodes with severity
-• Set personalized daily goals for fluids and bathroom visits
-• View insights with weekly and monthly charts
-• Track your logging streak
+Fixes:
+• [Fix]
 
-EXPORT & BACKUP:
-• Export reports as PDF, CSV, or JSON
-• Back up your data to a file and restore it on any device
-
-LANGUAGES:
-• Available in English, Spanish, and Portuguese
-
-We'd love to hear your feedback! Contact us at diary@eleva.care
+Questions? support@eleva.care
 ```
 
 ### Español
 
 ```
-¡Bienvenido a Eleva Diary! Tu diario de vejiga privado está aquí.
+Novedades de esta versión:
+• [Qué ha cambiado, en palabras sencillas]
+• [Qué ha cambiado, en palabras sencillas]
 
-NUEVAS FUNCIONES:
-• Registra eventos de micción con volumen y niveles de urgencia
-• Controla la ingesta de líquidos por tipo y cantidad
-• Registra episodios de pérdidas con severidad
-• Establece metas diarias personalizadas para líquidos y visitas al baño
-• Visualiza análisis con gráficos semanales y mensuales
-• Sigue tu racha de registros
+Correcciones:
+• [Corrección]
 
-EXPORTACIÓN Y RESPALDO:
-• Exporta informes como PDF, CSV o JSON
-• Haz una copia de seguridad en un archivo y restáurala en cualquier dispositivo
-
-IDIOMAS:
-• Disponible en inglés, español y portugués
-
-¡Nos encantaría conocer tu opinión! Contáctanos en diary@eleva.care
+¿Dudas? support@eleva.care
 ```
 
 ### Português
 
 ```
-Bem-vindo ao Eleva Diary! Seu diário de bexiga privado chegou.
+Novidades desta versão:
+• [O que mudou, em palavras simples]
+• [O que mudou, em palavras simples]
 
-NOVOS RECURSOS:
-• Registre eventos de micção com volume e níveis de urgência
-• Acompanhe a ingestão de líquidos por tipo e quantidade
-• Registre episódios de perdas com severidade
-• Defina metas diárias personalizadas para líquidos e idas ao banheiro
-• Visualize análises com gráficos semanais e mensais
-• Acompanhe sua sequência de registros
+Correções:
+• [Correção]
 
-EXPORTAÇÃO E BACKUP:
-• Exporte relatórios como PDF, CSV ou JSON
-• Faça backup dos seus dados em um arquivo e restaure em qualquer dispositivo
-
-IDIOMAS:
-• Disponível em inglês, espanhol e português
-
-Adoraríamos ouvir seu feedback! Entre em contato em diary@eleva.care
+Dúvidas? support@eleva.care
 ```
 
 ---
 
-## Version 1.x.x — Feature Update Template
+## Version x.x.x — fixes only
 
 ### English
 
 ```
-Thanks for using Eleva Diary! Here's what's new:
-
-NEW:
-• [Feature 1 description]
-• [Feature 2 description]
-
-IMPROVED:
-• [Improvement 1]
-• [Improvement 2]
-
-FIXED:
-• [Bug fix 1]
-• [Bug fix 2]
-
-Questions or feedback? Contact us at diary@eleva.care
+This version fixes problems and makes the app more reliable.
+• [Notable fix, if any]
 ```
 
 ### Español
 
 ```
-¡Gracias por usar Eleva Diary! Esto es lo nuevo:
-
-NUEVO:
-• [Descripción de función 1]
-• [Descripción de función 2]
-
-MEJORADO:
-• [Mejora 1]
-• [Mejora 2]
-
-CORREGIDO:
-• [Corrección 1]
-• [Corrección 2]
-
-¿Preguntas o comentarios? Contáctanos en diary@eleva.care
+Esta versión corrige errores y hace la app más fiable.
+• [Corrección destacable, si la hay]
 ```
 
 ### Português
 
 ```
-Obrigado por usar o Eleva Diary! Veja o que há de novo:
-
-NOVO:
-• [Descrição do recurso 1]
-• [Descrição do recurso 2]
-
-MELHORADO:
-• [Melhoria 1]
-• [Melhoria 2]
-
-CORRIGIDO:
-• [Correção 1]
-• [Correção 2]
-
-Perguntas ou feedback? Entre em contato em diary@eleva.care
+Esta versão corrige erros e torna a aplicação mais fiável.
+• [Correção a destacar, se houver]
 ```
 
 ---
 
-## Version X.X.X — Bug Fix Only Template
+## Updated Terms of Use or Privacy Policy
+
+The in-app notice is the channel that counts: when the Terms version changes, the app shows a notice on launch with a link to the new Terms and an Accept button. Until the user accepts, the version they accepted before continues to apply; an unfavourable change takes effect only once accepted and never earlier than 30 days after the notice, and continued use is never treated as acceptance. A release note can repeat the notice but never replaces it. Fill in the date with the earliest day the change can apply.
 
 ### English
 
 ```
-This update includes stability improvements and bug fixes.
-
-FIXED:
-• [Specific fix if notable]
-• General performance improvements
-
-Thank you for your continued support!
+We have updated our [Terms of Use / Privacy Policy]. [Terms: The app asks you to accept the new Terms; until you do, the version you accepted before still applies.] The new version applies from [date]. Read it at diary.eleva.care/[terms / privacy].
 ```
 
 ### Español
 
 ```
-Esta actualización incluye mejoras de estabilidad y correcciones de errores.
-
-CORREGIDO:
-• [Corrección específica si es notable]
-• Mejoras generales de rendimiento
-
-¡Gracias por tu apoyo continuo!
+Hemos actualizado [los Términos de uso / la Política de privacidad]. [Términos: La app te pide que aceptes los nuevos Términos; hasta que lo hagas, sigue aplicándose la versión que aceptaste antes.] La nueva versión se aplica desde el [fecha]. Puedes leerla en diary.eleva.care/[terms / privacy].
 ```
 
 ### Português
 
 ```
-Esta atualização inclui melhorias de estabilidade e correções de bugs.
-
-CORRIGIDO:
-• [Correção específica se notável]
-• Melhorias gerais de desempenho
-
-Obrigado pelo seu apoio contínuo!
+Atualizámos [os Termos de Utilização / a Política de Privacidade]. [Termos: A aplicação pede-lhe que aceite os novos Termos; até os aceitar, continua a aplicar-se a versão que aceitou antes.] A nova versão aplica-se a partir de [data]. Pode lê-la em diary.eleva.care/[terms / privacy].
 ```
 
 ---
 
-## Best Practices for Release Notes
+## Good practice
 
-1. **Lead with value**: Start with the most impactful change
-2. **Be specific**: Mention actual features, not vague improvements
-3. **Keep it scannable**: Use bullet points and short phrases
-4. **Include a CTA**: Invite feedback or support contact
-5. **Localize properly**: Don't machine-translate; ensure cultural appropriateness
-6. **Avoid jargon**: Use simple language users will understand
-7. **Stay under 500 words**: Concise notes are more likely to be read
+1. Start with the change that matters most to the user.
+2. Name real changes, not "improvements".
+3. Keep it short; Google Play allows 500 characters.
+4. Write each language natively; do not machine-translate.
+5. Never describe a feature as helping with a health condition.

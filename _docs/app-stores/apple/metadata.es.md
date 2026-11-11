@@ -1,11 +1,17 @@
-# Eleva Diary — Metadatos App Store de Apple (Español)
+# Eleva Diary — Metadatos del App Store de Apple (español de España)
 
-> **Última actualización:** 11 de noviembre de 2026  
-> **Límites de caracteres:** Nombre (30), Subtítulo (30), Texto Promocional (170), Palabras clave (100), Descripción (4000)
+> **Última actualización:** 11 de noviembre de 2026
+> **Localización en App Store Connect:** Spanish (Spain)
+> **Límites de caracteres:** Nombre (30), Subtítulo (30), Texto promocional (170), Palabras clave (100), Descripción (4000), Novedades (4000)
+> **Recuentos:** en caracteres; para las palabras clave también en bytes UTF-8, porque App Store Connect puede rechazar más de 100 bytes aunque haya menos de 100 caracteres.
+
+Reglas de redacción (ver `_docs/compliance/app-behavior-to-disclosures.md`): un diario miccional personal para llevar un registro y compartirlo con un profesional de la salud. Sin nombres de enfermedades en el nombre, el subtítulo, el texto promocional ni la descripción. No usar «análisis», «analizar», «tendencias», «patrones», «personalizado», «mejorar tu salud», «hábitos saludables» ni «controlar tu salud».
+
+Categoría, declaración de producto sanitario regulado, clasificación por edad, disponibilidad, URL y EULA: son comunes a todas las localizaciones; ver `metadata.en.md`.
 
 ---
 
-## Nombre de la App (máx. 30 caracteres)
+## Nombre de la app (máx. 30 caracteres)
 
 ```
 Eleva Diary
@@ -18,131 +24,111 @@ Eleva Diary
 ## Subtítulo (máx. 30 caracteres)
 
 ```
-Diario de Vejiga y Líquidos
+Tu diario miccional privado
 ```
 
 **Caracteres:** 27
 
 ---
 
-## Texto Promocional (máx. 170 caracteres)
+## Texto promocional (máx. 170 caracteres)
 
-> Este texto se puede actualizar en cualquier momento sin revisión de la app.
+> Se puede cambiar en cualquier momento sin pasar por la revisión.
 
 ```
-Controla tu salud vesical fácilmente. Registra micciones, ingesta de líquidos y pérdidas para entender tus patrones y compartir informes con tu médico.
+Lleva un diario miccional privado: apunta tus idas al baño, lo que bebes y las pérdidas, y exporta un informe para compartirlo con tu profesional de la salud.
 ```
 
-**Caracteres:** 153
+**Caracteres:** 158
 
 ---
 
-## Palabras Clave (máx. 100 caracteres, separadas por comas)
+## Palabras clave (máx. 100 caracteres, separadas por comas)
 
 ```
-diario vejiga,registro micciones,control líquidos,incontinencia,salud pélvica,pérdidas orina
+diario miccional,vejiga,micción,baño,líquidos,pérdidas de orina,incontinencia,suelo pélvico
 ```
 
-**Caracteres:** 93
+**Caracteres:** 91 (96 bytes)
+
+Las palabras clave solo sirven para la búsqueda y no se muestran. Pueden incluir términos que la gente busca, como «incontinencia», aunque la descripción no nombre ninguna afección.
 
 ---
 
 ## Descripción (máx. 4000 caracteres)
 
 ```
-Eleva Diary es un diario de vejiga privado y fácil de usar, diseñado para ayudarte a controlar tu salud urinaria. Ya sea que te estés preparando para una cita médica o simplemente quieras entender mejor tu cuerpo, Eleva Diary te da las herramientas para registrar, analizar y compartir tus datos—todo bajo tu control.
+Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, tu enfermera o tu fisioterapeuta si quieres.
 
 QUÉ PUEDES REGISTRAR
-• Eventos de micción con volumen (pequeño/mediano/grande) y nivel de urgencia (escala 1-5)
-• Ingesta de líquidos por tipo (agua, café, té, zumo, alcohol, otros) y cantidad en ml
-• Episodios de pérdidas con severidad (gotas/moderado/completo) y urgencia
-• Notas opcionales para cualquier entrada
-• Indicadores de dolor o molestia
+• Idas al baño: hora, volumen (pequeño, mediano o grande) o una cantidad exacta en ml, urgencia del 1 al 5, si hubo pérdida o dolor, y notas
+• Bebidas: hora, tipo (agua, café, té, zumo, alcohol u otra) y cantidad
+• Pérdidas: hora, cantidad, urgencia, qué estabas haciendo y notas
 
-ANÁLISIS Y PROGRESO
-• Progreso diario hacia metas personalizadas de líquidos y visitas al baño
-• Gráficos semanales y mensuales para visualizar tendencias
-• Seguimiento de rachas para fomentar el registro constante
-• Patrones por momento del día (mañana, tarde, noche)
+TU DIARIO DE UN VISTAZO
+• Totales diarios de bebidas, idas al baño y pérdidas
+• Gráficos semanales y mensuales sencillos de lo que has registrado
+• Tus propios objetivos diarios, si quieres fijarlos
+• Una racha que muestra cuántos días seguidos has registrado
+• Recordatorios opcionales para actualizar tu diario
 
-EXPORTACIÓN Y COMPARTIR
-• Exporta tus datos como PDF, CSV o JSON para compartir con tu médico
-• Informes PDF atractivos que resumen tus entradas por rango de fechas
-• Comparte directamente por correo, mensajería o almacenamiento en la nube
+COMPÁRTELO CUANDO QUIERAS
+• Exporta tu diario en PDF, CSV o JSON para las fechas que elijas
+• Envíalo con las opciones de compartir de tu teléfono: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
+• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo teléfono o en uno nuevo
 
-PRIVACIDAD PRIMERO
-• Todos los datos se almacenan localmente en tu dispositivo—no se requiere cuenta
-• Copia de seguridad en un archivo que tú controlas, restaurable en cualquier dispositivo
-• Sin anuncios, sin analíticas, sin rastreo de terceros
-• Tú controlas cuándo y cómo salen tus datos de tu dispositivo
+GUARDADO EN TU TELÉFONO
+• Tu diario se guarda en tu teléfono. Sin cuenta y sin iniciar sesión
+• Sin anuncios, sin analíticas y sin rastreo
+• Funciona sin conexión
+• Borra tu diario cuando quieras con «Borrar todos los datos» en Ajustes
 
-DISEÑADO PARA LA VIDA REAL
-• Entrada rápida con valores predeterminados inteligentes y controles intuitivos
-• Soporte para modo oscuro para registro nocturno cómodo
-• Disponible en inglés, español y portugués
-• Funciona sin conexión—no se necesita internet
+PARA QUIÉN ES
+Para cualquier persona a la que le hayan pedido llevar un diario miccional, o que quiera un registro sencillo de sus idas al baño y de lo que bebe para llevarlo a una consulta. Cuidadores, padres y madres pueden llevar el diario de la persona a la que cuidan.
 
-¿PARA QUIÉN ES?
-Eleva Diary es ideal para cualquier persona que gestione su salud vesical, incluyendo quienes experimentan vejiga hiperactiva (VH), incontinencia urinaria, cistitis intersticial, o quienes se recuperan de cirugía pélvica. También es útil para cuidadores que registran en nombre de un familiar.
+Disponible en español, inglés y portugués. Gratis y sin compras dentro de la app.
 
-AVISO MÉDICO
-Eleva Diary es una herramienta de registro personal, no un dispositivo médico. No diagnostica, trata ni previene ninguna condición. Consulta siempre con un profesional de salud cualificado para consejos médicos.
+IMPORTANTE
+Eleva Diary es un diario personal. No es un producto sanitario y no diagnostica, trata, cura ni previene ninguna afección. Consulta a un profesional de la salud sobre tus síntomas.
 
-Parte de Eleva Care — empoderándote para tomar control de tu viaje de salud.
+Una app de Eleva.care. ¿Dudas? support@eleva.care
 ```
 
-**Caracteres:** ~1,950
+**Caracteres:** 1998
+
+El párrafo «IMPORTANTE» reproduce el aviso médico de la app en español y equivale a la frase que exige Google («not a medical device and does not diagnose, treat, cure, or prevent any medical condition»).
 
 ---
 
-## Novedades (Notas de Versión)
+## Novedades (notas de versión)
 
-### Versión 1.0.0 (Lanzamiento Inicial)
-
-```
-¡Bienvenido a Eleva Diary! Comienza a controlar tu salud vesical hoy.
-
-• Registra micciones, ingesta de líquidos y eventos de pérdidas
-• Establece metas diarias personalizadas
-• Visualiza análisis con gráficos semanales y mensuales
-• Exporta informes como PDF, CSV o JSON
-• Haz una copia de seguridad en un archivo y restáurala en cualquier dispositivo
-• Disponible en inglés, español y portugués
-```
+App Store Connect no muestra el campo «Novedades» en la primera versión. A partir de la 1.0.1, usar `release-notes-templates.md`.
 
 ---
 
 ## Categoría
 
-**Principal:** Salud y forma física  
-**Secundaria:** Medicina
+**Principal:** Salud y forma física
+**Secundaria:** ninguna (nunca «Medicina»; ver `metadata.en.md`)
 
 ---
 
-## Clasificación por Edad
+## URL
 
-**4+** — Sin contenido objetable
-
----
-
-## URLs Requeridas
-
-| Campo                  | URL                        |
-| ---------------------- | -------------------------- |
-| Política de Privacidad | https://eleva.care/privacy |
-| URL de Soporte         | https://eleva.care/support |
-| URL de Marketing       | https://eleva.care/diary   |
+| Campo                  | Valor                                    |
+| ---------------------- | ---------------------------------------- |
+| Política de privacidad | https://diary.eleva.care/privacy         |
+| URL de soporte         | https://diary.eleva.care/privacy-choices |
+| URL de marketing       | https://diary.eleva.care                 |
 
 ---
 
-## Privacidad de la App (Resumen)
+## Privacidad de la app (resumen)
 
-Ver `app-privacy-answers.md` para orientación detallada.
-
-- **Datos No Recopilados** (todas las categorías, incluidos los Datos de Salud y Forma Física)
+Ver `app-privacy-answers.md`: **Datos no recopilados** en todas las categorías, Salud y forma física incluida.
 
 ---
 
-## Notas para Revisión
+## Notas para la revisión
 
-Ver `review-notes.md` para orientación detallada para revisores.
+Ver `review-notes.md`.

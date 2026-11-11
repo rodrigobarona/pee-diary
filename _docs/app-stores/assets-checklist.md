@@ -1,25 +1,48 @@
-# Eleva Diary — App Store Assets Checklist
+# Eleva Diary — App Store Assets and Setup Checklist
 
-> **Last updated:** February 2026  
-> **Purpose:** Track required visual assets and URLs for Apple App Store and Google Play submissions
+> **Last updated:** 11 November 2026
+> **Purpose:** The pages, addresses, visual assets and settings needed before submitting to the Apple App Store and Google Play.
 
 ---
 
-## Required URLs
+## Pages to publish
 
-| URL Type                        | URL                                | Status     |
-| ------------------------------- | ---------------------------------- | ---------- |
-| Privacy Policy                  | https://eleva.care/privacy         | ⬜ Publish |
-| Terms of Use                    | https://eleva.care/terms           | ⬜ Publish |
-| Privacy Choices / Data Deletion | https://eleva.care/privacy-choices | ⬜ Publish |
-| Support / Contact               | https://eleva.care/support         | ⬜ Publish |
-| Marketing / Product Page        | https://eleva.care/diary           | ⬜ Publish |
+All pages must be public (no login), not geofenced, not PDFs, and available in English, Spanish and Portuguese (pt-PT). Both stores check that the privacy policy URL works.
 
-**Notes:**
+| Page | URL | Used for | Status |
+| ---- | --- | -------- | ------ |
+| Home page | https://diary.eleva.care | App Store Marketing URL; Google Play website | ⬜ Publish |
+| Privacy Policy | https://diary.eleva.care/privacy | Both stores' privacy policy field; Settings > Privacy Policy | ⬜ Publish |
+| Terms of Use | https://diary.eleva.care/terms | Settings > Terms of Use; onboarding acceptance | ⬜ Publish |
+| Privacy Choices | https://diary.eleva.care/privacy-choices | App Store Support URL; Google Play optional data deletion link; Settings > Privacy Choices | ⬜ Publish |
 
-- All URLs must be publicly accessible (no login required)
-- Privacy Policy is required by both Apple and Google
-- Google requires a data deletion method disclosure
+What each page must contain:
+
+- **Home page:** the same neutral description as the store listings (a personal bladder diary to keep a record and share it with a health professional), the medical disclaimer, support@eleva.care, the company identification (BÚZIOS E TARTARUGAS - LDA, brand Eleva.care, NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal) and links to the three legal pages. No named conditions, "insights", "trends" or health-benefit claims.
+- **Privacy Choices:** how to export, back up and delete the diary, how to deal with device backups, and support@eleva.care for anything else (it doubles as the App Store Support URL).
+- **Privacy Policy / Terms of Use:** the texts in `_docs/legal/`, with "Last updated: 11 November 2026".
+- If diary.eleva.care keeps server logs or sets cookies, the privacy policy must say so before the site goes live; non-essential cookies or analytics would need consent.
+
+## Email addresses to set up
+
+| Address | Purpose | Where it appears |
+| ------- | ------- | ---------------- |
+| support@eleva.care | Support and general questions; store contact; App Review contact | Store listings, review notes, release notes, home page, legal texts |
+| privacy@eleva.care | Data protection requests (until the DPO is appointed, and after) | Privacy Policy, Privacy Choices |
+| legal@eleva.care | Legal notices and complaints | Terms of Use, Privacy Policy |
+
+Each mailbox must be monitored. Do not use diary@eleva.care or dpo@eleva.care anywhere.
+
+## Store-account settings
+
+- [ ] Apple: EU Digital Services Act trader status declared, with address, email (support@eleva.care) and a company phone number
+- [ ] Google: EU Digital Services Act trader status declared, with the same details
+- [ ] Apple: App Review contact name and phone number entered
+- [ ] Apple: regulated medical device declaration "No" for every region (`apple/metadata.en.md`)
+- [ ] Apple: App Privacy "Data Not Collected" (`apple/app-privacy-answers.md`)
+- [ ] Google: Data safety "No data collected / No data shared" (`google/data-safety-answers.md`)
+- [ ] Google: Health apps declaration "Health and fitness" (`google/health-apps-declaration-notes.md`)
+- [ ] Both: availability limited to EU/EEA countries (owner to confirm the list)
 
 ---
 
@@ -36,7 +59,7 @@
 
 ### Screenshots (Required)
 
-Screenshots must show actual app UI. Do not use mockups with excessive device frames.
+Screenshots must show the actual app UI of the build being submitted.
 
 #### iPhone Screenshots
 
@@ -46,48 +69,56 @@ Screenshots must show actual app UI. Do not use mockups with excessive device fr
 | 6.5" (iPhone 11 Pro Max) | 1284 × 2778 px | 3-10     |
 | 5.5" (iPhone 8 Plus)     | 1242 × 2208 px | 3-10     |
 
-#### iPad Screenshots (If supporting iPad)
+#### iPad Screenshots (if supporting iPad)
 
 | Device         | Required Sizes | Quantity |
 | -------------- | -------------- | -------- |
 | 12.9" iPad Pro | 2048 × 2732 px | 3-10     |
 
+`app.json` sets `supportsTablet: true`, so iPad screenshots are required unless that is turned off.
+
+#### What screenshots must not show
+
+- The old Fluid Balance ratio, "Normal range / Low output / High output" or traffic-light colours
+- Green/red trend arrows
+- Any "medical guidelines" goal text
+- The old app name "Pee Diary"
+- Real personal data: use demo entries
+
 #### Recommended Screenshot Content
 
-1. **Home screen** — Daily progress, streak badge, insights
-2. **Add entry** — Urination/fluid/leak entry form
-3. **History** — Calendar view with entries
-4. **Charts** — Weekly or monthly visualization
+1. **Today** — daily totals, streak
+2. **Add entry** — bathroom visit, drink or leak form
+3. **History** — calendar with entries
+4. **Charts** — weekly or monthly chart of what was logged, with the disclaimer line under it
 5. **Export** — PDF report preview or export options
-6. **Settings** — Language selection, backup options
+6. **Settings** — language, Local Backup, Reminders, Medical information
 
-#### Screenshot Text Overlay (Localized)
-
-If adding text overlays, localize for each language:
+#### Screenshot Text Overlays (localised)
 
 **English:**
 
-- "Track your bladder health"
-- "Log urination, fluids & leaks"
-- "Visualize your patterns"
-- "Export reports for your doctor"
-- "Privacy first — all data stays on device"
+- "Your private bladder diary"
+- "Log bathroom visits, drinks and leaks"
+- "Daily totals and simple charts"
+- "Export a report for your health professional"
+- "Kept on your phone. No account."
 
-**Spanish:**
+**Spanish (Spain):**
 
-- "Controla tu salud vesical"
-- "Registra micciones, líquidos y pérdidas"
-- "Visualiza tus patrones"
-- "Exporta informes para tu médico"
-- "Privacidad primero — todos los datos en tu dispositivo"
+- "Tu diario miccional privado"
+- "Apunta idas al baño, bebidas y pérdidas"
+- "Totales diarios y gráficos sencillos"
+- "Exporta un informe para tu profesional de la salud"
+- "Guardado en tu teléfono. Sin cuenta."
 
-**Portuguese:**
+**Portuguese (Portugal):**
 
-- "Acompanhe sua saúde da bexiga"
-- "Registre micções, líquidos e perdas"
-- "Visualize seus padrões"
-- "Exporte relatórios para seu médico"
-- "Privacidade em primeiro lugar — dados no seu dispositivo"
+- "O seu diário miccional privado"
+- "Registe idas à casa de banho, bebidas e perdas"
+- "Totais diários e gráficos simples"
+- "Exporte um relatório para o seu profissional de saúde"
+- "Guardado no seu telemóvel. Sem conta."
 
 ### App Preview Video (Optional)
 
@@ -96,14 +127,9 @@ If adding text overlays, localize for each language:
 | Duration      | 15-30 seconds               |
 | Format        | H.264, .mov or .mp4         |
 | Resolution    | Match screenshot sizes      |
-| Audio         | Optional, keep professional |
+| Audio         | Optional                    |
 
-**Suggested content:**
-
-- Quick demo of adding an entry
-- Scrolling through history
-- Viewing charts
-- Exporting a PDF
+Suggested content: adding an entry, scrolling through history, viewing the charts, exporting a PDF.
 
 ---
 
@@ -125,12 +151,9 @@ If adding text overlays, localize for each language:
 | Format        | PNG or JPEG                   |
 | Content       | App name, tagline, key visual |
 
-**Design suggestions:**
-
-- Clean, minimal design
-- App icon prominently displayed
-- Tagline: "Your private bladder diary"
-- Avoid excessive text
+- Clean, minimal design with the app icon
+- Tagline: "Your private bladder diary" / "Tu diario miccional privado" / "O seu diário miccional privado"
+- Little text
 
 ### Screenshots (Required)
 
@@ -140,11 +163,8 @@ If adding text overlays, localize for each language:
 | Tablet (7")  | 1080 × 1920 px       | 1-8 (optional) |
 | Tablet (10") | 1920 × 1200 px       | 1-8 (optional) |
 
-**Notes:**
-
-- Screenshots must be 16:9 or 9:16 aspect ratio
-- Same content recommendations as Apple screenshots
-- Localize text overlays for EN/ES/PT
+- 16:9 or 9:16 aspect ratio
+- Same content rules and overlays as the Apple screenshots
 
 ### Promo Video (Optional)
 
@@ -171,8 +191,8 @@ If adding text overlays, localize for each language:
 - [ ] iPhone 6.7" screenshots (EN/ES/PT)
 - [ ] iPhone 6.5" screenshots (EN/ES/PT)
 - [ ] iPhone 5.5" screenshots (EN/ES/PT)
+- [ ] iPad screenshots (EN/ES/PT), unless iPad support is turned off
 - [ ] Android phone screenshots (EN/ES/PT)
-- [ ] iPad screenshots (optional)
 - [ ] Android tablet screenshots (optional)
 
 ### Graphics
@@ -188,50 +208,28 @@ If adding text overlays, localize for each language:
 
 ## Screenshot Scenes to Capture
 
-Capture these screens in each supported language:
+Capture in each language, on the build being submitted:
 
-| Scene               | Description        | Shows                       |
-| ------------------- | ------------------ | --------------------------- |
-| 1. Onboarding/Home  | First impression   | Progress rings, daily stats |
-| 2. Add Urination    | Core feature       | Volume, urgency selectors   |
-| 3. Add Fluid        | Core feature       | Drink type, amount picker   |
-| 4. Calendar History | Data visualization | Calendar with entry dots    |
-| 5. Entry Detail     | Data depth         | Full entry with notes       |
-| 6. Weekly Chart     | Insights           | Bar chart trends            |
-| 7. Export           | Sharing capability | Format selection, preview   |
-| 8. Settings         | Customization      | Language, backup, goals     |
-
----
-
-## Best Practices
-
-### Do's
-
-✅ Use actual app screenshots (real data or demo data)
-✅ Show the app in context (what users will actually see)
-✅ Use high contrast, readable text overlays
-✅ Maintain consistent style across all screenshots
-✅ Localize all text (app UI + overlays)
-✅ Test screenshots on actual devices for clarity
-
-### Don'ts
-
-❌ Don't use fake testimonials or ratings
-❌ Don't include misleading performance claims
-❌ Don't show features not in the current version
-❌ Don't use competitor names or logos
-❌ Don't include excessive device frames (keep focus on app)
-❌ Don't use low-resolution or blurry images
+| Scene               | Shows                                         |
+| ------------------- | --------------------------------------------- |
+| 1. Today            | Daily totals, streak                          |
+| 2. Add bathroom visit | Size, urgency, leak/pain                    |
+| 3. Add drink        | Drink type, amount                            |
+| 4. History          | Calendar with entries                         |
+| 5. Entry detail     | Full entry with notes                         |
+| 6. Weekly chart     | Chart of logged entries, disclaimer line      |
+| 7. Export           | Format selection, PDF preview with footer     |
+| 8. Settings         | Language, Local Backup, Reminders, Medical information |
 
 ---
 
-## Tools for Screenshot Creation
+## Good Practice
 
-- **Figma**: Design overlays and frames
-- **Screenshots Pro**: Device frames and text overlays
-- **fastlane snapshot**: Automate iOS screenshots
-- **fastlane screengrab**: Automate Android screenshots
-- **App Screenshot Maker**: Quick mockups
+- Use real app screens with demo data
+- Keep overlays short, readable and localised (pt-PT and Spain Spanish)
+- Do not use testimonials, ratings, "clinically proven", "doctor-approved" or health-benefit claims
+- Do not show features that are not in the submitted version
+- Do not use competitor names or logos
 
 ---
 
@@ -239,31 +237,28 @@ Capture these screens in each supported language:
 
 ### Apple App Store
 
-- [ ] All required screenshot sizes uploaded
-- [ ] Screenshots localized for EN/ES/PT
+- [ ] All required screenshot sizes uploaded (EN/ES/PT)
 - [ ] App icon meets guidelines
-- [ ] App Preview uploaded (optional)
-- [ ] Privacy Policy URL accessible
-- [ ] Support URL accessible
-- [ ] App Privacy details completed
-- [ ] Age rating questionnaire completed
+- [ ] Privacy Policy URL, Support URL and Marketing URL live
+- [ ] App Privacy completed: Data Not Collected
+- [ ] Regulated medical device declared: No (every region)
+- [ ] Category: Health & Fitness, no secondary category
+- [ ] Age rating questionnaire completed (4+)
+- [ ] Review notes match the build (`apple/review-notes.md`)
 
 ### Google Play Store
 
-- [ ] Feature graphic uploaded (EN/ES/PT)
-- [ ] Phone screenshots uploaded (EN/ES/PT)
+- [ ] Feature graphic and phone screenshots uploaded (EN/ES/PT)
 - [ ] App icon uploaded
-- [ ] Privacy Policy URL accessible
-- [ ] Data Safety form completed
-- [ ] Health apps declaration completed
+- [ ] Privacy policy URL live
+- [ ] Data safety completed: No data collected / No data shared
+- [ ] Health apps declaration completed: Health and fitness
 - [ ] Content rating questionnaire completed
-- [ ] Target audience and content set
+- [ ] Target audience set: 18 and over
 
 ---
 
 ## File Organization
-
-Suggested folder structure for assets:
 
 ```
 assets/

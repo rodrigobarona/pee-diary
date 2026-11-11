@@ -1,136 +1,110 @@
 # Eleva Diary — Apple App Privacy Answers
 
-> **Last updated:** 11 November 2026  
-> **Reference:** [Apple App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/)
+> **Last updated:** 11 November 2026
+> **Source:** [Apple, App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/) (checked 11 November 2026)
 
-This document provides guidance for completing the App Privacy section in App Store Connect for Eleva Diary.
-
----
-
-## Overview
-
-Apple requires developers to disclose:
-
-1. **Data types collected** by the app
-2. Whether data is **linked to user identity**
-3. Whether data is used for **tracking**
-
-### Key Definitions (Apple)
-
-- **Collect**: Transmitting data off the device in a form that is readable for a longer period than necessary to service the request in real time.
-- **Track**: Linking user/device data with third-party data for targeted advertising or advertising measurement, or sharing with a data broker.
+How to complete App Store Connect > the app > App Privacy for Eleva Diary.
 
 ---
 
-## App Behavior Summary
+## The answer
 
-| Feature                                | Data Location        | Off-Device Transmission              |
-| -------------------------------------- | -------------------- | ------------------------------------ |
-| Diary entries (urination, fluid, leak) | Local (AsyncStorage) | Only via user-initiated export/share |
-| Goals & settings                       | Local (AsyncStorage) | Only via user-initiated export/share |
-| Local backup file (JSON)               | Generated locally    | Shared via OS share sheet            |
-| Export (PDF/CSV/JSON)                  | Generated locally    | Shared via OS share sheet            |
-| Reminders                              | Local notifications  | None (no push token, no server)      |
+**"Do you or your third-party partners collect data from this app?" — No.**
 
-The app has no network code, no analytics, crash reporting or advertising SDKs, and no iCloud entitlement. It does not write to iCloud. iOS may include the app's local data in the user's own device backup (iCloud Backup or a computer backup) according to the user's device settings; the app does not control or initiate this.
+The privacy label on the product page then reads **"Data Not Collected"**, for every category, Health & Fitness included.
+
+Privacy Policy URL: https://diary.eleva.care/privacy
 
 ---
 
-## Recommended App Privacy Selections
+## Why "Data Not Collected" is correct
 
-### Section 1: Data Used to Track You
+### Apple's definitions (quoted from the page above)
 
-**Selection:** ❌ **No**
+- Collect: "'Collect' refers to transmitting data off the device in a way that allows you and/or your third-party partners to access it for a period longer than what is necessary to service the transmitted request in real time."
+- On-device data: "Data that is processed only on device is not 'collected' and does not need to be disclosed in your answers."
+- Data Apple collects: "You are not responsible for disclosing data collected by Apple."
 
-**Rationale:** Eleva Diary does not link user data with third-party data for advertising or share data with data brokers. There are no ads, analytics SDKs, or third-party tracking libraries.
+### How the app behaves
 
----
+| What                                   | Where it is                     | Leaves the device?                                         |
+| -------------------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| Diary entries (with notes and edit history) | App's local storage (AsyncStorage), excluded from iCloud and computer backups | No                    |
+| Goals, goal history, streak            | App's local storage             | No                                                         |
+| Reminder settings, language, onboarding and launch preferences, accepted terms version and date | App's local storage | No                         |
+| Reminders                              | Local notifications on the device | No (no push token, no server)                            |
+| Export (PDF/CSV/JSON) and backup file  | App's cache folder, then the share sheet | Only where the user sends it                      |
+| Legal pages                            | Opened in the browser           | The app sends nothing; the browser loads a public page     |
 
-### Section 2: Data Linked to You
+The app has no network code; no analytics, advertising, tracking or crash-reporting SDKs; no HealthKit; no iCloud entitlement.
 
-**Selection:** ❌ **None**
+### Exports and backup files
 
-The app does not transmit any data off the device itself. Diary data leaves the device only when the user exports a report or a backup file and chooses the destination in the OS share sheet (see "User-Initiated Exports" below), or inside the device backup that iOS makes under the user's own settings (see "Device backups" below).
+Apple's page has no rule written specifically for user-initiated exports, so the conclusion rests on Apple's definition of "collect": when the user sends a report or backup file through the share sheet, it goes to a destination the user chooses (an email, a messaging app, a storage service). Neither Eleva nor any partner of Eleva receives it or can access it, so it is not "collected".
 
----
+### Device backups
 
-### Section 3: Data Not Linked to You
+The diary is not in iCloud Backup or computer backups. The app stores it with `@react-native-async-storage/async-storage` 2.2.0, which on iOS marks its storage folder with `NSURLIsExcludedFromBackupKey` unless the Info.plist key `RCTAsyncStorageExcludeFromBackup` is set to false (`RNCAsyncStorage.mm`: "by default, we want to exclude AsyncStorage data from backup"). `app.json` does not set that key, and no config plugin does. Export and backup files sit in the app's cache folder, which iOS never backs up. So nothing leaves the device through Apple's backups, and the label question does not arise. Restoring an iPhone from a backup does not bring the diary back; the privacy policy and Privacy Choices tell users to move it with Export Backup File and Import Backup File. Do not set `RCTAsyncStorageExcludeFromBackup` without rewriting those documents.
 
-**Selection:** ❌ **None**
+What happens to app data in an iPhone-to-iPhone direct transfer (Quick Start) has not been tested; the documents say only that Eleva cannot guarantee the diary comes across and that the backup file is the reliable way.
 
-No anonymous or pseudonymous data collection occurs.
+### What Eleva receives outside the app
 
----
-
-### Section 4: Data Not Collected
-
-For all data types, select **Data Not Collected**. The resulting privacy label is **"Data Not Collected"**:
-
-| Data Type Category | Collected?       |
-| ------------------ | ---------------- |
-| Health & Fitness   | ❌ Not collected |
-| Contact Info       | ❌ Not collected |
-| Financial Info     | ❌ Not collected |
-| Location           | ❌ Not collected |
-| Sensitive Info     | ❌ Not collected |
-| Contacts           | ❌ Not collected |
-| User Content       | ❌ Not collected |
-| Browsing History   | ❌ Not collected |
-| Search History     | ❌ Not collected |
-| Identifiers        | ❌ Not collected |
-| Purchases          | ❌ Not collected |
-| Usage Data         | ❌ Not collected |
-| Diagnostics        | ❌ Not collected |
-| Other Data         | ❌ Not collected |
+Emails that users choose to send to support@eleva.care, privacy@eleva.care or legal@eleva.care are not sent by the app, and the statistics, crash reports and reviews Apple shows developers are collected by Apple. Neither changes the label. The privacy policy covers both (Article 13 GDPR notice).
 
 ---
 
-## Health & Fitness Data — Detailed Breakdown
+## Settings in App Store Connect
 
-Since Eleva Diary handles bladder health data, you must carefully answer the Health & Fitness section:
+| Question                                              | Answer |
+| ----------------------------------------------------- | ------ |
+| Do you or your third-party partners collect data from this app? | **No** |
 
-### Health
+Answering "No" ends the questionnaire: App Store Connect does not ask about data types, linking to identity or tracking. For the record, the per-category answers are:
 
-**Is health data collected?**
+| Data type category | Collected? |
+| ------------------ | ---------- |
+| Health & Fitness   | No         |
+| Contact Info       | No         |
+| Financial Info     | No         |
+| Location           | No         |
+| Sensitive Info     | No         |
+| Contacts           | No         |
+| User Content       | No         |
+| Browsing History   | No         |
+| Search History     | No         |
+| Identifiers        | No         |
+| Purchases          | No         |
+| Usage Data         | No         |
+| Diagnostics        | No         |
+| Other Data         | No         |
 
-- **Answer:** ❌ **No**
-
-Bladder diary data is stored only on the device (AsyncStorage). The app does not send it to Eleva Care, to Apple's iCloud storage, or to any other service. Because the data is not collected, App Store Connect does not ask for purpose, linkage to identity or tracking for this data type.
-
-**Device backups:** If the user has iCloud Backup turned on or backs up the device to a computer, iOS may include the app's local data in that backup. This is done by iOS under the user's own settings; the app does not initiate it and the developer has no access to it.
+Tracking: none. The app does not link data with third-party data for advertising and shares nothing with data brokers, so it does not show the App Tracking Transparency prompt.
 
 ---
 
-## User-Initiated Exports
+## Related declaration: regulated medical device
 
-Apple's definition excludes user-initiated actions from "collection":
-
-> "Data that is sent off the device only at the user's explicit direction, and only when the data is sent to a third party chosen by the user, does not need to be disclosed."
-
-Therefore, the PDF/CSV/JSON export feature does **not** require disclosure as "collection" because:
-
-1. It is user-initiated (user taps export)
-2. User chooses the destination (via OS share sheet)
-3. Data is not sent to the developer or any predetermined third party
+Not part of App Privacy, but completed in the same App Information area: **"No" for every region**. See `metadata.en.md`. That answer holds only with the product decisions in `_docs/compliance/app-behavior-to-disclosures.md` shipped in the build.
 
 ---
 
-## Verification Checklist
+## Verification before each submission
 
-Before submitting, verify:
+The label must match the release build, not only the source code.
 
-- [ ] No analytics SDKs in `package.json` (e.g., Firebase Analytics, Amplitude)
-- [ ] No crash reporting or performance monitoring SDKs (e.g., Sentry, Crashlytics)
-- [ ] No ad SDKs
-- [ ] No iCloud entitlement or iCloud storage APIs in `app.json` and `package.json`
-- [ ] No network requests in app code and no push token requested (reminders are local notifications)
-- [ ] Local backup file uses the OS share sheet to export and the document picker to import
-- [ ] Export feature uses OS share sheet (user controls destination)
+- [ ] No analytics, advertising, tracking or crash-reporting packages in `package.json`
+- [ ] No iCloud entitlement or iCloud storage APIs; no HealthKit entitlement
+- [ ] The built Info.plist has no `RCTAsyncStorageExcludeFromBackup` key (the diary stays out of iCloud and computer backups); on a test iPhone, back up to iCloud, restore, and confirm the diary is not restored. Also test a Quick Start transfer and record the result
+- [ ] Inspect the release build's entitlements: `expo-notifications` may add `aps-environment`; that is acceptable only because the app never requests a push token (confirm in `lib/utils/notifications.ts`)
+- [ ] Run the release build behind a network proxy for a full session (launch, onboarding, logging, reminders, export, backup, Clear All Data) and confirm there is no traffic, apart from the browser loading diary.eleva.care when a legal link is tapped
+- [ ] Export and backup files use the share sheet; import uses the document picker
+- [ ] Privacy policy at https://diary.eleva.care/privacy is live and says the same (no collection by the app; Article 13 notice for emails and store data)
 
 ---
 
 ## References
 
-- [Apple App Privacy Details - Developer Documentation](https://developer.apple.com/app-store/app-privacy-details/)
-- [App Store Review Guidelines - Section 5.1 Privacy](https://developer.apple.com/app-store/review/guidelines/#privacy)
-- [Health Data Guidelines](https://developer.apple.com/app-store/review/guidelines/#health-and-health-research)
+- [Apple, App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/)
+- [App Review Guidelines, 5.1 Privacy and 1.4.1](https://developer.apple.com/app-store/review/guidelines/)
+- [Declare regulated medical device status](https://developer.apple.com/help/app-store-connect/manage-app-information/declare-regulated-medical-device-status)

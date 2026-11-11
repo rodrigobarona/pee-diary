@@ -1,198 +1,103 @@
 # Eleva Diary — Google Play Health Apps Declaration
 
-> **Last updated:** February 2026  
-> **Reference:** [Google Play Health Apps Policy](https://support.google.com/googleplay/android-developer/answer/10632613)
+> **Last updated:** 11 November 2026
+> **Sources (checked 11 November 2026):** [Google Play, Health Content and Services policy](https://support.google.com/googleplay/android-developer/answer/16679511); [Google Play, Health app categories and additional information](https://support.google.com/googleplay/android-developer/answer/13996367)
 
-This document provides guidance for completing the Health apps declaration in Google Play Console for Eleva Diary.
-
----
-
-## Overview
-
-Google Play requires apps that provide health-related functionality to complete a Health apps declaration. This includes apps that:
-
-- Track health or fitness data
-- Provide health information
-- Connect to medical devices
-
-Eleva Diary falls under this policy as a **health tracking/logging app**.
+Every developer must complete the Health apps declaration (Play Console > App content > Health apps). This note gives Eleva Diary's answers.
 
 ---
 
-## Health Apps Declaration Checklist
+## The answer
 
-### 1. App Category Selection
+**Type of health app: Health and fitness.**
 
-In Play Console → App content → Health apps, select:
+Google describes three types of health app: health and fitness apps (which "usually inform or let users track or sync information about their personal health and fitness"), medical apps (including Software as a Medical Device) and human subjects research apps. Eleva Diary lets users record their own bathroom visits, drinks and leaks, so it is a health and fitness app. In the form, select the health and fitness option that matches tracking the user's own health information.
 
-- [x] **Health or fitness tracking** — The app tracks user health data
-- [ ] Medical device software — NOT applicable (no device connectivity)
-- [ ] Telemedicine/telehealth — NOT applicable
-- [ ] Health information — Informational only, NOT applicable
-- [ ] Clinical trial recruitment — NOT applicable
+Do **not** select:
 
----
-
-### 2. Regulatory Status
-
-#### "Is your app a medical device?"
-
-**Answer:** ❌ No
-
-Eleva Diary is a personal logging/diary tool. It does not:
-
-- Diagnose medical conditions
-- Provide treatment recommendations
-- Control or connect to medical devices
-- Perform clinical measurements
-
-#### "Is your app regulated as a medical device in any jurisdiction?"
-
-**Answer:** ❌ No
-
-The app is a general wellness/logging tool not subject to medical device regulations (FDA, CE marking, etc.).
+- any Medical app feature (health care provider tools, telehealth, remote monitoring, disease management, symptom checking, medical reference);
+- Software as a Medical Device, or "regulated medical device" status;
+- human subjects research.
 
 ---
 
-### 3. Medical Disclaimer Requirement
+## Why the answer holds
 
-Google requires health apps to include a disclaimer. Eleva Diary includes this disclaimer:
+Eleva Diary is a personal diary. It stores what the user enters, shows daily totals and simple charts of those entries, and exports them so the user can share them with a health professional. It does not interpret entries, tell the user whether results are normal, give health advice or monitor a condition, and it is not meant to be a medical device under Regulation (EU) 2017/745.
 
-#### In-App Disclaimer (Required)
+This is true of the build that ships the product decisions in `_docs/compliance/app-behavior-to-disclosures.md`:
 
-Add to Settings → About or a dedicated Disclaimer screen:
+- (Decision 1) Fluid Balance card: only neutral totals (fluid intake and estimated output). No ratio, no "Normal/Low/High", no traffic-light colours.
+- (Decision 2) Trend arrows: neutral, with no green/red judgement.
+- (Decision 3) Goals: the user's own targets. The 2000 ml / 7 visits defaults are editable starting values; no text calls them medical norms or guidelines.
+- (Decision 4) Onboarding and store wording: a personal bladder diary to keep a record and share it with a health professional. No "insights", no "improve your bladder health", no "healthy habits", no named conditions in descriptions.
+- (Decision 5) Medical disclaimer on the last onboarding page (Skip leads to that page, so it cannot be skipped past), in Settings > Medical information (About section), under the charts and in the PDF footer.
+- (Decision 9) Neutral reminder text ("Time to update your diary").
 
-**English:**
-
-```
-Medical Disclaimer
-
-Eleva Diary is a personal logging tool designed to help you track bladder health patterns. It is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease or health condition.
-
-The information recorded and displayed in this app is for personal reference only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.
-
-Always consult with a qualified healthcare provider before making any decisions about your health or if you have questions about a medical condition.
-```
-
-**Spanish:**
-
-```
-Aviso Médico
-
-Eleva Diary es una herramienta de registro personal diseñada para ayudarte a controlar los patrones de salud de tu vejiga. No es un dispositivo médico y no está destinado a diagnosticar, tratar, curar o prevenir ninguna enfermedad o condición de salud.
-
-La información registrada y mostrada en esta aplicación es solo para referencia personal y no debe usarse como sustituto del consejo médico profesional, diagnóstico o tratamiento.
-
-Consulta siempre con un profesional de salud cualificado antes de tomar cualquier decisión sobre tu salud o si tienes preguntas sobre una condición médica.
-```
-
-**Portuguese:**
-
-```
-Aviso Médico
-
-Eleva Diary é uma ferramenta de registro pessoal projetada para ajudar você a acompanhar os padrões de saúde da bexiga. Não é um dispositivo médico e não se destina a diagnosticar, tratar, curar ou prevenir qualquer doença ou condição de saúde.
-
-As informações registradas e exibidas neste aplicativo são apenas para referência pessoal e não devem ser usadas como substituto de aconselhamento médico profissional, diagnóstico ou tratamento.
-
-Consulte sempre um profissional de saúde qualificado antes de tomar qualquer decisão sobre sua saúde ou se tiver dúvidas sobre uma condição médica.
-```
+Do not submit the declaration, or a build, while the output ratio or the "medical guidelines" goal text is still in the app: those features interpret the user's physiological data against reference values, which MDCG 2019-11 Rev.1 treats as a likely medical device function.
 
 ---
 
-### 4. Store Listing Disclaimer
+## Disclaimer in the store listing (required)
 
-Include in the Full Description (already added in metadata files):
+Google's Health Content and Services policy requires health apps that are not regulated as medical devices to state in the app description that the app is "not a medical device and does not diagnose, treat, cure, or prevent any medical condition". Each full description ends with an "IMPORTANT" paragraph:
 
-```
-MEDICAL DISCLAIMER
-Eleva Diary is a personal logging tool, not a medical device. It does not diagnose, treat, or prevent any condition. Always consult a qualified healthcare professional for medical advice.
-```
+- **EN:** "Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. Talk to a health professional about your symptoms."
+- **ES:** "Eleva Diary es un diario personal. No es un producto sanitario y no diagnostica, trata, cura ni previene ninguna afección. Consulta a un profesional de la salud sobre tus síntomas."
+- **PT:** "O Eleva Diary é um diário pessoal. Não é um dispositivo médico e não diagnostica, trata, cura nem previne qualquer doença. Fale com um profissional de saúde sobre os seus sintomas."
 
----
-
-### 5. Evidence/Documentation (If Requested)
-
-Google may request documentation to verify your app's purpose. Prepare:
-
-1. **App description**: Eleva Diary is a bladder diary for personal health logging
-2. **Target users**: Individuals tracking bladder health, caregivers
-3. **Clinical claims**: None — app makes no diagnostic or treatment claims
-4. **Data handling**: All data stored locally; user controls export
-5. **Professional guidance**: App encourages users to share data with healthcare providers
+The ES and PT texts are the in-app disclaimers (product decision 5 in `_docs/compliance/app-behavior-to-disclosures.md`). The EN store text adds "medical" before "condition" (and a serial comma) to match Google's wording exactly.
 
 ---
 
-## Health App Policy Compliance Summary
+## Disclaimer in the app
 
-| Requirement                 | Status       | Implementation                                |
-| --------------------------- | ------------ | --------------------------------------------- |
-| In-app medical disclaimer   | ✅ Required  | Add to Settings → About                       |
-| Store listing disclaimer    | ✅ Required  | Included in Full Description                  |
-| No misleading health claims | ✅ Compliant | Language focuses on "logging" not "diagnosis" |
-| Clear purpose statement     | ✅ Compliant | "Personal bladder diary" language             |
-| Privacy policy              | ✅ Required  | https://eleva.care/privacy                    |
-| Data safety form            | ✅ Required  | See data-safety-answers.md                    |
+Exact in-app text (product decision 5):
 
----
+| Language | Text |
+| -------- | ---- |
+| EN | Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms. |
+| ES | Eleva Diary es un diario personal. No es un producto sanitario y no diagnostica, trata, cura ni previene ninguna afección. Consulta a un profesional de la salud sobre tus síntomas. |
+| PT | O Eleva Diary é um diário pessoal. Não é um dispositivo médico e não diagnostica, trata, cura nem previne qualquer doença. Fale com um profissional de saúde sobre os seus sintomas. |
 
-## Prohibited Claims
-
-Avoid these types of statements in the app or store listing:
-
-❌ "Diagnose your bladder condition"
-❌ "Cure incontinence"
-❌ "Medical-grade tracking"
-❌ "Doctor-approved treatment"
-❌ "Clinically proven"
-❌ "FDA approved" (unless actually approved)
-
-### Acceptable Language
-
-✅ "Track your bladder health patterns"
-✅ "Log urination and fluid intake"
-✅ "Share reports with your healthcare provider"
-✅ "Personal diary tool"
-✅ "Understand your body better"
+Shown in: the last onboarding page, which every path reaches (Skip leads to it); Settings > Medical information (Información médica / Informação médica), in the About section; under the charts; in the footer of every PDF report.
 
 ---
 
-## Implementation Checklist
+## Wording
 
-Before submitting to Google Play:
+**Use:** "Keep a bladder diary"; "Log bathroom visits, drinks and leaks"; "Daily totals and simple charts of what you logged"; "Share your diary with your health professional"; "Your own daily targets".
 
-- [ ] Complete Health apps declaration in Play Console
-- [ ] Add medical disclaimer to Settings → About screen
-- [ ] Verify store description includes medical disclaimer
-- [ ] Ensure no misleading health claims in app or marketing
-- [ ] Complete Data Safety form (see data-safety-answers.md)
-- [ ] Privacy Policy URL is accessible and accurate
-- [ ] Test that disclaimer is visible on first launch or easily accessible
+**Do not use, in the app, the listing, screenshots, release notes or the website:** "insights", "analyse/analyze", "trends", "patterns", "personalised goals", "improve your (bladder) health", "healthy habits", "normal range", "medical guidelines", "clinically proven", "doctor-approved", "medical-grade", any named condition as a target group, or any claim to diagnose, treat, cure, prevent or monitor a condition.
 
 ---
 
-## In-App Implementation Suggestion
+## If Google asks for more information
 
-Add to `app/(tabs)/settings.tsx`:
+1. **Intended purpose:** a personal bladder diary to keep a record and share it with a health professional.
+2. **Users:** adults who keep a bladder diary, and carers or parents who keep one for someone else.
+3. **Health claims:** none.
+4. **Data:** stored on the device only; the app collects nothing (see `data-safety-answers.md`).
+5. **Qualification:** the owner keeps an internal intended-purpose and MDR qualification note (see the compliance mapping, owner actions).
 
-```tsx
-// Legal section in Settings
-<SectionTitle>Legal</SectionTitle>
-<TouchableOpacity onPress={() => openURL('https://eleva.care/privacy')}>
-  <OptionRow title="Privacy Policy" />
-</TouchableOpacity>
-<TouchableOpacity onPress={() => openURL('https://eleva.care/terms')}>
-  <OptionRow title="Terms of Use" />
-</TouchableOpacity>
-<TouchableOpacity onPress={() => showDisclaimer()}>
-  <OptionRow title="Medical Disclaimer" />
-</TouchableOpacity>
-```
+---
+
+## Status
+
+| Item                                          | Status | Notes |
+| --------------------------------------------- | ------ | ----- |
+| Health apps declaration: Health and fitness   | Open   | Submit with the first build that ships product decisions 1–9 |
+| Store listing disclaimer (EN/ES/PT)           | Done in the metadata files | `metadata.{en,es,pt}.md` |
+| In-app disclaimer in four places              | Check  | In the code under the charts, in Settings > Medical information and in the PDF footer; on the last onboarding page, with Skip leading to that page. Confirm all four on the release build |
+| No misleading or interpretive health features | Open   | Product decisions 1–4 must ship first |
+| Privacy policy URL live                       | Open   | https://diary.eleva.care/privacy |
+| Data safety: No data collected / No data shared | Open | See `data-safety-answers.md` release blockers |
 
 ---
 
 ## References
 
-- [Google Play Health Apps Policy](https://support.google.com/googleplay/android-developer/answer/10632613)
-- [Sensitive Categories Policy](https://support.google.com/googleplay/android-developer/answer/10632508)
-- [Medical Device Software Guidelines](https://support.google.com/googleplay/android-developer/answer/10632613#medical-device)
+- [Google Play, Health Content and Services policy](https://support.google.com/googleplay/android-developer/answer/16679511)
+- [Google Play, Health app categories and additional information](https://support.google.com/googleplay/android-developer/answer/13996367)
+- [MDCG 2019-11 Rev.1, Qualification and classification of software (June 2025)](https://health.ec.europa.eu/latest-updates/update-mdcg-2019-11-rev1-qualification-and-classification-software-regulation-eu-2017745-and-2025-06-17_en)
+- [Regulation (EU) 2017/745 on medical devices](https://eur-lex.europa.eu/eli/reg/2017/745/oj)

@@ -1,11 +1,17 @@
-# Eleva Diary — Metadados App Store da Apple (Português)
+# Eleva Diary — Metadados da App Store da Apple (português de Portugal)
 
-> **Última atualização:** 11 de novembro de 2026  
-> **Limites de caracteres:** Nome (30), Subtítulo (30), Texto Promocional (170), Palavras-chave (100), Descrição (4000)
+> **Última atualização:** 11 de novembro de 2026
+> **Localização no App Store Connect:** Portuguese (Portugal)
+> **Limites de caracteres:** Nome (30), Subtítulo (30), Texto promocional (170), Palavras-chave (100), Descrição (4000), Novidades (4000)
+> **Contagens:** em caracteres; nas palavras-chave também em bytes UTF-8, porque o App Store Connect pode recusar mais de 100 bytes mesmo com menos de 100 caracteres.
+
+Regras de redação (ver `_docs/compliance/app-behavior-to-disclosures.md`): um diário miccional pessoal para manter um registo e partilhá-lo com um profissional de saúde. Sem nomes de doenças no nome, no subtítulo, no texto promocional nem na descrição. Não usar «análises», «analisar», «tendências», «padrões», «personalizado», «melhorar a sua saúde» nem «hábitos saudáveis». Português europeu: telemóvel, ficheiro, registo, partilhar, cópia de segurança, aplicação.
+
+Categoria, declaração de dispositivo médico regulamentado, classificação etária, disponibilidade, URL e EULA: são comuns a todas as localizações; ver `metadata.en.md`.
 
 ---
 
-## Nome do App (máx. 30 caracteres)
+## Nome da aplicação (máx. 30 caracteres)
 
 ```
 Eleva Diary
@@ -18,131 +24,111 @@ Eleva Diary
 ## Subtítulo (máx. 30 caracteres)
 
 ```
-Diário de Bexiga e Líquidos
+Diário miccional privado
 ```
 
-**Caracteres:** 27
+**Caracteres:** 24
 
 ---
 
-## Texto Promocional (máx. 170 caracteres)
+## Texto promocional (máx. 170 caracteres)
 
-> Este texto pode ser atualizado a qualquer momento sem revisão do app.
+> Pode ser alterado a qualquer momento sem nova revisão.
 
 ```
-Acompanhe sua saúde da bexiga facilmente. Registre micções, ingestão de líquidos e perdas para entender seus padrões e compartilhar relatórios com seu médico.
+Mantenha um diário miccional privado: registe as idas à casa de banho, o que bebe e as perdas, e exporte um relatório para partilhar com o seu profissional de saúde.
 ```
 
-**Caracteres:** 159
+**Caracteres:** 165
 
 ---
 
 ## Palavras-chave (máx. 100 caracteres, separadas por vírgulas)
 
 ```
-diário bexiga,registro micção,controle líquidos,incontinência,saúde pélvica,perdas urinárias
+diário miccional,bexiga,micção,casa de banho,líquidos,bebidas,perdas de urina,incontinência
 ```
 
-**Caracteres:** 93
+**Caracteres:** 91 (96 bytes)
+
+As palavras-chave servem apenas para a pesquisa e não são mostradas. Podem incluir termos que as pessoas pesquisam, como «incontinência», embora a descrição não nomeie nenhuma doença.
 
 ---
 
 ## Descrição (máx. 4000 caracteres)
 
 ```
-Eleva Diary é um diário de bexiga privado e fácil de usar, projetado para ajudar você a acompanhar sua saúde urinária. Seja para se preparar para uma consulta médica ou simplesmente para entender melhor seu corpo, o Eleva Diary oferece as ferramentas para registrar, analisar e compartilhar seus dados—tudo sob seu controle.
+O Eleva Diary é um diário miccional simples e privado. Registe quando vai à casa de banho, o que bebe e as perdas de urina e, se quiser, partilhe o registo com o seu médico, enfermeiro ou fisioterapeuta.
 
-O QUE VOCÊ PODE REGISTRAR
-• Eventos de micção com volume (pequeno/médio/grande) e nível de urgência (escala 1-5)
-• Ingestão de líquidos por tipo (água, café, chá, suco, álcool, outros) e quantidade em ml
-• Episódios de perdas com severidade (gotas/moderado/completo) e urgência
-• Notas opcionais para qualquer entrada
-• Indicadores de dor ou desconforto
+O QUE PODE REGISTAR
+• Idas à casa de banho: hora, volume (pequeno, médio ou grande) ou uma quantidade exata em ml, urgência de 1 a 5, se houve perda ou dor, e notas
+• Bebidas: hora, tipo (água, café, chá, sumo, álcool ou outra) e quantidade
+• Perdas: hora, quantidade, urgência, o que estava a fazer e notas
 
-ANÁLISES E PROGRESSO
-• Progresso diário em direção a metas personalizadas de líquidos e idas ao banheiro
-• Gráficos semanais e mensais para visualizar tendências
-• Acompanhamento de sequências para incentivar o registro consistente
-• Padrões por momento do dia (manhã, tarde, noite)
+O SEU DIÁRIO EM RESUMO
+• Totais diários de bebidas, idas à casa de banho e perdas
+• Gráficos semanais e mensais simples do que registou
+• Os seus próprios objetivos diários, se os quiser definir
+• Uma sequência que mostra quantos dias seguidos registou
+• Lembretes opcionais para atualizar o diário
 
-EXPORTAÇÃO E COMPARTILHAMENTO
-• Exporte seus dados como PDF, CSV ou JSON para compartilhar com seu médico
-• Relatórios PDF elegantes que resumem suas entradas por período
-• Compartilhe diretamente por e-mail, mensagens ou armazenamento na nuvem
+PARTILHE QUANDO QUISER
+• Exporte o diário em PDF, CSV ou JSON para as datas que escolher
+• Envie-o pelas opções de partilha do telemóvel: por e-mail, numa aplicação de mensagens ou para o serviço de armazenamento que preferir
+• Guarde uma cópia de segurança num ficheiro e importe-a mais tarde, no mesmo telemóvel ou num novo
 
-PRIVACIDADE EM PRIMEIRO LUGAR
-• Todos os dados são armazenados localmente no seu dispositivo—não é necessário criar conta
-• Backup em um arquivo que você controla, para restaurar em qualquer dispositivo
-• Sem anúncios, sem análises, sem rastreamento de terceiros
-• Você controla quando e como seus dados saem do seu dispositivo
+GUARDADO NO SEU TELEMÓVEL
+• O diário fica guardado no seu telemóvel. Não precisa de conta nem de iniciar sessão
+• Sem anúncios, sem estatísticas de utilização e sem rastreio
+• Funciona sem ligação à internet
+• Apague o diário quando quiser com «Apagar todos os dados» nas Definições
 
-PROJETADO PARA A VIDA REAL
-• Entrada rápida com padrões inteligentes e controles intuitivos
-• Suporte para modo escuro para registro noturno confortável
-• Disponível em inglês, espanhol e português
-• Funciona offline—não é necessário internet
+PARA QUEM É
+Para quem precisa de manter um diário miccional a pedido de um profissional de saúde, ou quer um registo simples das idas à casa de banho e do que bebe para levar a uma consulta. Cuidadores, pais e mães podem manter o diário da pessoa de quem cuidam.
 
-PARA QUEM É?
-Eleva Diary é ideal para qualquer pessoa que gerencie sua saúde da bexiga, incluindo aqueles que experimentam bexiga hiperativa, incontinência urinária, cistite intersticial, ou aqueles em recuperação de cirurgia pélvica. Também é útil para cuidadores que registram em nome de um familiar.
+Disponível em português, inglês e espanhol. Gratuito e sem compras na aplicação.
 
-AVISO MÉDICO
-Eleva Diary é uma ferramenta de registro pessoal, não um dispositivo médico. Não diagnostica, trata ou previne nenhuma condição. Consulte sempre um profissional de saúde qualificado para aconselhamento médico.
+IMPORTANTE
+O Eleva Diary é um diário pessoal. Não é um dispositivo médico e não diagnostica, trata, cura nem previne qualquer doença. Fale com um profissional de saúde sobre os seus sintomas.
 
-Parte da Eleva Care — capacitando você a assumir o controle da sua jornada de saúde.
+Uma aplicação Eleva.care. Dúvidas? support@eleva.care
 ```
 
-**Caracteres:** ~1,950
+**Caracteres:** 2017
+
+O parágrafo «IMPORTANTE» reproduz o aviso médico da aplicação em português e corresponde à frase exigida pela Google («not a medical device and does not diagnose, treat, cure, or prevent any medical condition»).
 
 ---
 
-## Novidades (Notas de Versão)
+## Novidades (notas da versão)
 
-### Versão 1.0.0 (Lançamento Inicial)
-
-```
-Bem-vindo ao Eleva Diary! Comece a acompanhar sua saúde da bexiga hoje.
-
-• Registre micções, ingestão de líquidos e eventos de perdas
-• Defina metas diárias personalizadas
-• Visualize análises com gráficos semanais e mensais
-• Exporte relatórios como PDF, CSV ou JSON
-• Faça backup dos seus dados em um arquivo e restaure em qualquer dispositivo
-• Disponível em inglês, espanhol e português
-```
+O App Store Connect não mostra o campo «Novidades» na primeira versão. A partir da 1.0.1, usar `release-notes-templates.md`.
 
 ---
 
 ## Categoria
 
-**Principal:** Saúde e Fitness  
-**Secundária:** Medicina
+**Principal:** Saúde e fitness
+**Secundária:** nenhuma (nunca «Medicina»; ver `metadata.en.md`)
 
 ---
 
-## Classificação Etária
+## URL
 
-**4+** — Sem conteúdo objetável
-
----
-
-## URLs Obrigatórias
-
-| Campo                   | URL                        |
-| ----------------------- | -------------------------- |
-| Política de Privacidade | https://eleva.care/privacy |
-| URL de Suporte          | https://eleva.care/support |
-| URL de Marketing        | https://eleva.care/diary   |
+| Campo                   | Valor                                    |
+| ----------------------- | ---------------------------------------- |
+| Política de Privacidade | https://diary.eleva.care/privacy         |
+| URL de suporte          | https://diary.eleva.care/privacy-choices |
+| URL de marketing        | https://diary.eleva.care                 |
 
 ---
 
-## Privacidade do App (Resumo)
+## Privacidade da aplicação (resumo)
 
-Ver `app-privacy-answers.md` para orientação detalhada.
-
-- **Dados Não Coletados** (todas as categorias, incluindo Dados de Saúde e Fitness)
+Ver `app-privacy-answers.md`: **Dados não recolhidos** em todas as categorias, incluindo Saúde e fitness.
 
 ---
 
-## Notas para Revisão
+## Notas para a revisão
 
-Ver `review-notes.md` para orientação detalhada para revisores.
+Ver `review-notes.md`.

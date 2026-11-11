@@ -1,145 +1,111 @@
 # Eleva Diary — Notes for App Review (Apple)
 
-> **Last updated:** 11 November 2026  
-> **Purpose:** Guidance for App Store Review team to facilitate smooth app review
+> **Last updated:** 11 November 2026
+> **Purpose:** Text for App Store Connect > App Review Information > Notes, plus the facts behind it.
+
+These notes describe the build that ships the product decisions listed in `_docs/compliance/app-behavior-to-disclosures.md`. Before pasting them into App Store Connect, check every path below on that exact build. If something is not in the build, fix the build or the notes; never tell App Review about a screen that does not exist.
 
 ---
 
-## App Overview
+## Text to paste into "Notes" (App Review Information)
 
-**Eleva Diary** is a personal bladder diary app that helps users track urination, fluid intake, and leak episodes. The app is designed for individuals managing bladder health conditions or preparing health data to share with healthcare providers.
+```
+Eleva Diary is a personal bladder diary. Users record bathroom visits, drinks and leaks on the device and can export the record to share with a health professional. It does not interpret entries or give health advice.
 
----
+- No account or sign-in. All features work immediately; no demo account is needed.
+- No network requests. No analytics, advertising, tracking or crash-reporting SDKs. No HealthKit. No iCloud entitlement; the app does not write to iCloud. The diary is stored only in the app's local storage on the device.
+- Data leaves the device only when the user exports a PDF, CSV or JSON report, or a backup file, and sends it through the iOS share sheet to a destination they choose. The diary is excluded from iCloud Backup and computer backups (AsyncStorage's default backup exclusion); users move it to a new phone with Export Backup File and Import Backup File.
+- Permissions: notifications only, requested when the user turns on Settings > Reminders. Reminders are local notifications scheduled on the device ("Time to update your diary"). No push token is requested or sent.
+- Medical disclaimer: shown on the last onboarding page (Skip leads to that page, so every user sees it), in Settings > Medical information (About section), under the charts on the Today screen, and in the footer of every PDF report.
+- The last onboarding page shows "By continuing, you accept the Terms of Use. See how your data is handled in the Privacy Policy.", with links to both. The user accepts by tapping Get Started on that page. When the Terms version changes, the app shows a notice on launch with a link to the new Terms and an Accept button.
+- Legal pages: Settings > Privacy Policy, Terms of Use and Privacy Choices open https://diary.eleva.care/privacy, /terms and /privacy-choices in the browser.
+- Regulated medical device: declared "No" for every region. The app is a record-keeping tool with no diagnostic, monitoring or treatment function.
+- Languages: English, Spanish (Spain) and Portuguese (Portugal).
+- Built with Expo SDK 57 (React Native). Minimum iOS 16.4.
 
-## Key Information for Reviewers
-
-### 1. No Account Required
-
-Eleva Diary does not require user registration or login. All data is stored locally on the device using AsyncStorage. Users can start using the app immediately upon first launch.
-
-### 2. Health App — Not a Medical Device
-
-Eleva Diary is a **logging/diary tool**, not a medical device. It does not:
-
-- Diagnose any medical condition
-- Provide treatment recommendations
-- Replace professional medical advice
-- Connect to medical devices or sensors
-
-A medical disclaimer is displayed in the app description and will be visible in the app's About section.
-
-### 3. Data Privacy
-
-- **Local storage only**: All diary entries are stored on-device
-- **No iCloud storage**: The app does not store health data in iCloud (in line with Guideline 5.1.3(ii)) and has no iCloud entitlement
-- **Local backup file**: Users can export a backup file via the OS share sheet and import it again on any device (Settings → Local Backup)
-- **User-controlled export**: Users can export data as PDF, CSV, or JSON via the OS share sheet
-- **No analytics**: No third-party analytics or tracking SDKs are included
-- **No crash reporting**: No crash reporting or performance monitoring SDKs are included
-- **No ads**: The app is ad-free
-
-### 4. Content Rating
-
-The app is suitable for all ages (4+). It does not contain:
-
-- Violence
-- Sexual content
-- Profanity
-- Gambling
-- User-generated content shared publicly
-
-While the app deals with health topics, the content is clinical/medical logging (e.g., "urination," "fluid intake") and is not objectionable.
+Contact: support@eleva.care
+```
 
 ---
 
-## Testing the App
+## How to test
 
-### How to Test Core Features
+1. **First launch:** go through onboarding, or tap Skip, which leads to the last page. The last page shows the disclaimer and the Terms of Use and Privacy Policy notice with links; tap Get Started.
+2. **Add a bathroom visit:** tap "+" > Urination > choose size or enter ml, urgency, leak/pain, optional note > Save.
+3. **Add a drink:** tap "+" > Fluid Intake > choose type and amount > Save.
+4. **Add a leak:** tap "+" > Leak/Accident > choose amount, urgency, optional activity and note > Save.
+5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the streak, and the disclaimer under the charts.
+6. **History:** open the History tab, pick a day, open an entry, edit it or tap Delete.
+7. **Export Data:** Settings > Export Data > choose PDF, CSV or JSON and dates > share sheet. The PDF footer carries the disclaimer.
+8. **Local Backup:** Settings > Local Backup > Export Backup File (share sheet); Import Backup File (document picker; replaces the current diary after confirmation).
+9. **Reminders:** Settings > Reminders > Enable Reminders. iOS asks for notification permission at this point and not before.
+10. **Medical information:** Settings > About > Medical information.
+11. **Clear All Data:** Settings > Clear All Data > type DELETE to confirm. Deletes entries, goals, goal history, streak, reminder settings, the launch preference and export/backup files, and cancels reminders. Keeps the language, the completed onboarding and the accepted Terms version and date.
+12. **Language:** Settings > Language > English, Español or Português.
 
-1. **Add a urination entry**: Tap the "+" button → Select "Urination" → Choose volume, urgency → Save
-2. **Add a fluid entry**: Tap "+" → Select "Fluid" → Choose type, enter amount → Save
-3. **Add a leak entry**: Tap "+" → Select "Leak" → Choose severity, urgency → Save
-4. **View history**: Navigate to History tab → See calendar with entry dots → Tap a day to see entries
-5. **View insights**: Navigate to Home tab → See daily progress, weekly chart, streak
-6. **Export data**: Settings → Export → Choose format → Share via share sheet
-7. **Local backup**: Settings → Local Backup → "Export Backup File" → Save via share sheet; "Import Backup File" → Select the saved file
-8. **Change language**: Settings → Language → Select English/Spanish/Portuguese
-
-### Demo Credentials
-
-**Not applicable** — No login required. App works immediately on first launch.
-
----
-
-## Permissions Requested
-
-| Permission    | Purpose                                      | When Prompted                                   |
-| ------------- | -------------------------------------------- | ----------------------------------------------- |
-| Notifications | Local reminders to log entries (no push)     | Only when the user turns on reminders in Settings |
-
-Eleva Diary requests no other permissions (no camera, location, contacts, etc.). Reminders are scheduled on the device; the app does not request or send a push token.
+**Demo account:** not applicable.
 
 ---
 
-## Localization
+## Permissions
 
-The app is fully localized in:
+| Permission    | Purpose                                    | When requested                                         |
+| ------------- | ------------------------------------------ | ------------------------------------------------------ |
+| Notifications | Local reminders to update the diary (no push) | Only when the user turns on Settings > Reminders    |
 
-- English (en)
-- Spanish (es)
-- Portuguese (pt)
-
-The app automatically detects the device language and falls back to English if the locale is not supported.
+No other permissions (no camera, microphone, location, contacts, photos, HealthKit or tracking).
 
 ---
 
-## Technical Details
+## Answers to likely questions
 
-| Item        | Value                      |
-| ----------- | -------------------------- |
-| Framework   | React Native (Expo SDK 57) |
-| Minimum iOS | 16.4                       |
-| Bundle ID   | care.eleva.peediary        |
-| Developer   | Buzios e Tartarugas, Lda.  |
+### Is this a medical device?
 
----
+No. Eleva Diary is a personal diary, like a paper bladder diary. It stores what the user enters, shows totals and simple charts of those entries, and exports them. It does not interpret the entries, tell the user whether results are normal, or give health advice. Daily goals are targets the user sets; the starting values (2000 ml, 7 visits) can be changed and are not presented as medical norms. The regulated medical device declaration is "No" for every region (see `metadata.en.md`).
 
-## Contact Information
+### Does the app give health information? (Guideline 1.4.1)
 
-If you have questions during review, please contact:
+No. It is a record-keeping tool and gives no health advice. The disclaimer ("Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms.") is shown on the last onboarding page, in Settings > Medical information, under the charts and in the PDF footer.
 
-- **Email**: <diary@eleva.care>
-- **Support URL**: <https://eleva.care/support>
-- **Privacy Policy**: <https://eleva.care/privacy>
+### Why the Health & Fitness category but no HealthKit?
 
----
+The app keeps its own diary on the device and does not read from or write to HealthKit.
 
-## Common Review Concerns — Preemptive Clarifications
+### How is data stored and protected?
 
-### "Is this a medical device?"
+- The diary is kept in the app's private storage on the device. The app adds no encryption of its own; iOS protects the device's storage with its own encryption when the user has a passcode.
+- Nothing is sent to a server: the app has no network code, and Eleva has no server that holds diary data.
+- Export and backup files are written to the app's cache folder, handed to the share sheet, and deleted at launch, before each export and by Clear All Data.
 
-No. Eleva Diary is a personal logging tool similar to a paper bladder diary traditionally recommended by urologists. It does not diagnose, treat, or provide clinical recommendations.
+### What does the developer receive?
 
-### "Why does it access Health data?"
-
-Eleva Diary does **not** read from or write to Apple HealthKit. The app keeps its own diary data on the device only and does not send it to iCloud or to any server, so no data is collected.
-
-### "Are you a healthcare provider?"
-
-The developer (Eleva Care) provides health and wellness tools but is not a licensed healthcare provider. The app includes appropriate disclaimers.
-
-### "How is data protected?"
-
-- Data at rest: Stored in AsyncStorage (app sandbox, encrypted by iOS)
-- Data in transit: None — the app makes no network requests; data leaves the device only when the user exports a report or backup file via the share sheet, or inside the device backup iOS makes under the user's own settings
-- No server-side storage: Eleva Care does not operate servers that store user health data
+Nothing from the app. Eleva only receives what users choose to send by email, and the aggregated statistics, crash reports (from users who agreed to share them with developers) and reviews that Apple provides.
 
 ---
 
-## Screenshots & App Previews
+## Technical details
 
-Screenshots and app previews submitted with this app accurately represent the app's functionality and do not contain misleading imagery or claims.
+| Item          | Value                                                  |
+| ------------- | ------------------------------------------------------ |
+| App name      | Eleva Diary (store and home screen)                    |
+| Framework     | Expo SDK 57 (React Native)                             |
+| Minimum iOS   | 16.4                                                   |
+| Bundle ID     | care.eleva.peediary (internal identifier, not shown to users) |
+| Seller        | BÚZIOS E TARTARUGAS - LDA (brand Eleva.care), NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal |
 
 ---
 
-Thank you for reviewing Eleva Diary. We're committed to compliance with App Store guidelines and welcome any feedback.
+## Contact during review
+
+- **Email:** support@eleva.care
+- **Privacy Policy:** https://diary.eleva.care/privacy
+- **Terms of Use:** https://diary.eleva.care/terms
+- **Support URL:** https://diary.eleva.care/privacy-choices
+
+The App Review contact name and phone number are entered in App Store Connect by the owner.
+
+---
+
+## Screenshots
+
+Screenshots show the submitted build: neutral fluid totals with no ratio or "normal" labels, neutral charts, and no claim of health benefits. See `assets-checklist.md`.
