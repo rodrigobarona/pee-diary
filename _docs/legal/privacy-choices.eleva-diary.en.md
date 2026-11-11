@@ -24,7 +24,7 @@ This page explains:
 
 All diary entries, goals, and settings are stored **locally on your device** using secure local storage. This data:
 
-- Never leaves your device without your explicit action
+- Is never sent anywhere by the app; it leaves your device only if you export it, or in your device's own backup if you have turned that on
 - Is protected by your device's security (passcode/biometrics)
 - Is automatically deleted if you uninstall the app
 

@@ -24,7 +24,7 @@ Esta página explica:
 
 Todas as entradas do diário, metas e configurações são armazenadas **localmente no seu dispositivo** usando armazenamento local seguro. Esses dados:
 
-- Nunca saem do seu dispositivo sem sua ação explícita
+- O app nunca os envia para lugar nenhum; eles só saem do seu dispositivo se você os exportar, ou no backup do seu próprio dispositivo, se você o tiver ativado
 - São protegidos pela segurança do seu dispositivo (código/biometria)
 - São automaticamente excluídos se você desinstalar o app
 
@@ -46,7 +46,7 @@ Você pode exportar todos os seus dados do diário a qualquer momento em múltip
 ### Passos para Exportar
 
 1. Abra o Eleva Diary
-2. Vá para **Configurações** (ícone de engrenagem)
+2. Vá para **Definições** (ícone de engrenagem)
 3. Toque em **Exportar Dados** ou **Exportar**
 4. Selecione seu formato preferido:
    - **PDF** — Relatório formatado, ideal para compartilhar com seu médico
@@ -74,10 +74,9 @@ Sua exportação incluirá:
 Para excluir permanentemente todos os seus dados do app:
 
 1. Abra o Eleva Diary
-2. Vá para **Configurações** (ícone de engrenagem)
-3. Role até **Gerenciamento de Dados** ou **Limpar Dados**
-4. Toque em **Limpar Todos os Dados**
-5. Confirme a exclusão quando solicitado
+2. Vá para **Definições** (ícone de engrenagem)
+3. Toque em **Apagar todos os dados**
+4. Confirme a exclusão quando solicitado
 
 **Aviso:** Esta ação é permanente e não pode ser desfeita. Recomendamos exportar seus dados primeiro se quiser manter uma cópia.
 
@@ -109,7 +108,7 @@ Para excluir uma entrada individual:
 ### Exportar um Arquivo de Backup
 
 1. Abra o Eleva Diary
-2. Vá para **Configurações**
+2. Vá para **Definições**
 3. Em **Cópia Local**, toque em **Exportar Cópia de Segurança**
 4. Escolha onde salvar o arquivo ou para onde enviá-lo (Arquivos, email, armazenamento na nuvem, etc.)
 
@@ -118,7 +117,7 @@ O arquivo de backup contém suas entradas do diário, metas, histórico de metas
 ### Importar um Arquivo de Backup
 
 1. Abra o Eleva Diary em qualquer dispositivo iOS ou Android
-2. Vá para **Configurações**
+2. Vá para **Definições**
 3. Em **Cópia Local**, toque em **Importar Cópia de Segurança**
 4. Confirme e selecione seu arquivo de backup
 

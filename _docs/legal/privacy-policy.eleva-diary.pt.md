@@ -28,7 +28,7 @@ Esta Política de Privacidade explica como lidamos com as informações quando v
 - ✅ **Não** coletamos, transmitimos ou armazenamos seus dados de saúde pessoais em nossos servidores
 - ✅ **Não** utilizamos tecnologias de análise, publicidade ou rastreamento
 - ✅ Você tem **controle total** sobre seus dados em todos os momentos
-- ✅ Os dados só saem do seu dispositivo quando **você escolhe explicitamente** exportar ou fazer backup
+- ✅ O app nunca envia seus dados para lugar nenhum. Eles só saem do seu dispositivo quando **você escolhe** exportá-los, ou no backup do seu próprio dispositivo, se você o tiver ativado
 
 ---
 
@@ -80,7 +80,7 @@ O Eleva Diary não envia seus dados para nenhum serviço de nuvem. Para manter u
 
 ### Seu controle:
 
-- Um arquivo de backup só é criado quando você toca em **Exportar Cópia de Segurança** em Configurações
+- Um arquivo de backup só é criado quando você toca em **Exportar Cópia de Segurança** em Definições
 - Você pode restaurar os dados em qualquer dispositivo iOS ou Android tocando em **Importar Cópia de Segurança** e selecionando o arquivo
 - Importar um arquivo de backup substitui os dados atuais do aplicativo
 
@@ -144,8 +144,8 @@ Seus dados permanecem no seu dispositivo pelo tempo que você escolher mantê-lo
 Você pode excluir todos os seus dados a qualquer momento:
 
 1. Abra o Aplicativo
-2. Vá para **Configurações**
-3. Toque em **Limpar Dados** ou **Limpar Todos os Dados**
+2. Vá para **Definições** (o nome da tela no app)
+3. Toque em **Apagar todos os dados**
 4. Confirme a exclusão
 
 Isso remove permanentemente todas as entradas do diário, metas e configurações do seu dispositivo.
@@ -185,7 +185,7 @@ Dependendo da sua jurisdição, você pode ter direitos sobre seus dados pessoai
 | ------------- | ---------------------------------------------------- |
 | Acesso        | Ver seus dados no Histórico e Configurações do app   |
 | Retificação   | Editar qualquer entrada tocando nela                 |
-| Exclusão      | Usar Limpar Dados em Configurações                   |
+| Exclusão      | Usar Apagar todos os dados em Definições             |
 | Portabilidade | Exportar seus dados como CSV ou JSON                 |
 | Oposição      | Não aplicável (não há processamento por nossa parte) |
 

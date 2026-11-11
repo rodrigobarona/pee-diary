@@ -24,7 +24,7 @@ Esta página explica:
 
 Todas las entradas del diario, metas y configuraciones se almacenan **localmente en tu dispositivo** usando almacenamiento local seguro. Estos datos:
 
-- Nunca salen de tu dispositivo sin tu acción explícita
+- La app nunca los envía a ningún sitio; solo salen de tu dispositivo si los exportas, o en la copia de seguridad de tu propio dispositivo si la tienes activada
 - Están protegidos por la seguridad de tu dispositivo (código/biometría)
 - Se eliminan automáticamente si desinstalas la app
 

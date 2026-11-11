@@ -56,7 +56,7 @@ Eleva Diary é um diário de bexiga privado e fácil de usar, projetado para aju
 • Todos os dados são armazenados localmente no seu dispositivo—não é necessário criar conta
 • Sem anúncios, sem análises, sem rastreamento de terceiros
 • Você controla quando e como seus dados saem do seu dispositivo
-• Exclua todos os dados a qualquer momento em Configurações
+• Exclua todos os dados a qualquer momento em Definições
 
 ▶ PROJETADO PARA A VIDA REAL
 

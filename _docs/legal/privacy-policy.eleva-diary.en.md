@@ -28,7 +28,7 @@ This Privacy Policy explains how we handle information when you use Eleva Diary.
 - ✅ We do **not** collect, transmit, or store your personal health data on our servers
 - ✅ We do **not** use analytics, advertising, or tracking technologies
 - ✅ You have **full control** over your data at all times
-- ✅ Data only leaves your device when **you explicitly choose** to export or back up
+- ✅ The app never sends your data anywhere. It leaves your device only when **you choose** to export it, or in your device's own backup if you have turned that on
 
 ---
 

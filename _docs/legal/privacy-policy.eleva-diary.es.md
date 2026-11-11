@@ -28,7 +28,7 @@ Esta Política de Privacidad explica cómo manejamos la información cuando usas
 - ✅ **No** recopilamos, transmitimos ni almacenamos tus datos de salud personales en nuestros servidores
 - ✅ **No** utilizamos tecnologías de análisis, publicidad ni seguimiento
 - ✅ Tienes **control total** sobre tus datos en todo momento
-- ✅ Los datos solo salen de tu dispositivo cuando **tú eliges explícitamente** exportar o hacer copia de seguridad
+- ✅ La app nunca envía tus datos a ningún sitio. Solo salen de tu dispositivo cuando **tú eliges** exportarlos, o en la copia de seguridad de tu propio dispositivo si la tienes activada
 
 ---
 

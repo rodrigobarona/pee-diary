@@ -98,7 +98,7 @@ The app automatically detects the device language and falls back to English if t
 | Item        | Value                      |
 | ----------- | -------------------------- |
 | Framework   | React Native (Expo SDK 57) |
-| Minimum iOS | 13.4                       |
+| Minimum iOS | 16.4                       |
 | Bundle ID   | care.eleva.peediary        |
 | Developer   | Buzios e Tartarugas, Lda.  |
 
