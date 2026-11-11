@@ -101,7 +101,7 @@ export function DefaultErrorFallback({
             <MaterialCommunityIcons
               name="refresh"
               size={20}
-              color={colors.white}
+              color={colors.surface}
             />
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
@@ -120,7 +120,7 @@ export function DefaultErrorFallback({
               <MaterialCommunityIcons
                 name={showDetails ? "chevron-up" : "chevron-down"}
                 size={16}
-                color={colors.text.secondary}
+                color={colors.textMuted}
               />
             </TouchableOpacity>
 
@@ -190,7 +190,7 @@ export function ScreenErrorBoundary({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -205,13 +205,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: colors.text.primary,
+    color: colors.text,
     textAlign: "center",
     marginBottom: 8,
   },
   description: {
     fontSize: 15,
-    color: colors.text.secondary,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 22,
     marginBottom: 24,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   retryButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.white,
+    color: colors.surface,
   },
   detailsToggle: {
     flexDirection: "row",
@@ -239,12 +239,12 @@ const styles = StyleSheet.create({
   },
   detailsToggleText: {
     fontSize: 14,
-    color: colors.text.secondary,
+    color: colors.textMuted,
   },
   errorDetails: {
     marginTop: 12,
     maxHeight: 200,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.surface,
     borderRadius: 8,
     width: "100%",
   },
@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     fontSize: 12,
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: 8,
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
   errorStack: {
     fontSize: 10,
-    color: colors.text.secondary,
+    color: colors.textMuted,
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
     lineHeight: 14,
   },

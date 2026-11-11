@@ -335,7 +335,7 @@ export default function SettingsScreen() {
           {
             text: t("common.delete"),
             style: "destructive",
-            onPress: (value) => {
+            onPress: (value?: string) => {
               if (value?.toUpperCase() === confirmWord.toUpperCase()) {
                 clearAllEntries();
                 Haptics.notificationAsync(

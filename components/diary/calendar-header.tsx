@@ -110,17 +110,17 @@ export function CalendarHeader({
   const animateWeekChange = React.useCallback((direction: 'left' | 'right', callback: () => void) => {
     const toValue = direction === 'left' ? -WEEK_WIDTH : WEEK_WIDTH;
     
-    translateX.value = withTiming(toValue, { 
+    translateX.set(withTiming(toValue, { 
       duration: 200, 
       easing: Easing.out(Easing.cubic) 
     }, () => {
-      translateX.value = -toValue;
+      translateX.set(-toValue);
       runOnJS(callback)();
-      translateX.value = withTiming(0, { 
+      translateX.set(withTiming(0, { 
         duration: 200, 
         easing: Easing.out(Easing.cubic) 
-      });
-    });
+      }));
+    }));
   }, [translateX]);
 
   const goToPreviousWeek = React.useCallback(() => {
@@ -185,7 +185,7 @@ export function CalendarHeader({
     .activeOffsetX([-10, 10]) // Only activate after 10px horizontal movement
     .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20px (prevents conflict with scrolling)
     .onUpdate((event) => {
-      translateX.value = event.translationX * 0.5;
+      translateX.set(event.translationX * 0.5);
     })
     .onEnd((event) => {
       // Check both displacement and velocity for better swipe detection (quick flicks)
@@ -199,7 +199,7 @@ export function CalendarHeader({
       } else if (shouldGoToNext) {
         runOnJS(goToNextWeek)();
       } else {
-        translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
+        translateX.set(withSpring(0, { damping: 20, stiffness: 200 }));
       }
     });
 

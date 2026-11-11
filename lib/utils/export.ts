@@ -4,7 +4,7 @@ import {
   cacheDirectory,
   documentDirectory,
   writeAsStringAsync,
-} from "expo-file-system";
+} from "expo-file-system/legacy";
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 

@@ -38,11 +38,11 @@ function AddOption({
   }));
 
   const handlePressIn = React.useCallback(() => {
-    scale.value = withTiming(0.97, { duration: 100 });
+    scale.set(withTiming(0.97, { duration: 100 }));
   }, [scale]);
 
   const handlePressOut = React.useCallback(() => {
-    scale.value = withTiming(1, { duration: 150 });
+    scale.set(withTiming(1, { duration: 150 }));
   }, [scale]);
 
   return (

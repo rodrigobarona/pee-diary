@@ -1,13 +1,14 @@
 import "../global.css";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useFonts } from "expo-font";
 import {
   DarkTheme,
   DefaultTheme,
+  Stack,
   ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+  useRouter,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
@@ -21,8 +22,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 
-// Suppress deprecation warning from dependencies (react-native-bottom-tabs)
-// This can be removed once the library updates to use react-native-safe-area-context
+// Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
 
 // Prevent the splash screen from auto-hiding before fonts are loaded

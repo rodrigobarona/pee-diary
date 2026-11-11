@@ -66,11 +66,11 @@ function OptionRow({
   }));
 
   const handlePressIn = () => {
-    scale.value = withTiming(0.98, { duration: 100 });
+    scale.set(withTiming(0.98, { duration: 100 }));
   };
 
   const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 150 });
+    scale.set(withTiming(1, { duration: 150 }));
   };
 
   const iconColor = color || (isSelected ? colors.primary.DEFAULT : "#6B7280");
@@ -161,12 +161,14 @@ export default function ExportScreen() {
       setActivePreset(preset);
 
       if (preset === "custom") {
-        customRangeHeight.value = withSpring(140, {
-          damping: 18,
-          stiffness: 120,
-        });
+        customRangeHeight.set(
+          withSpring(140, {
+            damping: 18,
+            stiffness: 120,
+          })
+        );
       } else {
-        customRangeHeight.value = withTiming(0, { duration: 200 });
+        customRangeHeight.set(withTiming(0, { duration: 200 }));
         const range = getDateRangePreset(preset, entries);
         setStartDate(range.start);
         setEndDate(range.end);
