@@ -16,7 +16,7 @@ appId: care.eleva.peediary
 - waitForAnimationToEnd
 - takeScreenshot: 12-import-confirm
 - tapOn:
-    text: "Restore|RESTORE"
+    text: "(?i)${RESTORE}"
 # Android's picker opens on Recent files: go to Downloads
 - runFlow:
     when:
@@ -47,13 +47,21 @@ appId: care.eleva.peediary
       platform: iOS
     commands:
       - tapOn:
-          text: "eleva-diary-demo-backup.json, json.*"
+          text: "eleva-diary-demo-backup.json.*"
+      - waitForAnimationToEnd
+      # In the icon view the name label may not open the file: tap the icon
+      - runFlow:
+          when:
+            visible: "eleva-diary-demo.*"
+          commands:
+            - tapOn:
+                point: "17%,30%"
 - extendedWaitUntil:
-    visible: "OK"
+    visible: "OK|Aceptar"
     timeout: 60000
 - takeScreenshot: 14-import-success
 - tapOn:
-    text: "OK"
+    text: "OK|Aceptar"
 - waitForAnimationToEnd
 - scrollUntilVisible:
     element:

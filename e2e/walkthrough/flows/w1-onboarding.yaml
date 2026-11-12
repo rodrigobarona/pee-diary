@@ -3,6 +3,9 @@ appId: care.eleva.peediary
 ---
 - launchApp:
     clearState: true
+    # iOS: start in the walkthrough's language (the app follows the device)
+    arguments:
+      AppleLanguages: "(${LANG_CODE})"
 - extendedWaitUntil:
     visible:
       id: "onboarding-next"

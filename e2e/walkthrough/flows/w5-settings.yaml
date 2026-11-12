@@ -50,7 +50,7 @@ appId: care.eleva.peediary
 - waitForAnimationToEnd
 - takeScreenshot: 55-medical-info
 - tapOn:
-    text: "OK"
+    text: "OK|Aceptar"
     optional: true
 - waitForAnimationToEnd
 - scrollUntilVisible:

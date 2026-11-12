@@ -6,8 +6,9 @@
 #   e2e/walkthrough/run.sh android            # first adb device
 #   e2e/walkthrough/run.sh ios <simulator-udid>
 #
-# With LOCALE=pt or LOCALE=es it records screenshots only (no videos) in that
-# language: the demo backup switches the app's language when it is restored.
+# With LOCALE=pt or LOCALE=es it records in that language: on iOS the whole
+# walkthrough (videos and screenshots), on Android screenshots only (the demo
+# backup switches the app's language when it is restored).
 # Output then goes to walkthrough-output/<platform>-<locale>/.
 #
 # Needs Maestro (~/.maestro/bin/maestro), Python 3 and Pillow. Output goes to
@@ -22,14 +23,16 @@ OUT="$ROOT/walkthrough-output/$PLATFORM"
 FLOWS=(w1-onboarding.yaml w2-restore.yaml w3-browse.yaml w4-add.yaml w5-settings.yaml)
 # Words the flows tap, in the app's language
 case "$LOCALE" in
-  en) WORDS=(-e MONTH=Month -e WEEK=Week -e LARGE=Large -e TEA=Tea -e DISCARD=Discard) ;;
-  pt) WORDS=(-e MONTH=Mês -e WEEK=Semana -e LARGE=Grande -e TEA=Chá -e DISCARD=Descartar) ;;
-  es) WORDS=(-e MONTH=Mes -e WEEK=Semana -e LARGE=Grande -e TEA=Té -e DISCARD=Descartar) ;;
+  en) WORDS=(-e LANG_CODE=en -e RESTORE=Restore -e MONTH=Month -e WEEK=Week -e LARGE=Large -e TEA=Tea -e DISCARD=Discard) ;;
+  pt) WORDS=(-e LANG_CODE=pt-PT -e RESTORE=Restaurar -e MONTH=Mês -e WEEK=Semana -e LARGE=Grande -e TEA=Chá -e DISCARD=Descartar) ;;
+  es) WORDS=(-e LANG_CODE=es-ES -e RESTORE=Restaurar -e MONTH=Mes -e WEEK=Semana -e LARGE=Grande -e TEA=Té -e DISCARD=Descartar) ;;
   *) echo "LOCALE must be en, pt or es" >&2; exit 1 ;;
 esac
 if [ "$LOCALE" != en ]; then
   OUT="$OUT-$LOCALE"
-  FLOWS=(w1-onboarding.yaml w2-restore.yaml l-screens.yaml)
+  # iOS records the whole walkthrough in that language (the first launch
+  # passes the language as a launch argument). Android: screenshots only.
+  [ "$PLATFORM" = android ] && FLOWS=(w1-onboarding.yaml w2-restore.yaml l-screens.yaml)
 fi
 MAESTRO=${MAESTRO:-$HOME/.maestro/bin/maestro}
 BACKUP=$(mktemp -d)/eleva-diary-demo-backup.json
