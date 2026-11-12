@@ -1,13 +1,24 @@
 # Chapter 1: first launch, the three onboarding pages, empty Today
 appId: care.eleva.peediary
 ---
-- launchApp:
-    clearState: true
-    # iOS: start in the walkthrough's language (the app follows the device)
-    arguments:
-      AppleLanguages: "(${LANG_CODE})"
-      # And that language's region, so numbers and dates look native
-      AppleLocale: "${LOCALE_ID}"
+# iOS: a fresh start in the walkthrough's language and region (the app
+# follows the device)
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - launchApp:
+          clearState: true
+          arguments:
+            AppleLanguages: "(${LANG_CODE})"
+            AppleLocale: "${LOCALE_ID}"
+# Android: run.sh already cleared the app's data and set its language
+# (clearing here would also reset the language)
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp
 - extendedWaitUntil:
     visible:
       id: "onboarding-next"

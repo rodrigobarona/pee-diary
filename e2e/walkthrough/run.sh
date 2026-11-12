@@ -7,8 +7,8 @@
 #   e2e/walkthrough/run.sh ios <simulator-udid>
 #
 # With LOCALE=pt or LOCALE=es it records in that language: on iOS the whole
-# walkthrough (videos and screenshots), on Android screenshots only (the demo
-# backup switches the app's language when it is restored).
+# walkthrough (videos and screenshots), on Android screenshots only (the app
+# starts in that language through Android's per-app language setting).
 # Output then goes to walkthrough-output/<platform>-<locale>/.
 #
 # With STORE=1 on Android the emulator screen is set to 1080 x 1920 (9:16)
@@ -28,11 +28,11 @@ OUT="$ROOT/walkthrough-output/$PLATFORM"
 FLOWS=(w1-onboarding.yaml w2-restore.yaml w3-browse.yaml w4-add.yaml w5-settings.yaml)
 # Words the flows tap, in the app's language
 case "$LOCALE" in
-  en) WORDS=(-e LANG_CODE=en -e LOCALE_ID=en_GB -e RESTORE=Restore -e MONTH=Month -e WEEK=Week -e LARGE=Large -e TEA=Tea -e DISCARD=Discard) ;;
+  en) LANG_CODE_ANDROID=en-GB; WORDS=(-e LANG_CODE=en -e LOCALE_ID=en_GB -e RESTORE=Restore -e MONTH=Month -e WEEK=Week -e LARGE=Large -e TEA=Tea -e DISCARD=Discard) ;;
   # Android starts in the device language (English) until the demo backup
   # switches it, so the restore button may still be in English
-  pt) WORDS=(-e LANG_CODE=pt-PT -e LOCALE_ID=pt_PT -e "RESTORE=Restaurar|Restore" -e MONTH=Mês -e WEEK=Semana -e LARGE=Grande -e TEA=Chá -e DISCARD=Descartar) ;;
-  es) WORDS=(-e LANG_CODE=es-ES -e LOCALE_ID=es_ES -e "RESTORE=Restaurar|Restore" -e MONTH=Mes -e WEEK=Semana -e LARGE=Grande -e TEA=Té -e DISCARD=Descartar) ;;
+  pt) LANG_CODE_ANDROID=pt-PT; WORDS=(-e LANG_CODE=pt-PT -e LOCALE_ID=pt_PT -e "RESTORE=Restaurar|Restore" -e MONTH=Mês -e WEEK=Semana -e LARGE=Grande -e TEA=Chá -e DISCARD=Descartar) ;;
+  es) LANG_CODE_ANDROID=es-ES; WORDS=(-e LANG_CODE=es-ES -e LOCALE_ID=es_ES -e "RESTORE=Restaurar|Restore" -e MONTH=Mes -e WEEK=Semana -e LARGE=Grande -e TEA=Té -e DISCARD=Descartar) ;;
   *) echo "LOCALE must be en, pt or es" >&2; exit 1 ;;
 esac
 if [ "$LOCALE" != en ]; then
@@ -68,6 +68,11 @@ case "$PLATFORM" in
     demo notifications -e visible false
     # 24-hour clock, as phones in Portugal and Spain (and the UK) use
     "$ADB" -s "$DEVICE" shell settings put system time_12_24 24
+    # A fresh install state in the walkthrough's language (per-app language,
+    # Android 13+); w1-onboarding launches without clearing again
+    "$ADB" -s "$DEVICE" shell pm clear care.eleva.peediary >/dev/null
+    "$ADB" -s "$DEVICE" shell cmd locale set-app-locales care.eleva.peediary \
+      --locales "${LANG_CODE_ANDROID:-en-GB}"
     if [ "${STORE:-}" = 1 ]; then
       "$ADB" -s "$DEVICE" shell wm size 1080x1920
       trap '"$ADB" -s "$DEVICE" shell wm size reset' EXIT

@@ -48,7 +48,9 @@ SCENES = [
         "pt": "Registe idas à casa de banho, bebidas e perdas",
         "es": "Apunta idas al baño, bebidas y pérdidas",
     }),
-    ("03-charts", "22-today-lower", {
+    # iOS records the weekly chart and summary cards in every language;
+    # Android's localized runs record the lower part of Today
+    ("03-charts", {"ios": "21-today-mid", "android": "22-today-lower"}, {
         "en": "Daily totals and simple charts",
         "pt": "Totais diários e gráficos simples",
         "es": "Totales diarios y gráficos sencillos",
@@ -224,6 +226,8 @@ def main() -> int:
             out_dir = OUT / store / lang
             out_dir.mkdir(parents=True, exist_ok=True)
             for scene, capture_name, captions in SCENES:
+                if isinstance(capture_name, dict):
+                    capture_name = capture_name[spec["platform"]]
                 capture = latest_capture(folder, capture_name)
                 if capture is None:
                     missing.append(f"{folder.name}/{capture_name}")
