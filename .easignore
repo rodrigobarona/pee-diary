@@ -1,0 +1,71 @@
+# EAS uploads only what a build needs. This file replaces .gitignore for EAS,
+# so it repeats it first.
+
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
+
+# generated native folders
+/ios
+/android
+
+# Vercel
+.vercel
+site/dist/
+
+# Walkthrough recordings (e2e/walkthrough/run.sh)
+walkthrough-output/
+
+# Store credentials (Google Play service account key)
+secrets/
+/store-screenshots
+
+# Not needed to build the app
+/_docs
+/_resources
+/reports
+/research_notes
+/e2e
+/__tests__
+/walkthrough-output
+/store-screenshots
+/.agents
+/.cursor
+/.vscode
+/README.md
