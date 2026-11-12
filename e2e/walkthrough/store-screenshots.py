@@ -7,7 +7,7 @@ the real screen in a phone frame, at a size each store accepts.
 
 Reads walkthrough-output/{ios,ios-pt,ios-es,android,android-pt,android-es}
 (the latest run of each; see run.sh) and writes
-store-screenshots/{apple,google}/{en,pt,es}/NN-scene.png (git-ignored).
+store-screenshots/{apple,google}/{en,pt,es}/NN-scene.png (committed, so the uploaded set is kept).
 
 - Apple: 1320 x 2868 (the 6.9" set; App Store Connect scales it to every
   smaller iPhone). Record on an iPhone 17 Pro Max simulator.

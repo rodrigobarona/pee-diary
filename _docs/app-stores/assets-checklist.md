@@ -71,7 +71,7 @@ Screenshots must show the actual app UI of the build being submitted.
 | 6.9" (iPhone 17 Pro Max)            | 1320 × 2868 px | 3-10 (required) |
 | 6.5" (scaled from 6.9" by Apple)    | 1284 × 2778 px | optional        |
 
-App Store Connect scales the 6.9" set down to every smaller iPhone; the 5.5" set is no longer required. Capture with `e2e/walkthrough/run.sh ios <iPhone 17 Pro Max UDID>`; then `python3 e2e/walkthrough/store-screenshots.py` writes the store files to `store-screenshots/` (captions from the overlay lines below).
+App Store Connect scales the 6.9" set down to every smaller iPhone; the 5.5" set is no longer required. Capture with `e2e/walkthrough/run.sh ios <iPhone 17 Pro Max UDID>`; then `python3 e2e/walkthrough/store-screenshots.py` writes the store files to `store-screenshots/` (committed) (captions from the overlay lines below).
 
 #### iPad
 

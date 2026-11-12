@@ -54,7 +54,6 @@ walkthrough-output/
 
 # Store credentials (Google Play service account key)
 secrets/
-/store-screenshots
 
 # Not needed to build the app
 /_docs
