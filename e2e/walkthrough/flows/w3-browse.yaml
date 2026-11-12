@@ -1,0 +1,68 @@
+# Chapter 3: Today with data, week and month charts, History, an entry
+# Needs -e DAY=<day of month> -e DAY_KEY=<yyyy-mm-dd> (the demo's second day)
+appId: care.eleva.peediary
+---
+- startRecording: 03-today-and-history
+- takeScreenshot: 20-today-top
+- scroll
+- takeScreenshot: 21-today-mid
+- scroll
+- takeScreenshot: 22-today-lower
+- scrollUntilVisible:
+    element:
+      text: "Month"
+    direction: UP
+- tapOn:
+    text: "Month"
+- waitForAnimationToEnd
+- takeScreenshot: 22b-today-month
+- tapOn:
+    text: "Week"
+- waitForAnimationToEnd
+- scroll
+- scroll
+- takeScreenshot: 23-today-bottom
+# The tab's label is a custom view on Android: tap the tab by position
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          point: "75%,93%"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "tab-history"
+- waitForAnimationToEnd
+- takeScreenshot: 30-history
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          text: "${DAY}"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "history-day-${DAY_KEY}"
+- waitForAnimationToEnd
+- takeScreenshot: 31-history-day
+- scrollUntilVisible:
+    element:
+      id: "entry-5a9a4b54-727a-4aa2-9c15-b854019f5d5a"
+    direction: DOWN
+- takeScreenshot: 32-history-day-entries
+- tapOn:
+    id: "entry-5a9a4b54-727a-4aa2-9c15-b854019f5d5a"
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: 33-entry-detail
+- runFlow: close-form.yaml
+- stopRecording

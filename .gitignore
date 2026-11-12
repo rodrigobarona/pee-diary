@@ -45,3 +45,6 @@ app-example
 # Vercel
 .vercel
 site/dist/
+
+# Walkthrough recordings (e2e/walkthrough/run.sh)
+walkthrough-output/

@@ -1,0 +1,15 @@
+appId: care.eleva.peediary
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: "50%,45%"
+          end: "50%,98%"
+- waitForAnimationToEnd

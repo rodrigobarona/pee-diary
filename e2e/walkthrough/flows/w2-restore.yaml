@@ -1,0 +1,74 @@
+# Chapter 2: Settings, restore the demo backup, back to Today
+appId: care.eleva.peediary
+---
+- startRecording: 02-restore-backup
+- tapOn:
+    id: "settings-button"
+- waitForAnimationToEnd
+- takeScreenshot: 10-settings-top
+- scrollUntilVisible:
+    element:
+      id: "settings-row-import-backup"
+    direction: DOWN
+- takeScreenshot: 11-settings-bottom
+- tapOn:
+    id: "settings-row-import-backup"
+- waitForAnimationToEnd
+- takeScreenshot: 12-import-confirm
+- tapOn:
+    text: "Restore|RESTORE"
+# Android's picker opens on Recent files: go to Downloads
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible: "Show roots"
+          timeout: 60000
+      - tapOn: "Show roots"
+      - tapOn: "Downloads"
+- extendedWaitUntil:
+    visible: ".*eleva-diary-demo-backup.*"
+    timeout: 60000
+- waitForAnimationToEnd
+- takeScreenshot: 13-picker
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "eleva-diary-demo-backup.json"
+      - runFlow:
+          when:
+            visible: "Select"
+          commands:
+            - tapOn: "Select"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: "eleva-diary-demo-backup.json, json.*"
+- extendedWaitUntil:
+    visible: "OK"
+    timeout: 60000
+- takeScreenshot: 14-import-success
+- tapOn:
+    text: "OK"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "settings-row-goals"
+    direction: UP
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          point: "8%,8%"
+- waitForAnimationToEnd
+- stopRecording

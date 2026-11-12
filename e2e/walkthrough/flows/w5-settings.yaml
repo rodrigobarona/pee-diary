@@ -1,0 +1,61 @@
+# Chapter 5: goals, language, reminders, export, medical information, legal
+appId: care.eleva.peediary
+---
+- startRecording: 05-settings
+- tapOn:
+    id: "settings-button"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "settings-row-goals"
+    direction: UP
+- tapOn:
+    id: "settings-row-goals"
+- waitForAnimationToEnd
+- takeScreenshot: 50-goals
+- runFlow: dismiss-sheet.yaml
+- tapOn:
+    id: "settings-row-language"
+- waitForAnimationToEnd
+- takeScreenshot: 51-language
+- runFlow: dismiss-sheet.yaml
+- tapOn:
+    id: "settings-row-reminders"
+- extendedWaitUntil:
+    visible: "Allow"
+    timeout: 10000
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 52-reminders-permission
+- tapOn:
+    text: "Allow"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 53-reminders-on
+- scrollUntilVisible:
+    element:
+      id: "settings-row-export"
+    direction: DOWN
+- tapOn:
+    id: "settings-row-export"
+- waitForAnimationToEnd
+- takeScreenshot: 54-export
+- runFlow: dismiss-sheet.yaml
+- scrollUntilVisible:
+    element:
+      id: "settings-row-medical-info"
+    direction: DOWN
+- tapOn:
+    id: "settings-row-medical-info"
+- waitForAnimationToEnd
+- takeScreenshot: 55-medical-info
+- tapOn:
+    text: "OK"
+    optional: true
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "settings-row-privacy-choices"
+    direction: DOWN
+- takeScreenshot: 56-settings-legal
+- stopRecording

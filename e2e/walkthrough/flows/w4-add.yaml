@@ -1,0 +1,93 @@
+# Chapter 4: add a urination and a drink, open the leak form and cancel
+appId: care.eleva.peediary
+---
+- startRecording: 04-add-entries
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          point: "25%,93%"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "tab-today"
+- waitForAnimationToEnd
+- tapOn:
+    id: "add-entry-button"
+- extendedWaitUntil:
+    visible:
+      id: "add-menu-leak"
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: 40-add-menu
+- tapOn:
+    id: "add-menu-urination"
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: 41-add-urination
+- tapOn:
+    text: "Large.*"
+    optional: true
+- tapOn:
+    text: "Moderate.*|3"
+    optional: true
+- takeScreenshot: 42-add-urination-filled
+- scroll
+- takeScreenshot: 43-add-urination-bottom
+- tapOn:
+    id: "form-save"
+- waitForAnimationToEnd
+- tapOn:
+    id: "add-entry-button"
+- extendedWaitUntil:
+    visible:
+      id: "add-menu-leak"
+    timeout: 10000
+- waitForAnimationToEnd
+- tapOn:
+    id: "add-menu-fluid"
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- tapOn:
+    text: "Tea.*"
+    optional: true
+- takeScreenshot: 44-add-fluid
+- tapOn:
+    id: "form-save"
+- waitForAnimationToEnd
+- tapOn:
+    id: "add-entry-button"
+- extendedWaitUntil:
+    visible:
+      id: "add-menu-leak"
+    timeout: 10000
+- waitForAnimationToEnd
+- tapOn:
+    id: "add-menu-leak"
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: 45-add-leak
+- scroll
+- takeScreenshot: 46-add-leak-bottom
+- runFlow: close-form.yaml
+- tapOn:
+    text: "Discard.*|DISCARD.*"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 47-today-after-adding
+- stopRecording

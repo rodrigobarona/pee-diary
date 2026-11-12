@@ -1,0 +1,26 @@
+# Chapter 1: first launch, the three onboarding pages, empty Today
+appId: care.eleva.peediary
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-next"
+    timeout: 90000
+- waitForAnimationToEnd
+- startRecording: 01-onboarding
+- takeScreenshot: 01-welcome
+- tapOn:
+    id: "onboarding-next"
+- waitForAnimationToEnd
+- takeScreenshot: 02-welcome-track
+- tapOn:
+    id: "onboarding-next"
+- waitForAnimationToEnd
+- takeScreenshot: 03-welcome-share
+- tapOn:
+    id: "onboarding-get-started"
+- waitForAnimationToEnd
+- runFlow: dismiss-launch-menu.yaml
+- takeScreenshot: 04-today-empty
+- stopRecording
