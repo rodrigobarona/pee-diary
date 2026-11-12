@@ -45,8 +45,15 @@ const entryConfig = {
 // Above this font scale the time moves above the card, so a fixed time
 // column never clips it
 const STACKED_FONT_SCALE = 1.35;
-// Time column wide enough for "12:30 AM" at the default size
+// Time column wide enough for "12:30 AM" at the default size, and wider for
+// longer 12-hour formats such as Spanish "12:30 p. m."
 const TIME_COLUMN_WIDTH = 64;
+const WIDE_TIME_COLUMN_WIDTH = 84;
+
+function timeColumnWidth(): number {
+  const longest = dateFormatters.time.format(new Date(2000, 0, 1, 12, 30));
+  return longest.length > 8 ? WIDE_TIME_COLUMN_WIDTH : TIME_COLUMN_WIDTH;
+}
 
 const capitalize = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
@@ -71,6 +78,7 @@ export function TimelineEntry({
   const config = entryConfig[entry.type];
   // The device's 12- or 24-hour clock
   const time = dateFormatters.time.format(parseISO(entry.timestamp));
+  const columnWidth = timeColumnWidth();
   const typeLabel = t(config.labelKey);
   const isEdited = (entry.editHistory?.length ?? 0) > 0;
 
@@ -137,7 +145,10 @@ export function TimelineEntry({
         // Large text: the time on its own line above the card
         showTime ? <View style={styles.stackedTime}>{timeText}</View> : null
       ) : (
-        <View style={styles.leftColumn} {...hiddenA11y}>
+        <View
+          style={[styles.leftColumn, { width: columnWidth + 12 }]}
+          {...hiddenA11y}
+        >
           {/* Top connector line (invisible placeholder when first) */}
           <View
             style={[styles.trackLineTop, isFirst && styles.trackLineHidden]}
@@ -145,7 +156,9 @@ export function TimelineEntry({
 
           {/* Time and dot on one line */}
           <View style={styles.timeAndDot}>
-            <View style={styles.timeColumn}>{showTime ? timeText : null}</View>
+            <View style={[styles.timeColumn, { width: columnWidth }]}>
+              {showTime ? timeText : null}
+            </View>
             <View style={[styles.trackDot, { backgroundColor: config.color }]} />
           </View>
 

@@ -181,5 +181,13 @@ appId: care.eleva.peediary
     visible:
       id: "onboarding-next"
     timeout: 10000
+# Known app issue: replayed after the language changed in the same session,
+# the onboarding can keep showing the previous language. If this screenshot
+# comes out in the wrong language, retake it after relaunching the app.
+- tapOn:
+    id: "onboarding-next"
+- waitForAnimationToEnd
+- tapOn:
+    id: "onboarding-back"
 - waitForAnimationToEnd
 - takeScreenshot: 01-welcome
