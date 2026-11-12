@@ -14,9 +14,9 @@ for locale in en pt es; do
   (cd "$HERE" && node --no-warnings --import ./register.mjs make.mjs "$TMP/backup-$locale.json" "$locale" "$TMP/report-$locale.html")
   "$CHROME" --headless --disable-gpu --no-pdf-header-footer \
     --print-to-pdf="$OUT/eleva-diary-sample-$locale.pdf" "file://$TMP/report-$locale.html" 2>/dev/null
-  # First page as an image: A4 landscape at 2x
+  # First page only (A4 landscape, 2x): the page height at this width is 711 px
   "$CHROME" --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=2 \
-    --window-size=1123,794 --screenshot="$OUT/eleva-diary-sample-$locale-page.png" \
+    --window-size=1123,711 --screenshot="$OUT/eleva-diary-sample-$locale-page.png" \
     "file://$TMP/report-$locale.html" 2>/dev/null
 done
 ls -la "$OUT"
