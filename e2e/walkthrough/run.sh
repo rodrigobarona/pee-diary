@@ -11,6 +11,11 @@
 # backup switches the app's language when it is restored).
 # Output then goes to walkthrough-output/<platform>-<locale>/.
 #
+# With STORE=1 on Android the emulator screen is set to 1080 x 1920 (9:16)
+# while recording, so the captures fit Google Play's screenshot rule (the long
+# side at most twice the short one); store-screenshots.py then frames them.
+# Record iOS store captures on an iPhone 17 Pro Max simulator (1320 x 2868).
+#
 # Needs Maestro (~/.maestro/bin/maestro), Python 3 and Pillow. Output goes to
 # walkthrough-output/<platform>/ (git-ignored).
 set -euo pipefail
@@ -59,6 +64,10 @@ case "$PLATFORM" in
     demo network -e wifi show -e level 4
     demo network -e mobile show -e datatype none -e level 4
     demo notifications -e visible false
+    if [ "${STORE:-}" = 1 ]; then
+      "$ADB" -s "$DEVICE" shell wm size 1080x1920
+      trap '"$ADB" -s "$DEVICE" shell wm size reset' EXIT
+    fi
     ;;
   ios)
     DEVICE=${2:?simulator UDID}

@@ -27,6 +27,18 @@ appId: care.eleva.peediary
           timeout: 60000
       - tapOn: "Show roots"
       - tapOn: "Downloads"
+# iOS on a simulator that never used Files opens on an empty Recents: browse
+# to On My iPhone, where run.sh put the backup
+- runFlow:
+    when:
+      platform: iOS
+      visible: "No Recents"
+    commands:
+      - tapOn: "Browse"
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "On My iPhone"
+          optional: true
 - extendedWaitUntil:
     visible: ".*eleva-diary-demo-backup.*"
     timeout: 60000
