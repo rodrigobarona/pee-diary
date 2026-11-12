@@ -9,7 +9,7 @@ The app, the store texts and the store images are ready in this repository. What
 
 ## 1. Before the first build (owner)
 
-- [ ] `eas login` with the Expo account that owns the `eleva-care` organisation (project id in `app.json`)
+- [ ] `npx eas-cli@latest login` (EAS is Expo's build and submit tool; `npx` runs it without installing, or install it once with `npm install -g eas-cli` and type `eas …`) with the Expo account that owns the `eleva-care` organisation (project id in `app.json`)
 - [ ] Apple Developer Program membership active for BÚZIOS E TARTARUGAS - LDA (organisation, D-U-N-S)
 - [ ] Google Play developer account of type **Organisation** for the same company, with its D-U-N-S number and organisation verification completed. A personal account opened after 13 November 2023 must first run a closed test with 12 testers for 14 days
 - [ ] A company phone number for the EU Digital Services Act trader details (both stores show it publicly in the EU)
@@ -21,11 +21,11 @@ The app, the store texts and the store images are ready in this repository. What
 ```bash
 pnpm install
 pnpm test && pnpm lint && pnpm exec tsc --noEmit && npx expo-doctor
-eas build --profile production --platform all
+npx eas-cli@latest build --profile production --platform all
 ```
 
 - iOS: let EAS create the distribution certificate and provisioning profile.
-- Android: let EAS create the upload keystore and keep a backup of it (`eas credentials`). Accept **Play App Signing** on the first upload.
+- Android: let EAS create the upload keystore and keep a backup of it (`npx eas-cli@latest credentials`). Accept **Play App Signing** on the first upload.
 
 ## 3. Test the store builds (owner, about one day)
 
@@ -50,7 +50,7 @@ eas build --profile production --platform all
 - [ ] Pricing and Availability: price **Free**, then the EU/EEA countries decided in step 1
 - [ ] Accessibility Nutrition Labels (optional): leave blank or answer honestly for the tested build
 - [ ] On the 1.0 version page, select the uploaded build. Export compliance needs no answers (`ITSAppUsesNonExemptEncryption` is false)
-- [ ] Submit with `eas submit --profile production --platform ios`, then "Add for Review"
+- [ ] Submit with `npx eas-cli@latest submit --profile production --platform ios`, then "Add for Review"
 
 ## 5. Google Play Console (owner)
 
@@ -60,7 +60,7 @@ eas build --profile production --platform all
 - [ ] App content: privacy policy, Ads (No), App access (all functionality without special access), content rating (IARC), target audience 18+, Data safety (No data collected / No data shared), Health apps (Health and fitness), Advertising ID (No: the app has no `AD_ID` permission), Financial features (none), Government app (no)
 - [ ] Countries: the EU/EEA list from step 1
 - [ ] Upload the first EAS `.aab` by hand: Testing > Internal testing > Create release, and enrol in **Play App Signing** there (the Play API cannot create an app's first release)
-- [ ] Service account key with release permission saved as `secrets/play-service-account.json` (git-ignored); after the first manual upload, `eas submit --profile production --platform android` sends builds to the internal track as drafts
+- [ ] Service account key with release permission saved as `secrets/play-service-account.json` (git-ignored); after the first manual upload, `npx eas-cli@latest submit --profile production --platform android` sends builds to the internal track as drafts
 - [ ] Promote internal → production when the internal test passes; release notes from `apple/release-notes-templates.md` (1.0.0, Google Play)
 
 ## 6. After both are live

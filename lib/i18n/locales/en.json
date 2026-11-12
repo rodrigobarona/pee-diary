@@ -260,7 +260,8 @@
     "changedTo": "to",
     "deleteConfirm": "Are you sure you want to delete this entry?",
     "update": "Update",
-    "notFound": "This entry is no longer in your diary."
+    "notFound": "This entry is no longer in your diary.",
+    "deleteEntry": "Delete Entry"
   },
   "export": {
     "title": "Export Data",
@@ -458,7 +459,7 @@
       "dayHint": "Opens this day in History",
       "trendUp": "{{value}} more than the previous period",
       "trendDown": "{{value}} less than the previous period",
-      "daysOf": "{{count}} of {{total}} days",
+      "daysOf": "{{count}} of {{total}} days with entries",
       "statFluids": "{{label}}, {{value}} millilitres"
     }
   },

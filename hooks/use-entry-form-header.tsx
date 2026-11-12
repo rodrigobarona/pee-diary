@@ -86,7 +86,11 @@ export function useEntryFormHeader({
         ),
       headerRight: () => (
         <View style={styles.actions}>
-          {onDelete ? (
+          {/* Android: the bin in the top app bar (Material). iOS: a
+              "Delete Entry" button at the end of the form (deleteEntry
+              below), as Contacts and Calendar do, so the bar keeps only
+              Cancel, the title and the save action. */}
+          {onDelete && Platform.OS !== "ios" ? (
             <HeaderIconButton
               icon="trash-can-outline"
               label={t("common.delete")}
@@ -106,7 +110,7 @@ export function useEntryFormHeader({
     });
   }, [navigation, router, t, title, saveLabel, handleSave, handleDelete, onDelete]);
 
-  return { close };
+  return { close, deleteEntry: onDelete ? handleDelete : undefined };
 }
 
 // iOS: an action sheet with a destructive "Discard Changes" (HIG, Sheets);

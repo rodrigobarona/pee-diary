@@ -10,9 +10,34 @@ import {
   type WeekStartsOn,
 } from './device-format';
 
-import en from './locales/en.json';
+import { Platform } from 'react-native';
+
+import enBase from './locales/en.json';
+import enAndroid from './locales/en.android.json';
 import es from './locales/es.json';
 import pt from './locales/pt.json';
+
+type Strings = { [key: string]: string | Strings };
+
+// Fills `base` with `overrides`, key by key
+const mergeStrings = (base: Strings, overrides: Strings): Strings => {
+  const merged: Strings = { ...base };
+  for (const [key, value] of Object.entries(overrides)) {
+    const current = merged[key];
+    merged[key] =
+      typeof value === 'object' && typeof current === 'object'
+        ? mergeStrings(current, value)
+        : value;
+  }
+  return merged;
+};
+
+// English titles and buttons follow each platform: Title Case on iOS (HIG),
+// sentence case on Android (Material 3). Names the legal documents quote
+// (Clear All Data, Export Backup File, Get Started, Delete...) are not
+// overridden, so the documents match both apps.
+const en =
+  Platform.OS === 'android' ? mergeStrings(enBase as Strings, enAndroid) : enBase;
 
 // Initialize i18n
 const i18n = new I18n({

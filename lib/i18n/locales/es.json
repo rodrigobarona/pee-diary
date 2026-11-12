@@ -260,7 +260,8 @@
     "changedTo": "a",
     "deleteConfirm": "¿Seguro que quieres eliminar este registro?",
     "update": "Actualizar",
-    "notFound": "Este registro ya no está en tu diario."
+    "notFound": "Este registro ya no está en tu diario.",
+    "deleteEntry": "Eliminar registro"
   },
   "export": {
     "title": "Exportar datos",
@@ -458,7 +459,7 @@
       "dayHint": "Abre este día en el historial",
       "trendUp": "{{value}} más que en el periodo anterior",
       "trendDown": "{{value}} menos que en el periodo anterior",
-      "daysOf": "{{count}} de {{total}} días",
+      "daysOf": "{{count}} de {{total}} días con registros",
       "statFluids": "{{label}}, {{value}} mililitros"
     }
   },

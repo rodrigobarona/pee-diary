@@ -1,0 +1,79 @@
+{
+  "common": {
+    "discardChanges": "Discard changes",
+    "keepEditing": "Keep editing"
+  },
+  "home": {
+    "editGoals": "Edit fluid target",
+    "addNew": "Add new entry"
+  },
+  "insights": {
+    "thisWeek": "This week"
+  },
+  "goals": {
+    "title": "Fluid target",
+    "fluidTarget": "Fluid intake",
+    "history": "Target history"
+  },
+  "timePeriod": {
+    "earlyMorning": "Early hours"
+  },
+  "add": {
+    "title": "Add entry",
+    "urination": "Bathroom visit"
+  },
+  "entry": {
+    "addUrination": "Log bathroom visit",
+    "addFluid": "Log drink",
+    "addLeak": "Log leak"
+  },
+  "urination": {
+    "title": "Log bathroom visit",
+    "urgency": "Urgency level"
+  },
+  "fluid": {
+    "title": "Log drink",
+    "drinkType": "Drink type"
+  },
+  "leak": {
+    "title": "Log leak",
+    "urgency": "Urgency level"
+  },
+  "settings": {
+    "editGoals": "Edit fluid target",
+    "openAddMenuOnLaunch": "Open add menu on launch",
+    "viewTutorial": "View tutorial",
+    "remindersEnabled": "Enable reminders",
+    "reminderInterval": "Reminder interval",
+    "quietHoursEnabled": "Enable quiet hours",
+    "permissionRequired": "Permission required"
+  },
+  "detail": {
+    "editEntry": "Edit entry",
+    "editUrination": "Edit bathroom visit",
+    "editFluid": "Edit drink",
+    "editLeak": "Edit leak",
+    "editHistory": "Edit history",
+    "deleteEntry": "Delete entry"
+  },
+  "export": {
+    "dateRange": "Date range",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "customRange": "Custom range"
+  },
+  "error": {
+    "tryAgain": "Try again",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
+    "startNew": "Start a new diary"
+  },
+  "onboarding": {
+    "track": {
+      "title": "Easy logging"
+    },
+    "share": {
+      "title": "Share your diary"
+    }
+  }
+}

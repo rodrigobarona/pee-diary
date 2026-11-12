@@ -260,7 +260,8 @@
     "changedTo": "para",
     "deleteConfirm": "Tem a certeza de que pretende eliminar este registo?",
     "update": "Atualizar",
-    "notFound": "Este registo já não está no seu diário."
+    "notFound": "Este registo já não está no seu diário.",
+    "deleteEntry": "Eliminar registo"
   },
   "export": {
     "title": "Exportar dados",
@@ -458,7 +459,7 @@
       "dayHint": "Abre este dia no histórico",
       "trendUp": "mais {{value}} do que no período anterior",
       "trendDown": "menos {{value}} do que no período anterior",
-      "daysOf": "{{count}} de {{total}} dias",
+      "daysOf": "{{count}} de {{total}} dias com registos",
       "statFluids": "{{label}}, {{value}} mililitros"
     }
   },

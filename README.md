@@ -63,7 +63,7 @@ pnpm start
 
 - **iOS Simulator**: Press `i` in the terminal
 - **Android Emulator**: Press `a` in the terminal
-- **Physical Device**: a development build (`eas build --profile development`); the app uses native modules that Expo Go may not include
+- **Physical Device**: a development build (`npx eas-cli@latest build --profile development`); the app uses native modules that Expo Go may not include
 
 ### Tests and checks
 
@@ -77,9 +77,9 @@ npx expo-doctor
 ### Store builds
 
 ```bash
-eas build --profile production --platform all   # App Store and Google Play builds
-eas submit --profile production --platform ios
-eas submit --profile production --platform android  # needs secrets/play-service-account.json
+npx eas-cli@latest build --profile production --platform all   # App Store and Google Play builds
+npx eas-cli@latest submit --profile production --platform ios
+npx eas-cli@latest submit --profile production --platform android  # needs secrets/play-service-account.json
 ```
 
 Store screenshots: `e2e/walkthrough/run.sh` records the app on a simulator or emulator, and `e2e/walkthrough/store-screenshots.py` turns the captures into the sizes each store accepts (see `_docs/app-stores/assets-checklist.md`).

@@ -1,7 +1,7 @@
 import { parseISO } from "date-fns";
 import { useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, StyleSheet, View } from "react-native";
 
 import {
   AmountPicker,
@@ -239,8 +239,9 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     return true;
   };
 
-  // The bin icon in the header; the legal documents describe deleting an
-  // entry as "tap the bin icon and confirm with Delete".
+  // The bin icon (top app bar on Android, the button at the end of the form
+  // on iOS); the legal documents describe deleting an entry as "tap the bin
+  // icon and confirm with Delete".
   const handleDelete = (close: () => void) => {
     Alert.alert(t("common.delete"), t("detail.deleteConfirm"), [
       { text: t("common.cancel"), style: "cancel" },
@@ -256,7 +257,7 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     ]);
   };
 
-  useEntryFormHeader({
+  const { deleteEntry: requestDelete } = useEntryFormHeader({
     title: t(TITLE_KEYS[entry.type]),
     saveLabel: t("detail.update"),
     onSave: handleUpdate,
@@ -501,6 +502,23 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
           ) : null}
         </View>
       ) : null}
+      {/* iOS: delete at the end of the form, in red with the bin icon */}
+      {Platform.OS === "ios" && requestDelete ? (
+        <AnimatedPressable
+          onPress={requestDelete}
+          feedback="highlight"
+          highlightColor={colors.highlight}
+          accessibilityRole="button"
+          accessibilityLabel={t("detail.deleteEntry")}
+          style={styles.deleteButton}
+          testID="form-delete"
+        >
+          <Icon name="trash-can-outline" size={20} color={colors.destructive} />
+          <Text variant="body" style={styles.deleteText}>
+            {t("detail.deleteEntry")}
+          </Text>
+        </AnimatedPressable>
+      ) : null}
     </FormScrollView>
   );
 }
@@ -550,6 +568,19 @@ const styles = StyleSheet.create({
   },
   historyChangeKey: {
     fontWeight: "500",
+  },
+  deleteButton: {
+    ...cardStyle,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingVertical: spacing.md,
+    overflow: "hidden",
+  },
+  deleteText: {
+    color: colors.destructive,
   },
   fieldLabel: {
     marginTop: spacing.xs,

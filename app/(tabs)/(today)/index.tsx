@@ -297,7 +297,8 @@ export default function HomeScreen() {
       avgVoids: Math.round(thisWeekAvgVoids * 10) / 10,
       avgFluids: Math.round(thisWeekAvgFluids),
       fluidGoalDays,
-      totalDays: 7,
+      // Out of the days with entries, like the averages beside it
+      totalDays: daysWithEntries.length,
       voidTrend: hasPrevious ? voidTrend : undefined,
       fluidTrend: hasPrevious ? fluidTrend : undefined,
       voidDiff:
@@ -428,7 +429,7 @@ export default function HomeScreen() {
       avgVoids: Math.round(thisMonthAvgVoids * 10) / 10,
       avgFluids: Math.round(thisMonthAvgFluids),
       fluidGoalDays,
-      totalDays: 30,
+      totalDays: daysWithEntries.length,
       voidTrend: hasPrevious ? voidTrend : undefined,
       fluidTrend: hasPrevious ? fluidTrend : undefined,
       voidDiff:
