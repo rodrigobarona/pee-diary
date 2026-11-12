@@ -31,8 +31,11 @@ OUT = ROOT / "store-screenshots"
 FONTS = HERE / "fonts"
 
 STORES = {
-    "apple": {"platform": "ios", "size": (1320, 2868)},
-    "google": {"platform": "android", "size": (1080, 1920)},
+    # corner: the frame's corner radius as a share of the phone's width.
+    # Android draws its clock in the screen's corner, so a rounder frame
+    # would cut it.
+    "apple": {"platform": "ios", "size": (1320, 2868), "corner": 0.12},
+    "google": {"platform": "android", "size": (1080, 1920), "corner": 0.06},
 }
 
 # Scene: capture name and caption per language. Every capture is recorded in
@@ -48,9 +51,9 @@ SCENES = [
         "pt": "Registe idas à casa de banho, bebidas e perdas",
         "es": "Apunta idas al baño, bebidas y pérdidas",
     }),
-    # iOS records the weekly chart and summary cards in every language;
-    # Android's localized runs record the lower part of Today
-    ("03-charts", {"ios": "21-today-mid", "android": "22-today-lower"}, {
+    # The weekly chart and summary cards: iOS scrolls there in every run;
+    # Android (a shorter 9:16 screen) centres the cards (21b)
+    ("03-charts", {"ios": "21-today-mid", "android": "21b-today-summary"}, {
         "en": "Daily totals and simple charts",
         "pt": "Totais diários e gráficos simples",
         "es": "Totales diarios y gráficos sencillos",
@@ -97,7 +100,9 @@ def wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
     return lines
 
 
-def compose(capture: Path, caption: str, size: tuple[int, int]) -> Image.Image:
+def compose(
+    capture: Path, caption: str, size: tuple[int, int], corner: float = 0.12
+) -> Image.Image:
     width, height = size
     canvas = Image.new("RGB", size, TEAL)
     # Vertical gradient, darker at the top behind the caption
@@ -127,17 +132,22 @@ def compose(capture: Path, caption: str, size: tuple[int, int]) -> Image.Image:
         )
     caption_bottom = top + len(lines) * line_height
 
-    # Phone: the capture in a dark rounded frame, bleeding off the bottom
+    # Phone: the capture in a dark rounded frame, fitted below the caption
     screen = Image.open(capture).convert("RGB")
     phone_top = caption_bottom + round(height * 0.035)
-    phone_width = round(width * 0.80)
+    # As wide as 80% of the canvas, but never taller than the space left, so
+    # the whole phone shows whatever the caption's length
+    available = height - phone_top - round(height * 0.03)
+    phone_width = min(
+        round(width * 0.80), round(available * screen.width / screen.height * 0.97)
+    )
     bezel = round(phone_width * 0.028)
     screen_width = phone_width - 2 * bezel
     screen_height = round(screen.height * screen_width / screen.width)
     screen = screen.resize((screen_width, screen_height), Image.LANCZOS)
     phone_height = screen_height + 2 * bezel
     phone_left = (width - phone_width) // 2
-    radius = round(phone_width * 0.12)
+    radius = round(phone_width * corner)
 
     shadow = Image.new("L", size, 0)
     ImageDraw.Draw(shadow).rounded_rectangle(
@@ -207,12 +217,12 @@ def feature_graphic(capture: Path, lang: str) -> Image.Image:
     phone_left, phone_top = 650, 60
     draw.rounded_rectangle(
         (phone_left, phone_top, phone_left + phone_width, phone_top + screen.height + 2 * bezel),
-        40,
+        22,
         fill=BEZEL,
     )
     mask = Image.new("L", screen.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle(
-        (0, 0, screen.width, screen.height), 32, fill=255
+        (0, 0, screen.width, screen.height), 14, fill=255
     )
     canvas.paste(screen, (phone_left + bezel, phone_top + bezel), mask)
     return canvas
@@ -232,7 +242,7 @@ def main() -> int:
                 if capture is None:
                     missing.append(f"{folder.name}/{capture_name}")
                     continue
-                image = compose(capture, captions[lang], spec["size"])
+                image = compose(capture, captions[lang], spec["size"], spec["corner"])
                 assert image.size == spec["size"]
                 image.save(out_dir / f"{scene}.png", optimize=True)
     for lang in ("en", "pt", "es"):

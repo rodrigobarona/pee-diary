@@ -13,7 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { Alert, LogBox, Platform } from "react-native";
+import { ActivityIndicator, Alert, LogBox, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
@@ -71,11 +71,20 @@ function InnerLayout() {
   const hasCheckedLaunchRef = useRef(false);
 
   // A save failed (storage full, say): tell the user once
+  const isShowingSaveAlertRef = useRef(false);
   useEffect(() => {
-    if (!saveFailed) return;
-    Alert.alert(t("error.saveFailedTitle"), t("error.saveFailedDescription"), [
-      { text: "OK", onPress: acknowledgeSaveFailure },
-    ]);
+    if (!saveFailed || isShowingSaveAlertRef.current) return;
+    isShowingSaveAlertRef.current = true;
+    const done = () => {
+      isShowingSaveAlertRef.current = false;
+      acknowledgeSaveFailure();
+    };
+    Alert.alert(
+      t("error.saveFailedTitle"),
+      t("error.saveFailedDescription"),
+      [{ text: t("common.ok"), onPress: done }],
+      { onDismiss: done }
+    );
   }, [saveFailed, t]);
 
   // Reschedule reminders at launch, on return to the app and on changes
@@ -126,7 +135,11 @@ function InnerLayout() {
       <>
         <LoadFailedScreen
           onRetry={() => void retryStoreLoad()}
-          onStartNew={() => void startNewDiaryAfterLoadFailure()}
+          onStartNew={() => {
+            startNewDiaryAfterLoadFailure().catch(() => {
+              Alert.alert(t("error.loadFailedTitle"), t("error.startNewFailed"));
+            });
+          }}
         />
         <StatusBar style="dark" />
       </>
@@ -237,9 +250,24 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError, diaryReady]);
 
-  // Don't render until fonts are loaded and the diary has been read
-  if ((!fontsLoaded && !fontError) || !diaryReady) {
+  // Don't render until fonts are loaded and the diary has been read (the
+  // splash covers this at launch; a reload after Try Again shows a spinner)
+  if (!fontsLoaded && !fontError) {
     return null;
+  }
+  if (!diaryReady) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: navigationTheme.colors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={navigationTheme.colors.primary} />
+      </View>
+    );
   }
 
   return (

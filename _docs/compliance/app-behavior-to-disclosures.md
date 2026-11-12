@@ -82,7 +82,7 @@ Store descriptions use the same texts; the English store text reads "...does not
 
 ### What the app stores on the device
 
-All in AsyncStorage (key `pee-diary-storage`) in the app's private storage. The app adds no encryption of its own; the phone's own storage encryption protects it when the user has a passcode, PIN or screen lock.
+All in AsyncStorage (key `pee-diary-storage`) in the app's private storage. A recovery copy (key `pee-diary-storage.recovery`, at most three records) also stays on the phone when saved data cannot be read, fails validation or comes from a newer app version, or when the user chooses "Start a New Diary" after a load failure; it is never sent anywhere and Clear All Data deletes it. The app adds no encryption of its own; the phone's own storage encryption protects it when the user has a passcode, PIN or screen lock.
 
 | Data | Details | Leaves the device? |
 | ---- | ------- | ------------------ |
@@ -125,7 +125,7 @@ Local notifications scheduled on the device. The app asks for notification permi
 | Action | Effect |
 | ------ | ------ |
 | Delete an entry | Open the entry, tap Delete, confirm |
-| Clear All Data | Deletes entries, the fluid goal and its history, the streak, reminder settings, the launch preference and export/backup files; cancels reminders. Keeps the language and the completed onboarding. Confirm by typing DELETE. |
+| Clear All Data | Deletes entries, the fluid target and its history, the streak, reminder settings, the launch preference, any recovery copy and export/backup files; cancels reminders. Keeps the language and the completed onboarding. Confirm by typing DELETE. |
 | Uninstall | Removes the app's data from the phone. On Android, the last backup stays in the user's Google account until the user deletes it there or Google removes it under its own rules, and reinstalling can restore the diary from it. On iOS, no device backup holds the diary; only an exported backup file can bring it back |
 
 ### Operating-system backups (not app features)

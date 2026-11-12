@@ -55,17 +55,26 @@ export function createDiaryStorage(
     }
   }
 
+  /** Adds a recovery copy; throws if it cannot be written. */
+  async function writeRecoveryCopy(
+    record: Omit<RecoveryRecord, "savedAt">
+  ): Promise<string> {
+    const savedAt = new Date().toISOString();
+    const records = await readRecoveryCopies();
+    records.push({ savedAt, ...record });
+    await strings.setItem(
+      RECOVERY_KEY,
+      JSON.stringify(records.slice(-MAX_RECOVERY_RECORDS))
+    );
+    return savedAt;
+  }
+
   /** Adds a recovery copy. Best effort: it never throws. */
   async function saveRecoveryCopy(
     record: Omit<RecoveryRecord, "savedAt">
   ): Promise<void> {
     try {
-      const records = await readRecoveryCopies();
-      records.push({ savedAt: new Date().toISOString(), ...record });
-      await strings.setItem(
-        RECOVERY_KEY,
-        JSON.stringify(records.slice(-MAX_RECOVERY_RECORDS))
-      );
+      await writeRecoveryCopy(record);
     } catch {
       // Nothing else to do: the saved diary itself is left untouched.
     }
@@ -118,8 +127,9 @@ export function createDiaryStorage(
     /**
      * Moves the saved diary's raw keys (the manifest and every chunk, even
      * when some are missing) into a recovery copy and removes them, so the
-     * next read starts an empty diary. For "Start a new diary" after a
-     * load failure; nothing is discarded.
+     * next read starts an empty diary. For "Start a New Diary" after a
+     * load failure; nothing is discarded. Throws, leaving the diary as it
+     * was, if the copy cannot be written and read back.
      */
     async moveSavedToRecovery(): Promise<void> {
       const keys = store.getAllKeys
@@ -130,10 +140,15 @@ export function createDiaryStorage(
           )
         : [STORE_NAME];
       const pairs = await store.multiGet(keys);
-      await saveRecoveryCopy({
-        reason: "unreadable",
-        data: Object.fromEntries(pairs),
-      });
+      const data = Object.fromEntries(pairs);
+      const savedAt = await writeRecoveryCopy({ reason: "unreadable", data });
+      // Remove the diary only once its copy has been read back
+      const kept = (await readRecoveryCopies()).find(
+        (record) => record.savedAt === savedAt
+      );
+      if (!kept || JSON.stringify(kept.data) !== JSON.stringify(data)) {
+        throw new Error("The recovery copy could not be confirmed");
+      }
       await store.multiRemove(keys);
       readFailed = false;
     },

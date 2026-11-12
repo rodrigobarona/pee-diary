@@ -11,7 +11,7 @@ The app, the store texts and the store images are ready in this repository. What
 
 - [ ] `eas login` with the Expo account that owns the `eleva-care` organisation (project id in `app.json`)
 - [ ] Apple Developer Program membership active for BÚZIOS E TARTARUGAS - LDA (organisation, D-U-N-S)
-- [ ] Google Play developer account of type **Organisation** for the same company. A personal account opened after 13 November 2023 must first run a closed test with 12 testers for 14 days
+- [ ] Google Play developer account of type **Organisation** for the same company, with its D-U-N-S number and organisation verification completed. A personal account opened after 13 November 2023 must first run a closed test with 12 testers for 14 days
 - [ ] A company phone number for the EU Digital Services Act trader details (both stores show it publicly in the EU)
 - [ ] Portuguese lawyer's sign-off on the role wording, the liability clause and the governing-law clause (`_docs/compliance/app-behavior-to-disclosures.md`, owner actions)
 - [ ] Decide the list of EU/EEA countries (both stores)
@@ -57,8 +57,9 @@ eas build --profile production --platform all
 - [ ] Developer account: trader status (DSA) with the same details
 - [ ] Create app "Eleva Diary", default language English (United Kingdom), free, app
 - [ ] Store listings en-GB, es-ES, pt-PT from `google/metadata.*.md`; icon `google/play-icon-512.png`; feature graphic and phone screenshots from `store-screenshots/google/{en,pt,es}/`
-- [ ] App content: privacy policy, Ads (No), App access (all functionality without special access), content rating (IARC), target audience 18+, Data safety (No data collected / No data shared), Health apps (Health and fitness), Financial features (none), Government app (no)
+- [ ] App content: privacy policy, Ads (No), App access (all functionality without special access), content rating (IARC), target audience 18+, Data safety (No data collected / No data shared), Health apps (Health and fitness), Advertising ID (No: the app has no `AD_ID` permission), Financial features (none), Government app (no)
 - [ ] Countries: the EU/EEA list from step 1
+- [ ] Upload the first EAS `.aab` by hand: Testing > Internal testing > Create release, and enrol in **Play App Signing** there (the Play API cannot create an app's first release)
 - [ ] Service account key with release permission saved as `secrets/play-service-account.json` (git-ignored); after the first manual upload, `eas submit --profile production --platform android` sends builds to the internal track as drafts
 - [ ] Promote internal → production when the internal test passes; release notes from `apple/release-notes-templates.md` (1.0.0, Google Play)
 

@@ -8,6 +8,17 @@ appId: care.eleva.peediary
 - takeScreenshot: 21-today-mid
 - scroll
 - takeScreenshot: 22-today-lower
+# Android (9:16 store captures): the weekly chart and the summary cards
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "today-insight-cards"
+          direction: DOWN
+          centerElement: true
+      - takeScreenshot: 21b-today-summary
 - scrollUntilVisible:
     element:
       text: "${MONTH}"

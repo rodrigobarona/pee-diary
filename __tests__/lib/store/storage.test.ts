@@ -202,3 +202,58 @@ it("uses the AsyncStorage API the app depends on", () => {
     expect(typeof (AsyncStorage as unknown as Record<string, unknown>)[method]).toBe("function");
   }
 });
+
+describe("load failure safeguards", () => {
+  const NAME = "pee-diary-storage";
+  // A saved diary whose manifest names a chunk that is missing
+  const brokenDiary = () => {
+    const store = createStore();
+    store.data.set(NAME, JSON.stringify({ __elevaChunked: 1, generation: 1, count: 2 }));
+    store.data.set(`${NAME}.g1.0`, '{"state":');
+    return store;
+  };
+
+  it("starts a new diary only after keeping the unreadable one as a recovery copy", async () => {
+    const store = brokenDiary();
+    const diary = createDiaryStorage(store);
+    await expect(diary.storage.getItem(NAME)).rejects.toThrow();
+
+    await diary.moveSavedToRecovery();
+
+    expect(store.data.has(NAME)).toBe(false);
+    expect(store.data.has(`${NAME}.g1.0`)).toBe(false);
+    expect(await diary.storage.getItem(NAME)).toBeNull();
+    const [copy] = await diary.readRecoveryCopies();
+    expect(copy.reason).toBe("unreadable");
+    expect(copy.data).toEqual({
+      [NAME]: JSON.stringify({ __elevaChunked: 1, generation: 1, count: 2 }),
+      [`${NAME}.g1.0`]: '{"state":',
+    });
+    // Saving works again
+    await diary.storage.setItem(NAME, { state: {} as never, version: 1 });
+    expect(store.data.has(NAME)).toBe(true);
+  });
+
+  it("keeps the diary when the recovery copy cannot be written", async () => {
+    const store = brokenDiary();
+    const diary = createDiaryStorage(store);
+    (store.multiSet as jest.Mock).mockRejectedValueOnce(new Error("disk full"));
+
+    await expect(diary.moveSavedToRecovery()).rejects.toThrow();
+
+    expect(store.data.has(NAME)).toBe(true);
+    expect(store.data.has(`${NAME}.g1.0`)).toBe(true);
+  });
+
+  it("reports a failed save instead of losing it silently", async () => {
+    const store = createStore();
+    const onWriteError = jest.fn();
+    const diary = createDiaryStorage(store, { onWriteError });
+    await diary.storage.getItem(NAME);
+    (store.multiSet as jest.Mock).mockRejectedValueOnce(new Error("disk full"));
+
+    await diary.storage.setItem(NAME, { state: {} as never, version: 1 });
+
+    expect(onWriteError).toHaveBeenCalledTimes(1);
+  });
+});

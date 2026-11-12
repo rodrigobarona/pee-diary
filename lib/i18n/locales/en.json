@@ -15,7 +15,8 @@
     "discard": "Discard",
     "discardChanges": "Discard Changes",
     "discardChangesTitle": "Discard changes?",
-    "keepEditing": "Keep Editing"
+    "keepEditing": "Keep Editing",
+    "ok": "OK"
   },
   "tabs": {
     "home": "Today",
@@ -117,7 +118,8 @@
     "urgency": "Urgency Level",
     "hadLeak": "Any leakage?",
     "hadPain": "Any pain or discomfort?",
-    "notes": "Notes"
+    "notes": "Notes",
+    "exactAmount": "Exact amount (optional)"
   },
   "fluid": {
     "title": "Log Drink",
@@ -299,7 +301,8 @@
     "saveFailedTitle": "Couldn't save your diary",
     "saveFailedDescription": "Your latest changes may not be kept after the app closes. Free up some space on your phone, then make the change again.",
     "startNew": "Start a New Diary",
-    "startNewConfirm": "The diary that can't be read is kept on this phone as a recovery copy, which support@eleva.care can help with. Start a new, empty diary?"
+    "startNewConfirm": "The diary that can't be read stays on this phone as a recovery copy; it is not deleted. Start a new, empty diary?",
+    "startNewFailed": "Couldn't keep a copy of the diary, so nothing was changed. Try again later."
   },
   "onboarding": {
     "welcome": {

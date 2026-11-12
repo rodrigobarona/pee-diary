@@ -17,7 +17,7 @@ import Svg, {
 
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Text } from "@/components/ui/text";
-import { dateFormatters } from "@/lib/i18n";
+import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
 import { cardStyle, spacing } from "@/lib/theme/styles";
@@ -112,7 +112,7 @@ export function FluidBalanceChart({
           <Text variant="footnote" tone="secondary" style={styles.centered}>
             {t("insights.fluidIntake")}
           </Text>
-          <Text variant="headline">{totalIntake} ml</Text>
+          <Text variant="headline">{numberFormatters.decimal.format(totalIntake)} ml</Text>
         </View>
         <View
           style={styles.summaryItem}
@@ -131,7 +131,7 @@ export function FluidBalanceChart({
           <Text variant="footnote" tone="secondary" style={styles.centered}>
             {t("insights.urinationOutput")}
           </Text>
-          <Text variant="headline">{totalOutput} ml</Text>
+          <Text variant="headline">{numberFormatters.decimal.format(totalOutput)} ml</Text>
         </View>
       </View>
 

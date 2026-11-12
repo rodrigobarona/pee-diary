@@ -15,7 +15,8 @@
     "discard": "Descartar",
     "discardChanges": "Descartar cambios",
     "discardChangesTitle": "¿Descartar los cambios?",
-    "keepEditing": "Seguir editando"
+    "keepEditing": "Seguir editando",
+    "ok": "Aceptar"
   },
   "tabs": {
     "home": "Hoy",
@@ -117,7 +118,8 @@
     "urgency": "Nivel de urgencia",
     "hadLeak": "¿Hubo alguna pérdida?",
     "hadPain": "¿Has notado dolor o molestias?",
-    "notes": "Notas"
+    "notes": "Notas",
+    "exactAmount": "Cantidad exacta (opcional)"
   },
   "fluid": {
     "title": "Registrar bebida",
@@ -299,7 +301,8 @@
     "saveFailedTitle": "No se ha podido guardar tu diario",
     "saveFailedDescription": "Es posible que los últimos cambios se pierdan al cerrar la aplicación. Libera espacio en el móvil y vuelve a hacer el cambio.",
     "startNew": "Empezar un diario nuevo",
-    "startNewConfirm": "El diario que no se puede leer se queda en este móvil como copia de recuperación, con la que support@eleva.care puede ayudarte. ¿Empezar un diario nuevo y vacío?"
+    "startNewConfirm": "El diario que no se puede leer se queda en este móvil como copia de recuperación y no se borra. ¿Empezar un diario nuevo y vacío?",
+    "startNewFailed": "No se ha podido guardar una copia del diario, así que no se ha cambiado nada. Inténtalo más tarde."
   },
   "onboarding": {
     "welcome": {

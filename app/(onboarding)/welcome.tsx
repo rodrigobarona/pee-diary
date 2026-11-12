@@ -167,12 +167,17 @@ function CTAButton({
 function IconCluster({
   icons,
   accentColor,
+  compact,
 }: {
   icons: OnboardingPage["icons"];
   accentColor: string;
+  compact: boolean;
 }) {
   return (
-    <View style={styles.iconCluster} {...hiddenA11y}>
+    <View
+      style={[styles.iconCluster, compact ? styles.iconClusterCompact : undefined]}
+      {...hiddenA11y}
+    >
       {icons.map((icon, idx) => (
         <View
           key={idx}
@@ -212,6 +217,10 @@ function OnboardingPageContent({
   pageWidth: number;
 }) {
   const { t } = useI18n();
+  // Short screens (a 16:9 phone, or large text): a smaller illustration, so
+  // the last page's medical notice fits above the buttons
+  const { height: windowHeight, fontScale } = useWindowDimensions();
+  const compact = windowHeight / Math.max(fontScale, 1) < 800;
 
   const inputRange = [
     (index - 1) * pageWidth,
@@ -326,12 +335,19 @@ function OnboardingPageContent({
     <ScrollView
       style={[styles.page, { width: pageWidth }]}
       contentContainerStyle={styles.pageScrollContent}
-      showsVerticalScrollIndicator={false}
+      // The page with the medical notice shows its scroll bar (always, on
+      // Android), so a notice that does not fit is seen to continue
+      showsVerticalScrollIndicator={Boolean(page.noticeKey)}
+      persistentScrollbar={Boolean(page.noticeKey)}
     >
       <View style={styles.pageContent}>
         {/* Icon cluster with scale animation */}
         <Animated.View style={iconStyle}>
-          <IconCluster icons={page.icons} accentColor={page.accentColor} />
+          <IconCluster
+            icons={page.icons}
+            accentColor={page.accentColor}
+            compact={compact}
+          />
         </Animated.View>
 
         {/* Title with fade + slide */}
@@ -704,6 +720,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.xl,
+  },
+  iconClusterCompact: {
+    transform: [{ scale: 0.7 }],
+    height: 84,
+    marginBottom: spacing.md,
   },
   iconWrapper: {
     position: "absolute",

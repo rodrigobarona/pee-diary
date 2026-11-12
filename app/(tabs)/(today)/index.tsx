@@ -655,7 +655,7 @@ export default function HomeScreen() {
             }
           >
             <Icon
-              name={fluidTarget === null ? "flag-outline" : "cog-outline"}
+              name="target"
               size={iconSize.sm}
               color={colors.primary.DEFAULT}
             />
@@ -741,6 +741,7 @@ export default function HomeScreen() {
 
           {/* Insight Cards - Row 1 */}
           <View
+            testID="today-insight-cards"
             style={[
               styles.insightCardsRow,
               stackCards ? styles.insightCardsStacked : undefined,

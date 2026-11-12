@@ -276,7 +276,12 @@ export function MonthlyChart({
                           fill={colors.textSecondary}
                           textAnchor="middle"
                         >
-                          {dateFormatters.monthShort.format(week.weekStart)}
+                          {/* A week across two months names both: "Oct–Nov" */}
+                          {week.weekStart.getMonth() === week.weekEnd.getMonth()
+                            ? dateFormatters.monthShort.format(week.weekStart)
+                            : `${dateFormatters.monthShort.format(
+                                week.weekStart
+                              )}–${dateFormatters.monthShort.format(week.weekEnd)}`}
                         </SvgText>
                       )}
                     </G>

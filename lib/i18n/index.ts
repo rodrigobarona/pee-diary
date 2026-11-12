@@ -121,8 +121,19 @@ function weekdayAxisFormatter(locale: SupportedLocale, l: string) {
 
 const buildNumberFormatters = (locale: SupportedLocale) => {
   const l = intlLocale(locale);
+  // Portuguese and Spanish write 1504, not 1 504 or 1.504: group only from
+  // five digits (iOS does this already; Android's Intl groups four)
+  const grouped = new Intl.NumberFormat(l);
+  const ungrouped = new Intl.NumberFormat(l, { useGrouping: false });
+  const decimal =
+    locale === 'en'
+      ? grouped
+      : {
+          format: (value: number) =>
+            (Math.abs(value) < 10000 ? ungrouped : grouped).format(value),
+        };
   return {
-    decimal: new Intl.NumberFormat(l),
+    decimal,
     ml: new Intl.NumberFormat(l, {
       style: 'unit',
       unit: 'milliliter',

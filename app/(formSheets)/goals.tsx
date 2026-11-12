@@ -15,6 +15,7 @@ import { SheetHandle } from '@/components/ui/sheet-handle';
 import { Text } from '@/components/ui/text';
 import { adjustableA11y, hiddenA11y } from '@/lib/a11y';
 import { haptics } from '@/lib/haptics';
+import { numberFormatters } from '@/lib/i18n';
 import { useI18n } from '@/lib/i18n/context';
 import { useDiaryStore } from '@/lib/store';
 import { colors } from '@/lib/theme/colors';
@@ -104,7 +105,7 @@ export default function GoalsScreen() {
     };
     // Also when the app goes to the background, in case it is closed there
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state !== 'active') commit();
+      if (state === 'background') commit();
     });
     return () => {
       subscription.remove();
@@ -140,7 +141,9 @@ export default function GoalsScreen() {
   const isFluidMax = target === null || target >= MAX_GOAL;
   const valueText = t('a11y.settings.millilitres', { value: target ?? 0 });
   const formatTarget = (value: number | null) =>
-    value === null ? t('goals.noTarget') : `${value} ml`;
+    value === null
+      ? t('goals.noTarget')
+      : `${numberFormatters.decimal.format(value)} ml`;
 
   // Fluid target changes only, most recent first
   const sortedHistory = React.useMemo(() =>
@@ -232,7 +235,7 @@ export default function GoalsScreen() {
                 })}
               >
                 <Text variant="largeTitle" style={styles.valueText}>
-                  {target}
+                  {numberFormatters.decimal.format(target)}
                 </Text>
                 <Text variant="subheadline" tone="secondary">
                   ml

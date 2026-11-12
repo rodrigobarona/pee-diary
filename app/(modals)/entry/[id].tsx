@@ -318,16 +318,25 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
               label={t("urination.volume")}
             />
             {/* The exact amount, if any: kept in step with the size */}
+            <Text variant="footnote" tone="secondary" style={styles.fieldLabel}>
+              {t("urination.exactAmount")}
+            </Text>
             <FormCard>
-              <Input
-                value={volumeMl}
-                onChangeText={(text) => setVolumeMl(text.replace(/[^0-9]/g, ""))}
-                placeholder={t("urination.volumePrecise")}
-                accessibilityLabel={t("urination.volumePrecise")}
-                keyboardType="number-pad"
-                appearance="plain"
-                returnKeyType="done"
-              />
+              <View style={styles.unitRow}>
+                <Input
+                  value={volumeMl}
+                  onChangeText={(text) => setVolumeMl(text.replace(/[^0-9]/g, ""))}
+                  placeholder={t("urination.volumePrecisePlaceholder")}
+                  accessibilityLabel={t("urination.exactAmount")}
+                  keyboardType="number-pad"
+                  appearance="plain"
+                  returnKeyType="done"
+                  style={styles.unitInput}
+                />
+                <Text variant="body" tone="secondary" style={styles.unit}>
+                  ml
+                </Text>
+              </View>
             </FormCard>
           </View>
 
@@ -541,6 +550,20 @@ const styles = StyleSheet.create({
   },
   historyChangeKey: {
     fontWeight: "500",
+  },
+  fieldLabel: {
+    marginTop: spacing.xs,
+    marginStart: spacing.xs,
+  },
+  unitRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  unitInput: {
+    flex: 1,
+  },
+  unit: {
+    paddingEnd: spacing.lg,
   },
   notFoundText: {
     textAlign: "center",

@@ -31,9 +31,9 @@ Contact: support@eleva.care
 ## How to test
 
 1. **First launch:** go through onboarding, or tap Skip, which leads to the last page. The last page shows the disclaimer and the Terms of Use and Privacy Policy notice with links; tap Get Started.
-2. **Add a bathroom visit:** tap "+" > Urination > choose size or enter ml, urgency, leak/pain, optional note > Save.
-3. **Add a drink:** tap "+" > Fluid Intake > choose type and amount > Save.
-4. **Add a leak:** tap "+" > Leak/Accident > choose amount, urgency, optional activity and note > Save.
+2. **Add a bathroom visit:** tap "+" > Bathroom Visit > choose size or enter ml, urgency, leak/pain, optional note > Save.
+3. **Add a drink:** tap "+" > Drink > choose type and amount > Save.
+4. **Add a leak:** tap "+" > Leak > choose amount, urgency, optional activity and note > Save.
 5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the number of days the user's own fluid target was reached ("Fluid target reached", shown only once the user has set a target), the streak, and the disclaimer under the charts.
 6. **History:** open the History tab, pick a day, open an entry, edit it or tap Delete.
 7. **Export Data:** Settings > Export Data > choose PDF, CSV or JSON and dates > share sheet. The PDF footer carries the disclaimer.
