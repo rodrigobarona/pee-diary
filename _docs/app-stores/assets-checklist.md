@@ -11,10 +11,11 @@ All pages must be public (no login), not geofenced, not PDFs, and available in E
 
 | Page | URL | Used for | Status |
 | ---- | --- | -------- | ------ |
-| Home page | https://diary.eleva.care | App Store Marketing URL; Google Play website | ⬜ Publish |
-| Privacy Policy | https://diary.eleva.care/privacy | Both stores' privacy policy field; Settings > Privacy Policy | ⬜ Publish |
-| Terms of Use | https://diary.eleva.care/terms | Settings > Terms of Use; onboarding acceptance | ⬜ Publish |
-| Privacy Choices | https://diary.eleva.care/privacy-choices | App Store Support URL; Google Play optional data deletion link; Settings > Privacy Choices | ⬜ Publish |
+| Home page | https://diary.eleva.care | App Store Marketing URL; Google Play website | ✅ Live |
+| Privacy Policy | https://diary.eleva.care/privacy | Both stores' privacy policy field; Settings > Privacy Policy | ✅ Live |
+| Terms of Use | https://diary.eleva.care/terms | Settings > Terms of Use; onboarding acceptance | ✅ Live |
+| Privacy Choices | https://diary.eleva.care/privacy-choices | Google Play optional data deletion link; Settings > Privacy Choices | ✅ Live |
+| Support | https://diary.eleva.care/en/support (/pt/support, /es/support) | App Store Support URL | ✅ Live |
 
 Each page is published in Portuguese, English and Spanish at a language path (for example https://diary.eleva.care/pt/privacy or https://diary.eleva.care/en/terms); the addresses without a language redirect by the browser's language. The app opens the page in its own language. The site is hosted on Vercel (Eleva team account).
 
@@ -22,7 +23,7 @@ What each page must contain:
 
 - **Home page:** the same neutral description as the store listings (a personal bladder diary to keep a record and share it with a health professional), the medical disclaimer, support@eleva.care, the company identification (BÚZIOS E TARTARUGAS - LDA, brand Eleva.care, NIPC 515001708, Rua Gil Vicente 2, 2775-198 Parede, Portugal) and links to the three legal pages. No named conditions, "insights", "trends" or health-benefit claims.
 - **Privacy Choices:** how to export, back up and delete the diary, how to deal with device backups, and support@eleva.care for anything else (it doubles as the App Store Support URL).
-- **Privacy Policy / Terms of Use:** the texts in `_docs/legal/`, with "Last updated: 11 November 2026".
+- **Privacy Policy / Terms of Use:** the texts in the website repo (see `_docs/legal-moved.md`), with "Last updated: 11 November 2026".
 - **The site itself:** no cookies, analytics, tracking, forms, or third-party scripts or fonts. Vercel's request logs (IP address, user agent, URL, time; kept up to 30 days) and the short-lived security cookie Vercel may set only when its attack protection challenges a visitor are disclosed in privacy policy §11.3. Adding analytics, non-essential cookies, forms or third-party scripts or fonts requires updating the privacy policy first, and consent for anything not strictly necessary.
 
 ## Email addresses to set up

@@ -6,6 +6,10 @@
 #   e2e/walkthrough/run.sh android            # first adb device
 #   e2e/walkthrough/run.sh ios <simulator-udid>
 #
+# With LOCALE=pt or LOCALE=es it records screenshots only (no videos) in that
+# language: the demo backup switches the app's language when it is restored.
+# Output then goes to walkthrough-output/<platform>-<locale>/.
+#
 # Needs Maestro (~/.maestro/bin/maestro), Python 3 and Pillow. Output goes to
 # walkthrough-output/<platform>/ (git-ignored).
 set -euo pipefail
@@ -13,11 +17,24 @@ set -euo pipefail
 PLATFORM=${1:?android or ios}
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../.." && pwd)
+LOCALE=${LOCALE:-en}
 OUT="$ROOT/walkthrough-output/$PLATFORM"
+FLOWS=(w1-onboarding.yaml w2-restore.yaml w3-browse.yaml w4-add.yaml w5-settings.yaml)
+# Words the flows tap, in the app's language
+case "$LOCALE" in
+  en) WORDS=(-e MONTH=Month -e WEEK=Week -e LARGE=Large -e TEA=Tea -e DISCARD=Discard) ;;
+  pt) WORDS=(-e MONTH=Mês -e WEEK=Semana -e LARGE=Grande -e TEA=Chá -e DISCARD=Descartar) ;;
+  es) WORDS=(-e MONTH=Mes -e WEEK=Semana -e LARGE=Grande -e TEA=Té -e DISCARD=Descartar) ;;
+  *) echo "LOCALE must be en, pt or es" >&2; exit 1 ;;
+esac
+if [ "$LOCALE" != en ]; then
+  OUT="$OUT-$LOCALE"
+  FLOWS=(w1-onboarding.yaml w2-restore.yaml l-screens.yaml)
+fi
 MAESTRO=${MAESTRO:-$HOME/.maestro/bin/maestro}
 BACKUP=$(mktemp -d)/eleva-diary-demo-backup.json
 
-python3 "$HERE/make-demo-backup.py" "$BACKUP"
+python3 "$HERE/make-demo-backup.py" "$BACKUP" "$LOCALE"
 # The flows open the demo's second day, three days ago
 DAY_KEY=$(python3 -c 'import datetime as d; print((d.datetime.now(d.timezone.utc).date()-d.timedelta(days=3)).isoformat())')
 DAY=$((10#${DAY_KEY:8:2}))
@@ -54,6 +71,5 @@ esac
 
 rm -rf "$OUT" && mkdir -p "$OUT"
 cd "$HERE/flows"
-"$MAESTRO" --device "$DEVICE" test -e DAY="$DAY" -e DAY_KEY="$DAY_KEY" \
-  w1-onboarding.yaml w2-restore.yaml w3-browse.yaml w4-add.yaml w5-settings.yaml \
-  --test-output-dir "$OUT"
+"$MAESTRO" --device "$DEVICE" test -e DAY="$DAY" -e DAY_KEY="$DAY_KEY" "${WORDS[@]}" \
+  "${FLOWS[@]}" --test-output-dir "$OUT"

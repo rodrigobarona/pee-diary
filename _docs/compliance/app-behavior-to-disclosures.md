@@ -3,7 +3,7 @@
 > **Last updated:** 11 November 2026
 > **Purpose:** Single source of truth linking what the app does to what the store declarations and legal texts say. When the app changes, update this file first, then every document it points to.
 
-Covers: the Apple App Store and Google Play declarations (`_docs/app-stores/**`) and the legal texts (`_docs/legal/privacy-policy.eleva-diary.{en,es,pt}.md`, `privacy-choices.eleva-diary.{en,es,pt}.md`, `terms.eleva-diary.{en,es,pt}.md`), published at https://diary.eleva.care/privacy, https://diary.eleva.care/privacy-choices and https://diary.eleva.care/terms.
+Covers: the Apple App Store and Google Play declarations (`_docs/app-stores/**`) and the legal texts (`privacy-policy`, `privacy-choices` and `terms.eleva-diary.{en,es,pt}.md` in the website repo, see `_docs/legal-moved.md`), published at https://diary.eleva.care/privacy, https://diary.eleva.care/privacy-choices and https://diary.eleva.care/terms.
 
 ---
 

@@ -4,7 +4,10 @@ Four full days before today plus this morning, made-up data only. Times are
 written as UTC; run the simulators in a UTC+0 zone (Europe/Lisbon in winter)
 for the times to read as written.
 
-    python3 e2e/walkthrough/make-demo-backup.py OUT.json
+    python3 e2e/walkthrough/make-demo-backup.py OUT.json [en|pt|es]
+
+The language is the app language the backup restores, and the language of
+the notes.
 """
 import json
 import random
@@ -13,6 +16,12 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 rng = random.Random(11)
+LANGUAGE = sys.argv[2] if len(sys.argv) > 2 else "en"
+NOTES = {
+    "en": ("Measured with the jug", "Cold this week"),
+    "pt": ("Medido com o jarro", "Constipação esta semana"),
+    "es": ("Medido con la jarra", "Resfriado esta semana"),
+}[LANGUAGE]
 # The urination with a measured volume and a note, opened by the flows
 MEASURED_ID = "5a9a4b54-727a-4aa2-9c15-b854019f5d5a"
 
@@ -52,7 +61,7 @@ for i, day in enumerate(DAYS):
         special = h == 7 and i == 1
         if special:
             e["volumeMl"] = 420
-            e["notes"] = "Measured with the jug"
+            e["notes"] = NOTES[0]
         add(e, day + timedelta(hours=h, minutes=m), MEASURED_ID if special else None)
 
     # Fluids
@@ -67,7 +76,7 @@ for i, day in enumerate(DAYS):
     # Two leaks
     if i == 1:
         add({"type": "leak", "severity": "drops", "urgency": 3, "activity": "coughing",
-             "notes": "Cold this week"}, day + timedelta(hours=11, minutes=20))
+             "notes": NOTES[1]}, day + timedelta(hours=11, minutes=20))
     if i == 3:
         add({"type": "leak", "severity": "moderate", "urgency": 4, "activity": "exercise"},
             day + timedelta(hours=18, minutes=5))
@@ -78,7 +87,7 @@ backup = {
     "entries": entries,
     "goals": {"fluidTarget": 2000},
     "goalHistory": [],
-    "language": "en",
+    "language": LANGUAGE,
     "streak": {"currentStreak": 5, "lastActiveDate": today.strftime("%Y-%m-%d")},
     "exportedAt": iso(today + timedelta(hours=9, minutes=30)),
 }

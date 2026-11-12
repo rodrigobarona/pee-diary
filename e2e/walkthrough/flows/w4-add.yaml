@@ -33,7 +33,7 @@ appId: care.eleva.peediary
 - waitForAnimationToEnd
 - takeScreenshot: 41-add-urination
 - tapOn:
-    text: "Large.*"
+    text: "${LARGE}.*"
     optional: true
 - tapOn:
     text: "Moderate.*|3"
@@ -60,7 +60,7 @@ appId: care.eleva.peediary
 - waitForAnimationToEnd
 - waitForAnimationToEnd
 - tapOn:
-    text: "Tea.*"
+    text: "${TEA}.*"
     optional: true
 - takeScreenshot: 44-add-fluid
 - tapOn:
@@ -86,7 +86,7 @@ appId: care.eleva.peediary
 - takeScreenshot: 46-add-leak-bottom
 - runFlow: close-form.yaml
 - tapOn:
-    text: "Discard.*|DISCARD.*"
+    text: "(?i)${DISCARD}.*"
     optional: true
 - waitForAnimationToEnd
 - takeScreenshot: 47-today-after-adding

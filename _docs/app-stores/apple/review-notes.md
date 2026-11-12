@@ -100,7 +100,7 @@ Nothing from the app. Eleva only receives what users choose to send by email, an
 - **Email:** support@eleva.care
 - **Privacy Policy:** https://diary.eleva.care/privacy
 - **Terms of Use:** https://diary.eleva.care/terms
-- **Support URL:** https://diary.eleva.care/privacy-choices
+- **Support URL:** https://diary.eleva.care/en/support
 
 The App Review contact name and phone number are entered in App Store Connect by the owner.
 

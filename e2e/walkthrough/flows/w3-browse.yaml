@@ -10,14 +10,14 @@ appId: care.eleva.peediary
 - takeScreenshot: 22-today-lower
 - scrollUntilVisible:
     element:
-      text: "Month"
+      text: "${MONTH}"
     direction: UP
 - tapOn:
-    text: "Month"
+    text: "${MONTH}"
 - waitForAnimationToEnd
 - takeScreenshot: 22b-today-month
 - tapOn:
-    text: "Week"
+    text: "${WEEK}"
 - waitForAnimationToEnd
 - scroll
 - scroll

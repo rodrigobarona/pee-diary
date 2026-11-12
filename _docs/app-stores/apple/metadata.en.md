@@ -147,10 +147,10 @@ Distribute in EU/EEA storefronts (owner to confirm the exact list). The legal te
 | Field          | Value                                     |
 | -------------- | ----------------------------------------- |
 | Privacy Policy | https://diary.eleva.care/privacy          |
-| Support URL    | https://diary.eleva.care/privacy-choices  |
+| Support URL    | https://diary.eleva.care/en/support       |
 | Marketing URL  | https://diary.eleva.care                  |
 
-- **Support URL:** the Privacy Choices page explains how to export, back up and delete the diary, and must give support@eleva.care for anything else. Apple needs a web page here, not an email address.
+- **Support URL:** the Support page answers common questions (data, backups, deleting everything) and gives support@eleva.care, privacy@eleva.care and legal@eleva.care. Apple needs a web page here, not an email address.
 - **Marketing URL:** the diary's home page. It must describe the app in the same neutral terms as this listing, show the medical disclaimer, give support@eleva.care and link to the three legal pages.
 - All three pages must be live, public, not geofenced and not PDFs before submission. See `assets-checklist.md` for the full list of pages and addresses to publish.
 

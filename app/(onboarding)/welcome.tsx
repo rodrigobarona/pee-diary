@@ -421,6 +421,15 @@ function TermsAcceptance() {
 export default function OnboardingScreen() {
   const { t } = useI18n();
   const router = useRouter();
+  // Draw again whenever the screen comes into focus. Replayed from Settings
+  // after the language changed, it could otherwise show the language it was
+  // first drawn in until the next tap.
+  const [, setFocusCount] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      setFocusCount((count) => count + 1);
+    }, [])
+  );
   const insets = useSafeAreaInsets();
   // Follows rotation and window resizes (iPad, split screen)
   const { width: pageWidth } = useWindowDimensions();

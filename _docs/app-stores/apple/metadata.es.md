@@ -118,7 +118,7 @@ App Store Connect no muestra el campo «Novedades» en la primera versión. A pa
 | Campo                  | Valor                                    |
 | ---------------------- | ---------------------------------------- |
 | Política de privacidad | https://diary.eleva.care/privacy         |
-| URL de soporte         | https://diary.eleva.care/privacy-choices |
+| URL de soporte         | https://diary.eleva.care/es/support      |
 | URL de marketing       | https://diary.eleva.care                 |
 
 ---
