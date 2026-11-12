@@ -67,7 +67,7 @@ WHAT YOU CAN RECORD
 YOUR DIARY AT A GLANCE
 • Daily totals of drinks, bathroom visits and leaks
 • Simple weekly and monthly charts of what you logged
-• A daily fluid goal you set yourself, if you want one
+• A daily fluid target you set yourself, if you want one
 • A streak showing how many days in a row you have logged
 • Optional reminders to update your diary
 
@@ -93,7 +93,7 @@ Eleva Diary is a personal diary. It is not a medical device and does not diagnos
 Made by Eleva.care. Questions? support@eleva.care
 ```
 
-**Character count:** 1,806
+**Character count:** 1,811
 
 The disclaimer paragraph uses Google's required wording ("not a medical device and does not diagnose, treat, cure, or prevent any medical condition") so that both stores carry the same text. It differs from the in-app disclaimer only by the words "medical" and the serial comma.
 
@@ -120,7 +120,7 @@ Apple requires apps available in the EU/EEA, UK or US whose primary or secondary
 
 **Answer: No, for every region listed (EU/EEA, UK, US).**
 
-This answer holds because the build being submitted includes the product changes in `_docs/compliance/app-behavior-to-disclosures.md` ("Product decisions"): the Fluid Balance card shows only neutral totals (no ratio, no "Normal/Low/High", no traffic-light colours), trend arrows are neutral, the only goal is a daily fluid goal the user sets themselves, with no claim that it is a medical norm, onboarding and store wording describe a personal diary, and the medical disclaimer appears on the last onboarding page (which Skip leads to), Settings > Medical information, under the charts and in the PDF footer. Do not submit a build that still has the output ratio or the "medical guidelines" goal text: with those features the "No" answer is not defensible under MDCG 2019-11 Rev.1.
+This answer holds because the build being submitted includes the product changes in `_docs/compliance/app-behavior-to-disclosures.md` ("Product decisions"): the Fluid Balance card shows only neutral totals (no ratio, no "Normal/Low/High", no traffic-light colours), trend arrows are neutral, the only goal is an optional daily fluid target the user sets themselves (none by default), with no claim that it is a medical norm, onboarding and store wording describe a personal diary, and the medical disclaimer appears on the last onboarding page (which Skip leads to), Settings > Medical information, under the charts and in the PDF footer. Do not submit a build that still has the output ratio or the "medical guidelines" goal text: with those features the "No" answer is not defensible under MDCG 2019-11 Rev.1.
 
 Source: [Declare regulated medical device status](https://developer.apple.com/help/app-store-connect/manage-app-information/declare-regulated-medical-device-status).
 
@@ -128,7 +128,7 @@ Source: [Declare regulated medical device status](https://developer.apple.com/he
 
 ## Age Rating
 
-**4+.** Answer the questionnaire as follows: no violence, sexual content, profanity, gambling or user-generated content shared with others. If asked about medical or treatment information, answer **None**: the app records what the user enters and gives no medical or treatment information. (Answering "Frequent" would also be inaccurate.) If the questionnaire has a separate item on health or wellness topics, answer it truthfully (**Yes**: a bladder diary deals with a health topic); this does not change medical or treatment information, which stays **None**. Check the live questionnaire in App Store Connect when submitting, and record the answers given here (Guideline 2.3.6).
+**Expected 4+** (record the rating App Store Connect calculates; do not change answers to reach a rating). Answer the questionnaire as follows: no violence, sexual content, profanity, gambling or user-generated content shared with others. If asked about medical or treatment information, answer **None**: the app records what the user enters and gives no medical or treatment information. (Answering "Frequent" would also be inaccurate.) If the questionnaire has a separate item on health or wellness topics, answer it truthfully (**Yes**: a bladder diary deals with a health topic); this does not change medical or treatment information, which stays **None**. Check the live questionnaire in App Store Connect when submitting, and record the answers given here (Guideline 2.3.6).
 
 The age rating describes content. The Terms of Use say who the app is for: adults, and people under 16 with a parent or guardian, who can keep the diary for a child.
 

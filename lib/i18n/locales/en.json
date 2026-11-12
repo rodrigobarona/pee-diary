@@ -30,9 +30,9 @@
   "home": {
     "noEntries": "No entries yet today",
     "addFirst": "Tap the + button below to add your first entry",
-    "editGoals": "Edit fluid target",
+    "editGoals": "Edit Fluid Target",
     "exportData": "Export your data",
-    "todayActivity": "Today's Activity",
+    "todayActivity": "Today's activity",
     "viewInHistory": "View in History",
     "addNew": "Add New Entry",
     "noLeaks": "None",
@@ -45,13 +45,13 @@
   },
   "insights": {
     "title": "Summary",
-    "avgFluids": "Avg Fluids",
+    "avgFluids": "Avg fluids",
     "avgVoids": "Avg visits",
-    "fluidGoalReached": "Fluid goal reached",
+    "fluidGoalReached": "Fluid target reached",
     "thisWeek": "This Week",
     "week": "Week",
     "month": "Month",
-    "nightVoidsAvg": "avg per night",
+    "nightVoidsAvg": "avg {{value}} per night",
     "fluidBalance": "Intake and output",
     "fluidIntake": "Fluid intake",
     "urinationOutput": "Estimated output",
@@ -68,7 +68,7 @@
     "fluidTarget": "Fluid Intake",
     "fluidDescription": "Your daily fluid target",
     "targetsInfo": "Your target is for your own record. Ask your health professional what is right for you.",
-    "history": "Goal History",
+    "history": "Target History",
     "historyEmpty": "No changes yet",
     "fluids": "Fluids",
     "noTarget": "No target",
@@ -91,11 +91,11 @@
   "add": {
     "title": "Add Entry",
     "subtitle": "What would you like to log?",
-    "urination": "Urination",
+    "urination": "Bathroom Visit",
     "urinationDesc": "Log a bathroom visit",
-    "fluid": "Fluid Intake",
+    "fluid": "Drink",
     "fluidDesc": "Log what you drank",
-    "leak": "Leak/Accident",
+    "leak": "Leak",
     "leakDesc": "Log a leak"
   },
   "entry": {
@@ -249,8 +249,8 @@
   },
   "detail": {
     "editEntry": "Edit Entry",
-    "editUrination": "Edit Urination",
-    "editFluid": "Edit Fluid",
+    "editUrination": "Edit Bathroom Visit",
+    "editFluid": "Edit Drink",
     "editLeak": "Edit Leak",
     "editHistory": "Edit History",
     "edited": "Edited",
@@ -294,7 +294,12 @@
     "showDetails": "Show Details",
     "hideDetails": "Hide Details",
     "loadFailedTitle": "Couldn't open your diary",
-    "loadFailedDescription": "Your entries are still on this phone, but the app couldn't read them just now. Try again. If it keeps happening, restart your phone or write to support@eleva.care."
+    "loadFailedDescription": "Your entries are still on this phone, but the app couldn't read them just now. Try again. If it keeps happening, restart your phone or write to support@eleva.care.",
+    "saveRefused": "This entry couldn't be saved. Check the values and try again.",
+    "saveFailedTitle": "Couldn't save your diary",
+    "saveFailedDescription": "Your latest changes may not be kept after the app closes. Free up some space on your phone, then make the change again.",
+    "startNew": "Start a New Diary",
+    "startNewConfirm": "The diary that can't be read is kept on this phone as a recovery copy, which support@eleva.care can help with. Start a new, empty diary?"
   },
   "onboarding": {
     "welcome": {

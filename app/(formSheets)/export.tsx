@@ -235,19 +235,19 @@ export default function ExportScreen() {
   }[] = [
     {
       key: "pdf",
-      label: `${t("export.pdf")} - ${t("export.pdfDesc")}`,
+      label: `${t("export.pdf")} · ${t("export.pdfDesc")}`,
       icon: "file-pdf-box",
       color: colors.orange.accent,
     },
     {
       key: "csv",
-      label: `${t("export.csv")} - ${t("export.csvDesc")}`,
+      label: `${t("export.csv")} · ${t("export.csvDesc")}`,
       icon: "file-delimited",
       color: colors.green.accent,
     },
     {
       key: "json",
-      label: `${t("export.json")} - ${t("export.jsonDesc")}`,
+      label: `${t("export.json")} · ${t("export.jsonDesc")}`,
       icon: "code-json",
       color: colors.violet.accent,
     },

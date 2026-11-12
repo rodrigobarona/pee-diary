@@ -786,9 +786,9 @@ export default function HomeScreen() {
                 range: formatHourRange(21, 5),
               })}
               value={numberFormatters.decimal.format(currentStats.nightVoidsTotal)}
-              subtitle={`${numberFormatters.decimal.format(
-                currentStats.avgNightVoids
-              )} ${t("insights.nightVoidsAvg")}`}
+              subtitle={t("insights.nightVoidsAvg", {
+                value: numberFormatters.decimal.format(currentStats.avgNightVoids),
+              })}
               icon="weather-night"
               color={colors.indigo.accent}
               iconBackground={colors.indigo.container}

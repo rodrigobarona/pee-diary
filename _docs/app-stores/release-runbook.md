@@ -46,8 +46,10 @@ eas build --profile production --platform all
 - [ ] Regulated medical device: **No** for every region (Account Holder or Admin)
 - [ ] Age rating questionnaire answered honestly; record the rating Apple calculates
 - [ ] Screenshots: `store-screenshots/apple/{en,pt,es}/` (1320 × 2868, the 6.9" set)
-- [ ] App Review contact name and phone; review notes from `apple/review-notes.md`
-- [ ] Availability: the EU/EEA countries decided in step 1
+- [ ] App Review Information: untick **Sign-in required** (there are no accounts); contact name, phone and email support@eleva.care; review notes from `apple/review-notes.md`
+- [ ] Pricing and Availability: price **Free**, then the EU/EEA countries decided in step 1
+- [ ] Accessibility Nutrition Labels (optional): leave blank or answer honestly for the tested build
+- [ ] On the 1.0 version page, select the uploaded build. Export compliance needs no answers (`ITSAppUsesNonExemptEncryption` is false)
 - [ ] Submit with `eas submit --profile production --platform ios`, then "Add for Review"
 
 ## 5. Google Play Console (owner)

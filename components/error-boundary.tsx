@@ -1,5 +1,12 @@
 import * as React from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -76,16 +83,33 @@ interface DefaultErrorFallbackProps {
   // Translation keys; the generic "Something went wrong" text by default
   titleKey?: string;
   descriptionKey?: string;
+  secondaryAction?: { label: string; onPress: () => void };
 }
 
-/** Shown when the saved diary could not be read at launch. */
-export function LoadFailedScreen({ onRetry }: { onRetry: () => void }) {
+/**
+ * Shown when the saved diary could not be read at launch: Try Again, or
+ * (when it keeps failing) start a new diary, keeping a recovery copy.
+ */
+export function LoadFailedScreen({
+  onRetry,
+  onStartNew,
+}: {
+  onRetry: () => void;
+  onStartNew: () => void;
+}) {
+  const t = (key: string) => i18n.t(key);
+  const confirmStartNew = () =>
+    Alert.alert(t("error.startNew"), t("error.startNewConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("error.startNew"), style: "destructive", onPress: onStartNew },
+    ]);
   return (
     <DefaultErrorFallback
       error={null}
       onRetry={onRetry}
       titleKey="error.loadFailedTitle"
       descriptionKey="error.loadFailedDescription"
+      secondaryAction={{ label: t("error.startNew"), onPress: confirmStartNew }}
     />
   );
 }
@@ -95,6 +119,7 @@ function DefaultErrorFallback({
   onRetry,
   titleKey = "error.title",
   descriptionKey = "error.description",
+  secondaryAction,
 }: DefaultErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
   // The root error boundary sits outside I18nProvider, so read the shared
@@ -132,6 +157,22 @@ function DefaultErrorFallback({
             <Icon name="refresh" size={iconSize.md} color={colors.onPrimary} />
             <Text variant="button" tone="onAccent">
               {t("error.tryAgain")}
+            </Text>
+          </Pressable>
+        ) : null}
+
+        {secondaryAction ? (
+          <Pressable
+            style={({ pressed }) => [
+              styles.detailsToggle,
+              IS_IOS && pressed ? styles.pressedIOS : undefined,
+            ]}
+            onPress={secondaryAction.onPress}
+            accessibilityRole="button"
+            android_ripple={ripple}
+          >
+            <Text variant="subheadline" tone="secondary">
+              {secondaryAction.label}
             </Text>
           </Pressable>
         ) : null}

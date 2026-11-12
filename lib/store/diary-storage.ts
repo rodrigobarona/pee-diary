@@ -36,7 +36,10 @@ export interface RecoveryRecord {
   data: unknown;
 }
 
-export function createDiaryStorage(store: KeyValueStore) {
+export function createDiaryStorage(
+  store: KeyValueStore,
+  options: { onWriteError?: (error: unknown) => void } = {}
+) {
   const strings = createChunkedStorage(store);
   let hasRead = false;
   let readFailed = false;
@@ -95,7 +98,12 @@ export function createDiaryStorage(store: KeyValueStore) {
     },
     async setItem(name, value) {
       if (!hasRead || readFailed) return;
-      await strings.setItem(name, JSON.stringify(value));
+      try {
+        await strings.setItem(name, JSON.stringify(value));
+      } catch (error) {
+        // zustand does not wait for saves: report the failure here
+        options.onWriteError?.(error);
+      }
     },
     async removeItem(name) {
       await strings.removeItem(name);
@@ -107,6 +115,28 @@ export function createDiaryStorage(store: KeyValueStore) {
     saveRecoveryCopy,
     readRecoveryCopies,
     clearRecoveryCopies: () => strings.removeItem(RECOVERY_KEY),
+    /**
+     * Moves the saved diary's raw keys (the manifest and every chunk, even
+     * when some are missing) into a recovery copy and removes them, so the
+     * next read starts an empty diary. For "Start a new diary" after a
+     * load failure; nothing is discarded.
+     */
+    async moveSavedToRecovery(): Promise<void> {
+      const keys = store.getAllKeys
+        ? (await store.getAllKeys()).filter(
+            (key) =>
+              key === STORE_NAME ||
+              (key.startsWith(`${STORE_NAME}.g`) && !key.startsWith(RECOVERY_KEY))
+          )
+        : [STORE_NAME];
+      const pairs = await store.multiGet(keys);
+      await saveRecoveryCopy({
+        reason: "unreadable",
+        data: Object.fromEntries(pairs),
+      });
+      await store.multiRemove(keys);
+      readFailed = false;
+    },
     /** The saved diary as stored, for tests and support. */
     readSaved: async (): Promise<StorageValue<PersistedDiaryState> | null> => {
       const raw = await strings.getItem(STORE_NAME);

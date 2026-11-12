@@ -13,7 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { LogBox, Platform } from "react-native";
+import { Alert, LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
@@ -22,10 +22,13 @@ import { TERMS_VERSION } from "@/constants/legal";
 import { useReminderSync } from "@/hooks/use-reminder-sync";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
 import {
+  acknowledgeSaveFailure,
   retryStoreLoad,
+  startNewDiaryAfterLoadFailure,
   useDiaryStore,
   useStoreHydrated,
   useStoreLoadFailed,
+  useStoreSaveFailed,
 } from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
 import { navigationTheme, stackHeaderOptions } from "@/lib/theme/navigation";
@@ -64,7 +67,16 @@ function InnerLayout() {
   const router = useRouter();
   const isHydrated = useStoreHydrated();
   const loadFailed = useStoreLoadFailed();
+  const saveFailed = useStoreSaveFailed();
   const hasCheckedLaunchRef = useRef(false);
+
+  // A save failed (storage full, say): tell the user once
+  useEffect(() => {
+    if (!saveFailed) return;
+    Alert.alert(t("error.saveFailedTitle"), t("error.saveFailedDescription"), [
+      { text: "OK", onPress: acknowledgeSaveFailure },
+    ]);
+  }, [saveFailed, t]);
 
   // Reschedule reminders at launch, on return to the app and on changes
   useReminderSync(isHydrated);
@@ -112,7 +124,10 @@ function InnerLayout() {
   if (loadFailed && !isHydrated) {
     return (
       <>
-        <LoadFailedScreen onRetry={() => void retryStoreLoad()} />
+        <LoadFailedScreen
+          onRetry={() => void retryStoreLoad()}
+          onStartNew={() => void startNewDiaryAfterLoadFailure()}
+        />
         <StatusBar style="dark" />
       </>
     );
@@ -202,6 +217,11 @@ export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     ...MaterialCommunityIcons.font,
   });
+  // Keep the splash screen until the saved diary has loaded (or failed to),
+  // so nothing can be logged before it is read
+  const isHydrated = useStoreHydrated();
+  const loadFailed = useStoreLoadFailed();
+  const diaryReady = isHydrated || loadFailed;
 
   useEffect(() => {
     if (fontError) {
@@ -210,15 +230,15 @@ export default function RootLayout() {
   }, [fontError]);
 
   useEffect(() => {
-    if (fontsLoaded) {
+    if ((fontsLoaded || fontError) && diaryReady) {
       SplashScreen.hideAsync().catch(() => {
         // Ignore errors - splash screen may not be available in all contexts (e.g., modals)
       });
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError, diaryReady]);
 
-  // Don't render until fonts are loaded
-  if (!fontsLoaded && !fontError) {
+  // Don't render until fonts are loaded and the diary has been read
+  if ((!fontsLoaded && !fontError) || !diaryReady) {
     return null;
   }
 

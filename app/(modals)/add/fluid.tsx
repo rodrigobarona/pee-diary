@@ -36,12 +36,16 @@ export default function FluidScreen() {
       return false;
     }
 
-    addFluidEntry({
+    const saved = addFluidEntry({
       drinkType,
       amount: amountNum,
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
+    if (!saved) {
+      Alert.alert(t("common.error"), t("error.saveRefused"));
+      return false;
+    }
     return true;
   }, [addFluidEntry, drinkType, amount, notes, timestamp, t]);
 

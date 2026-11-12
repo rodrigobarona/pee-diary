@@ -63,7 +63,8 @@ SCENES = [
         "pt": "Exporte um relatório para o seu profissional de saúde",
         "es": "Exporta un informe para tu profesional de la salud",
     }),
-    ("06-private", "10-settings-top", {
+    # The first welcome page says the diary stays on the phone
+    ("06-private", "01-welcome", {
         "en": "Kept on your phone. No account.",
         "pt": "Guardado no seu telemóvel. Sem conta.",
         "es": "Guardado en tu móvil. Sin cuenta.",

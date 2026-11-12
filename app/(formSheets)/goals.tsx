@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  AppState,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/shallow';
 
@@ -88,15 +95,22 @@ export default function GoalsScreen() {
   React.useEffect(() => {
     targetRef.current = target;
   }, [target]);
-  React.useEffect(
-    () => () => {
+  React.useEffect(() => {
+    const commit = () => {
       const latest = targetRef.current;
       if (latest !== useDiaryStore.getState().goals.fluidTarget) {
         updateGoals({ fluidTarget: latest });
       }
-    },
-    [updateGoals]
-  );
+    };
+    // Also when the app goes to the background, in case it is closed there
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') commit();
+    });
+    return () => {
+      subscription.remove();
+      commit();
+    };
+  }, [updateGoals]);
 
   const toggleHistory = () => {
     setHistoryExpanded(!historyExpanded);

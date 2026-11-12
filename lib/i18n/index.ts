@@ -97,8 +97,27 @@ const buildDateFormatters = (locale: SupportedLocale) => {
     weekday: new Intl.DateTimeFormat(l, { weekday: 'long' }),
     weekdayShort: new Intl.DateTimeFormat(l, { weekday: 'short' }),
     weekdayNarrow: new Intl.DateTimeFormat(l, { weekday: 'narrow' }),
+    weekdayAxis: weekdayAxisFormatter(locale, l),
   };
 };
+
+/**
+ * Weekday labels under chart bars. One letter in English and Spanish; in
+ * Portuguese one letter is ambiguous (S is Monday, Friday and Saturday), so
+ * three: "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom".
+ */
+function weekdayAxisFormatter(locale: SupportedLocale, l: string) {
+  if (locale !== 'pt') {
+    return new Intl.DateTimeFormat(l, { weekday: 'narrow' });
+  }
+  const short = new Intl.DateTimeFormat(l, { weekday: 'short' });
+  return {
+    format: (date: Date) => {
+      const label = short.format(date).replace(/\.$/, '');
+      return label.charAt(0).toUpperCase() + label.slice(1, 3);
+    },
+  };
+}
 
 const buildNumberFormatters = (locale: SupportedLocale) => {
   const l = intlLocale(locale);

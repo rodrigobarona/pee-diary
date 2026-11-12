@@ -203,9 +203,13 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
 
   const handleUpdate = () => {
     const updates: Record<string, unknown> = {
-      timestamp: timestamp.toISOString(),
       notes: notes.trim() || undefined,
     };
+    // Only a time the user changed: rewriting an imported time with
+    // milliseconds would add a change the user did not make
+    if (timestamp.getTime() !== loadedValues.timestamp) {
+      updates.timestamp = timestamp.toISOString();
+    }
 
     if (entry.type === "urination") {
       const parsedVolumeMl = parseInt(volumeMl, 10);
@@ -228,7 +232,10 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
       updates.urgency = urgency;
     }
 
-    updateEntry(entry.id, updates);
+    if (!updateEntry(entry.id, updates)) {
+      Alert.alert(t("common.error"), t("error.saveRefused"));
+      return false;
+    }
     return true;
   };
 

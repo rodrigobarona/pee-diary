@@ -42,7 +42,7 @@ WHAT YOU CAN RECORD
 YOUR DIARY AT A GLANCE
 • Daily totals of drinks, bathroom visits and leaks
 • Simple weekly and monthly charts of what you logged
-• A daily fluid goal you set yourself, if you want one
+• A daily fluid target you set yourself, if you want one
 • A streak showing how many days in a row you have logged
 • Optional reminders to update your diary
 
@@ -68,7 +68,7 @@ Eleva Diary is a personal diary. It is not a medical device and does not diagnos
 Made by Eleva.care. Questions? support@eleva.care
 ```
 
-**Character count:** 1,806
+**Character count:** 1,811
 
 Same text as the App Store description, so both stores say the same thing.
 

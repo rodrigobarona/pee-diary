@@ -232,7 +232,7 @@ export default function SettingsScreen() {
             text: t("common.delete"),
             style: "destructive",
             onPress: (value?: string) => {
-              if (value?.toUpperCase() === confirmWord.toUpperCase()) {
+              if (value?.trim().toUpperCase() === confirmWord.toUpperCase()) {
                 clearEverything();
                 haptics.warning();
               } else {

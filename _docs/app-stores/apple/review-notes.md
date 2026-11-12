@@ -34,13 +34,13 @@ Contact: support@eleva.care
 2. **Add a bathroom visit:** tap "+" > Urination > choose size or enter ml, urgency, leak/pain, optional note > Save.
 3. **Add a drink:** tap "+" > Fluid Intake > choose type and amount > Save.
 4. **Add a leak:** tap "+" > Leak/Accident > choose amount, urgency, optional activity and note > Save.
-5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the number of days the user's own fluid goal was reached ("Fluid goal reached"), the streak, and the disclaimer under the charts.
+5. **Today:** see daily totals, the fluid card (intake and estimated output totals only), weekly and monthly charts, the number of days the user's own fluid target was reached ("Fluid target reached", shown only once the user has set a target), the streak, and the disclaimer under the charts.
 6. **History:** open the History tab, pick a day, open an entry, edit it or tap Delete.
 7. **Export Data:** Settings > Export Data > choose PDF, CSV or JSON and dates > share sheet. The PDF footer carries the disclaimer.
 8. **Local Backup:** Settings > Local Backup > Export Backup File (share sheet); Import Backup File (document picker; replaces the current diary after confirmation).
 9. **Reminders:** Settings > Reminders > Enable Reminders. iOS asks for notification permission at this point and not before.
 10. **Medical information:** Settings > About > Medical information.
-11. **Clear All Data:** Settings > Clear All Data > type DELETE to confirm. Deletes entries, the fluid goal and its history, the streak, reminder settings, the launch preference and export/backup files, and cancels reminders. Keeps the language, the completed onboarding and the accepted Terms version and date.
+11. **Clear All Data:** Settings > Clear All Data > type DELETE to confirm. Deletes entries, the fluid target and its history, the streak, reminder settings, the launch preference and export/backup files, and cancels reminders. Keeps the language, the completed onboarding and the accepted Terms version and date.
 12. **Language:** Settings > Language > English, Español or Português.
 
 **Demo account:** not applicable.

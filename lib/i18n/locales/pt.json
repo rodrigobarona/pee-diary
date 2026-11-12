@@ -51,7 +51,7 @@
     "thisWeek": "Esta semana",
     "week": "Semana",
     "month": "Mês",
-    "nightVoidsAvg": "média por noite",
+    "nightVoidsAvg": "média de {{value}} por noite",
     "fluidBalance": "Líquidos ingeridos e urina",
     "fluidIntake": "Líquidos ingeridos",
     "urinationOutput": "Urina estimada",
@@ -93,9 +93,9 @@
     "subtitle": "O que pretende registar?",
     "urination": "Micção",
     "urinationDesc": "Registar uma ida à casa de banho",
-    "fluid": "Ingestão de líquidos",
+    "fluid": "Bebida",
     "fluidDesc": "Registar o que bebeu",
-    "leak": "Perda/acidente",
+    "leak": "Perda",
     "leakDesc": "Registar uma perda"
   },
   "entry": {
@@ -294,7 +294,12 @@
     "showDetails": "Mostrar detalhes",
     "hideDetails": "Ocultar detalhes",
     "loadFailedTitle": "Não foi possível abrir o seu diário",
-    "loadFailedDescription": "Os seus registos continuam neste telemóvel, mas a aplicação não os conseguiu ler agora. Tente novamente. Se voltar a acontecer, reinicie o telemóvel ou escreva para support@eleva.care."
+    "loadFailedDescription": "Os seus registos continuam neste telemóvel, mas a aplicação não os conseguiu ler agora. Tente novamente. Se voltar a acontecer, reinicie o telemóvel ou escreva para support@eleva.care.",
+    "saveRefused": "Não foi possível guardar este registo. Verifique os valores e tente novamente.",
+    "saveFailedTitle": "Não foi possível guardar o diário",
+    "saveFailedDescription": "As últimas alterações podem perder-se quando a aplicação fechar. Liberte algum espaço no telemóvel e volte a fazer a alteração.",
+    "startNew": "Começar um diário novo",
+    "startNewConfirm": "O diário que não pode ser lido fica guardado neste telemóvel como cópia de recuperação, com a qual support@eleva.care pode ajudar. Começar um diário novo e vazio?"
   },
   "onboarding": {
     "welcome": {

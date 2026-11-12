@@ -240,7 +240,7 @@ Capture in each language, on the build being submitted:
 - [ ] App Privacy completed: Data Not Collected
 - [ ] Regulated medical device declared: No (every region)
 - [ ] Category: Health & Fitness, no secondary category
-- [ ] Age rating questionnaire completed (4+)
+- [ ] Age rating questionnaire completed honestly (expected 4+); record the rating App Store Connect calculates
 - [ ] Review notes match the build (`apple/review-notes.md`)
 
 ### Google Play Store

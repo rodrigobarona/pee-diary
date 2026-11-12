@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { TimePicker, UrgencyScale, VolumePicker } from "@/components/diary";
 import {
@@ -48,7 +48,7 @@ export default function UrinationScreen() {
 
   const handleSave = React.useCallback(() => {
     const parsedVolumeMl = volumeMl ? parseInt(volumeMl, 10) : undefined;
-    addUrinationEntry({
+    const saved = addUrinationEntry({
       volume,
       volumeMl:
         parsedVolumeMl && !isNaN(parsedVolumeMl) ? parsedVolumeMl : undefined,
@@ -58,6 +58,10 @@ export default function UrinationScreen() {
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
+    if (!saved) {
+      Alert.alert(t("common.error"), t("error.saveRefused"));
+      return false;
+    }
     return true;
   }, [
     addUrinationEntry,
@@ -68,6 +72,7 @@ export default function UrinationScreen() {
     hadPain,
     notes,
     timestamp,
+    t,
   ]);
 
   useEntryFormHeader({

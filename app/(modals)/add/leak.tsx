@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { TimePicker, UrgencyScale } from "@/components/diary";
 import {
@@ -43,15 +43,19 @@ export default function LeakScreen() {
     notes.trim() !== "";
 
   const handleSave = React.useCallback(() => {
-    addLeakEntry({
+    const saved = addLeakEntry({
       severity,
       urgency,
       activity,
       notes: notes.trim() || undefined,
       timestamp: timestamp.toISOString(),
     });
+    if (!saved) {
+      Alert.alert(t("common.error"), t("error.saveRefused"));
+      return false;
+    }
     return true;
-  }, [addLeakEntry, severity, urgency, activity, notes, timestamp]);
+  }, [addLeakEntry, severity, urgency, activity, notes, timestamp, t]);
 
   useEntryFormHeader({
     title: t("leak.title"),

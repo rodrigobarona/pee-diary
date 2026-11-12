@@ -201,7 +201,7 @@ export function WeeklyChart({
                         }
                         textAnchor="middle"
                       >
-                        {dateFormatters.weekdayNarrow.format(day.date)}
+                        {dateFormatters.weekdayAxis.format(day.date)}
                       </SvgText>
                     </G>
                   );

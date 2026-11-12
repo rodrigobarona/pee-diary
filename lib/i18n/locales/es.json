@@ -51,7 +51,7 @@
     "thisWeek": "Esta semana",
     "week": "Semana",
     "month": "Mes",
-    "nightVoidsAvg": "media por noche",
+    "nightVoidsAvg": "media de {{value}} por noche",
     "fluidBalance": "Líquidos ingeridos y orina",
     "fluidIntake": "Líquidos ingeridos",
     "urinationOutput": "Orina estimada",
@@ -93,9 +93,9 @@
     "subtitle": "¿Qué quieres registrar?",
     "urination": "Micción",
     "urinationDesc": "Registrar una ida al baño",
-    "fluid": "Ingesta de líquidos",
+    "fluid": "Bebida",
     "fluidDesc": "Registrar lo que has bebido",
-    "leak": "Pérdida/accidente",
+    "leak": "Pérdida",
     "leakDesc": "Registrar una pérdida"
   },
   "entry": {
@@ -212,7 +212,7 @@
     "openAddMenuOnLaunchDescription": "Mostrar el menú para añadir registros al abrir la aplicación",
     "viewTutorial": "Ver introducción",
     "viewTutorialDescription": "Volver a ver las pantallas de bienvenida",
-    "legal": "Legal",
+    "legal": "Información legal",
     "privacyPolicy": "Política de privacidad",
     "terms": "Términos de uso",
     "privacyChoices": "Opciones de privacidad",
@@ -294,7 +294,12 @@
     "showDetails": "Mostrar detalles",
     "hideDetails": "Ocultar detalles",
     "loadFailedTitle": "No se ha podido abrir tu diario",
-    "loadFailedDescription": "Tus registros siguen en este móvil, pero la aplicación no ha podido leerlos ahora. Inténtalo de nuevo. Si vuelve a pasar, reinicia el móvil o escribe a support@eleva.care."
+    "loadFailedDescription": "Tus registros siguen en este móvil, pero la aplicación no ha podido leerlos ahora. Inténtalo de nuevo. Si vuelve a pasar, reinicia el móvil o escribe a support@eleva.care.",
+    "saveRefused": "No se ha podido guardar este registro. Revisa los valores e inténtalo de nuevo.",
+    "saveFailedTitle": "No se ha podido guardar tu diario",
+    "saveFailedDescription": "Es posible que los últimos cambios se pierdan al cerrar la aplicación. Libera espacio en el móvil y vuelve a hacer el cambio.",
+    "startNew": "Empezar un diario nuevo",
+    "startNewConfirm": "El diario que no se puede leer se queda en este móvil como copia de recuperación, con la que support@eleva.care puede ayudarte. ¿Empezar un diario nuevo y vacío?"
   },
   "onboarding": {
     "welcome": {
