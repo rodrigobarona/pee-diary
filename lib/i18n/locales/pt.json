@@ -30,7 +30,7 @@
   "home": {
     "noEntries": "Ainda não há registos hoje",
     "addFirst": "Toque no botão + abaixo para adicionar o primeiro registo",
-    "editGoals": "Editar objetivos diários",
+    "editGoals": "Editar objetivo de líquidos",
     "exportData": "Exportar os seus dados",
     "todayActivity": "Atividade de hoje",
     "viewInHistory": "Ver no histórico",
@@ -40,7 +40,8 @@
       "voids": "Micções",
       "fluids": "Líquidos",
       "leaks": "Perdas"
-    }
+    },
+    "setTarget": "Definir um objetivo"
   },
   "insights": {
     "title": "Resumo",
@@ -57,17 +58,23 @@
     "intake": "Ingestão",
     "output": "Urina (estimada)",
     "outputEstimateNote": "O volume de urina é estimado a partir dos tamanhos que escolheu (pequeno, médio, grande), exceto quando indicou uma quantidade exata.",
-    "nightVoidsBetween": "Micções {{range}}"
+    "nightVoidsBetween": "Micções {{range}}",
+    "vsLastWeek": "face à semana anterior",
+    "vsLastMonth": "face ao mês anterior"
   },
   "goals": {
-    "title": "Objetivos diários",
+    "title": "Objetivo de líquidos",
     "description": "Defina o seu próprio objetivo diário de líquidos, por exemplo o que o seu profissional de saúde indicou. Serve apenas de referência.",
     "fluidTarget": "Ingestão de líquidos",
     "fluidDescription": "O seu objetivo diário de líquidos",
     "targetsInfo": "O seu objetivo serve para o seu próprio registo. Pergunte ao seu profissional de saúde o que é adequado para si.",
     "history": "Histórico de objetivos",
     "historyEmpty": "Ainda não há alterações",
-    "fluids": "Líquidos"
+    "fluids": "Líquidos",
+    "noTarget": "Sem objetivo",
+    "noTargetDescription": "Não tem um objetivo de líquidos. Defina um apenas se quiser comparar cada dia com ele, por exemplo um objetivo indicado pelo seu profissional de saúde.",
+    "setTarget": "Definir um objetivo",
+    "removeTarget": "Remover objetivo"
   },
   "streak": {
     "day": "dia",
@@ -93,8 +100,8 @@
   },
   "entry": {
     "urination": "Micção",
-    "fluid": "Ingestão de líquidos",
-    "leak": "Perda/acidente",
+    "fluid": "Bebida",
+    "leak": "Perda",
     "addUrination": "Registar micção",
     "addFluid": "Registar bebida",
     "addLeak": "Registar perda"
@@ -113,7 +120,7 @@
     "notes": "Notas"
   },
   "fluid": {
-    "title": "Registar ingestão de líquidos",
+    "title": "Registar bebida",
     "drinkType": "Tipo de bebida",
     "water": "Água",
     "coffee": "Café",
@@ -121,15 +128,16 @@
     "juice": "Sumo",
     "alcohol": "Álcool",
     "other": "Outro",
-    "amount": "Quantidade (ml)",
-    "notes": "Notas"
+    "amount": "Quantidade",
+    "notes": "Notas",
+    "amountRequired": "Indique uma quantidade superior a 0 ml."
   },
   "leak": {
-    "title": "Registar perda/acidente",
+    "title": "Registar perda",
     "severity": "Quantidade",
     "drops": "Gotas",
     "dropsDesc": "Algumas gotas",
-    "moderate": "Moderada",
+    "moderate": "Média",
     "moderateDesc": "Quantidade visível",
     "full": "Abundante",
     "fullDesc": "Perda completa",
@@ -141,7 +149,7 @@
       "laughing": "A rir",
       "exercise": "A fazer exercício",
       "lifting": "A levantar peso",
-      "standing": "A levantar-se",
+      "standing": "Ao levantar-se",
       "walking": "A caminhar",
       "sleeping": "A dormir",
       "other": "Outro"
@@ -177,14 +185,14 @@
     "about": "Sobre",
     "version": "Versão",
     "medicalInfo": "Informação médica",
-    "madeWithCare": "Feito com cuidado",
+    "madeWithCare": "Feito com carinho",
     "byElevaCare": "pela Eleva Care",
     "entriesRecorded": {
       "one": "{{count}} registo guardado",
       "other": "{{count}} registos guardados"
     },
     "waitForData": "Os seus dados ainda estão a carregar. Tente novamente daqui a pouco.",
-    "editGoals": "Editar objetivos",
+    "editGoals": "Editar objetivo",
     "restore": "Restaurar",
     "localBackup": "Cópia local",
     "exportBackup": "Exportar cópia de segurança",
@@ -204,7 +212,7 @@
     "openAddMenuOnLaunchDescription": "Mostrar o menu para adicionar registos ao abrir a aplicação",
     "viewTutorial": "Ver introdução",
     "viewTutorialDescription": "Rever os ecrãs de boas-vindas",
-    "legal": "Legal",
+    "legal": "Informação legal",
     "privacyPolicy": "Política de Privacidade",
     "terms": "Termos de Utilização",
     "privacyChoices": "Escolhas de Privacidade",
@@ -219,7 +227,13 @@
     "reminderNotificationTitle": "Lembrete do diário",
     "reminderNotificationBody": "Está na hora de atualizar o seu diário.",
     "permissionRequired": "Permissão necessária",
-    "permissionRequiredDescription": "Ative as notificações nas definições do telemóvel para receber lembretes."
+    "permissionRequiredDescription": "Ative as notificações nas definições do telemóvel para receber lembretes.",
+    "importBackupSkipped": {
+      "one": "Não foi possível ler {{count}} registo danificado no ficheiro, que ficou de fora.",
+      "other": "Não foi possível ler {{count}} registos danificados no ficheiro, que ficaram de fora."
+    },
+    "notificationsOff": "As notificações estão desativadas",
+    "notificationsOffDescription": "Os lembretes só aparecem depois de permitir as notificações do Eleva Diary nas definições do telemóvel."
   },
   "urgency": {
     "1": "Nenhuma",
@@ -243,7 +257,8 @@
     "changedFrom": "de",
     "changedTo": "para",
     "deleteConfirm": "Tem a certeza de que pretende eliminar este registo?",
-    "update": "Atualizar"
+    "update": "Atualizar",
+    "notFound": "Este registo já não está no seu diário."
   },
   "export": {
     "title": "Exportar dados",
@@ -277,7 +292,9 @@
     "description": "Ocorreu um erro inesperado. Tente novamente.",
     "tryAgain": "Tentar novamente",
     "showDetails": "Mostrar detalhes",
-    "hideDetails": "Ocultar detalhes"
+    "hideDetails": "Ocultar detalhes",
+    "loadFailedTitle": "Não foi possível abrir o seu diário",
+    "loadFailedDescription": "Os seus registos continuam neste telemóvel, mas a aplicação não os conseguiu ler agora. Tente novamente. Se voltar a acontecer, reinicie o telemóvel ou escreva para support@eleva.care."
   },
   "onboarding": {
     "welcome": {
@@ -313,7 +330,7 @@
     "voidVolume": "Vol. micção",
     "urineLeaks": "Perdas de urina",
     "drops": "Gotas",
-    "moderate": "Mod.",
+    "moderate": "Méd.",
     "full": "Abund.",
     "urgency": "Urg.",
     "pain": "Dor",
@@ -395,7 +412,7 @@
       "millilitres": "{{value}} mililitros",
       "decreaseBy": "Diminuir {{amount}} ml",
       "increaseBy": "Aumentar {{amount}} ml",
-      "goalChange": "{{date}}, líquidos alterados de {{from}} para {{to}} mililitros",
+      "goalChange": "{{date}}, objetivo de líquidos alterado de {{from}} para {{to}}",
       "pageOf": "Página {{page}} de {{total}}"
     },
     "today": {
@@ -433,7 +450,32 @@
       "dayHint": "Abre este dia no histórico",
       "trendUp": "mais {{value}} do que no período anterior",
       "trendDown": "menos {{value}} do que no período anterior",
-      "daysOf": "{{count}} de {{total}} dias"
+      "daysOf": "{{count}} de {{total}} dias",
+      "statFluids": "{{label}}, {{value}} mililitros"
+    }
+  },
+  "csv": {
+    "headers": {
+      "id": "ID",
+      "type": "Tipo",
+      "timestamp": "Data e hora",
+      "date": "Data",
+      "time": "Hora",
+      "volume": "Volume",
+      "volumeMl": "Volume (ml)",
+      "urgency": "Urgência",
+      "hadLeak": "Perda",
+      "hadPain": "Dor",
+      "drinkType": "Tipo de bebida",
+      "amountMl": "Quantidade (ml)",
+      "severity": "Quantidade da perda",
+      "activity": "Atividade",
+      "notes": "Notas"
+    },
+    "types": {
+      "urination": "Micção",
+      "fluid": "Bebida",
+      "leak": "Perda"
     }
   }
 }

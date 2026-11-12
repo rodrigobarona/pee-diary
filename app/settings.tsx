@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   ActivityIndicator,
   Alert,
+  AppState,
   Linking,
   Modal,
   Platform,
@@ -20,11 +21,10 @@ import { useShallow } from "zustand/react/shallow";
 import { SettingsRow, SettingsSection } from "@/components/ui/settings-list";
 import { Text } from "@/components/ui/text";
 import { legalUrl } from "@/constants/legal";
-import { dateFormatters } from "@/lib/i18n";
+import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { haptics } from "@/lib/haptics";
 import {
-  REMINDER_INTERVAL_OPTIONS,
   useDiaryStore,
   useStoreHydrated,
 } from "@/lib/store";
@@ -38,6 +38,7 @@ import {
 import { deleteExportFiles } from "@/lib/utils/export";
 import {
   cancelAllReminders,
+  hasNotificationPermission,
   requestNotificationPermission,
 } from "@/lib/utils/notifications";
 
@@ -88,6 +89,26 @@ export default function SettingsScreen() {
   }, [clearAllData]);
   const resetOnboarding = useDiaryStore((state) => state.resetOnboarding);
   const reminderSettings = useDiaryStore((state) => state.reminderSettings);
+
+  // Reminders are on but the phone blocks the app's notifications (turned
+  // off in the phone's settings after they were allowed): say so, or the
+  // switch would look on while no reminder ever arrives. Checked again when
+  // the app returns to the foreground.
+  const [permissionGranted, setPermissionGranted] = React.useState(true);
+  const notificationsBlocked = reminderSettings.enabled && !permissionGranted;
+  React.useEffect(() => {
+    if (!reminderSettings.enabled) return;
+    const check = () => {
+      hasNotificationPermission()
+        .then(setPermissionGranted)
+        .catch(() => {});
+    };
+    check();
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") check();
+    });
+    return () => subscription.remove();
+  }, [reminderSettings.enabled]);
   const updateReminderSettings = useDiaryStore(
     (state) => state.updateReminderSettings
   );
@@ -98,7 +119,7 @@ export default function SettingsScreen() {
   // Get the confirmation word for the current locale
   const confirmWord = t("settings.clearDataConfirmWord");
   const isDeleteConfirmed =
-    deleteConfirmText.toUpperCase() === confirmWord.toUpperCase();
+    deleteConfirmText.trim().toUpperCase() === confirmWord.toUpperCase();
 
   const handleOpenLanguage = React.useCallback(() => {
     router.push("/(formSheets)/language");
@@ -122,7 +143,9 @@ export default function SettingsScreen() {
 
       if (value) {
         // Request permission first
-        const hasPermission = await requestNotificationPermission();
+        const hasPermission = await requestNotificationPermission().catch(
+          () => false
+        );
         if (!hasPermission) {
           Alert.alert(
             t("settings.permissionRequired"),
@@ -145,24 +168,10 @@ export default function SettingsScreen() {
     [updateReminderSettings, t]
   );
 
-  // Handle changing reminder interval
+  // Reminder interval: a list sheet with one choice
   const handleChangeInterval = React.useCallback(() => {
-
-    const intervals = REMINDER_INTERVAL_OPTIONS;
-    const options = intervals.map((h) =>
-      t("settings.everyXHours", { count: h })
-    );
-    options.push(t("common.cancel"));
-
-    Alert.alert(t("settings.reminderInterval"), "", [
-      ...intervals.map((hours, index) => ({
-        text: options[index],
-        // useReminderSync (app/_layout.tsx) reschedules the reminders
-        onPress: () => updateReminderSettings({ intervalHours: hours }),
-      })),
-      { text: t("common.cancel"), style: "cancel" },
-    ]);
-  }, [updateReminderSettings, t]);
+    router.push("/(formSheets)/reminder-interval");
+  }, [router]);
 
   // Handle toggling quiet hours
   const handleToggleQuietHours = React.useCallback(
@@ -306,11 +315,19 @@ export default function SettingsScreen() {
             const result = await importBackupFile();
             if (result.success) {
               haptics.success();
+              const skipped = result.skippedEntries ?? 0;
               Alert.alert(
                 t("settings.importBackup"),
-                t("settings.importBackupSuccess", {
-                  count: result.entriesCount ?? 0,
-                })
+                [
+                  t("settings.importBackupSuccess", {
+                    count: result.entriesCount ?? 0,
+                  }),
+                  skipped > 0
+                    ? t("settings.importBackupSkipped", { count: skipped })
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join("\n\n")
               );
             } else if (result.error !== "cancelled") {
               Alert.alert(
@@ -447,7 +464,11 @@ export default function SettingsScreen() {
         <SettingsRow
           icon="target"
           label={t("settings.editGoals")}
-          description={`${goals.fluidTarget}ml`}
+          description={
+            goals.fluidTarget === null
+              ? t("goals.noTarget")
+              : `${numberFormatters.decimal.format(goals.fluidTarget)} ml`
+          }
           onPress={handleOpenGoals}
           accessory="disclosure"
           testID="settings-row-goals"
@@ -490,6 +511,16 @@ export default function SettingsScreen() {
           onSwitchChange={handleToggleReminders}
           testID="settings-row-reminders"
         />
+        {notificationsBlocked ? (
+          <SettingsRow
+            icon="bell-off-outline"
+            label={t("settings.notificationsOff")}
+            description={t("settings.notificationsOffDescription")}
+            onPress={() => Linking.openSettings()}
+            accessory="disclosure"
+            testID="settings-row-notifications-off"
+          />
+        ) : null}
         {reminderSettings.enabled ? (
           <SettingsRow
             icon="clock-outline"

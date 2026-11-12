@@ -22,7 +22,9 @@ import {
 /** Version of the backup file this build writes and the newest it reads. */
 export const BACKUP_VERSION = 1;
 
-// The whole file is checked; one invalid entry or field rejects the file.
+// The whole file is checked. An entry that fails the check is skipped (and
+// counted) rather than rejecting the file, so one damaged entry cannot make
+// every later backup unusable; any other invalid field rejects the file.
 // Backups of earlier versions may have goals with a visit target (voidTarget),
 // which is dropped, and may lack goalHistory, language or streak.
 export const backupFileSchema = z.object({
@@ -37,8 +39,13 @@ export const backupFileSchema = z.object({
 
 export type BackupFile = z.infer<typeof backupFileSchema>;
 
+// The file's shape with the entries left unchecked, to check them one by one
+const backupEnvelopeSchema = backupFileSchema.extend({
+  entries: z.array(z.unknown()),
+});
+
 export type BackupParseResult =
-  | { ok: true; backup: BackupFile }
+  | { ok: true; backup: BackupFile; skippedEntries: number }
   | { ok: false; error: "incompatibleVersion" | "invalidFormat" };
 
 /** Parses and validates the text of a backup file. Never throws. */
@@ -61,18 +68,33 @@ export function parseBackupFile(text: string): BackupParseResult {
     return { ok: false, error: "incompatibleVersion" };
   }
 
-  const parsed = backupFileSchema.safeParse(data);
+  const parsed = backupEnvelopeSchema.safeParse(data);
   if (!parsed.success) {
     return { ok: false, error: "invalidFormat" };
   }
 
-  // Two entries with the same id would break editing and deleting
-  const ids = new Set(parsed.data.entries.map((entry) => entry.id));
-  if (ids.size !== parsed.data.entries.length) {
+  // Keep each valid entry once: a second entry with the same id would break
+  // editing and deleting
+  const entries: DiaryEntry[] = [];
+  const ids = new Set<string>();
+  for (const raw of parsed.data.entries) {
+    const entry = diaryEntrySchema.safeParse(raw);
+    if (entry.success && !ids.has(entry.data.id)) {
+      ids.add(entry.data.id);
+      entries.push(entry.data as DiaryEntry);
+    }
+  }
+  const skippedEntries = parsed.data.entries.length - entries.length;
+  // Nothing usable in a file that had entries: not a backup this app can read
+  if (entries.length === 0 && skippedEntries > 0) {
     return { ok: false, error: "invalidFormat" };
   }
 
-  return { ok: true, backup: parsed.data };
+  return {
+    ok: true,
+    backup: { ...parsed.data, entries },
+    skippedEntries,
+  };
 }
 
 /** What importing the backup replaces in the store. */

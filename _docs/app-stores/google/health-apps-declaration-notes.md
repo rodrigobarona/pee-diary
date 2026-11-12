@@ -29,7 +29,7 @@ This is true of the build that ships the product decisions in `_docs/compliance/
 
 - (Decision 1) Fluid Balance card: only neutral totals (fluid intake and estimated output). No ratio, no "Normal/Low/High", no traffic-light colours.
 - (Decision 2) Trend arrows: neutral, with no green/red judgement.
-- (Decision 3) Goal: a daily fluid goal the user sets themselves. The 2000 ml default is an editable starting value; no text calls it a medical norm or guideline.
+- (Decision 3) Goal: an optional daily fluid target the user sets themselves. There is no default target: the app starts without one and suggests no amount; no text calls a target a medical norm or guideline.
 - (Decision 4) Onboarding and store wording: a personal bladder diary to keep a record and share it with a health professional. No "insights", no "improve your bladder health", no "healthy habits", no named conditions in descriptions.
 - (Decision 5) Medical disclaimer on the last onboarding page (Skip leads to that page, so it cannot be skipped past), in Settings > Medical information (About section), under the charts and in the PDF footer.
 - (Decision 9) Neutral reminder text ("Time to update your diary").

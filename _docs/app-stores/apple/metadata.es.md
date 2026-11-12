@@ -46,10 +46,10 @@ Lleva un diario miccional privado: apunta tus idas al baño, lo que bebes y las 
 ## Palabras clave (máx. 100 caracteres, separadas por comas)
 
 ```
-diario miccional,vejiga,micción,baño,líquidos,pérdidas de orina,incontinencia,suelo pélvico
+vejiga,micción,baño,orinar,líquidos,pérdidas de orina,incontinencia,suelo pélvico,registro
 ```
 
-**Caracteres:** 91 (96 bytes)
+**Caracteres:** 90 (95 bytes). "Diario miccional" ya está en el subtítulo, que Apple también indexa.
 
 Las palabras clave solo sirven para la búsqueda y no se muestran. Pueden incluir términos que la gente busca, como «incontinencia», aunque la descripción no nombre ninguna afección.
 
@@ -58,7 +58,7 @@ Las palabras clave solo sirven para la búsqueda y no se muestran. Pueden inclui
 ## Descripción (máx. 4000 caracteres)
 
 ```
-Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, tu enfermera o tu fisioterapeuta si quieres.
+Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, enfermero o fisioterapeuta si quieres.
 
 QUÉ PUEDES REGISTRAR
 • Idas al baño: hora, volumen (pequeño, mediano o grande) o una cantidad exacta en ml, urgencia del 1 al 5, si hubo pérdida o dolor, y notas
@@ -74,11 +74,11 @@ TU DIARIO DE UN VISTAZO
 
 COMPÁRTELO CUANDO QUIERAS
 • Exporta tu diario en PDF, CSV o JSON para las fechas que elijas
-• Envíalo con las opciones de compartir de tu teléfono: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
-• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo teléfono o en uno nuevo
+• Envíalo con las opciones de compartir de tu móvil: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
+• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo móvil o en uno nuevo
 
-GUARDADO EN TU TELÉFONO
-• Tu diario se guarda en tu teléfono. Sin cuenta y sin iniciar sesión
+GUARDADO EN TU MÓVIL
+• Tu diario se guarda en tu móvil. Sin cuenta y sin iniciar sesión
 • Sin anuncios, sin analíticas y sin rastreo
 • Funciona sin conexión
 • Borra tu diario cuando quieras con «Borrar todos los datos» en Ajustes

@@ -46,10 +46,10 @@ Mantenha um diário miccional privado: registe as idas à casa de banho, o que b
 ## Palavras-chave (máx. 100 caracteres, separadas por vírgulas)
 
 ```
-diário miccional,bexiga,micção,casa de banho,líquidos,bebidas,perdas de urina,incontinência
+bexiga,micção,casa de banho,líquidos,bebidas,perdas de urina,incontinência,pélvico,registo
 ```
 
-**Caracteres:** 91 (96 bytes)
+**Caracteres:** 90 (95 bytes). "Diário miccional" já está no subtítulo, que a Apple também indexa.
 
 As palavras-chave servem apenas para a pesquisa e não são mostradas. Podem incluir termos que as pessoas pesquisam, como «incontinência», embora a descrição não nomeie nenhuma doença.
 

@@ -36,6 +36,7 @@ import {
   getEarliestTimestamp,
   getDateRangePreset,
   type ExportFormat,
+  type CSVLabels,
   type PDFTranslations,
 } from "@/lib/utils/export";
 
@@ -146,6 +147,33 @@ export default function ExportScreen() {
     [t],
   );
 
+  // CSV column names and values in the user's language
+  const csvLabels: CSVLabels = React.useMemo(() => {
+    const record = (prefix: string, codes: string[]) =>
+      Object.fromEntries(codes.map((code) => [code, t(`${prefix}.${code}`)]));
+    return {
+      headers: [
+        "id", "type", "timestamp", "date", "time", "volume", "volumeMl",
+        "urgency", "hadLeak", "hadPain", "drinkType", "amountMl", "severity",
+        "activity", "notes",
+      ].map((key) => t(`csv.headers.${key}`)) as CSVLabels["headers"],
+      yes: t("common.yes"),
+      no: t("common.no"),
+      values: {
+        type: record("csv.types", ["urination", "fluid", "leak"]),
+        volume: record("pdf.volumes", ["small", "medium", "large"]),
+        drinkType: record("fluid", [
+          "water", "coffee", "tea", "juice", "alcohol", "other",
+        ]),
+        severity: record("leak", ["drops", "moderate", "full"]),
+        activity: record("leak.activities", [
+          "coughing", "sneezing", "laughing", "exercise", "lifting",
+          "standing", "walking", "sleeping", "other",
+        ]),
+      },
+    };
+  }, [t]);
+
   // Handle export
   const handleExport = React.useCallback(async () => {
     if (filteredEntries.length === 0) {
@@ -162,6 +190,7 @@ export default function ExportScreen() {
         { start: startDate, end: endDate },
         pdfTranslations,
         locale,
+        csvLabels,
       );
 
       if (result.success) {
@@ -182,7 +211,7 @@ export default function ExportScreen() {
     } finally {
       setIsExporting(false);
     }
-  }, [filteredEntries, selectedFormat, startDate, endDate, t, pdfTranslations, locale]);
+  }, [filteredEntries, selectedFormat, startDate, endDate, t, pdfTranslations, locale, csvLabels]);
 
   // Preset options
   const presets: { key: PresetKey; label: string; icon: IconName }[] = [

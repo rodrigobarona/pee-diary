@@ -61,7 +61,7 @@ No other permissions (no camera, microphone, location, contacts, photos, HealthK
 
 ### Is this a medical device?
 
-No. Eleva Diary is a personal diary, like a paper bladder diary. It stores what the user enters, shows totals and simple charts of those entries, and exports them. It does not interpret the entries, tell the user whether results are normal, or give health advice. The only goal is a daily fluid goal the user sets themselves; its starting value (2000 ml) can be changed and is not presented as a medical norm. The regulated medical device declaration is "No" for every region (see `metadata.en.md`).
+No. Eleva Diary is a personal diary, like a paper bladder diary. It stores what the user enters, shows totals and simple charts of those entries, and exports them. It does not interpret the entries, tell the user whether results are normal, or give health advice. The only goal is an optional daily fluid target the user sets themselves. The app starts with no target and suggests no amount: "Set a target" starts from the user's own recent average (or 1500 ml with no drinks logged) and the user adjusts it or removes it. The regulated medical device declaration is "No" for every region (see `metadata.en.md`).
 
 ### Does the app give health information? (Guideline 1.4.1)
 

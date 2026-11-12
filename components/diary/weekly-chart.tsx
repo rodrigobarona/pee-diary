@@ -43,7 +43,7 @@ const PADDING = 8;
 export function WeeklyChart({
   data,
   onDayPress,
-  fluidTarget = 2000,
+  fluidTarget,
 }: WeeklyChartProps) {
   const { t } = useI18n();
   const { fontScale } = useWindowDimensions();
@@ -62,6 +62,14 @@ export function WeeklyChart({
   const handleLayout = React.useCallback((event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   }, []);
+
+  // Fluid bars share one scale: the user's target if they set one, or the
+  // largest day, whichever is higher, so no bar is cut off
+  const fluidScaleMax = Math.max(
+    fluidTarget ?? 0,
+    ...data.map((day) => day.fluids),
+    1
+  );
 
   // Responsive dimensions
   const dayCount = data.length || 1;
@@ -126,7 +134,7 @@ export function WeeklyChart({
                   // Fluid bar height, against the user's own target
                   const fluidHeight = Math.min(
                     Math.max(
-                      (day.fluids / Math.max(fluidTarget, 1)) *
+                      (day.fluids / fluidScaleMax) *
                         (CHART_HEIGHT - 8),
                       day.fluids > 0 ? 4 : 0
                     ),

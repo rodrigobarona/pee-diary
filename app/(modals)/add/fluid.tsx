@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { AmountPicker, DrinkTypePicker, TimePicker } from "@/components/diary";
 import { FormCard, FormScrollView, SectionTitle } from "@/components/ui";
@@ -32,6 +32,7 @@ export default function FluidScreen() {
   const handleSave = React.useCallback(() => {
     const amountNum = parseInt(amount, 10);
     if (isNaN(amountNum) || amountNum <= 0) {
+      Alert.alert(t("fluid.amount"), t("fluid.amountRequired"));
       return false;
     }
 
@@ -42,7 +43,7 @@ export default function FluidScreen() {
       timestamp: timestamp.toISOString(),
     });
     return true;
-  }, [addFluidEntry, drinkType, amount, notes, timestamp]);
+  }, [addFluidEntry, drinkType, amount, notes, timestamp, t]);
 
   useEntryFormHeader({
     title: t("fluid.title"),

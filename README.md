@@ -1,74 +1,29 @@
-# Pee Diary
+# Eleva Diary
 
-A premium, privacy-first mobile application for tracking bladder health. Built for patients and healthcare providers, Pee Diary helps users log urination patterns, fluid intake, and leakage events to support medical diagnosis and bladder training programs.
+A private bladder diary for iPhone and Android, by Eleva.care. People write down their bathroom visits, drinks and leaks, and can share the record with their doctor, nurse or physiotherapist as a PDF, CSV or JSON file.
 
-## Why a Bladder Diary?
+Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. It never interprets entries, shows normal ranges or gives health advice.
 
-Healthcare professionals often recommend keeping a bladder diary to diagnose and treat conditions such as:
+## What the app does
 
-- **Overactive Bladder (OAB)** – Frequent urination and strong urges
-- **Urinary Incontinence** – Involuntary leakage events
-- **Nocturia** – Excessive nighttime urination
-- **Urinary Tract Infections (UTIs)** – Monitoring patterns for recurrence
-- **Pelvic Floor Disorders** – Supporting physical therapy programs
+- **Bathroom visits:** time, size (small, medium or large) or an exact amount in ml, urgency from 1 to 5, leak and pain, notes
+- **Drinks:** time, type and amount
+- **Leaks:** time, amount, urgency, activity and notes
+- **Today:** the day's totals, an optional fluid target the user sets themselves (none by default), weekly and monthly charts of what was logged, and the medical disclaimer under them
+- **History:** a calendar of the days with entries; any entry can be edited (with its edit history) or deleted
+- **Export:** a PDF report in the usual paper-diary layout, a CSV in the user's language, or JSON, for a chosen date range
+- **Backup:** a backup file the user saves and imports themselves (no cloud, no account)
+- **Reminders:** optional local reminders, with quiet hours
+- **Languages:** English, European Portuguese (pt-PT) and Spain Spanish (es-ES)
 
-A complete voiding diary provides physicians with essential data for accurate diagnosis and personalized treatment plans.
+## Privacy
 
-## Target Audience
+- Everything stays on the phone: no account, no analytics, no crash reporting, no network requests
+- Export and backup files are written to the cache folder and removed at the next launch or export
+- Settings > Clear All Data deletes the diary, goals, reminders and every file the app wrote
+- Store answers: App Store "Data Not Collected"; Google Play Data safety "No data collected / No data shared"
 
-- **Patients with urinary symptoms** seeking to monitor and understand their bladder habits
-- **Individuals undergoing bladder retraining** or pelvic floor therapy
-- **People preparing for urology appointments** who need documented symptom history
-- **Anyone concerned about bladder health** wanting to track patterns proactively
-
-## Key Features
-
-### Quick Logging (Under 10 Seconds)
-
-- **Urination Events**: Volume (small/medium/large), urgency level (1-5 scale), pain indicator, leak occurrence
-- **Fluid Intake**: Drink type (water, coffee, tea, juice, alcohol, other), amount in ml
-- **Leakage Episodes**: Severity (drops/moderate/full), urgency level, optional notes
-
-### Comprehensive Dashboard
-
-- Daily progress tracking with visual progress bars
-- Personalized daily goals for fluid intake and void frequency
-- Time-of-day activity breakdown (morning, afternoon, evening, night)
-- Streak tracking for consistent logging habits
-
-### Insights & Analytics
-
-- Weekly and monthly trend charts
-- Average fluids and voids comparison vs. previous periods
-- Goal achievement tracking
-- Trend indicators (improving, declining, stable)
-
-### Calendar History
-
-- Visual calendar with entry indicators by type
-- Filter entries by category (urination, fluids, leaks)
-- Expandable time period sections
-- Quick navigation to any past date
-
-### Data Export
-
-- **PDF Reports**: Professional, clinician-friendly format with clear timestamps and units
-- **CSV Files**: Spreadsheet-compatible for detailed analysis
-- **JSON Format**: Complete data backup for technical users
-- Flexible date range selection (7 days, 30 days, custom range)
-
-### Privacy & Data Control
-
-- **Offline-First**: All data stored locally on your device
-- **Backup File**: Export a backup file and import it again on any device
-- **No Account Required**: Use immediately without registration
-- **Full Data Ownership**: Export or delete your data anytime
-
-### Multi-Language Support
-
-- English
-- Spanish (Español)
-- Portuguese (Português)
+Store listings, review notes and the release checklist are in `_docs/app-stores/`; the mapping of app behaviour to the legal texts is in `_docs/compliance/`. The legal pages are published at https://diary.eleva.care.
 
 ## Tech Stack
 
@@ -94,7 +49,7 @@ A complete voiding diary provides physicians with essential data for accurate di
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/pee-diary.git
+git clone https://github.com/rodrigobarona/pee-diary.git
 cd pee-diary
 
 # Install dependencies
@@ -108,50 +63,47 @@ pnpm start
 
 - **iOS Simulator**: Press `i` in the terminal
 - **Android Emulator**: Press `a` in the terminal
-- **Physical Device**: Scan the QR code with Expo Go
+- **Physical Device**: a development build (`eas build --profile development`); the app uses native modules that Expo Go may not include
+
+### Tests and checks
+
+```bash
+pnpm test        # Jest
+pnpm lint        # ESLint
+pnpm exec tsc --noEmit
+npx expo-doctor
+```
+
+### Store builds
+
+```bash
+eas build --profile production --platform all   # App Store and Google Play builds
+eas submit --profile production --platform ios
+eas submit --profile production --platform android  # needs secrets/play-service-account.json
+```
+
+Store screenshots: `e2e/walkthrough/run.sh` records the app on a simulator or emulator, and `e2e/walkthrough/store-screenshots.py` turns the captures into the sizes each store accepts (see `_docs/app-stores/assets-checklist.md`).
 
 ## Project Structure
 
 ```
-app/                        # Expo Router pages
-├── (tabs)/                 # Bottom tab navigation
-│   ├── index.tsx          # Home - Today's dashboard
-│   ├── history.tsx        # History - Calendar view
-│   ├── add.tsx            # Add button (FAB trigger)
-│   └── settings.tsx       # Settings - Preferences
-├── add/                    # Entry form modals
-│   ├── urination.tsx      # Log urination
-│   ├── fluid.tsx          # Log fluid intake
-│   └── leak.tsx           # Log leakage
-├── entry/
-│   └── [id].tsx           # Entry detail/edit view
-├── export.tsx             # Export screen
-└── goals.tsx              # Goals configuration
+app/                         # Expo Router screens
+├── (onboarding)/welcome.tsx # First-run pages and Terms acceptance
+├── (tabs)/(today)/          # Today: totals, charts
+├── (tabs)/history/          # History: calendar and entries
+├── (modals)/add/            # Log a bathroom visit, drink or leak
+├── (modals)/entry/[id].tsx  # Edit or delete an entry
+├── (modals)/terms-update.tsx
+├── (formSheets)/            # Add menu, fluid target, export, language, reminder interval
+└── settings.tsx
 
-components/
-├── ui/                     # Design system primitives
-│   ├── button.tsx
-│   ├── card.tsx
-│   ├── text.tsx
-│   └── ...
-└── diary/                  # App-specific components
-    ├── calendar.tsx
-    ├── progress-bar.tsx
-    ├── weekly-chart.tsx
-    └── ...
-
-lib/
-├── i18n/                   # Internationalization
-│   ├── context.tsx
-│   └── locales/
-├── store/                  # Zustand state management
-│   ├── diary-store.ts
-│   └── types.ts
-├── theme/                  # Color tokens and utilities
-└── utils/                  # Helper functions
-    ├── backup.ts
-    ├── export.ts
-    └── date.ts
+components/ui/               # Design system primitives
+components/diary/            # Charts, pickers, calendar, timeline
+lib/store/                   # Zustand store, chunked AsyncStorage, migrations
+lib/utils/                   # Export, backup, reminders, dates
+lib/i18n/                    # en, pt (pt-PT), es (es-ES)
+plugins/                     # Expo config plugins (Android backup rules, storage size, Material 3 theme)
+e2e/walkthrough/             # Maestro walkthrough and store screenshots
 ```
 
 ## Design System
@@ -160,14 +112,14 @@ Based on the **Eleva Care** brand identity:
 
 | Color             | Hex       | Purpose                                 |
 | ----------------- | --------- | --------------------------------------- |
-| **Deep Teal**     | `#006D77` | Primary - Calming, medical, trustworthy |
+| **Deep Teal**     | `#006D77` | Primary - Calm, trustworthy             |
 | **Soft Coral**    | `#E29578` | Secondary - Warm, approachable          |
 | **Pale Lavender** | `#E0FBFC` | Accent - Fresh, clean                   |
 | **Error Red**     | `#EF4444` | Destructive actions, alerts             |
 
 ### Design Principles
 
-- **Medical-grade clarity**: No gamification or playful elements
+- **Clarity**: No gamification, no warning colours on what the user logged
 - **Accessibility first**: WCAG AA compliance, large tap targets
 - **One-hand operation**: Optimized for quick, single-handed use
 - **Low cognitive load**: Minimal steps to complete any action
@@ -192,6 +144,7 @@ All entries are validated with Zod schemas:
   type: 'urination',
   timestamp: string,      // ISO datetime
   volume: 'small' | 'medium' | 'large',
+  volumeMl?: number,      // exact amount, if measured
   urgency: 1 | 2 | 3 | 4 | 5,
   hadLeak: boolean,
   hadPain: boolean,
@@ -213,13 +166,14 @@ All entries are validated with Zod schemas:
   timestamp: string,
   severity: 'drops' | 'moderate' | 'full',
   urgency: 1 | 2 | 3 | 4 | 5,
+  activity?: 'coughing' | 'sneezing' | 'laughing' | 'exercise' | 'lifting' | 'standing' | 'walking' | 'sleeping' | 'other',
   notes?: string
 }
 ```
 
 ## Medical Disclaimer
 
-Pee Diary is a **logging tool only** and does not provide medical advice, diagnosis, or treatment recommendations. Always consult a qualified healthcare provider for medical concerns. The data collected is intended to support conversations with your healthcare team.
+Eleva Diary is a personal diary. It is not a medical device and does not diagnose, treat, cure or prevent any condition. Talk to a health professional about your symptoms.
 
 ## Contributing
 

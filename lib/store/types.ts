@@ -125,7 +125,9 @@ export type UpdateLeakEntry = Partial<
 // Only a fluid target: a daily bathroom-visit target was removed because more
 // visits are not better for many bladder conditions.
 export interface DailyGoals {
-  fluidTarget: number; // Default: 2000ml
+  // The user's own daily fluid target in ml; null until they set one (the
+  // app suggests no amount)
+  fluidTarget: number | null;
 }
 
 // Goal History - tracks when goals were changed
@@ -133,7 +135,7 @@ export interface GoalHistoryRecord {
   changedAt: string; // ISO datetime when the change was made
   goals: DailyGoals; // The new goals after the change
   changes: {
-    fluidTarget?: { from: number; to: number };
+    fluidTarget?: { from: number | null; to: number | null };
   };
 }
 
@@ -161,11 +163,14 @@ export const languageSchema = z.enum(["en", "es", "pt"]);
 // Goals as this version stores them, or as earlier versions did, with a visit
 // target (voidTarget) that is no longer used and is dropped when read.
 export const storedGoalsSchema = z.object({
-  fluidTarget: z.number().positive(),
+  fluidTarget: z.number().positive().nullable(),
   voidTarget: z.number().optional(),
 });
 
-const goalChangeSchema = z.object({ from: z.number(), to: z.number() });
+const goalChangeSchema = z.object({
+  from: z.number().nullable(),
+  to: z.number().nullable(),
+});
 
 // A goal history record, including records of earlier versions that only
 // changed the visit target (dropped when read).

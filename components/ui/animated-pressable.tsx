@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   Platform,
   Pressable,
+  StyleSheet,
   type GestureResponderEvent,
   type PressableProps,
   type StyleProp,
@@ -91,8 +92,14 @@ export const AnimatedPressable = React.forwardRef<View, AnimatedPressableProps>(
       [animateIOS, onPressOut, pressed]
     );
 
+    // The caller's own opacity (a hidden or disabled state) is kept: the
+    // press dims from it rather than replacing it with 1
+    const flatStyle =
+      typeof style === 'function' ? undefined : StyleSheet.flatten(style);
+    const baseOpacity =
+      typeof flatStyle?.opacity === 'number' ? flatStyle.opacity : 1;
     const animatedStyle = useAnimatedStyle(() => ({
-      opacity: interpolate(pressed.get(), [0, 1], [1, 0.55]),
+      opacity: baseOpacity * interpolate(pressed.get(), [0, 1], [1, 0.55]),
     }));
 
     const [isHighlighted, setHighlighted] = React.useState(false);

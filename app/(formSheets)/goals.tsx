@@ -55,33 +55,78 @@ function StepButton({ icon, label, disabled, onPress }: StepButtonProps) {
   );
 }
 
+// Where "Set a target" starts the stepper: the user's own average over the
+// last 7 days with drinks (rounded to the step), or 1500 ml without any.
+// It is a starting point to adjust, not a recommendation.
+function startingTarget(): number {
+  const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const byDay = new Map<string, number>();
+  for (const entry of useDiaryStore.getState().entries) {
+    if (entry.type !== 'fluid') continue;
+    const time = new Date(entry.timestamp).getTime();
+    if (time < since) continue;
+    const day = entry.timestamp.slice(0, 10);
+    byDay.set(day, (byDay.get(day) ?? 0) + entry.amount);
+  }
+  if (byDay.size === 0) return 1500;
+  const average = [...byDay.values()].reduce((a, b) => a + b, 0) / byDay.size;
+  return Math.max(MIN_GOAL, Math.min(MAX_GOAL, Math.round(average / STEP) * STEP));
+}
+
 export default function GoalsScreen() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
-  const goals = useDiaryStore((state) => state.goals);
+  const savedTarget = useDiaryStore((state) => state.goals.fluidTarget);
   const goalHistory = useDiaryStore(useShallow((state) => state.goalHistory));
   const updateGoals = useDiaryStore((state) => state.updateGoals);
   const [historyExpanded, setHistoryExpanded] = React.useState(false);
+
+  // The target being edited. It is saved once, when the sheet closes, so the
+  // goal history gets one record per visit instead of one per tap.
+  const [target, setTarget] = React.useState<number | null>(savedTarget);
+  const targetRef = React.useRef(target);
+  React.useEffect(() => {
+    targetRef.current = target;
+  }, [target]);
+  React.useEffect(
+    () => () => {
+      const latest = targetRef.current;
+      if (latest !== useDiaryStore.getState().goals.fluidTarget) {
+        updateGoals({ fluidTarget: latest });
+      }
+    },
+    [updateGoals]
+  );
 
   const toggleHistory = () => {
     setHistoryExpanded(!historyExpanded);
   };
 
-  // The goal is saved as it changes (the user's own target, no norm)
+  // The user's own target, no norm
   const adjustFluidGoal = (delta: number) => {
-    const newValue = Math.max(
-      MIN_GOAL,
-      Math.min(MAX_GOAL, goals.fluidTarget + delta)
-    );
-    if (newValue !== goals.fluidTarget) {
+    if (target === null) return;
+    const newValue = Math.max(MIN_GOAL, Math.min(MAX_GOAL, target + delta));
+    if (newValue !== target) {
       haptics.selection();
-      updateGoals({ fluidTarget: newValue });
+      setTarget(newValue);
     }
   };
 
-  const isFluidMin = goals.fluidTarget <= MIN_GOAL;
-  const isFluidMax = goals.fluidTarget >= MAX_GOAL;
-  const valueText = t('a11y.settings.millilitres', { value: goals.fluidTarget });
+  const setOwnTarget = () => {
+    haptics.selection();
+    setTarget(startingTarget());
+  };
+
+  const removeTarget = () => {
+    haptics.selection();
+    setTarget(null);
+  };
+
+  const isFluidMin = target === null || target <= MIN_GOAL;
+  const isFluidMax = target === null || target >= MAX_GOAL;
+  const valueText = t('a11y.settings.millilitres', { value: target ?? 0 });
+  const formatTarget = (value: number | null) =>
+    value === null ? t('goals.noTarget') : `${value} ml`;
 
   // Fluid target changes only, most recent first
   const sortedHistory = React.useMemo(() =>
@@ -129,41 +174,78 @@ export default function GoalsScreen() {
             </Text>
           </View>
         </View>
-        <View style={styles.stepperRow}>
-          <StepButton
-            icon="minus"
-            label={t('a11y.settings.decreaseBy', { amount: STEP })}
-            disabled={isFluidMin}
-            onPress={() => adjustFluidGoal(-STEP)}
-          />
-          {/* One adjustable element: swipe up/down (VoiceOver) or the
-              adjust actions (TalkBack) change the goal by 250 ml */}
-          <View
-            style={styles.valueContainer}
-            {...adjustableA11y({
-              label: t('goals.fluidDescription'),
-              valueText,
-              min: MIN_GOAL,
-              max: MAX_GOAL,
-              now: goals.fluidTarget,
-              onIncrement: () => adjustFluidGoal(STEP),
-              onDecrement: () => adjustFluidGoal(-STEP),
-            })}
-          >
-            <Text variant="largeTitle" style={styles.valueText}>
-              {goals.fluidTarget}
+        {target === null ? (
+          <View style={styles.noTarget}>
+            <Text variant="subheadline" tone="secondary" style={styles.noTargetText}>
+              {t('goals.noTargetDescription')}
             </Text>
-            <Text variant="subheadline" tone="secondary">
-              ml
-            </Text>
+            <Pressable
+              onPress={setOwnTarget}
+              accessibilityRole="button"
+              android_ripple={ripple}
+              style={({ pressed }) => [
+                styles.textButton,
+                IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
+              ]}
+              testID="goals-set-target"
+            >
+              <Text variant="headline" tone="accent">
+                {t('goals.setTarget')}
+              </Text>
+            </Pressable>
           </View>
-          <StepButton
-            icon="plus"
-            label={t('a11y.settings.increaseBy', { amount: STEP })}
-            disabled={isFluidMax}
-            onPress={() => adjustFluidGoal(STEP)}
-          />
-        </View>
+        ) : (
+          <>
+            <View style={styles.stepperRow}>
+              <StepButton
+                icon="minus"
+                label={t('a11y.settings.decreaseBy', { amount: STEP })}
+                disabled={isFluidMin}
+                onPress={() => adjustFluidGoal(-STEP)}
+              />
+              {/* One adjustable element: swipe up/down (VoiceOver) or the
+                  adjust actions (TalkBack) change the goal by 250 ml */}
+              <View
+                style={styles.valueContainer}
+                {...adjustableA11y({
+                  label: t('goals.fluidDescription'),
+                  valueText,
+                  min: MIN_GOAL,
+                  max: MAX_GOAL,
+                  now: target,
+                  onIncrement: () => adjustFluidGoal(STEP),
+                  onDecrement: () => adjustFluidGoal(-STEP),
+                })}
+              >
+                <Text variant="largeTitle" style={styles.valueText}>
+                  {target}
+                </Text>
+                <Text variant="subheadline" tone="secondary">
+                  ml
+                </Text>
+              </View>
+              <StepButton
+                icon="plus"
+                label={t('a11y.settings.increaseBy', { amount: STEP })}
+                disabled={isFluidMax}
+                onPress={() => adjustFluidGoal(STEP)}
+              />
+            </View>
+            <Pressable
+              onPress={removeTarget}
+              accessibilityRole="button"
+              android_ripple={ripple}
+              style={({ pressed }) => [
+                styles.textButton,
+                IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
+              ]}
+            >
+              <Text variant="subheadline" tone="secondary">
+                {t('goals.removeTarget')}
+              </Text>
+            </Pressable>
+          </>
+        )}
       </View>
 
       {/* About these targets */}
@@ -235,8 +317,8 @@ export default function GoalsScreen() {
                       change
                         ? t('a11y.settings.goalChange', {
                             date: when,
-                            from: change.from,
-                            to: change.to,
+                            from: formatTarget(change.from),
+                            to: formatTarget(change.to),
                           })
                         : when
                     }
@@ -256,7 +338,8 @@ export default function GoalsScreen() {
                           color={colors.category.fluid.accent}
                         />
                         <Text variant="subheadline">
-                          {t('goals.fluids')}: {change.from}ml → {change.to}ml
+                          {t('goals.fluids')}: {formatTarget(change.from)} →{' '}
+                          {formatTarget(change.to)}
                         </Text>
                       </View>
                     ) : null}
@@ -339,6 +422,22 @@ const styles = StyleSheet.create({
   },
   stepButtonPressedIOS: {
     opacity: 0.55,
+  },
+  noTarget: {
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  noTargetText: {
+    textAlign: 'center',
+  },
+  textButton: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+    borderRadius: radius.full,
+    overflow: 'hidden',
   },
   valueContainer: {
     alignItems: 'center',

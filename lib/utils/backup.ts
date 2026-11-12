@@ -15,6 +15,7 @@ import {
   parseBackupFile,
 } from "@/lib/utils/backup-file";
 import { deleteExportFiles, EXPORT_FILE_PREFIX } from "@/lib/utils/export";
+import { isValidEntry } from "@/lib/store/persistence";
 
 // Uses the export prefix so deleteExportFiles() removes it.
 export const BACKUP_FILENAME = `${EXPORT_FILE_PREFIX}backup.json`;
@@ -58,7 +59,9 @@ export async function exportBackupFile(options?: {
 
     const backupData: BackupData = {
       version: BACKUP_VERSION,
-      entries: state.entries,
+      // Only entries a restore can read back (the store already refuses
+      // invalid ones; this guards data saved by older builds)
+      entries: state.entries.filter((entry) => isValidEntry(entry)),
       goals: state.goals,
       goalHistory: state.goalHistory,
       language: state.language,
@@ -102,12 +105,16 @@ export async function exportBackupFile(options?: {
 export async function importBackupFile(): Promise<{
   success: boolean;
   entriesCount?: number;
+  // Damaged entries in the file that were left out
+  skippedEntries?: number;
   error?: ImportBackupError;
 }> {
   try {
     // Open file picker
     const result = await DocumentPicker.getDocumentAsync({
-      type: "application/json",
+      // Some Android file sources label .json files as generic binary or
+      // text; the content is checked below either way
+      type: ["application/json", "text/plain", "application/octet-stream"],
       copyToCacheDirectory: true,
     });
 
@@ -155,6 +162,7 @@ export async function importBackupFile(): Promise<{
     return {
       success: true,
       entriesCount: imported.entries.length,
+      skippedEntries: parsed.skippedEntries,
     };
   } catch {
     return { success: false, error: "failed" };

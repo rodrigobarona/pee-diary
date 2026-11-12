@@ -116,13 +116,31 @@ describe("parseBackupFile", () => {
     ["an unknown entry type", text({ version: 1, entries: [{ ...fluid, type: "meal" }] })],
     ["a negative amount", text({ version: 1, entries: [{ ...fluid, amount: -5 }] })],
     ["an urgency out of range", text({ version: 1, entries: [{ ...leak, urgency: 9 }] })],
-    ["two entries with the same id", text({ version: 1, entries: [fluid, fluid] })],
     ["an unknown language", text({ ...validBackup, language: "fr" })],
     ["a zero fluid goal", text({ ...validBackup, goals: { fluidTarget: 0 } })],
     ["a malformed goal history", text({ ...validBackup, goalHistory: [{ changedAt: 5 }] })],
     ["a malformed streak", text({ ...validBackup, streak: { currentStreak: "3" } })],
   ])("rejects a file with %s", (_, content) => {
     expect(parseBackupFile(content)).toEqual({ ok: false, error: "invalidFormat" });
+  });
+
+  it("keeps one entry of each id and skips damaged entries, counting them", () => {
+    const result = parseBackupFile(
+      text({
+        version: 1,
+        entries: [fluid, fluid, { ...leak, timestamp: undefined }, { ...fluid, id: "f2", amount: 0 }],
+      })
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.backup.entries.map((e) => e.id)).toEqual([fluid.id]);
+    expect(result.skippedEntries).toBe(3);
+  });
+
+  it("rejects a file whose entries are all damaged", () => {
+    expect(
+      parseBackupFile(text({ version: 1, entries: [{ ...fluid, amount: null }] }))
+    ).toEqual({ ok: false, error: "invalidFormat" });
   });
 
   it("rejects a backup from a newer version of the app as incompatible", () => {
@@ -174,7 +192,7 @@ describe("importBackupFile", () => {
   it("replaces the entries, goals, goal history and language with a valid backup", async () => {
     (readAsStringAsync as jest.Mock).mockResolvedValueOnce(text(validBackup));
     const result = await importBackupFile();
-    expect(result).toEqual({ success: true, entriesCount: 3 });
+    expect(result).toEqual({ success: true, entriesCount: 3, skippedEntries: 0 });
     const state = useDiaryStore.getState();
     expect(state.entries.map((e) => e.id)).toEqual(["u1", "f1", "l1"]);
     expect(state.goals).toEqual({ fluidTarget: 2200 });
@@ -185,7 +203,7 @@ describe("importBackupFile", () => {
   it("leaves the diary untouched when the file is invalid", async () => {
     const before = useDiaryStore.getState();
     (readAsStringAsync as jest.Mock).mockResolvedValueOnce(
-      text({ ...validBackup, entries: [fluid, { ...leak, timestamp: undefined }] })
+      text({ ...validBackup, language: "fr" })
     );
     const result = await importBackupFile();
     expect(result).toEqual({ success: false, error: "invalidFormat" });

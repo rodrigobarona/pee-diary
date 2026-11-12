@@ -85,7 +85,7 @@ entries.sort(key=lambda e: e["timestamp"])
 backup = {
     "version": 1,
     "entries": entries,
-    "goals": {"fluidTarget": 2000},
+    "goals": {"fluidTarget": 1750},
     "goalHistory": [],
     "language": LANGUAGE,
     "streak": {"currentStreak": 5, "lastActiveDate": today.strftime("%Y-%m-%d")},

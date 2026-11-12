@@ -58,7 +58,7 @@ const PADDING = 8;
 export function MonthlyChart({
   data,
   onWeekPress,
-  fluidTarget = 2000,
+  fluidTarget,
 }: MonthlyChartProps) {
   const { t, formatVersion } = useI18n();
   const { fontScale } = useWindowDimensions();
@@ -124,6 +124,14 @@ export function MonthlyChart({
   const barWidth = Math.max(Math.min((barGroupWidth - 16) / 2, 24), 2);
   const barGap = 4;
 
+  // Fluid bars: the user's target if set, or the largest weekly average,
+  // whichever is higher, so no bar is cut off
+  const fluidScaleMax = Math.max(
+    fluidTarget ?? 0,
+    ...weeklyData.map((w) => w.avgFluids),
+    1
+  );
+
   // The visit scale follows the logged averages only: there is no visit target
   const maxVoids = Math.max(...weeklyData.map((w) => w.avgVoids), 1);
   const voidScale = (CHART_HEIGHT - 8) / maxVoids;
@@ -188,7 +196,7 @@ export function MonthlyChart({
                   // Fluid bar height (daily average, against the user's target)
                   const fluidHeight = Math.min(
                     Math.max(
-                      (week.avgFluids / Math.max(fluidTarget, 1)) *
+                      (week.avgFluids / fluidScaleMax) *
                         (CHART_HEIGHT - 8),
                       week.avgFluids > 0 ? 4 : 0
                     ),

@@ -44,12 +44,11 @@ export interface PersistedDiaryState {
   reminderSettings: ReminderSettings;
 }
 
-// Starting value for the user's own daily fluid target. It is not a medical
-// norm; the user can change it at any time in Daily Goals. There is no
-// bathroom-visit target: more visits are not better for many bladder
-// conditions.
+// No fluid target until the user sets their own in Daily Goals: a starting
+// amount would read as a recommended intake. There is no bathroom-visit
+// target: more visits are not better for many bladder conditions.
 export const DEFAULT_GOALS: DailyGoals = {
-  fluidTarget: 2000, // ml
+  fluidTarget: null,
 };
 
 export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
@@ -97,7 +96,7 @@ export const sanitizeGoals = (goals: unknown): DailyGoals => {
     ?.fluidTarget;
   return {
     fluidTarget:
-      typeof fluidTarget === "number" && fluidTarget > 0
+      typeof fluidTarget === "number" && Number.isFinite(fluidTarget) && fluidTarget > 0
         ? fluidTarget
         : DEFAULT_GOALS.fluidTarget,
   };

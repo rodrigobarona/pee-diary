@@ -165,7 +165,7 @@ describe("export files", () => {
       })
     );
     const result = await importBackupFile();
-    expect(result).toEqual({ success: true, entriesCount: 0 });
+    expect(result).toEqual({ success: true, entriesCount: 0, skippedEntries: 0 });
     expect(useDiaryStore.getState().goals).toEqual({ fluidTarget: 2400 });
     expect(useDiaryStore.getState().goalHistory).toEqual([]);
   });
@@ -236,7 +236,7 @@ describe("recorded amounts and neutral styling", () => {
     const [header, , measuredRow, leakRow] = formatToCSV([
       ...entries,
       ...measured,
-    ]).split("\n");
+    ]).split("\r\n");
     const columns = header.split(",");
     const cell = (row: string, name: string) =>
       row.split(",")[columns.indexOf(name)];
@@ -244,6 +244,39 @@ describe("recorded amounts and neutral styling", () => {
     expect(cell(measuredRow, "Volume (ml)")).toBe("320");
     expect(cell(leakRow, "Activity")).toBe("coughing");
     expect(cell(leakRow, "Severity")).toBe("full");
+  });
+
+  it("starts the CSV with a BOM and keeps notes from running as formulas", () => {
+    const csv = formatToCSV([
+      { ...measured[0], notes: "=HYPERLINK(\"http://x\")" },
+      { ...measured[1], notes: "line one\rline two" },
+    ]);
+    expect(csv.startsWith("\uFEFF")).toBe(true);
+    expect(csv).toContain(`"'=HYPERLINK(""http://x"")"`);
+    expect(csv).toContain(`"line one\rline two"`);
+  });
+
+  it("writes the CSV in the user's language when given labels", () => {
+    const csv = formatToCSV(measured, {
+      headers: [
+        "ID", "Tipo", "Data e hora", "Data", "Hora", "Volume", "Volume (ml)",
+        "Urgência", "Perda", "Dor", "Tipo de bebida", "Quantidade (ml)",
+        "Quantidade da perda", "Atividade", "Notas",
+      ],
+      yes: "Sim",
+      no: "Não",
+      values: {
+        type: { urination: "Ida à casa de banho", leak: "Perda" },
+        volume: { medium: "Médio" },
+        activity: { coughing: "Tosse" },
+      },
+    });
+    const [header, urinationRow, leakRow] = csv.split("\r\n");
+    expect(header).toContain("Urgência");
+    expect(urinationRow).toContain("Ida à casa de banho,");
+    expect(urinationRow).toContain(",Médio,");
+    expect(urinationRow).toMatch(/,(Sim|Não),/);
+    expect(leakRow).toContain(",Tosse,");
   });
 
   it("marks leaks, pain and high urgency in the PDF without warning colours", () => {

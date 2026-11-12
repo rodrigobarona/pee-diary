@@ -26,7 +26,7 @@ import { a11yLabel } from "@/lib/a11y";
 import { haptics } from "@/lib/haptics";
 import { dateFormatters, numberFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
-import { useDiaryStore } from "@/lib/store";
+import { useDiaryStore, useStoreHydrated } from "@/lib/store";
 import type {
   DiaryEntry,
   DrinkType,
@@ -68,6 +68,7 @@ interface FormValues {
   timestamp: number;
   notes: string;
   volume: VolumeSize;
+  volumeMl: string;
   urgency: UrgencyLevel;
   hadLeak: boolean;
   hadPain: boolean;
@@ -81,6 +82,10 @@ function valuesFromEntry(entry: DiaryEntry): FormValues {
     timestamp: parseISO(entry.timestamp).getTime(),
     notes: entry.notes ?? "",
     volume: entry.type === "urination" ? entry.volume : "medium",
+    volumeMl:
+      entry.type === "urination" && entry.volumeMl !== undefined
+        ? entry.volumeMl.toString()
+        : "",
     urgency: entry.type === "fluid" ? 3 : entry.urgency,
     hadLeak: entry.type === "urination" ? entry.hadLeak : false,
     hadPain: entry.type === "urination" ? entry.hadPain : false,
@@ -98,9 +103,13 @@ export default function EntryDetailScreen() {
     id ? state.entries.find((e) => e.id === id) : undefined
   );
 
+  const isHydrated = useStoreHydrated();
+
   // The form starts from the entry's values once it is available (the store
-  // may still be loading); a new entry id starts a new form
-  if (!entry) return <EntryLoading />;
+  // may still be loading); a new entry id starts a new form. An id that is
+  // not in the diary (deleted, or an old link) says so instead of loading
+  // forever.
+  if (!entry) return isHydrated ? <EntryNotFound /> : <EntryLoading />;
   return <EntryForm key={entry.id} entry={entry} />;
 }
 
@@ -124,6 +133,26 @@ function EntryLoading() {
   );
 }
 
+function EntryNotFound() {
+  const { t } = useI18n();
+
+  useEntryFormHeader({
+    title: t("detail.editEntry"),
+    saveLabel: t("detail.update"),
+    onSave: () => false,
+    isDirty: false,
+  });
+
+  return (
+    <View style={styles.loadingContainer}>
+      <Icon name="file-question-outline" size={48} color={colors.textSecondary} />
+      <Text variant="body" tone="secondary" style={styles.notFoundText}>
+        {t("detail.notFound")}
+      </Text>
+    </View>
+  );
+}
+
 function EntryForm({ entry }: { entry: DiaryEntry }) {
   const { t } = useI18n();
 
@@ -140,6 +169,7 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     () => new Date(loadedValues.timestamp)
   );
   const [volume, setVolume] = React.useState<VolumeSize>(loadedValues.volume);
+  const [volumeMl, setVolumeMl] = React.useState(loadedValues.volumeMl);
   const [urgency, setUrgency] = React.useState<UrgencyLevel>(
     loadedValues.urgency
   );
@@ -159,6 +189,7 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     timestamp: timestamp.getTime(),
     notes,
     volume,
+    volumeMl,
     urgency,
     hadLeak,
     hadPain,
@@ -177,13 +208,21 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     };
 
     if (entry.type === "urination") {
+      const parsedVolumeMl = parseInt(volumeMl, 10);
       updates.volume = volume;
+      // An empty field removes the exact amount
+      updates.volumeMl = parsedVolumeMl > 0 ? parsedVolumeMl : undefined;
       updates.urgency = urgency;
       updates.hadLeak = hadLeak;
       updates.hadPain = hadPain;
     } else if (entry.type === "fluid") {
+      const parsedAmount = parseInt(amount, 10);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        Alert.alert(t("fluid.amount"), t("fluid.amountRequired"));
+        return false;
+      }
       updates.drinkType = drinkType;
-      updates.amount = parseInt(amount, 10);
+      updates.amount = parsedAmount;
     } else if (entry.type === "leak") {
       updates.severity = severity;
       updates.urgency = urgency;
@@ -271,6 +310,18 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
               onChange={setVolume}
               label={t("urination.volume")}
             />
+            {/* The exact amount, if any: kept in step with the size */}
+            <FormCard>
+              <Input
+                value={volumeMl}
+                onChangeText={(text) => setVolumeMl(text.replace(/[^0-9]/g, ""))}
+                placeholder={t("urination.volumePrecise")}
+                accessibilityLabel={t("urination.volumePrecise")}
+                keyboardType="number-pad"
+                appearance="plain"
+                returnKeyType="done"
+              />
+            </FormCard>
           </View>
 
           <View style={styles.section}>
@@ -483,6 +534,10 @@ const styles = StyleSheet.create({
   },
   historyChangeKey: {
     fontWeight: "500",
+  },
+  notFoundText: {
+    textAlign: "center",
+    paddingHorizontal: spacing.xl,
   },
   loadingContainer: {
     flex: 1,

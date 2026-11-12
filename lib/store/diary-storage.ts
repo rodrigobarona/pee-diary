@@ -6,9 +6,10 @@
  * 1. Nothing is written until the saved diary has been read. A change made
  *    while the app is still loading would otherwise overwrite the saved diary
  *    with an almost empty one.
- * 2. If reading fails (for example a storage error), nothing is written for
- *    the rest of the session, so a later version or a restart can still read
- *    the saved diary.
+ * 2. If reading fails (for example a storage error), nothing is written
+ *    until a retry reads it, so a later attempt can still read the saved
+ *    diary. The app shows a blocking screen with Try Again meanwhile
+ *    (useStoreLoadFailed).
  * 3. Saved data that cannot be parsed or upgraded, entries that fail
  *    validation, and data from a newer version of the app are kept in a
  *    recovery copy on the phone instead of being discarded. "Clear All Data"
@@ -77,6 +78,8 @@ export function createDiaryStorage(store: KeyValueStore) {
         throw error;
       }
       hasRead = true;
+      // A retry that reads the diary lifts the write block (safeguard 2)
+      readFailed = false;
       if (raw === null) return null;
 
       try {

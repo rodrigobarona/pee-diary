@@ -63,7 +63,7 @@ describe("TimeGroupSummary", () => {
     expect(buttons).toHaveLength(5);
     const morning = buttons[1].props.accessibilityLabel as string;
     expect(morning).toBe(
-      "Morning, from 05:00 to 12:00, 1 void, 2 drinks, 450 millilitres"
+      "Morning, from 05:00 to 12:00, 1 bathroom visit, 2 drinks, 450 millilitres"
     );
     for (const button of buttons) {
       expect(button.props.accessibilityLabel).not.toMatch(GLYPHS);

@@ -31,6 +31,8 @@ export interface KeyValueStore {
   ): Promise<readonly (readonly [string, string | null])[]>;
   multiSet(pairs: [string, string][]): Promise<void>;
   multiRemove(keys: readonly string[]): Promise<void>;
+  // Used to find chunks left by an interrupted save (optional for tests)
+  getAllKeys?(): Promise<readonly string[]>;
 }
 
 export interface StringStorage {
@@ -105,10 +107,34 @@ export function createChunkedStorage(
   // write in progress.
   const pending = new Map<string, { value: string | null }>();
   const running = new Map<string, Promise<void>>();
+  // Names whose leftover chunks were already looked for this session
+  const swept = new Set<string>();
+
+  /**
+   * Removes chunks of `name` that the current manifest does not name. A save
+   * interrupted after writing its chunks but before the manifest leaves such
+   * chunks behind; they hold diary data, so they must not outlive Clear All
+   * Data. Runs once per name and session, after the first save.
+   */
+  async function sweepOrphans(name: string, manifest: Manifest | null) {
+    if (swept.has(name) || !store.getAllKeys) return;
+    swept.add(name);
+    const keep = new Set(manifest ? chunkKeys(name, manifest) : []);
+    const prefix = `${name}.g`;
+    const pattern = /^\d+\.\d+$/;
+    const orphans = (await store.getAllKeys()).filter(
+      (key) =>
+        key.startsWith(prefix) &&
+        pattern.test(key.slice(prefix.length)) &&
+        !keep.has(key)
+    );
+    if (orphans.length > 0) await store.multiRemove(orphans);
+  }
 
   async function write(name: string, value: string | null) {
     const previous = parseManifest(await store.getItem(name));
     const staleKeys = previous ? chunkKeys(name, previous) : [];
+    let current: Manifest | null = null;
 
     if (value === null) {
       await store.removeItem(name);
@@ -126,11 +152,13 @@ export function createChunkedStorage(
         ])
       );
       await store.setItem(name, JSON.stringify(manifest));
+      current = manifest;
     }
 
     if (staleKeys.length > 0) {
       await store.multiRemove(staleKeys);
     }
+    await sweepOrphans(name, current).catch(() => {});
   }
 
   function enqueue(name: string, value: string | null): Promise<void> {

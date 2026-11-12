@@ -22,17 +22,17 @@ Eleva Diary
 ## Descripción breve (máx. 80 caracteres)
 
 ```
-Diario miccional privado: apunta idas al baño, bebidas y pérdidas y compártelo.
+Diario miccional privado: apunta idas al baño, bebidas y pérdidas, y compártelo.
 ```
 
-**Caracteres:** 79
+**Caracteres:** 80
 
 ---
 
 ## Descripción completa (máx. 4000 caracteres)
 
 ```
-Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, tu enfermera o tu fisioterapeuta si quieres.
+Eleva Diary es un diario miccional sencillo y privado. Apunta cuándo vas al baño, lo que bebes y las pérdidas de orina, y comparte el registro con tu médico, enfermero o fisioterapeuta si quieres.
 
 QUÉ PUEDES REGISTRAR
 • Idas al baño: hora, volumen (pequeño, mediano o grande) o una cantidad exacta en ml, urgencia del 1 al 5, si hubo pérdida o dolor, y notas
@@ -48,11 +48,11 @@ TU DIARIO DE UN VISTAZO
 
 COMPÁRTELO CUANDO QUIERAS
 • Exporta tu diario en PDF, CSV o JSON para las fechas que elijas
-• Envíalo con las opciones de compartir de tu teléfono: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
-• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo teléfono o en uno nuevo
+• Envíalo con las opciones de compartir de tu móvil: por correo, por una app de mensajería o al servicio de almacenamiento que prefieras
+• Guarda una copia de seguridad en un archivo e impórtala más adelante, en el mismo móvil o en uno nuevo
 
-GUARDADO EN TU TELÉFONO
-• Tu diario se guarda en tu teléfono. Sin cuenta y sin iniciar sesión
+GUARDADO EN TU MÓVIL
+• Tu diario se guarda en tu móvil. Sin cuenta y sin iniciar sesión
 • Sin anuncios, sin analíticas y sin rastreo
 • Funciona sin conexión
 • Borra tu diario cuando quieras con «Borrar todos los datos» en Ajustes

@@ -66,19 +66,16 @@ Screenshots must show the actual app UI of the build being submitted.
 
 #### iPhone Screenshots
 
-| Device                   | Required Sizes | Quantity |
-| ------------------------ | -------------- | -------- |
-| 6.7" (iPhone 15 Pro Max) | 1290 × 2796 px | 3-10     |
-| 6.5" (iPhone 11 Pro Max) | 1284 × 2778 px | 3-10     |
-| 5.5" (iPhone 8 Plus)     | 1242 × 2208 px | 3-10     |
+| Device                              | Size           | Quantity        |
+| ----------------------------------- | -------------- | --------------- |
+| 6.9" (iPhone 17 Pro Max)            | 1320 × 2868 px | 3-10 (required) |
+| 6.5" (scaled from 6.9" by Apple)    | 1284 × 2778 px | optional        |
 
-#### iPad Screenshots (if supporting iPad)
+App Store Connect scales the 6.9" set down to every smaller iPhone; the 5.5" set is no longer required. Capture with `e2e/walkthrough/run.sh ios <iPhone 17 Pro Max UDID>`; then `python3 e2e/walkthrough/store-screenshots.py` writes the store files to `store-screenshots/` (captions from the overlay lines below).
 
-| Device         | Required Sizes | Quantity |
-| -------------- | -------------- | -------- |
-| 12.9" iPad Pro | 2048 × 2732 px | 3-10     |
+#### iPad
 
-`app.json` sets `supportsTablet: true`, so iPad screenshots are required unless that is turned off.
+`app.json` sets `supportsTablet: false`, so no iPad screenshots. The app still runs on iPad in iPhone compatibility mode and App Review may test it there: check onboarding, the add sheets and the share sheet on an iPad simulator before submitting.
 
 #### What screenshots must not show
 
@@ -113,7 +110,7 @@ Screenshots must show the actual app UI of the build being submitted.
 - "Apunta idas al baño, bebidas y pérdidas"
 - "Totales diarios y gráficos sencillos"
 - "Exporta un informe para tu profesional de la salud"
-- "Guardado en tu teléfono. Sin cuenta."
+- "Guardado en tu móvil. Sin cuenta."
 
 **Portuguese (Portugal):**
 
@@ -162,11 +159,11 @@ Suggested content: adding an entry, scrolling through history, viewing the chart
 
 | Device Type  | Size                 | Quantity       |
 | ------------ | -------------------- | -------------- |
-| Phone        | 1080 × 1920 px (min) | 2-8            |
+| Phone        | 1080 × 1920 px       | 4-8            |
 | Tablet (7")  | 1080 × 1920 px       | 1-8 (optional) |
 | Tablet (10") | 1920 × 1200 px       | 1-8 (optional) |
 
-- 16:9 or 9:16 aspect ratio
+- Each side 320-3840 px and the long side at most twice the short side: a raw 1080 × 2424 capture is rejected. Use 9:16 (1080 × 1920); at least 4 screenshots of 1080 px or more make the app eligible for featuring.
 - Same content rules and overlays as the Apple screenshots
 
 ### Promo Video (Optional)
@@ -191,10 +188,7 @@ Suggested content: adding an entry, scrolling through history, viewing the chart
 
 ### Screenshots
 
-- [ ] iPhone 6.7" screenshots (EN/ES/PT)
-- [ ] iPhone 6.5" screenshots (EN/ES/PT)
-- [ ] iPhone 5.5" screenshots (EN/ES/PT)
-- [ ] iPad screenshots (EN/ES/PT), unless iPad support is turned off
+- [ ] iPhone 6.9" screenshots (EN/ES/PT)
 - [ ] Android phone screenshots (EN/ES/PT)
 - [ ] Android tablet screenshots (optional)
 

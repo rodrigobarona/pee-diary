@@ -16,6 +16,7 @@ import {
   sanitizePersistedState,
   STORE_NAME,
   STORE_VERSION,
+  isValidEntry,
   type PersistedDiaryState,
 } from "./persistence";
 
@@ -122,6 +123,11 @@ export const calculateStreak = (
   return { currentStreak: streak, lastActiveDate };
 };
 
+// Set when reading the saved diary fails; not saved
+const useStoreLoadState = create<{ failed: boolean }>()(() => ({
+  failed: false,
+}));
+
 // The state of a fresh install
 const createInitialState = (): PersistedDiaryState => ({
   entries: [],
@@ -176,16 +182,16 @@ export const useDiaryStore = create<DiaryState>()(
       addUrinationEntry: (entry) => {
         const now = new Date().toISOString();
         set((state) => {
-          const newEntries = [
-            ...state.entries,
-            {
-              ...entry,
-              id: createId(),
-              timestamp: entry.timestamp ?? now,
-              createdAt: now,
-              type: "urination" as const,
-            },
-          ];
+          const newEntry = {
+            ...entry,
+            id: createId(),
+            timestamp: entry.timestamp ?? now,
+            createdAt: now,
+            type: "urination" as const,
+          };
+          // Never store an entry a backup could not restore
+          if (!isValidEntry(newEntry)) return state;
+          const newEntries = [...state.entries, newEntry];
           return {
             entries: newEntries,
             streak: calculateStreak(newEntries),
@@ -196,16 +202,15 @@ export const useDiaryStore = create<DiaryState>()(
       addFluidEntry: (entry) => {
         const now = new Date().toISOString();
         set((state) => {
-          const newEntries = [
-            ...state.entries,
-            {
-              ...entry,
-              id: createId(),
-              timestamp: entry.timestamp ?? now,
-              createdAt: now,
-              type: "fluid" as const,
-            },
-          ];
+          const newEntry = {
+            ...entry,
+            id: createId(),
+            timestamp: entry.timestamp ?? now,
+            createdAt: now,
+            type: "fluid" as const,
+          };
+          if (!isValidEntry(newEntry)) return state;
+          const newEntries = [...state.entries, newEntry];
           return {
             entries: newEntries,
             streak: calculateStreak(newEntries),
@@ -216,16 +221,15 @@ export const useDiaryStore = create<DiaryState>()(
       addLeakEntry: (entry) => {
         const now = new Date().toISOString();
         set((state) => {
-          const newEntries = [
-            ...state.entries,
-            {
-              ...entry,
-              id: createId(),
-              timestamp: entry.timestamp ?? now,
-              createdAt: now,
-              type: "leak" as const,
-            },
-          ];
+          const newEntry = {
+            ...entry,
+            id: createId(),
+            timestamp: entry.timestamp ?? now,
+            createdAt: now,
+            type: "leak" as const,
+          };
+          if (!isValidEntry(newEntry)) return state;
+          const newEntries = [...state.entries, newEntry];
           return {
             entries: newEntries,
             streak: calculateStreak(newEntries),
@@ -235,6 +239,7 @@ export const useDiaryStore = create<DiaryState>()(
 
       updateEntry: (id, updates) =>
         set((state) => {
+          let rejected = false;
           const entries = state.entries.map((entry) => {
             if (entry.id !== id) return entry;
 
@@ -255,12 +260,20 @@ export const useDiaryStore = create<DiaryState>()(
               changes,
             };
 
-            return {
+            const updated = {
               ...entry,
               ...updates,
               editHistory: [...(entry.editHistory ?? []), editRecord],
             } as DiaryEntry;
+            // An invalid value (an empty amount, say) would break every
+            // later backup restore: keep the entry as it was
+            if (!isValidEntry(updated)) {
+              rejected = true;
+              return entry;
+            }
+            return updated;
           });
+          if (rejected) return state;
           // A changed time can move the entry to another day
           return { entries, streak: calculateStreak(entries) };
         }),
@@ -445,11 +458,32 @@ export const useDiaryStore = create<DiaryState>()(
             data: rejectedEntries,
           });
         }
-        return { ...current, ...state };
+        // The saved streak can be days old: work it out from the entries
+        return {
+          ...current,
+          ...state,
+          streak: calculateStreak(state.entries),
+        };
+      },
+      // A read error leaves the store unhydrated: say so instead of showing
+      // an empty diary that cannot save (see diary-storage.ts)
+      onRehydrateStorage: () => {
+        useStoreLoadState.setState({ failed: false });
+        return (_state, error) => {
+          if (error) useStoreLoadState.setState({ failed: true });
+        };
       },
     }
   )
 );
+
+// Whether reading the saved diary failed at launch
+export const useStoreLoadFailed = () =>
+  useStoreLoadState((state) => state.failed);
+export const getStoreLoadFailed = () => useStoreLoadState.getState().failed;
+
+/** Reads the saved diary again after a failure (the Try Again button). */
+export const retryStoreLoad = () => useDiaryStore.persist.rehydrate();
 
 // Hydration state check: subscribes to the persist middleware, which says
 // both whether it has hydrated and when it finishes

@@ -31,7 +31,7 @@ import { useTabScreenBottomSpace } from "@/hooks/use-tab-screen-bottom-space";
 import { useTodayKey } from "@/hooks/use-today-key";
 import { tabA11y, tabListA11y } from "@/lib/a11y";
 import { haptics } from "@/lib/haptics";
-import { formatHourRange } from "@/lib/i18n";
+import { formatHourRange, numberFormatters } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import type { DiaryEntry } from "@/lib/store/types";
@@ -50,6 +50,17 @@ import { groupByDay, parseDayKey, toDayKey } from "@/lib/utils/day";
 
 const NO_ENTRIES: DiaryEntry[] = [];
 
+// Days whose fluids reached the target that applied on that day (days
+// without a target do not count)
+const countTargetDays = (
+  days: readonly { date: Date; fluids: number }[],
+  goalsForDate: (dayKey: string) => { fluidTarget: number | null }
+): number =>
+  days.filter((day) => {
+    const target = goalsForDate(toDayKey(day.date)).fluidTarget;
+    return target !== null && day.fluids >= target;
+  }).length;
+
 // Helper to check if an entry is between 21:00 and 05:00, for the count of
 // bathroom visits logged in that time window
 const isNighttimeEntry = (entry: DiaryEntry): boolean => {
@@ -58,16 +69,18 @@ const isNighttimeEntry = (entry: DiaryEntry): boolean => {
   return hour >= 21 || hour < 5;
 };
 
-// Get greeting based on time of day
-const getGreeting = (t: (key: string) => string): string => {
+// Get greeting based on time of day. In Portugal and Spain "boa tarde" /
+// "buenas tardes" lasts until about 20:00.
+const getGreeting = (t: (key: string) => string, locale: string): string => {
   const hour = getHours(new Date());
+  const eveningStarts = locale === "en" ? 18 : 20;
   if (hour >= 5 && hour < 12) return t("greeting.morning");
-  if (hour >= 12 && hour < 18) return t("greeting.afternoon");
+  if (hour >= 12 && hour < eveningStarts) return t("greeting.afternoon");
   return t("greeting.evening");
 };
 
 export default function HomeScreen() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const { fontScale } = useWindowDimensions();
   const bottomSpace = useTabScreenBottomSpace();
@@ -84,6 +97,16 @@ export default function HomeScreen() {
   // Get all entries and goals
   const allEntries = useDiaryStore(useShallow((state) => state.entries));
   const goals = useDiaryStore((state) => state.goals);
+  // Changes with the goals, so the insight cards recompute
+  const goalHistory = useDiaryStore(useShallow((state) => state.goalHistory));
+  const getGoalsForDate = React.useCallback(
+    (dayKey: string) => {
+      void goals;
+      void goalHistory;
+      return useDiaryStore.getState().getGoalsForDate(dayKey);
+    },
+    [goals, goalHistory]
+  );
   const streak = useDiaryStore((state) => state.streak);
   const refreshStreak = useDiaryStore((state) => state.refreshStreak);
 
@@ -120,12 +143,13 @@ export default function HomeScreen() {
     return { voids, fluids, leaks };
   }, [todayEntries]);
 
-  // Calculate progress (only fluids have a goal)
+  // Progress against the user's own fluid target, if they set one
+  const fluidTarget = goals.fluidTarget;
   const fluidProgress =
-    goals.fluidTarget > 0 ? summary.fluids / goals.fluidTarget : 0;
+    fluidTarget !== null && fluidTarget > 0 ? summary.fluids / fluidTarget : 0;
 
   const dateLabel = formatDateHeader(today);
-  const greeting = getGreeting(t);
+  const greeting = getGreeting(t, locale);
 
   // Compute weekly chart data (last 7 days)
   const weeklyData = React.useMemo(() => {
@@ -230,10 +254,8 @@ export default function HomeScreen() {
           lastWeekDaysWithEntries.length
         : 0;
 
-    // Days on which the fluid goal was reached
-    const fluidGoalDays = thisWeekDays.filter(
-      (d) => d.fluids >= goals.fluidTarget
-    ).length;
+    // Days on which the fluid target that applied that day was reached
+    const fluidGoalDays = countTargetDays(thisWeekDays, getGoalsForDate);
 
     // Count bathroom visits logged between 21:00 and 05:00 this week
     const weekEntries = eachDayOfInterval({
@@ -267,19 +289,29 @@ export default function HomeScreen() {
       Math.round(thisWeekAvgFluids - lastWeekAvgFluids)
     );
 
+    // No earlier data: nothing to compare with, so no trend
+    const hasPrevious = lastWeekDaysWithEntries.length > 0;
+    const vs = t("insights.vsLastWeek");
+
     return {
       avgVoids: Math.round(thisWeekAvgVoids * 10) / 10,
       avgFluids: Math.round(thisWeekAvgFluids),
       fluidGoalDays,
       totalDays: 7,
-      voidTrend,
-      fluidTrend,
-      voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
-      fluidDiff: fluidDiff > 0 ? `${fluidDiff} ml` : undefined,
+      voidTrend: hasPrevious ? voidTrend : undefined,
+      fluidTrend: hasPrevious ? fluidTrend : undefined,
+      voidDiff:
+        hasPrevious && voidDiff > 0
+          ? `${numberFormatters.decimal.format(voidDiff)} ${vs}`
+          : undefined,
+      fluidDiff:
+        hasPrevious && fluidDiff > 0
+          ? `${numberFormatters.decimal.format(fluidDiff)} ml ${vs}`
+          : undefined,
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
-  }, [weeklyData, getDayEntries, today, goals]);
+  }, [weeklyData, getDayEntries, today, getGoalsForDate, t]);
 
   // Compute monthly chart data (last 30 days)
   const monthlyData = React.useMemo(() => {
@@ -353,10 +385,8 @@ export default function HomeScreen() {
           lastMonthDaysWithEntries.length
         : 0;
 
-    // Days on which the fluid goal was reached
-    const fluidGoalDays = thisMonthDays.filter(
-      (d) => d.fluids >= goals.fluidTarget
-    ).length;
+    // Days on which the fluid target that applied that day was reached
+    const fluidGoalDays = countTargetDays(thisMonthDays, getGoalsForDate);
 
     // Count bathroom visits logged between 21:00 and 05:00 this month
     const monthEntries = eachDayOfInterval({
@@ -390,19 +420,29 @@ export default function HomeScreen() {
       Math.round(thisMonthAvgFluids - lastMonthAvgFluids)
     );
 
+    // No earlier data: nothing to compare with, so no trend
+    const hasPrevious = lastMonthDaysWithEntries.length > 0;
+    const vs = t("insights.vsLastMonth");
+
     return {
       avgVoids: Math.round(thisMonthAvgVoids * 10) / 10,
       avgFluids: Math.round(thisMonthAvgFluids),
       fluidGoalDays,
       totalDays: 30,
-      voidTrend,
-      fluidTrend,
-      voidDiff: voidDiff > 0 ? `${voidDiff}` : undefined,
-      fluidDiff: fluidDiff > 0 ? `${fluidDiff} ml` : undefined,
+      voidTrend: hasPrevious ? voidTrend : undefined,
+      fluidTrend: hasPrevious ? fluidTrend : undefined,
+      voidDiff:
+        hasPrevious && voidDiff > 0
+          ? `${numberFormatters.decimal.format(voidDiff)} ${vs}`
+          : undefined,
+      fluidDiff:
+        hasPrevious && fluidDiff > 0
+          ? `${numberFormatters.decimal.format(fluidDiff)} ml ${vs}`
+          : undefined,
       nightVoidsTotal,
       avgNightVoids: Math.round(avgNightVoids * 10) / 10,
     };
-  }, [monthlyData, getDayEntries, today, goals]);
+  }, [monthlyData, getDayEntries, today, getGoalsForDate, t]);
 
   // Get current period stats based on toggle
   const currentStats = insightsPeriod === "week" ? weeklyStats : monthlyStats;
@@ -553,7 +593,7 @@ export default function HomeScreen() {
           <ProgressBar
             progress={fluidProgress}
             value={summary.fluids}
-            target={goals.fluidTarget}
+            target={fluidTarget ?? 0}
             unit="ml"
             label={t("home.summary.fluids")}
             icon="cup-water"
@@ -561,11 +601,18 @@ export default function HomeScreen() {
             iconBackground={colors.category.fluid.container}
             fillColor={colors.category.fluid.fill}
             onPress={() => handleStatPress("fluid")}
-            accessibilityLabel={t("a11y.today.statWithTarget", {
-              label: t("home.summary.fluids"),
-              value: summary.fluids,
-              target: goals.fluidTarget,
-            })}
+            accessibilityLabel={
+              fluidTarget !== null
+                ? t("a11y.today.statWithTarget", {
+                    label: t("home.summary.fluids"),
+                    value: summary.fluids,
+                    target: fluidTarget,
+                  })
+                : t("a11y.today.statFluids", {
+                    label: t("home.summary.fluids"),
+                    value: summary.fluids,
+                  })
+            }
             accessibilityHint={t("a11y.today.statHint")}
           />
 
@@ -603,15 +650,17 @@ export default function HomeScreen() {
             onPress={handleEditGoals}
             style={styles.link}
             accessibilityRole="button"
-            accessibilityLabel={t("home.editGoals")}
+            accessibilityLabel={
+              fluidTarget === null ? t("home.setTarget") : t("home.editGoals")
+            }
           >
             <Icon
-              name="cog-outline"
+              name={fluidTarget === null ? "flag-outline" : "cog-outline"}
               size={iconSize.sm}
               color={colors.primary.DEFAULT}
             />
             <Text variant="subheadline" tone="accent">
-              {t("home.editGoals")}
+              {fluidTarget === null ? t("home.setTarget") : t("home.editGoals")}
             </Text>
           </AnimatedPressable>
         </View>
@@ -680,13 +729,13 @@ export default function HomeScreen() {
             <WeeklyChart
               data={weeklyData}
               onDayPress={handleDayPress}
-              fluidTarget={goals.fluidTarget}
+              fluidTarget={fluidTarget ?? undefined}
             />
           ) : (
             <MonthlyChart
               data={monthlyData}
               onWeekPress={handleDayPress}
-              fluidTarget={goals.fluidTarget}
+              fluidTarget={fluidTarget ?? undefined}
             />
           )}
 
@@ -699,7 +748,7 @@ export default function HomeScreen() {
           >
             <InsightCard
               title={t("insights.avgFluids")}
-              value={`${currentStats.avgFluids} ml`}
+              value={`${numberFormatters.decimal.format(currentStats.avgFluids)} ml`}
               trend={currentStats.fluidTrend}
               trendValue={currentStats.fluidDiff}
               icon="cup-water"
@@ -708,13 +757,14 @@ export default function HomeScreen() {
             />
             <InsightCard
               title={t("insights.avgVoids")}
-              value={`${currentStats.avgVoids}`}
+              value={numberFormatters.decimal.format(currentStats.avgVoids)}
               trend={currentStats.voidTrend}
               trendValue={currentStats.voidDiff}
               icon="toilet"
               color={colors.category.urination.accent}
               iconBackground={colors.category.urination.container}
             />
+            {fluidTarget !== null ? (
             <InsightCard
               title={t("insights.fluidGoalReached")}
               value={`${currentStats.fluidGoalDays}/${currentStats.totalDays}`}
@@ -726,6 +776,7 @@ export default function HomeScreen() {
               color={colors.amber.accent}
               iconBackground={colors.amber.container}
             />
+            ) : null}
           </View>
 
           {/* Insight Cards - Row 2: visits logged 21:00-05:00 */}
@@ -734,10 +785,10 @@ export default function HomeScreen() {
               title={t("insights.nightVoidsBetween", {
                 range: formatHourRange(21, 5),
               })}
-              value={`${currentStats.nightVoidsTotal}`}
-              subtitle={`${currentStats.avgNightVoids} ${t(
-                "insights.nightVoidsAvg"
-              )}`}
+              value={numberFormatters.decimal.format(currentStats.nightVoidsTotal)}
+              subtitle={`${numberFormatters.decimal.format(
+                currentStats.avgNightVoids
+              )} ${t("insights.nightVoidsAvg")}`}
               icon="weather-night"
               color={colors.indigo.accent}
               iconBackground={colors.indigo.container}

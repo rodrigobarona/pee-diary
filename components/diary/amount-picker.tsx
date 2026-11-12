@@ -42,6 +42,9 @@ export function AmountPicker({
   showInput = true,
 }: AmountPickerProps) {
   const { t } = useI18n();
+  // The typed amount is shown on request, like the exact amount of a
+  // bathroom visit, so the form does not show the amount twice
+  const [showCustom, setShowCustom] = React.useState(false);
 
   // Get current drink config for icon display
   const currentDrink =
@@ -60,7 +63,8 @@ export function AmountPicker({
 
   const adjustAmount = React.useCallback(
     (delta: number) => {
-      const newAmount = Math.max(0, current + delta);
+      // Never below one step: a drink of 0 ml is not a drink
+      const newAmount = Math.max(STEP, current + delta);
       if (newAmount === current) return;
       haptics.selection();
       onChange(newAmount.toString());
@@ -76,10 +80,10 @@ export function AmountPicker({
       <View style={styles.amountContainer}>
         <AnimatedPressable
           onPress={() => adjustAmount(-STEP)}
-          disabled={current <= 0}
+          disabled={current <= STEP}
           accessibilityRole="button"
           accessibilityLabel={t("a11y.forms.decreaseAmount", { step: STEP })}
-          style={[styles.adjustButton, current <= 0 ? styles.disabled : undefined]}
+          style={[styles.adjustButton, current <= STEP ? styles.disabled : undefined]}
         >
           <Icon name="minus" size={24} color={colors.primary.DEFAULT} />
         </AnimatedPressable>
@@ -89,7 +93,7 @@ export function AmountPicker({
           {...adjustableA11y({
             label,
             valueText: amountText,
-            min: 0,
+            min: STEP,
             now: current,
             onIncrement: () => adjustAmount(STEP),
             onDecrement: () => adjustAmount(-STEP),
@@ -159,14 +163,33 @@ export function AmountPicker({
         })}
       </View>
 
-      {/* Custom Amount Input */}
+      {/* Custom Amount Input, on request */}
       {showInput ? (
+        <AnimatedPressable
+          onPress={() => setShowCustom((shown) => !shown)}
+          style={styles.customToggle}
+          accessibilityRole="button"
+          accessibilityLabel={t("urination.volumePrecise")}
+          accessibilityState={{ expanded: showCustom }}
+        >
+          <Icon
+            name={showCustom ? "chevron-up" : "chevron-down"}
+            size={20}
+            color={colors.primary.DEFAULT}
+          />
+          <Text variant="subheadline" tone="accent" style={styles.customToggleText}>
+            {t("urination.volumePrecise")}
+          </Text>
+        </AnimatedPressable>
+      ) : null}
+      {showInput && showCustom ? (
         <Input
           value={value}
           onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
           keyboardType="number-pad"
-          placeholder={label}
-          accessibilityLabel={label}
+          placeholder={t("urination.volumePrecisePlaceholder")}
+          accessibilityLabel={`${label}, ${t("urination.volumePrecise")}`}
+          returnKeyType="done"
           style={styles.input}
         />
       ) : null}
@@ -177,6 +200,20 @@ export function AmountPicker({
 const styles = StyleSheet.create({
   container: {
     gap: spacing.md,
+  },
+  customToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    gap: spacing.xs,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    overflow: "hidden",
+  },
+  customToggleText: {
+    fontWeight: "500",
   },
   amountContainer: {
     ...cardStyle,

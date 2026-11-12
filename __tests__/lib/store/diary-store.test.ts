@@ -1,7 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { TERMS_VERSION } from "@/constants/legal";
-import { diaryStorage, useDiaryStore } from "@/lib/store";
+import {
+  diaryStorage,
+  getStoreLoadFailed,
+  retryStoreLoad,
+  useDiaryStore,
+} from "@/lib/store";
 import { act } from "react";
 
 // Reset store before each test
@@ -103,7 +108,8 @@ describe("DiaryStore", () => {
     it("should update daily goals", () => {
       const { updateGoals, goals: initialGoals } = useDiaryStore.getState();
 
-      expect(initialGoals.fluidTarget).toBe(2000);
+      // No target until the user sets one
+      expect(initialGoals.fluidTarget).toBeNull();
 
       act(() => {
         updateGoals({ fluidTarget: 2500 });
@@ -115,7 +121,7 @@ describe("DiaryStore", () => {
 
     it("has only a fluid goal, with no bathroom-visit target", () => {
       expect(useDiaryStore.getInitialState().goals).toEqual({
-        fluidTarget: 2000,
+        fluidTarget: null,
       });
     });
 
@@ -130,7 +136,7 @@ describe("DiaryStore", () => {
       expect(goalHistory).toHaveLength(1);
       expect(goalHistory[0].changes).toHaveProperty("fluidTarget");
       expect(goalHistory[0].changes.fluidTarget).toMatchObject({
-        from: 2000,
+        from: null,
         to: 2500,
       });
     });
@@ -184,7 +190,7 @@ describe("DiaryStore", () => {
       });
 
       const state = useDiaryStore.getState();
-      expect(state.goals).toEqual({ fluidTarget: 2000 });
+      expect(state.goals).toEqual({ fluidTarget: null });
       expect(state.goalHistory).toEqual([]);
     });
   });
@@ -355,7 +361,7 @@ describe("DiaryStore", () => {
 
       const cleared = useDiaryStore.getState();
       expect(cleared.entries).toEqual([]);
-      expect(cleared.goals).toEqual({ fluidTarget: 2000 });
+      expect(cleared.goals).toEqual({ fluidTarget: null });
       expect(cleared.goalHistory).toEqual([]);
       expect(cleared.streak).toEqual({ currentStreak: 0, lastActiveDate: null });
       expect(cleared.reminderSettings).toEqual({
@@ -389,6 +395,70 @@ describe("DiaryStore", () => {
       const { reminderSettings: updated } = useDiaryStore.getState();
       expect(updated.enabled).toBe(true);
       expect(updated.intervalHours).toBe(2);
+    });
+  });
+
+  describe("release safeguards", () => {
+    it("refuses an edit that would save an invalid amount", () => {
+      act(() => {
+        useDiaryStore.getState().addFluidEntry({ drinkType: "water", amount: 250 });
+      });
+      const [entry] = useDiaryStore.getState().entries;
+      act(() => {
+        useDiaryStore.getState().updateEntry(entry.id, { amount: Number.NaN });
+        useDiaryStore.getState().updateEntry(entry.id, { amount: 0 });
+      });
+      expect(useDiaryStore.getState().entries[0]).toEqual(entry);
+    });
+
+    it("does not add an entry with an invalid amount", () => {
+      act(() => {
+        useDiaryStore.getState().addFluidEntry({ drinkType: "water", amount: 0 });
+      });
+      expect(useDiaryStore.getState().entries).toHaveLength(0);
+    });
+
+    it("works the streak out again when the saved diary loads", async () => {
+      const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+      await AsyncStorage.setItem(
+        "pee-diary-storage",
+        JSON.stringify({
+          state: {
+            entries: [
+              {
+                id: "old",
+                type: "fluid",
+                timestamp: fiveDaysAgo.toISOString(),
+                createdAt: fiveDaysAgo.toISOString(),
+                drinkType: "water",
+                amount: 200,
+              },
+            ],
+            streak: { currentStreak: 7, lastActiveDate: "2020-01-01" },
+          },
+          version: 0,
+        })
+      );
+      await act(async () => {
+        await useDiaryStore.persist.rehydrate();
+      });
+      expect(useDiaryStore.getState().streak.currentStreak).toBe(0);
+    });
+
+    it("reports a read error and recovers on retry", async () => {
+      const getItem = AsyncStorage.getItem;
+      AsyncStorage.getItem = jest.fn().mockRejectedValueOnce(new Error("disk"));
+      await act(async () => {
+        await useDiaryStore.persist.rehydrate().catch(() => {});
+      });
+      expect(useDiaryStore.persist.hasHydrated()).toBe(false);
+      expect(getStoreLoadFailed()).toBe(true);
+      AsyncStorage.getItem = getItem;
+      await act(async () => {
+        await retryStoreLoad();
+      });
+      expect(useDiaryStore.persist.hasHydrated()).toBe(true);
+      expect(getStoreLoadFailed()).toBe(false);
     });
   });
 });

@@ -17,11 +17,16 @@ import { LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
-import { ErrorBoundary } from "@/components/error-boundary";
+import { ErrorBoundary, LoadFailedScreen } from "@/components/error-boundary";
 import { TERMS_VERSION } from "@/constants/legal";
 import { useReminderSync } from "@/hooks/use-reminder-sync";
 import { I18nProvider, useI18n } from "@/lib/i18n/context";
-import { useDiaryStore, useStoreHydrated } from "@/lib/store";
+import {
+  retryStoreLoad,
+  useDiaryStore,
+  useStoreHydrated,
+  useStoreLoadFailed,
+} from "@/lib/store";
 import { deleteExportFiles } from "@/lib/utils/export";
 import { navigationTheme, stackHeaderOptions } from "@/lib/theme/navigation";
 import { getLaunchAction } from "@/lib/utils/launch";
@@ -58,6 +63,7 @@ function InnerLayout() {
   const { locale, t } = useI18n();
   const router = useRouter();
   const isHydrated = useStoreHydrated();
+  const loadFailed = useStoreLoadFailed();
   const hasCheckedLaunchRef = useRef(false);
 
   // Reschedule reminders at launch, on return to the app and on changes
@@ -100,6 +106,17 @@ function InnerLayout() {
         break;
     }
   }, [isHydrated, locale, router]);
+
+  // The saved diary could not be read: nothing can be saved until it is, so
+  // block the app instead of showing an empty diary
+  if (loadFailed && !isHydrated) {
+    return (
+      <>
+        <LoadFailedScreen onRetry={() => void retryStoreLoad()} />
+        <StatusBar style="dark" />
+      </>
+    );
+  }
 
   return (
     // The app has only a light appearance for now (app.json
@@ -168,6 +185,10 @@ function InnerLayout() {
         />
         <Stack.Screen
           name="(formSheets)/language"
+          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
+        />
+        <Stack.Screen
+          name="(formSheets)/reminder-interval"
           options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
         />
       </Stack>

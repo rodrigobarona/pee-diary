@@ -149,6 +149,19 @@ All features are available without login or registration. Choose "All functional
 
 ---
 
+## Other App Content Answers
+
+| Question | Answer |
+| -------- | ------ |
+| Ads | No, the app contains no ads |
+| Financial features | None |
+| Government app | No |
+| News app | No |
+| COVID-19 contact tracing or status | No |
+| Release notes | `../apple/release-notes-templates.md` (the 1.0.0 text is written for Google Play, 500 characters max) |
+
+---
+
 ## Data Safety (Summary)
 
 See `data-safety-answers.md`.

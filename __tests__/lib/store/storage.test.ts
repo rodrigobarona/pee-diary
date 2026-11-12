@@ -28,6 +28,7 @@ const createStore = () => {
     multiRemove: jest.fn(async (keys: readonly string[]) => {
       for (const key of keys) data.delete(key);
     }),
+    getAllKeys: jest.fn(async () => [...data.keys()]),
   };
   return store;
 };
@@ -50,6 +51,25 @@ describe("splitIntoChunks", () => {
 });
 
 describe("chunked storage", () => {
+  it("removes chunks left by an interrupted save", async () => {
+    const store = createStore();
+    // An earlier session wrote generation 1's chunks but not its manifest
+    store.data.set("diary.g1.0", "old diary");
+    store.data.set("diary.g1.7", "old diary");
+    store.data.set("diary.recovery.g1.0", "kept");
+    const storage = createChunkedStorage(store, { chunkSize: 10 });
+
+    await storage.setItem("diary", "new");
+
+    expect([...store.data.keys()].sort()).toEqual(
+      ["diary", "diary.g1.0", "diary.recovery.g1.0"].sort()
+    );
+    expect(await storage.getItem("diary")).toBe("new");
+
+    await storage.removeItem("diary");
+    expect([...store.data.keys()]).toEqual(["diary.recovery.g1.0"]);
+  });
+
   it("keeps every stored value below the chunk size and reads the whole value back", async () => {
     const store = createStore();
     const storage = createChunkedStorage(store, { chunkSize: 10 });

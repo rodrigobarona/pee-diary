@@ -73,11 +73,28 @@ export class ErrorBoundary extends React.Component<Props, State> {
 interface DefaultErrorFallbackProps {
   error: Error | null;
   onRetry?: () => void;
+  // Translation keys; the generic "Something went wrong" text by default
+  titleKey?: string;
+  descriptionKey?: string;
+}
+
+/** Shown when the saved diary could not be read at launch. */
+export function LoadFailedScreen({ onRetry }: { onRetry: () => void }) {
+  return (
+    <DefaultErrorFallback
+      error={null}
+      onRetry={onRetry}
+      titleKey="error.loadFailedTitle"
+      descriptionKey="error.loadFailedDescription"
+    />
+  );
 }
 
 function DefaultErrorFallback({
   error,
   onRetry,
+  titleKey = "error.title",
+  descriptionKey = "error.description",
 }: DefaultErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
   // The root error boundary sits outside I18nProvider, so read the shared
@@ -96,10 +113,10 @@ function DefaultErrorFallback({
         </View>
 
         <Text variant="title3" style={styles.title} accessibilityRole="header">
-          {t("error.title")}
+          {t(titleKey)}
         </Text>
         <Text variant="subheadline" tone="secondary" style={styles.description}>
-          {t("error.description")}
+          {t(descriptionKey)}
         </Text>
 
         {onRetry ? (

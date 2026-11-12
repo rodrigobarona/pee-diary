@@ -30,7 +30,7 @@
   "home": {
     "noEntries": "Aún no hay registros hoy",
     "addFirst": "Pulsa el botón + de abajo para añadir tu primer registro",
-    "editGoals": "Editar objetivos diarios",
+    "editGoals": "Editar objetivo de líquidos",
     "exportData": "Exportar tus datos",
     "todayActivity": "Actividad de hoy",
     "viewInHistory": "Ver en el historial",
@@ -40,7 +40,8 @@
       "voids": "Micciones",
       "fluids": "Líquidos",
       "leaks": "Pérdidas"
-    }
+    },
+    "setTarget": "Fijar un objetivo"
   },
   "insights": {
     "title": "Resumen",
@@ -57,17 +58,23 @@
     "intake": "Ingesta",
     "output": "Orina (estimada)",
     "outputEstimateNote": "El volumen de orina se estima a partir de los tamaños que elegiste (pequeño, mediano, grande), salvo cuando indicaste una cantidad exacta.",
-    "nightVoidsBetween": "Micciones {{range}}"
+    "nightVoidsBetween": "Micciones {{range}}",
+    "vsLastWeek": "respecto a la semana anterior",
+    "vsLastMonth": "respecto al mes anterior"
   },
   "goals": {
-    "title": "Objetivos diarios",
+    "title": "Objetivo de líquidos",
     "description": "Fija tu propio objetivo diario de líquidos, por ejemplo el que te haya indicado tu profesional de la salud. Es solo para tu referencia.",
     "fluidTarget": "Ingesta de líquidos",
     "fluidDescription": "Tu objetivo diario de líquidos",
     "targetsInfo": "Tu objetivo es para tu propio registro. Pregunta a tu profesional de la salud qué es adecuado para ti.",
     "history": "Historial de objetivos",
     "historyEmpty": "Aún no hay cambios",
-    "fluids": "Líquidos"
+    "fluids": "Líquidos",
+    "noTarget": "Sin objetivo",
+    "noTargetDescription": "No tienes un objetivo de líquidos. Fija uno solo si quieres comparar cada día con él, por ejemplo uno que te haya indicado tu profesional de la salud.",
+    "setTarget": "Fijar un objetivo",
+    "removeTarget": "Quitar objetivo"
   },
   "streak": {
     "day": "día",
@@ -93,8 +100,8 @@
   },
   "entry": {
     "urination": "Micción",
-    "fluid": "Ingesta de líquidos",
-    "leak": "Pérdida/accidente",
+    "fluid": "Bebida",
+    "leak": "Pérdida",
     "addUrination": "Registrar micción",
     "addFluid": "Registrar bebida",
     "addLeak": "Registrar pérdida"
@@ -113,7 +120,7 @@
     "notes": "Notas"
   },
   "fluid": {
-    "title": "Registrar ingesta de líquidos",
+    "title": "Registrar bebida",
     "drinkType": "Tipo de bebida",
     "water": "Agua",
     "coffee": "Café",
@@ -121,15 +128,16 @@
     "juice": "Zumo",
     "alcohol": "Alcohol",
     "other": "Otro",
-    "amount": "Cantidad (ml)",
-    "notes": "Notas"
+    "amount": "Cantidad",
+    "notes": "Notas",
+    "amountRequired": "Indica una cantidad superior a 0 ml."
   },
   "leak": {
-    "title": "Registrar pérdida/accidente",
+    "title": "Registrar pérdida",
     "severity": "Cantidad",
     "drops": "Gotas",
     "dropsDesc": "Unas gotas",
-    "moderate": "Moderada",
+    "moderate": "Media",
     "moderateDesc": "Cantidad apreciable",
     "full": "Abundante",
     "fullDesc": "Pérdida completa",
@@ -141,7 +149,7 @@
       "laughing": "Riendo",
       "exercise": "Haciendo ejercicio",
       "lifting": "Levantando peso",
-      "standing": "Poniéndose de pie",
+      "standing": "Al levantarse",
       "walking": "Caminando",
       "sleeping": "Durmiendo",
       "other": "Otro"
@@ -184,7 +192,7 @@
       "other": "{{count}} registros guardados"
     },
     "waitForData": "Tus datos aún se están cargando. Inténtalo de nuevo en un momento.",
-    "editGoals": "Editar objetivos",
+    "editGoals": "Editar objetivo",
     "restore": "Restaurar",
     "localBackup": "Copia local",
     "exportBackup": "Exportar copia de seguridad",
@@ -219,7 +227,13 @@
     "reminderNotificationTitle": "Recordatorio del diario",
     "reminderNotificationBody": "Es hora de actualizar tu diario.",
     "permissionRequired": "Permiso necesario",
-    "permissionRequiredDescription": "Activa las notificaciones en los ajustes del móvil para recibir recordatorios."
+    "permissionRequiredDescription": "Activa las notificaciones en los ajustes del móvil para recibir recordatorios.",
+    "importBackupSkipped": {
+      "one": "No se ha podido leer {{count}} registro dañado del archivo, así que no se ha importado.",
+      "other": "No se han podido leer {{count}} registros dañados del archivo, así que no se han importado."
+    },
+    "notificationsOff": "Las notificaciones están desactivadas",
+    "notificationsOffDescription": "Los recordatorios no aparecerán hasta que permitas las notificaciones de Eleva Diary en los ajustes del móvil."
   },
   "urgency": {
     "1": "Ninguna",
@@ -243,7 +257,8 @@
     "changedFrom": "de",
     "changedTo": "a",
     "deleteConfirm": "¿Seguro que quieres eliminar este registro?",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "notFound": "Este registro ya no está en tu diario."
   },
   "export": {
     "title": "Exportar datos",
@@ -277,7 +292,9 @@
     "description": "Se ha producido un error inesperado. Inténtalo de nuevo.",
     "tryAgain": "Reintentar",
     "showDetails": "Mostrar detalles",
-    "hideDetails": "Ocultar detalles"
+    "hideDetails": "Ocultar detalles",
+    "loadFailedTitle": "No se ha podido abrir tu diario",
+    "loadFailedDescription": "Tus registros siguen en este móvil, pero la aplicación no ha podido leerlos ahora. Inténtalo de nuevo. Si vuelve a pasar, reinicia el móvil o escribe a support@eleva.care."
   },
   "onboarding": {
     "welcome": {
@@ -313,7 +330,7 @@
     "voidVolume": "Vol. micción",
     "urineLeaks": "Pérdidas de orina",
     "drops": "Gotas",
-    "moderate": "Mod.",
+    "moderate": "Med.",
     "full": "Abund.",
     "urgency": "Urg.",
     "pain": "Dolor",
@@ -395,7 +412,7 @@
       "millilitres": "{{value}} mililitros",
       "decreaseBy": "Reducir {{amount}} ml",
       "increaseBy": "Aumentar {{amount}} ml",
-      "goalChange": "{{date}}, líquidos cambiados de {{from}} a {{to}} mililitros",
+      "goalChange": "{{date}}, objetivo de líquidos cambiado de {{from}} a {{to}}",
       "pageOf": "Página {{page}} de {{total}}"
     },
     "today": {
@@ -433,7 +450,32 @@
       "dayHint": "Abre este día en el historial",
       "trendUp": "{{value}} más que en el periodo anterior",
       "trendDown": "{{value}} menos que en el periodo anterior",
-      "daysOf": "{{count}} de {{total}} días"
+      "daysOf": "{{count}} de {{total}} días",
+      "statFluids": "{{label}}, {{value}} mililitros"
+    }
+  },
+  "csv": {
+    "headers": {
+      "id": "ID",
+      "type": "Tipo",
+      "timestamp": "Fecha y hora",
+      "date": "Fecha",
+      "time": "Hora",
+      "volume": "Volumen",
+      "volumeMl": "Volumen (ml)",
+      "urgency": "Urgencia",
+      "hadLeak": "Pérdida",
+      "hadPain": "Dolor",
+      "drinkType": "Tipo de bebida",
+      "amountMl": "Cantidad (ml)",
+      "severity": "Cantidad de la pérdida",
+      "activity": "Actividad",
+      "notes": "Notas"
+    },
+    "types": {
+      "urination": "Micción",
+      "fluid": "Bebida",
+      "leak": "Pérdida"
     }
   }
 }

@@ -30,22 +30,23 @@
   "home": {
     "noEntries": "No entries yet today",
     "addFirst": "Tap the + button below to add your first entry",
-    "editGoals": "Edit daily goals",
+    "editGoals": "Edit fluid target",
     "exportData": "Export your data",
     "todayActivity": "Today's Activity",
     "viewInHistory": "View in History",
     "addNew": "Add New Entry",
     "noLeaks": "None",
     "summary": {
-      "voids": "Voids",
+      "voids": "Bathroom visits",
       "fluids": "Fluids",
       "leaks": "Leaks"
-    }
+    },
+    "setTarget": "Set a target"
   },
   "insights": {
     "title": "Summary",
     "avgFluids": "Avg Fluids",
-    "avgVoids": "Avg Voids",
+    "avgVoids": "Avg visits",
     "fluidGoalReached": "Fluid goal reached",
     "thisWeek": "This Week",
     "week": "Week",
@@ -57,17 +58,23 @@
     "intake": "Intake",
     "output": "Output (estimated)",
     "outputEstimateNote": "Output is estimated from the sizes you chose (small, medium, large), unless you entered an exact amount.",
-    "nightVoidsBetween": "Voids {{range}}"
+    "nightVoidsBetween": "Visits {{range}}",
+    "vsLastWeek": "vs last week",
+    "vsLastMonth": "vs last month"
   },
   "goals": {
-    "title": "Daily Goals",
+    "title": "Fluid Target",
     "description": "Set your own daily fluid target, for example one your health professional gave you. It is for your own reference.",
     "fluidTarget": "Fluid Intake",
     "fluidDescription": "Your daily fluid target",
     "targetsInfo": "Your target is for your own record. Ask your health professional what is right for you.",
     "history": "Goal History",
     "historyEmpty": "No changes yet",
-    "fluids": "Fluids"
+    "fluids": "Fluids",
+    "noTarget": "No target",
+    "noTargetDescription": "You have no fluid target. Set one only if you want to compare each day with it, for example a target your health professional gave you.",
+    "setTarget": "Set a target",
+    "removeTarget": "Remove target"
   },
   "streak": {
     "day": "day",
@@ -92,15 +99,15 @@
     "leakDesc": "Log a leak"
   },
   "entry": {
-    "urination": "Urination",
-    "fluid": "Fluid Intake",
-    "leak": "Leak/Accident",
-    "addUrination": "Log Urination",
-    "addFluid": "Log Fluid",
+    "urination": "Bathroom visit",
+    "fluid": "Drink",
+    "leak": "Leak",
+    "addUrination": "Log Bathroom Visit",
+    "addFluid": "Log Drink",
     "addLeak": "Log Leak"
   },
   "urination": {
-    "title": "Log Urination",
+    "title": "Log Bathroom Visit",
     "volume": "Volume",
     "volumeSmall": "Small",
     "volumeMedium": "Medium",
@@ -113,7 +120,7 @@
     "notes": "Notes"
   },
   "fluid": {
-    "title": "Log Fluid Intake",
+    "title": "Log Drink",
     "drinkType": "Drink Type",
     "water": "Water",
     "coffee": "Coffee",
@@ -121,15 +128,16 @@
     "juice": "Juice",
     "alcohol": "Alcohol",
     "other": "Other",
-    "amount": "Amount (ml)",
-    "notes": "Notes"
+    "amount": "Amount",
+    "notes": "Notes",
+    "amountRequired": "Enter an amount above 0 ml."
   },
   "leak": {
-    "title": "Log Leak/Accident",
+    "title": "Log Leak",
     "severity": "Amount",
     "drops": "Drops",
     "dropsDesc": "A few drops",
-    "moderate": "Moderate",
+    "moderate": "Medium",
     "moderateDesc": "Noticeable amount",
     "full": "Full",
     "fullDesc": "Full accident",
@@ -184,7 +192,7 @@
       "other": "{{count}} entries recorded"
     },
     "waitForData": "Your data is still loading. Try again in a moment.",
-    "editGoals": "Edit Daily Goals",
+    "editGoals": "Edit Fluid Target",
     "restore": "Restore",
     "localBackup": "Local Backup",
     "exportBackup": "Export Backup File",
@@ -219,7 +227,13 @@
     "reminderNotificationTitle": "Diary reminder",
     "reminderNotificationBody": "Time to update your diary.",
     "permissionRequired": "Permission Required",
-    "permissionRequiredDescription": "Turn on notifications in your phone's settings to get reminders."
+    "permissionRequiredDescription": "Turn on notifications in your phone's settings to get reminders.",
+    "importBackupSkipped": {
+      "one": "{{count}} damaged entry in the file couldn't be read and was left out.",
+      "other": "{{count}} damaged entries in the file couldn't be read and were left out."
+    },
+    "notificationsOff": "Notifications are off",
+    "notificationsOffDescription": "Reminders can't appear until you allow notifications for Eleva Diary in your phone's settings."
   },
   "urgency": {
     "1": "None",
@@ -243,7 +257,8 @@
     "changedFrom": "from",
     "changedTo": "to",
     "deleteConfirm": "Are you sure you want to delete this entry?",
-    "update": "Update"
+    "update": "Update",
+    "notFound": "This entry is no longer in your diary."
   },
   "export": {
     "title": "Export Data",
@@ -277,7 +292,9 @@
     "description": "Something unexpected happened. Please try again.",
     "tryAgain": "Try Again",
     "showDetails": "Show Details",
-    "hideDetails": "Hide Details"
+    "hideDetails": "Hide Details",
+    "loadFailedTitle": "Couldn't open your diary",
+    "loadFailedDescription": "Your entries are still on this phone, but the app couldn't read them just now. Try again. If it keeps happening, restart your phone or write to support@eleva.care."
   },
   "onboarding": {
     "welcome": {
@@ -313,7 +330,7 @@
     "voidVolume": "Void Volume",
     "urineLeaks": "Urine Leaks",
     "drops": "Drops",
-    "moderate": "Mod.",
+    "moderate": "Med.",
     "full": "Full",
     "urgency": "Urg.",
     "pain": "Pain",
@@ -395,7 +412,7 @@
       "millilitres": "{{value}} millilitres",
       "decreaseBy": "Decrease by {{amount}} ml",
       "increaseBy": "Increase by {{amount}} ml",
-      "goalChange": "{{date}}, fluids changed from {{from}} to {{to}} millilitres",
+      "goalChange": "{{date}}, fluid target changed from {{from}} to {{to}}",
       "pageOf": "Page {{page}} of {{total}}"
     },
     "today": {
@@ -410,8 +427,8 @@
       "timeRange": "from {{start}} to {{end}}",
       "periodHint": "Opens this time of day in History",
       "voids": {
-        "one": "{{count}} void",
-        "other": "{{count}} voids"
+        "one": "{{count}} bathroom visit",
+        "other": "{{count}} bathroom visits"
       },
       "drinks": {
         "one": "{{count}} drink, {{amount}} millilitres",
@@ -422,18 +439,43 @@
         "other": "{{count}} leaks"
       },
       "millilitres": "{{amount}} millilitres",
-      "weeklyChart": "Chart of voids and fluids for each of the last 7 days",
-      "monthlyChart": "Chart of the daily average of voids and fluids, week by week, for the last 30 days",
+      "weeklyChart": "Chart of bathroom visits and fluids for each of the last 7 days",
+      "monthlyChart": "Chart of the daily average of bathroom visits and fluids, week by week, for the last 30 days",
       "fluidBalanceChart": "Chart of fluid intake and estimated output for each of the last 7 days",
       "chartDay": "{{date}}: {{details}}",
       "chartWeek": "Week from {{start}} to {{end}}: {{details}}",
-      "avgVoidsPerDay": "an average of {{count}} voids a day",
+      "avgVoidsPerDay": "an average of {{count}} bathroom visits a day",
       "avgFluidsPerDay": "an average of {{amount}} millilitres of fluids a day",
       "intakeOutput": "intake {{intake}} millilitres, estimated output {{output}} millilitres",
       "dayHint": "Opens this day in History",
       "trendUp": "{{value}} more than the previous period",
       "trendDown": "{{value}} less than the previous period",
-      "daysOf": "{{count}} of {{total}} days"
+      "daysOf": "{{count}} of {{total}} days",
+      "statFluids": "{{label}}, {{value}} millilitres"
+    }
+  },
+  "csv": {
+    "headers": {
+      "id": "ID",
+      "type": "Type",
+      "timestamp": "Date and time",
+      "date": "Date",
+      "time": "Time",
+      "volume": "Volume",
+      "volumeMl": "Volume (ml)",
+      "urgency": "Urgency",
+      "hadLeak": "Leak",
+      "hadPain": "Pain",
+      "drinkType": "Drink type",
+      "amountMl": "Amount (ml)",
+      "severity": "Leak amount",
+      "activity": "Activity",
+      "notes": "Notes"
+    },
+    "types": {
+      "urination": "Bathroom visit",
+      "fluid": "Drink",
+      "leak": "Leak"
     }
   }
 }

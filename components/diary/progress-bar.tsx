@@ -9,6 +9,7 @@ import Animated, {
 
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { Icon, type IconName } from '@/components/ui/icon';
+import { numberFormatters } from '@/lib/i18n';
 import { Text } from '@/components/ui/text';
 import { colors } from '@/lib/theme/colors';
 import { cardStyle, iconSize, spacing } from '@/lib/theme/styles';
@@ -100,16 +101,17 @@ export function ProgressBar({
             </View>
           ) : isNoTargetMode ? (
             <Text variant="title3" style={{ color: valueColor }}>
-              {value}
+              {numberFormatters.decimal.format(value)}
+              {unit ? ` ${unit}` : ''}
             </Text>
           ) : (
             <>
               <Text variant="title3" style={{ color: valueColor }}>
-                {value}
+                {numberFormatters.decimal.format(value)}
               </Text>
               <Text variant="subheadline" tone="secondary">
-                /{target}
-                {unit}
+                /{numberFormatters.decimal.format(target)}
+                {unit ? ` ${unit}` : ''}
               </Text>
             </>
           )}

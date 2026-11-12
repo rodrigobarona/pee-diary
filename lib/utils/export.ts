@@ -92,25 +92,37 @@ function escapeHTML(value: string): string {
 }
 
 /**
- * Escape a value for CSV format
+ * Column names and values of the CSV, in the user's language. Without them
+ * the CSV uses English column names and the stored codes ("medium").
  */
-function escapeCSV(
-  value: string | number | boolean | undefined | null,
-): string {
-  if (value === undefined || value === null) return "";
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  const str = String(value);
-  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
+export interface CSVLabels {
+  headers: [
+    id: string,
+    type: string,
+    timestamp: string,
+    date: string,
+    time: string,
+    volume: string,
+    volumeMl: string,
+    urgency: string,
+    hadLeak: string,
+    hadPain: string,
+    drinkType: string,
+    amountMl: string,
+    severity: string,
+    activity: string,
+    notes: string,
+  ];
+  yes: string;
+  no: string;
+  // Display names of the stored codes, by column
+  values: Partial<Record<CSVCodeColumn, Record<string, string>>>;
 }
 
-/**
- * Format entries to CSV string
- */
-export function formatToCSV(entries: DiaryEntry[]): string {
-  const headers = [
+type CSVCodeColumn = "type" | "volume" | "drinkType" | "severity" | "activity";
+
+const defaultCSVLabels: CSVLabels = {
+  headers: [
     "ID",
     "Type",
     "Timestamp",
@@ -126,13 +138,54 @@ export function formatToCSV(entries: DiaryEntry[]): string {
     "Severity",
     "Activity",
     "Notes",
-  ].join(",");
+  ],
+  yes: "Yes",
+  no: "No",
+  values: {},
+};
+
+/**
+ * Escape a value for CSV format. Text starting with = + - @ (or a tab or
+ * carriage return) is prefixed with an apostrophe, so a spreadsheet shows a
+ * note such as "=HYPERLINK(...)" as text instead of running it.
+ */
+function escapeCSV(
+  value: string | number | boolean | undefined | null,
+  labels: CSVLabels = defaultCSVLabels,
+): string {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "boolean") return value ? labels.yes : labels.no;
+  let str = String(value);
+  if (typeof value === "string" && /^[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
+  if (/[",\r\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+/**
+ * Format entries to CSV string. Starts with a UTF-8 byte order mark, so
+ * spreadsheet apps show accented letters correctly.
+ */
+export function formatToCSV(
+  entries: DiaryEntry[],
+  labels: CSVLabels = defaultCSVLabels,
+): string {
+  const headers = labels.headers.map((name) => escapeCSV(name)).join(",");
+  // A stored code shown in the user's language
+  const code = (column: CSVCodeColumn, value: string | undefined) =>
+    escapeCSV(
+      value === undefined ? undefined : labels.values[column]?.[value] ?? value,
+    );
+  const bool = (value: boolean) => escapeCSV(value, labels);
 
   const rows = entries.map((entry) => {
     const entryDate = new Date(entry.timestamp);
     const base = [
       escapeCSV(entry.id),
-      escapeCSV(entry.type),
+      code("type", entry.type),
       escapeCSV(entry.timestamp),
       escapeCSV(format(entryDate, "yyyy-MM-dd")),
       escapeCSV(format(entryDate, "HH:mm")),
@@ -142,11 +195,11 @@ export function formatToCSV(entries: DiaryEntry[]): string {
       case "urination":
         return [
           ...base,
-          escapeCSV(entry.volume),
+          code("volume", entry.volume),
           escapeCSV(entry.volumeMl),
           escapeCSV(entry.urgency),
-          escapeCSV(entry.hadLeak),
-          escapeCSV(entry.hadPain),
+          bool(entry.hadLeak),
+          bool(entry.hadPain),
           "",
           "",
           "",
@@ -161,7 +214,7 @@ export function formatToCSV(entries: DiaryEntry[]): string {
           "",
           "",
           "",
-          escapeCSV(entry.drinkType),
+          code("drinkType", entry.drinkType),
           escapeCSV(entry.amount),
           "",
           "",
@@ -177,8 +230,8 @@ export function formatToCSV(entries: DiaryEntry[]): string {
           "",
           "",
           "",
-          escapeCSV(entry.severity),
-          escapeCSV(entry.activity),
+          code("severity", entry.severity),
+          code("activity", entry.activity),
           escapeCSV(entry.notes),
         ].join(",");
       default:
@@ -186,7 +239,7 @@ export function formatToCSV(entries: DiaryEntry[]): string {
     }
   });
 
-  return [headers, ...rows].join("\n");
+  return `\uFEFF${[headers, ...rows].join("\r\n")}`;
 }
 
 /**
@@ -585,9 +638,9 @@ export function generatePDFHTML(
       font-size: 9px;
       color: #4B5563;
       max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      /* The full note reaches the report: wrap, never cut */
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     /* Summary Row */
@@ -657,6 +710,7 @@ export async function exportAndShare(
   dateRange: { start: Date; end: Date },
   pdfTranslations?: PDFTranslations,
   locale?: string,
+  csvLabels?: CSVLabels,
 ): Promise<{ success: boolean; error?: ExportError }> {
   if (entries.length === 0) {
     return { success: false, error: "noEntries" };
@@ -675,7 +729,7 @@ export async function exportAndShare(
     // Numeric dates keep file names the same in every language
     const startStr = format(dateRange.start, "yyyy-MM-dd");
     const endStr = format(dateRange.end, "yyyy-MM-dd");
-    const filename = `${EXPORT_FILE_PREFIX}${startStr}-to-${endStr}.${exportFormat}`;
+    const filename = `${EXPORT_FILE_PREFIX}${startStr}_${endStr}.${exportFormat}`;
     let filePath = `${fileDir}${filename}`;
     let mimeType: string;
     let uti: string;
@@ -696,7 +750,9 @@ export async function exportAndShare(
     } else {
       // Generate file content
       const content =
-        exportFormat === "csv" ? formatToCSV(entries) : formatToJSON(entries);
+        exportFormat === "csv"
+          ? formatToCSV(entries, csvLabels)
+          : formatToJSON(entries);
 
       // Write file
       await writeAsStringAsync(filePath, content);
