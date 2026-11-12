@@ -63,7 +63,7 @@ pnpm start
 
 - **iOS Simulator**: Press `i` in the terminal
 - **Android Emulator**: Press `a` in the terminal
-- **Physical Device**: a development build (`npx eas-cli@latest build --profile development`); the app uses native modules that Expo Go may not include
+- **Physical Device**: a development build with `expo-dev-client` (`npx eas-cli@latest build --profile development`, or `npx expo run:ios` / `run:android` locally), then `pnpm start`. The dev client is left out of production builds.
 
 ### Tests and checks
 
