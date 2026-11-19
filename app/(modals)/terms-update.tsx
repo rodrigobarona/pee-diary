@@ -17,7 +17,7 @@ import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
-import { iconSize, radius, ripple, spacing } from "@/lib/theme/styles";
+import { iconSize, radius, ripple, spacing, columnStyle, MAX_CONTENT_WIDTH } from "@/lib/theme/styles";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -62,6 +62,7 @@ export default function TermsUpdateScreen() {
       style={styles.container}
       contentContainerStyle={[
         styles.content,
+        columnStyle(MAX_CONTENT_WIDTH.reading),
         {
           // Android shows this full screen, edge to edge: start below the
           // status bar (iOS presents it as a page sheet)

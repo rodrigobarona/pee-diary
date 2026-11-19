@@ -22,6 +22,7 @@ import type { DateEntryInfo } from "@/components/diary/calendar-header";
 import type { FilterType } from "@/components/diary/filter-chips";
 import { useDayCountsLabel } from "@/components/diary/daily-stats-bar";
 import { AddEntryFab } from "@/components/add-entry-fab";
+import { ContentColumn } from "@/components/ui/content-column";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -37,6 +38,7 @@ import {
   iconSize,
   radius,
   spacing,
+  MAX_CONTENT_WIDTH,
 } from "@/lib/theme/styles";
 import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
 
@@ -283,166 +285,169 @@ export default function HistoryScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Calendar Header */}
-      <CalendarHeader
-        selectedDate={selectedDate}
-        onSelectDate={handleDateSelect}
-        entriesByDate={entriesByDate}
-      />
+      {/* One centred column on large windows (unfolded foldables) */}
+      <ContentColumn maxWidth={MAX_CONTENT_WIDTH.page} style={styles.column}>
+        {/* Calendar Header */}
+        <CalendarHeader
+          selectedDate={selectedDate}
+          onSelectDate={handleDateSelect}
+          entriesByDate={entriesByDate}
+        />
 
-      {/* Filter Chips */}
-      <FilterChips
-        selected={filter}
-        onSelect={setFilter}
-        counts={filterCounts}
-      />
+        {/* Filter Chips */}
+        <FilterChips
+          selected={filter}
+          onSelect={setFilter}
+          counts={filterCounts}
+        />
 
-      {/* Day header: one heading that reads the date and the day's counts */}
-      <View
-        style={styles.dayHeader}
-        accessible
-        accessibilityRole="header"
-        accessibilityLabel={dayHeaderLabel}
-      >
-        <Text variant="headline" style={styles.dayTitle}>
-          {dayTitle}
-        </Text>
-        {selectedDayData.hasAnyEntries ? (
-          <DailyStatsBar
-            voids={summary.voids}
-            fluids={summary.fluids}
-            leaks={summary.leaks}
-            hideFromAccessibility
-          />
-        ) : null}
-      </View>
+        {/* Day header: one heading that reads the date and the day's counts */}
+        <View
+          style={styles.dayHeader}
+          accessible
+          accessibilityRole="header"
+          accessibilityLabel={dayHeaderLabel}
+        >
+          <Text variant="headline" style={styles.dayTitle}>
+            {dayTitle}
+          </Text>
+          {selectedDayData.hasAnyEntries ? (
+            <DailyStatsBar
+              voids={summary.voids}
+              fluids={summary.fluids}
+              leaks={summary.leaks}
+              hideFromAccessibility
+            />
+          ) : null}
+        </View>
 
-      {/* Day Content - Full height */}
-      <View style={styles.contentContainer}>
-        {selectedDayData.hasEntries ? (
-          /* Entries List */
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={[
-              styles.scrollContent,
-              { paddingBottom: bottomSpace },
-            ]}
-            showsVerticalScrollIndicator={false}
-          >
-            {selectedDayData.periods.map((periodGroup) => {
-              const isExpanded = expandedPeriods.has(periodGroup.period);
-              const config = periodConfig[periodGroup.period];
-              const periodName = t(`timePeriod.${periodGroup.period}`);
-              const count = periodGroup.entries.length;
+        {/* Day Content - Full height */}
+        <View style={styles.contentContainer}>
+          {selectedDayData.hasEntries ? (
+            /* Entries List */
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={[
+                styles.scrollContent,
+                { paddingBottom: bottomSpace },
+              ]}
+              showsVerticalScrollIndicator={false}
+            >
+              {selectedDayData.periods.map((periodGroup) => {
+                const isExpanded = expandedPeriods.has(periodGroup.period);
+                const config = periodConfig[periodGroup.period];
+                const periodName = t(`timePeriod.${periodGroup.period}`);
+                const count = periodGroup.entries.length;
 
-              return (
-                <View key={periodGroup.period} style={styles.periodSection}>
-                  {/* Collapsible period header */}
-                  <AnimatedPressable
-                    style={styles.periodHeader}
-                    onPress={() => togglePeriod(periodGroup.period)}
-                    feedback="highlight"
-                    highlightColor={colors.highlight}
-                    accessibilityRole="button"
-                    accessibilityLabel={a11yLabel(
-                      periodName,
-                      t("a11y.history.entryCount", { count })
-                    )}
-                    accessibilityState={{ expanded: isExpanded }}
-                    testID={`history-period-${periodGroup.period}`}
-                  >
-                    <View style={styles.periodIconContainer}>
-                      <Icon
-                        name={config.icon}
-                        size={iconSize.sm}
-                        color={config.color}
-                      />
-                    </View>
-                    <Text
-                      variant="subheadline"
-                      tone="secondary"
-                      style={styles.periodLabel}
+                return (
+                  <View key={periodGroup.period} style={styles.periodSection}>
+                    {/* Collapsible period header */}
+                    <AnimatedPressable
+                      style={styles.periodHeader}
+                      onPress={() => togglePeriod(periodGroup.period)}
+                      feedback="highlight"
+                      highlightColor={colors.highlight}
+                      accessibilityRole="button"
+                      accessibilityLabel={a11yLabel(
+                        periodName,
+                        t("a11y.history.entryCount", { count })
+                      )}
+                      accessibilityState={{ expanded: isExpanded }}
+                      testID={`history-period-${periodGroup.period}`}
                     >
-                      {periodName}
-                    </Text>
-                    <View style={styles.periodBadge}>
-                      <Text
-                        variant="caption1"
-                        tone="secondary"
-                        style={styles.periodBadgeText}
-                      >
-                        {numberFormatters.decimal.format(count)}
-                      </Text>
-                    </View>
-                    <View style={styles.periodLine} />
-                    <Icon
-                      name={isExpanded ? "chevron-up" : "chevron-down"}
-                      size={iconSize.md}
-                      color={colors.textSecondary}
-                    />
-                  </AnimatedPressable>
-
-                  {/* Entries in this period (collapsible) */}
-                  {isExpanded ? (
-                    <View style={styles.entriesList}>
-                      {periodGroup.entries.map((entry, entryIndex) => (
-                        <TimelineEntry
-                          key={entry.id}
-                          entry={entry}
-                          isFirst={entryIndex === 0}
-                          isLast={entryIndex === periodGroup.entries.length - 1}
-                          onPress={() => handleEntryPress(entry.id)}
-                          testID={`entry-${entry.id}`}
+                      <View style={styles.periodIconContainer}>
+                        <Icon
+                          name={config.icon}
+                          size={iconSize.sm}
+                          color={config.color}
                         />
-                      ))}
-                    </View>
-                  ) : null}
-                </View>
-              );
-            })}
-          </ScrollView>
-        ) : (
-          /* Empty State - Full height centered */
-          <View
-            style={[styles.emptyState, { paddingBottom: bottomSpace - spacing.xl }]}
-          >
-            <View style={styles.emptyContent}>
-              <Icon
-                name="calendar-blank-outline"
-                size={64}
-                color={colors.textTertiary}
-              />
-              <Text
-                variant="title3"
-                tone="secondary"
-                style={styles.emptyTitle}
-                accessibilityRole="header"
-              >
-                {t("history.noDataForDay")}
-              </Text>
-              <Text variant="subheadline" tone="secondary" style={styles.emptySubtitle}>
-                {isToday(selectedDate)
-                  ? t("history.startTracking")
-                  : t("history.noEntriesForDate")}
-              </Text>
-            </View>
+                      </View>
+                      <Text
+                        variant="subheadline"
+                        tone="secondary"
+                        style={styles.periodLabel}
+                      >
+                        {periodName}
+                      </Text>
+                      <View style={styles.periodBadge}>
+                        <Text
+                          variant="caption1"
+                          tone="secondary"
+                          style={styles.periodBadgeText}
+                        >
+                          {numberFormatters.decimal.format(count)}
+                        </Text>
+                      </View>
+                      <View style={styles.periodLine} />
+                      <Icon
+                        name={isExpanded ? "chevron-up" : "chevron-down"}
+                        size={iconSize.md}
+                        color={colors.textSecondary}
+                      />
+                    </AnimatedPressable>
 
-            {/* Handwriting arrow pointing to the add button (visual only:
-                the add button has its own name) */}
-            <View style={styles.arrowHint} {...hiddenA11y}>
-              <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
-                {t("history.tapToAdd")}
-              </Text>
-              <Icon
-                name="chevron-double-down"
-                size={iconSize.xl}
-                color={colors.textSecondary}
-              />
+                    {/* Entries in this period (collapsible) */}
+                    {isExpanded ? (
+                      <View style={styles.entriesList}>
+                        {periodGroup.entries.map((entry, entryIndex) => (
+                          <TimelineEntry
+                            key={entry.id}
+                            entry={entry}
+                            isFirst={entryIndex === 0}
+                            isLast={entryIndex === periodGroup.entries.length - 1}
+                            onPress={() => handleEntryPress(entry.id)}
+                            testID={`entry-${entry.id}`}
+                          />
+                        ))}
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </ScrollView>
+          ) : (
+            /* Empty State - Full height centered */
+            <View
+              style={[styles.emptyState, { paddingBottom: bottomSpace - spacing.xl }]}
+            >
+              <View style={styles.emptyContent}>
+                <Icon
+                  name="calendar-blank-outline"
+                  size={64}
+                  color={colors.textTertiary}
+                />
+                <Text
+                  variant="title3"
+                  tone="secondary"
+                  style={styles.emptyTitle}
+                  accessibilityRole="header"
+                >
+                  {t("history.noDataForDay")}
+                </Text>
+                <Text variant="subheadline" tone="secondary" style={styles.emptySubtitle}>
+                  {isToday(selectedDate)
+                    ? t("history.startTracking")
+                    : t("history.noEntriesForDate")}
+                </Text>
+              </View>
+
+              {/* Handwriting arrow pointing to the add button (visual only:
+                  the add button has its own name) */}
+              <View style={styles.arrowHint} {...hiddenA11y}>
+                <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
+                  {t("history.tapToAdd")}
+                </Text>
+                <Icon
+                  name="chevron-double-down"
+                  size={iconSize.xl}
+                  color={colors.textSecondary}
+                />
+              </View>
             </View>
-          </View>
-        )}
-      </View>
-      <AddEntryFab />
+          )}
+        </View>
+        <AddEntryFab />
+      </ContentColumn>
     </View>
   );
 }
@@ -451,6 +456,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  column: {
+    flex: 1,
   },
   dayHeader: {
     flexDirection: "row",

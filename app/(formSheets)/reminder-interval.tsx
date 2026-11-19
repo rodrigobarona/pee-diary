@@ -3,6 +3,7 @@ import * as React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ContentColumn } from "@/components/ui/content-column";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Icon } from "@/components/ui/icon";
 import { SheetHandle } from "@/components/ui/sheet-handle";
@@ -47,62 +48,65 @@ export default function ReminderIntervalScreen() {
         },
       ]}
     >
-      <SheetHandle />
-      <Text
-        variant={IS_IOS ? "title3" : "title2"}
-        style={styles.title}
-        accessibilityRole="header"
-      >
-        {t("settings.reminderInterval")}
-      </Text>
+      {/* A centred column on large windows (unfolded foldables) */}
+      <ContentColumn>
+        <SheetHandle />
+        <Text
+          variant={IS_IOS ? "title3" : "title2"}
+          style={styles.title}
+          accessibilityRole="header"
+        >
+          {t("settings.reminderInterval")}
+        </Text>
 
-      <View
-        style={styles.optionsContainer}
-        {...choiceGroupA11y(t("settings.reminderInterval"))}
-      >
-        {REMINDER_INTERVAL_OPTIONS.map((hours, index) => {
-          const isSelected = hours === intervalHours;
-          const label = t("settings.everyXHours", { count: hours });
-          return (
-            <React.Fragment key={hours}>
-              {index > 0 ? <View style={styles.separator} /> : null}
-              <AnimatedPressable
-                onPress={() => handleSelect(hours)}
-                testID={`reminder-interval-${hours}`}
-                feedback="highlight"
-                highlightColor={colors.highlight}
-                {...choiceA11y(isSelected)}
-                accessibilityLabel={label}
-                style={styles.option}
-              >
-                <View style={styles.labelContainer}>
-                  <Text
-                    variant="body"
-                    style={isSelected ? styles.labelSelected : undefined}
-                  >
-                    {label}
-                  </Text>
-                </View>
-                {IS_IOS ? (
-                  <View style={styles.checkmarkSlot}>
-                    {isSelected ? (
-                      <Icon
-                        name="check"
-                        size={iconSize.lg}
-                        color={colors.primary.DEFAULT}
-                      />
-                    ) : null}
+        <View
+          style={styles.optionsContainer}
+          {...choiceGroupA11y(t("settings.reminderInterval"))}
+        >
+          {REMINDER_INTERVAL_OPTIONS.map((hours, index) => {
+            const isSelected = hours === intervalHours;
+            const label = t("settings.everyXHours", { count: hours });
+            return (
+              <React.Fragment key={hours}>
+                {index > 0 ? <View style={styles.separator} /> : null}
+                <AnimatedPressable
+                  onPress={() => handleSelect(hours)}
+                  testID={`reminder-interval-${hours}`}
+                  feedback="highlight"
+                  highlightColor={colors.highlight}
+                  {...choiceA11y(isSelected)}
+                  accessibilityLabel={label}
+                  style={styles.option}
+                >
+                  <View style={styles.labelContainer}>
+                    <Text
+                      variant="body"
+                      style={isSelected ? styles.labelSelected : undefined}
+                    >
+                      {label}
+                    </Text>
                   </View>
-                ) : (
-                  <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                    {isSelected ? <View style={styles.radioInner} /> : null}
-                  </View>
-                )}
-              </AnimatedPressable>
-            </React.Fragment>
-          );
-        })}
-      </View>
+                  {IS_IOS ? (
+                    <View style={styles.checkmarkSlot}>
+                      {isSelected ? (
+                        <Icon
+                          name="check"
+                          size={iconSize.lg}
+                          color={colors.primary.DEFAULT}
+                        />
+                      ) : null}
+                    </View>
+                  ) : (
+                    <View style={[styles.radio, isSelected && styles.radioSelected]}>
+                      {isSelected ? <View style={styles.radioInner} /> : null}
+                    </View>
+                  )}
+                </AnimatedPressable>
+              </React.Fragment>
+            );
+          })}
+        </View>
+      </ContentColumn>
     </View>
   );
 }

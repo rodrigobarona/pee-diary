@@ -21,7 +21,9 @@ import { useDiaryStore } from '@/lib/store';
 import { colors } from '@/lib/theme/colors';
 import {
   cardStyle,
+  columnStyle,
   iconSize,
+  MAX_CONTENT_WIDTH,
   MIN_TOUCH_TARGET,
   radius,
   ripple,
@@ -156,6 +158,7 @@ export default function GoalsScreen() {
       style={styles.scrollView}
       contentContainerStyle={[
         styles.container,
+        columnStyle(MAX_CONTENT_WIDTH.reading),
         Platform.OS === 'android' ? styles.containerAndroid : undefined,
         { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg },
       ]}

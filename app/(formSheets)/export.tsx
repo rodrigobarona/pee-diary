@@ -29,6 +29,8 @@ import {
   iconSize,
   radius,
   spacing,
+  columnStyle,
+  MAX_CONTENT_WIDTH,
 } from "@/lib/theme/styles";
 import {
   exportAndShare,
@@ -267,6 +269,7 @@ export default function ExportScreen() {
       style={styles.container}
       contentContainerStyle={[
         styles.scrollContent,
+        columnStyle(MAX_CONTENT_WIDTH.reading),
         {
           // Keeps Export & Share above the home indicator or the Android
           // gesture / 3-button navigation bar

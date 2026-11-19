@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BackHandler,
   Linking,
@@ -29,7 +29,7 @@ import { hiddenA11y } from "@/lib/a11y";
 import { useI18n } from "@/lib/i18n/context";
 import { useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
-import { iconSize, radius, ripple, spacing } from "@/lib/theme/styles";
+import { iconSize, radius, ripple, spacing, columnStyle } from "@/lib/theme/styles";
 import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
 
 const IS_IOS = Platform.OS === "ios";
@@ -434,6 +434,9 @@ function TermsAcceptance() {
   );
 }
 
+// Widest the dots, button and terms line grow on a large window
+const ONBOARDING_FOOTER_MAX_WIDTH = 440;
+
 export default function OnboardingScreen() {
   const { t } = useI18n();
   const router = useRouter();
@@ -445,9 +448,28 @@ export default function OnboardingScreen() {
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const scrollX = useSharedValue(0);
 
+  // Folding, unfolding or rotating changes the page width while the scroll
+  // offset stays in pixels: snap back to the page that was showing
+  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+  // The page fades and dots follow scrollX, which a programmatic jump may
+  // not report: set it too, so the page shows fully at once
+  const jumpToPage = useCallback(
+    (x: number) => {
+      scrollViewRef.current?.scrollTo({ x, animated: false });
+      scrollX.set(x);
+    },
+    [scrollX]
+  );
+  useEffect(() => {
+    jumpToPage(currentIndexRef.current * pageWidth);
+  }, [pageWidth, jumpToPage]);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
-      scrollX.value = event.contentOffset.x;
+      scrollX.set(event.contentOffset.x);
     },
   });
 
@@ -602,7 +624,15 @@ export default function OnboardingScreen() {
       </Animated.ScrollView>
 
       {/* Bottom section - FIXED HEIGHT */}
-      <View style={[styles.bottomSection, { paddingBottom: bottomPadding }]}>
+      <View
+        style={[
+          styles.bottomSection,
+          // On a large window the button keeps a phone-like width under the
+          // page text instead of spanning the screen
+          columnStyle(ONBOARDING_FOOTER_MAX_WIDTH),
+          { paddingBottom: bottomPadding },
+        ]}
+      >
         {/* Pagination dots - fixed position */}
         {/* One element for screen readers: "Page 2 of 3" */}
         <View

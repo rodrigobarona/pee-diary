@@ -82,8 +82,10 @@ export function CalendarHeader({
 }: CalendarHeaderProps) {
   const { t } = useI18n();
   const countsLabel = useDayCountsLabel();
+  // How far a week slides when it changes: the strip's own width, measured,
+  // so it is right in a centred column on a large window too
   const { width: windowWidth } = useWindowDimensions();
-  const weekWidth = windowWidth - spacing.lg;
+  const [weekWidth, setWeekWidth] = React.useState(windowWidth - spacing.lg);
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [currentWeekStart, setCurrentWeekStart] = React.useState(() =>
     startOfWeek(selectedDate, weekOptions())
@@ -300,7 +302,12 @@ export function CalendarHeader({
     day.getDate() === 1 && index > 0 ? dateFormatters.monthShort.format(day) : null;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onLayout={(event) =>
+        setWeekWidth(event.nativeEvent.layout.width - spacing.lg)
+      }
+    >
       {/* Month (opens the date picker) and Today */}
       <View style={styles.header}>
         <AnimatedPressable

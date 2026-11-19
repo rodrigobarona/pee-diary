@@ -11,6 +11,9 @@ export {
   rippleBorderless,
   rippleNeutral,
   SCREEN_MARGIN,
+  BREAKPOINTS,
+  MAX_CONTENT_WIDTH,
+  columnStyle,
   spacing,
 } from './styles';
 export {

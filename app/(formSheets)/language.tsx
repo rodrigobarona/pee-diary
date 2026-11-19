@@ -3,6 +3,7 @@ import * as React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ContentColumn } from "@/components/ui/content-column";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Icon } from "@/components/ui/icon";
 import { SheetHandle } from "@/components/ui/sheet-handle";
@@ -107,35 +108,38 @@ export default function LanguageScreen() {
         },
       ]}
     >
-      <SheetHandle />
-      {/* Title */}
-      <Text
-        variant={IS_IOS ? "title3" : "title2"}
-        style={styles.title}
-        accessibilityRole="header"
-      >
-        {t("settings.language")}
-      </Text>
-      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
-        {t("settings.languageSubtitle")}
-      </Text>
+      {/* A centred column on large windows (unfolded foldables) */}
+      <ContentColumn>
+        <SheetHandle />
+        {/* Title */}
+        <Text
+          variant={IS_IOS ? "title3" : "title2"}
+          style={styles.title}
+          accessibilityRole="header"
+        >
+          {t("settings.language")}
+        </Text>
+        <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+          {t("settings.languageSubtitle")}
+        </Text>
 
-      {/* Language Options: one choice */}
-      <View
-        style={styles.optionsContainer}
-        {...choiceGroupA11y(t("settings.language"))}
-      >
-        {languageOptions.map((option, index) => (
-          <React.Fragment key={option.value}>
-            {index > 0 ? <View style={styles.separator} /> : null}
-            <LanguageOption
-              option={option}
-              isSelected={locale === option.value}
-              onPress={() => handleLanguageSelect(option.value)}
-            />
-          </React.Fragment>
-        ))}
-      </View>
+        {/* Language Options: one choice */}
+        <View
+          style={styles.optionsContainer}
+          {...choiceGroupA11y(t("settings.language"))}
+        >
+          {languageOptions.map((option, index) => (
+            <React.Fragment key={option.value}>
+              {index > 0 ? <View style={styles.separator} /> : null}
+              <LanguageOption
+                option={option}
+                isSelected={locale === option.value}
+                onPress={() => handleLanguageSelect(option.value)}
+              />
+            </React.Fragment>
+          ))}
+        </View>
+      </ContentColumn>
     </View>
   );
 }

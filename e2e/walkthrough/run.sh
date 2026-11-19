@@ -16,6 +16,11 @@
 # side at most twice the short one); store-screenshots.py then frames them.
 # Record iOS store captures on an iPhone 17 Pro Max simulator (1320 x 2868).
 #
+# WM_SIZE=<w>x<h> on Android records at that screen size in pixels instead,
+# into walkthrough-output/android-<OUT_TAG or the size>/: at the emulator's
+# 420 dpi, 1768x2208 is an unfolded foldable in portrait (673 x 841 dp) and
+# 2208x1768 the same in landscape (841 x 673 dp).
+#
 # Needs Maestro (~/.maestro/bin/maestro), Python 3 and Pillow. Output goes to
 # walkthrough-output/<platform>/ (git-ignored).
 set -euo pipefail
@@ -25,6 +30,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../.." && pwd)
 LOCALE=${LOCALE:-en}
 OUT="$ROOT/walkthrough-output/$PLATFORM"
+[ -n "${WM_SIZE:-}" ] && OUT="$OUT-${OUT_TAG:-$WM_SIZE}"
 FLOWS=(w1-onboarding.yaml w2-restore.yaml w3-browse.yaml w4-add.yaml w5-settings.yaml)
 # Words the flows tap, in the app's language
 case "$LOCALE" in
@@ -73,8 +79,10 @@ case "$PLATFORM" in
     "$ADB" -s "$DEVICE" shell pm clear care.eleva.peediary >/dev/null
     "$ADB" -s "$DEVICE" shell cmd locale set-app-locales care.eleva.peediary \
       --locales "${LANG_CODE_ANDROID:-en-GB}"
-    if [ "${STORE:-}" = 1 ]; then
-      "$ADB" -s "$DEVICE" shell wm size 1080x1920
+    SIZE=${WM_SIZE:-}
+    [ "${STORE:-}" = 1 ] && SIZE=1080x1920
+    if [ -n "$SIZE" ]; then
+      "$ADB" -s "$DEVICE" shell wm size "$SIZE"
       trap '"$ADB" -s "$DEVICE" shell wm size reset' EXIT
     fi
     ;;

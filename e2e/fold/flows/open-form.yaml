@@ -1,0 +1,26 @@
+# Fold continuity, step 1 (folded, phone width): open the drink form, change
+# the amount and type a note with the keyboard up
+appId: care.eleva.peediary
+---
+- launchApp
+- runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
+- tapOn:
+    id: "add-entry-button"
+- extendedWaitUntil:
+    visible:
+      id: "add-menu-fluid"
+    timeout: 10000
+- tapOn:
+    id: "add-menu-fluid"
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- tapOn: "330 ml"
+- scrollUntilVisible:
+    element:
+      id: "form-notes"
+- tapOn:
+    id: "form-notes"
+- inputText: "Fold test note"
+- takeScreenshot: 1-folded

@@ -3,6 +3,7 @@ import * as React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ContentColumn } from "@/components/ui/content-column";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { SheetHandle } from "@/components/ui/sheet-handle";
 import { Text } from "@/components/ui/text";
@@ -117,41 +118,44 @@ export default function AddMenuScreen() {
         { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.sm },
       ]}
     >
-      <SheetHandle />
+      {/* A centred column on large windows (unfolded foldables) */}
+      <ContentColumn>
+        <SheetHandle />
 
-      <Text
-        variant={Platform.OS === "ios" ? "title3" : "title2"}
-        style={styles.title}
-        accessibilityRole="header"
-      >
-        {t("add.title")}
-      </Text>
-      <Text
-        variant="subheadline"
-        tone="secondary"
-        style={styles.subtitle}
-      >
-        {t("add.subtitle")}
-      </Text>
+        <Text
+          variant={Platform.OS === "ios" ? "title3" : "title2"}
+          style={styles.title}
+          accessibilityRole="header"
+        >
+          {t("add.title")}
+        </Text>
+        <Text
+          variant="subheadline"
+          tone="secondary"
+          style={styles.subtitle}
+        >
+          {t("add.subtitle")}
+        </Text>
 
-      <View style={styles.options}>
-        {options.map((option, index) => (
-          <React.Fragment key={option.route}>
-            {index > 0 && Platform.OS === "ios" ? (
-              <View style={styles.separator} />
-            ) : null}
-            <AddOption
-              icon={option.icon}
-              label={option.label}
-              description={option.description}
-              color={option.color}
-              tileColor={option.tileColor}
-              onPress={() => handleOptionPress(option.route)}
-              testID={option.testID}
-            />
-          </React.Fragment>
-        ))}
-      </View>
+        <View style={styles.options}>
+          {options.map((option, index) => (
+            <React.Fragment key={option.route}>
+              {index > 0 && Platform.OS === "ios" ? (
+                <View style={styles.separator} />
+              ) : null}
+              <AddOption
+                icon={option.icon}
+                label={option.label}
+                description={option.description}
+                color={option.color}
+                tileColor={option.tileColor}
+                onPress={() => handleOptionPress(option.route)}
+                testID={option.testID}
+              />
+            </React.Fragment>
+          ))}
+        </View>
+      </ContentColumn>
     </View>
   );
 }

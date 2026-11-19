@@ -44,6 +44,8 @@ import {
   radius,
   SCREEN_MARGIN,
   spacing,
+  columnStyle,
+  MAX_CONTENT_WIDTH,
 } from "@/lib/theme/styles";
 import { formatDateHeader } from "@/lib/utils/date";
 import { groupByDay, parseDayKey, toDayKey } from "@/lib/utils/day";
@@ -551,6 +553,8 @@ export default function HomeScreen() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
+          // One centred column on large windows (unfolded foldables)
+          columnStyle(MAX_CONTENT_WIDTH.page),
           { paddingBottom: bottomSpace },
         ]}
         contentInsetAdjustmentBehavior="automatic"

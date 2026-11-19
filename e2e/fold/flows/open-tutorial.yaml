@@ -1,0 +1,16 @@
+# Fold continuity, onboarding pager: open the tutorial on page 2 at phone width
+appId: care.eleva.peediary
+---
+- launchApp
+- runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
+- tapOn:
+    id: "settings-button"
+- scrollUntilVisible:
+    element:
+      id: "settings-row-tutorial"
+- tapOn:
+    id: "settings-row-tutorial"
+- tapOn:
+    id: "onboarding-next"
+- waitForAnimationToEnd
+- takeScreenshot: 5-tutorial-folded

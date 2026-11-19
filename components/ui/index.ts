@@ -2,6 +2,7 @@
 // Following: imports-design-system-folder rule
 export * from './animated-pressable';
 export * from './button';
+export * from './content-column';
 export * from './form-card';
 export * from './form-scroll-view';
 export * from './header-button';

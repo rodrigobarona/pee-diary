@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "@/lib/theme/colors";
-import { spacing } from "@/lib/theme/styles";
+import { columnStyle, MAX_CONTENT_WIDTH, spacing } from "@/lib/theme/styles";
 
 interface FormScrollViewProps {
   children: React.ReactNode;
@@ -41,6 +41,8 @@ export function FormScrollView({
       style={styles.scrollView}
       contentContainerStyle={[
         styles.content,
+        // A readable column on large windows (foldables, tablets)
+        columnStyle(MAX_CONTENT_WIDTH.reading),
         Platform.OS === "android"
           ? { paddingBottom: insets.bottom + 32 }
           : undefined,

@@ -20,6 +20,39 @@ export const spacing = {
 // Horizontal screen margin: 16 on compact widths on both platforms
 export const SCREEN_MARGIN = spacing.lg;
 
+/**
+ * Window width classes (dp on Android, pt on iOS), the same on both
+ * platforms: Material 3's breakpoints, which Samsung and Apple's iPhone Duo
+ * guidance line up with. Layouts switch on the window's width, never on the
+ * device or its orientation (see hooks/use-window-class.ts).
+ * - compact  < 600: phones, cover screens (today's layout)
+ * - medium   600-839: unfolded foldables in portrait
+ * - expanded >= 840: unfolded foldables in landscape, tablets
+ */
+export const BREAKPOINTS = {
+  medium: 600,
+  expanded: 840,
+} as const;
+
+/**
+ * Widest a column of content may grow on large windows, so lines stay
+ * readable (about 45-75 characters) and controls are not stretched.
+ * - reading: forms, sheets, Settings, legal text
+ * - page: the Today and History screens in one column
+ */
+export const MAX_CONTENT_WIDTH = {
+  reading: 600,
+  page: 680,
+} as const;
+
+/**
+ * Style for a content column centred in its parent and no wider than
+ * `maxWidth` (for a ScrollView's contentContainerStyle or a View).
+ */
+export function columnStyle(maxWidth: number) {
+  return { width: '100%', maxWidth, alignSelf: 'center' } as const;
+}
+
 // Corner radii
 export const radius = {
   sm: 8, // small tiles, inner elements

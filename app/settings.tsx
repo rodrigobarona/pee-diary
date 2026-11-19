@@ -29,7 +29,7 @@ import {
   useStoreHydrated,
 } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
-import { ripple, spacing } from "@/lib/theme/styles";
+import { ripple, spacing, columnStyle, MAX_CONTENT_WIDTH } from "@/lib/theme/styles";
 import { typography } from "@/lib/theme/typography";
 import {
   exportBackupFile,
@@ -362,6 +362,8 @@ export default function SettingsScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.scrollContent,
+        // A readable column on large windows (unfolded foldables)
+        columnStyle(MAX_CONTENT_WIDTH.reading),
         // Android draws edge to edge: end above the navigation bar
         Platform.OS === "android"
           ? { paddingBottom: insets.bottom + 24 }

@@ -1,0 +1,12 @@
+# Fold continuity, after the window changed size: the same form, amount and
+# note are still there (no restart, nothing lost)
+appId: care.eleva.peediary
+---
+- waitForAnimationToEnd
+- assertVisible:
+    id: "form-save"
+- assertVisible: "Fold test note"
+- scrollUntilVisible:
+    element: "330"
+    direction: UP
+- takeScreenshot: ${STEP}
