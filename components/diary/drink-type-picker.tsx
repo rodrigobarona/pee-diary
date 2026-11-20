@@ -94,6 +94,7 @@ export function DrinkTypePicker({ value, onChange, label }: DrinkTypePickerProps
             onPress={() => handleSelect(drink.type)}
             {...choiceA11y(isSelected)}
             accessibilityLabel={t(drink.labelKey)}
+            testID={`drink-${drink.type}`}
             style={[
               styles.card,
               isSelected ? selectionStyle.selected : selectionStyle.unselected,

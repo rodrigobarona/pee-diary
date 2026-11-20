@@ -1,0 +1,10 @@
+# After folding, the entry that was open in the detail pane is still in
+# view, as its edit form (the phone's detail view)
+appId: care.eleva.peediary
+---
+- extendedWaitUntil:
+    visible:
+      id: "form-save"
+    timeout: 10000
+- waitForAnimationToEnd
+- takeScreenshot: history-folded

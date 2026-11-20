@@ -1,0 +1,18 @@
+# Wide window: open History and choose an entry, which shows in the detail
+# pane beside the list
+appId: care.eleva.peediary
+---
+- launchApp
+- runFlow: finish-onboarding.yaml
+- runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
+- tapOn:
+    id: "tab-history"
+- waitForAnimationToEnd
+- tapOn:
+    id: "entry-.*"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "history-detail-edit"
+    timeout: 10000
+- takeScreenshot: history-wide

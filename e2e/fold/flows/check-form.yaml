@@ -10,14 +10,14 @@ appId: care.eleva.peediary
 # The note may be scrolled out of view after the change: find it
 - scrollUntilVisible:
     element: "Fold test note"
-# The drink type (Water, the default) and the amount are still chosen
+# The drink type (water, the default) and the amount are still chosen
 - scrollUntilVisible:
     element: "330"
     direction: UP
 # Android exposes the chosen drink as a checked radio button
 - scrollUntilVisible:
     element:
-      text: "Water"
+      id: "drink-water"
       checked: true
     direction: UP
 - takeScreenshot: ${STEP}

@@ -107,4 +107,13 @@ for step in unfolded rotated folded; do
   # Page 2 wholly on screen, not left between two pages
   "$MAESTRO" hierarchy 2>/dev/null | python3 "$HERE/assert-on-screen.py" onboarding-title-1
 done
+# History list-detail: an entry open in the detail pane stays in view when
+# the window narrows (its edit form opens)
+if [ "$MODE" != window ]; then
+  # Wide: the hinge's unfolded landscape, or the size mode's landscape
+  change "$([ "$MODE" = hinge ] && echo unfolded || echo rotated)"
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/history-select.yaml"
+  change folded
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/expect-entry-form.yaml"
+fi
 echo "Fold continuity ($MODE): passed ($OUT)"
