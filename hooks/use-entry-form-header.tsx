@@ -1,12 +1,15 @@
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRoute, useRouter } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import * as React from "react";
 import { ActionSheetIOS, Alert, Platform, StyleSheet, View } from "react-native";
 
 import { HeaderIconButton, HeaderTextButton } from "@/components/ui/header-button";
+import { Text } from "@/components/ui/text";
 import { haptics } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n/context";
+import { presentsAsDialog } from "@/lib/layout/presentation";
 import { colors } from "@/lib/theme/colors";
+import { spacing } from "@/lib/theme/styles";
 
 interface EntryFormHeaderOptions {
   title: string;
@@ -27,6 +30,10 @@ interface EntryFormHeaderOptions {
  * swipe-down on iOS, system back on Android) asks first. A successful save
  * plays the success haptic; the edit screen's delete plays the warning
  * haptic once confirmed.
+ *
+ * Android, wide windows: the form is a centred dialog (presentsAsDialog)
+ * with no navigation header, so the hook returns the same buttons as a
+ * header row (`dialogHeader`) for FormScrollView to draw in the dialog.
  */
 export function useEntryFormHeader({
   title,
@@ -38,6 +45,8 @@ export function useEntryFormHeader({
   const { t } = useI18n();
   const navigation = useNavigation();
   const router = useRouter();
+  const route = useRoute();
+  const isDialog = presentsAsDialog(route.key);
   // Set after a save or a delete, so leaving does not ask about changes
   const isClosingRef = React.useRef(false);
 
@@ -67,6 +76,7 @@ export function useEntryFormHeader({
   }, [onDelete, close]);
 
   React.useLayoutEffect(() => {
+    if (isDialog) return;
     navigation.setOptions({
       title,
       headerLeft: () =>
@@ -108,9 +118,48 @@ export function useEntryFormHeader({
         </View>
       ),
     });
-  }, [navigation, router, t, title, saveLabel, handleSave, handleDelete, onDelete]);
+  }, [navigation, router, t, title, saveLabel, handleSave, handleDelete, onDelete, isDialog]);
 
-  return { close, deleteEntry: onDelete ? handleDelete : undefined };
+  const dialogHeader = isDialog ? (
+    <View style={styles.dialogHeader}>
+      <HeaderIconButton
+        icon="close"
+        label={t("common.close")}
+        onPress={() => router.back()}
+        testID="form-close"
+      />
+      <Text
+        variant="title3"
+        style={styles.dialogTitle}
+        numberOfLines={1}
+        accessibilityRole="header"
+      >
+        {title}
+      </Text>
+      {onDelete ? (
+        <HeaderIconButton
+          icon="trash-can-outline"
+          label={t("common.delete")}
+          onPress={handleDelete}
+          color={colors.destructive}
+          testID="form-delete"
+        />
+      ) : null}
+      <HeaderTextButton
+        label={saveLabel}
+        onPress={handleSave}
+        prominent
+        testID="form-save"
+      />
+    </View>
+  ) : null;
+
+  return {
+    close,
+    deleteEntry: onDelete ? handleDelete : undefined,
+    // Android, wide windows: the form is a dialog with this header row
+    dialog: isDialog ? { header: dialogHeader, onDismiss: () => router.back() } : undefined,
+  };
 }
 
 // iOS: an action sheet with a destructive "Discard Changes" (HIG, Sheets);
@@ -137,6 +186,20 @@ function confirmDiscard(t: (key: string) => string, onDiscard: () => void) {
 }
 
 const styles = StyleSheet.create({
+  // Material 3 dialog header: close, title, actions; 64dp tall
+  dialogHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 64,
+    paddingStart: spacing.xs,
+    paddingEnd: spacing.sm,
+    gap: spacing.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
+  dialogTitle: {
+    flex: 1,
+  },
   actions: {
     flexDirection: "row",
     alignItems: "center",

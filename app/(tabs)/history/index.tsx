@@ -1,5 +1,10 @@
-import { isToday, isYesterday } from "date-fns";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { isSameDay, isToday, isYesterday, parseISO } from "date-fns";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import * as React from "react";
 import {
   LayoutAnimation,
@@ -41,6 +46,10 @@ import {
   MAX_CONTENT_WIDTH,
 } from "@/lib/theme/styles";
 import { isDayKey, parseDayKey, toDayKey } from "@/lib/utils/day";
+import { useWindowClass } from "@/hooks/use-window-class";
+import { fitsTwoPanes } from "@/lib/layout/window-class";
+import { NAVIGATION_RAIL_WIDTH } from "@/components/navigation-rail";
+import { EntryDetailPane } from "@/components/diary/entry-detail-pane";
 
 // Enable LayoutAnimation on Android
 if (
@@ -71,10 +80,14 @@ const periodConfig: Record<TimePeriod, { icon: IconName; color: string }> = {
   night: { icon: "weather-night", color: colors.indigo.accent },
 };
 
+// Narrowest each pane may be before History shows one pane
+const HISTORY_PANE_MIN_WIDTH = 340;
+
 export default function HistoryScreen() {
   const { t } = useI18n();
   const countsLabel = useDayCountsLabel();
   const router = useRouter();
+  const navigation = useNavigation();
   const bottomSpace = useTabScreenBottomSpace();
   const params = useLocalSearchParams<{
     date?: string;
@@ -89,6 +102,20 @@ export default function HistoryScreen() {
   );
 
   const entries = useDiaryStore(useShallow((state) => state.entries));
+
+  // Wide windows (a foldable in landscape, a tablet): the list and the
+  // chosen entry's details side by side (Material list-detail)
+  const windowClass = useWindowClass();
+  const twoPane =
+    windowClass.widthClass === "expanded" &&
+    fitsTwoPanes(
+      windowClass.width - NAVIGATION_RAIL_WIDTH,
+      windowClass.fontScale,
+      { minPaneWidth: HISTORY_PANE_MIN_WIDTH }
+    );
+  const [selectedEntryId, setSelectedEntryId] = React.useState<string | null>(
+    null
+  );
 
   // Toggle period expansion with animation (a disclosure: no haptic)
   const togglePeriod = React.useCallback((period: TimePeriod) => {
@@ -147,13 +174,38 @@ export default function HistoryScreen() {
     }, [params.date, params.filter, params.period])
   );
 
-  // Navigation handler for entry press
+  // Tapping an entry: on wide windows it shows in the detail pane; on
+  // phones it opens the edit form
   const handleEntryPress = React.useCallback(
     (id: string) => {
-      router.push(`/(modals)/entry/${id}`);
+      if (twoPane) {
+        setSelectedEntryId(id);
+      } else {
+        router.push(`/(modals)/entry/${id}`);
+      }
     },
-    [router]
+    [router, twoPane]
   );
+
+  // The chosen entry, while it is still in the diary on the chosen day
+  const selectedEntry = React.useMemo(() => {
+    if (!selectedEntryId) return null;
+    const entry = entries.find((e) => e.id === selectedEntryId);
+    if (!entry || !isSameDay(parseISO(entry.timestamp), selectedDate)) {
+      return null;
+    }
+    return entry;
+  }, [entries, selectedEntryId, selectedDate]);
+
+  // Folding (or narrowing the window) with an entry open in the pane: the
+  // entry stays in view, as its edit form, the phone's detail view
+  const wasTwoPane = React.useRef(twoPane);
+  React.useEffect(() => {
+    if (wasTwoPane.current && !twoPane && selectedEntry && navigation.isFocused()) {
+      router.push(`/(modals)/entry/${selectedEntry.id}`);
+    }
+    wasTwoPane.current = twoPane;
+  }, [twoPane, selectedEntry, router, navigation]);
 
   // Handle date selection from calendar
   const handleDateSelect = React.useCallback((date: Date) => {
@@ -285,167 +337,179 @@ export default function HistoryScreen() {
 
   return (
     <View style={styles.container}>
-      {/* One centred column on large windows (unfolded foldables) */}
-      <ContentColumn maxWidth={MAX_CONTENT_WIDTH.page} style={styles.column}>
-        {/* Calendar Header */}
-        <CalendarHeader
-          selectedDate={selectedDate}
-          onSelectDate={handleDateSelect}
-          entriesByDate={entriesByDate}
-        />
+      {/* Large windows: one centred column, or the list beside the chosen
+          entry's details when wide */}
+      <ContentColumn
+        maxWidth={twoPane ? MAX_CONTENT_WIDTH.wide : MAX_CONTENT_WIDTH.page}
+        style={[styles.column, twoPane ? styles.columnRow : undefined]}
+      >
+        <View style={twoPane ? styles.listPane : styles.column}>
+          {/* Calendar Header */}
+          <CalendarHeader
+            selectedDate={selectedDate}
+            onSelectDate={handleDateSelect}
+            entriesByDate={entriesByDate}
+          />
 
-        {/* Filter Chips */}
-        <FilterChips
-          selected={filter}
-          onSelect={setFilter}
-          counts={filterCounts}
-        />
+          {/* Filter Chips */}
+          <FilterChips
+            selected={filter}
+            onSelect={setFilter}
+            counts={filterCounts}
+          />
 
-        {/* Day header: one heading that reads the date and the day's counts */}
-        <View
-          style={styles.dayHeader}
-          accessible
-          accessibilityRole="header"
-          accessibilityLabel={dayHeaderLabel}
-        >
-          <Text variant="headline" style={styles.dayTitle}>
-            {dayTitle}
-          </Text>
-          {selectedDayData.hasAnyEntries ? (
-            <DailyStatsBar
-              voids={summary.voids}
-              fluids={summary.fluids}
-              leaks={summary.leaks}
-              hideFromAccessibility
-            />
-          ) : null}
-        </View>
+          {/* Day header: one heading that reads the date and the day's counts */}
+          <View
+            style={styles.dayHeader}
+            accessible
+            accessibilityRole="header"
+            accessibilityLabel={dayHeaderLabel}
+          >
+            <Text variant="headline" style={styles.dayTitle}>
+              {dayTitle}
+            </Text>
+            {selectedDayData.hasAnyEntries ? (
+              <DailyStatsBar
+                voids={summary.voids}
+                fluids={summary.fluids}
+                leaks={summary.leaks}
+                hideFromAccessibility
+              />
+            ) : null}
+          </View>
 
-        {/* Day Content - Full height */}
-        <View style={styles.contentContainer}>
-          {selectedDayData.hasEntries ? (
-            /* Entries List */
-            <ScrollView
-              style={styles.scrollView}
-              contentContainerStyle={[
-                styles.scrollContent,
-                { paddingBottom: bottomSpace },
-              ]}
-              showsVerticalScrollIndicator={false}
-            >
-              {selectedDayData.periods.map((periodGroup) => {
-                const isExpanded = expandedPeriods.has(periodGroup.period);
-                const config = periodConfig[periodGroup.period];
-                const periodName = t(`timePeriod.${periodGroup.period}`);
-                const count = periodGroup.entries.length;
+          {/* Day Content - Full height */}
+          <View style={styles.contentContainer}>
+            {selectedDayData.hasEntries ? (
+              /* Entries List */
+              <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={[
+                  styles.scrollContent,
+                  { paddingBottom: bottomSpace },
+                ]}
+                showsVerticalScrollIndicator={false}
+              >
+                {selectedDayData.periods.map((periodGroup) => {
+                  const isExpanded = expandedPeriods.has(periodGroup.period);
+                  const config = periodConfig[periodGroup.period];
+                  const periodName = t(`timePeriod.${periodGroup.period}`);
+                  const count = periodGroup.entries.length;
 
-                return (
-                  <View key={periodGroup.period} style={styles.periodSection}>
-                    {/* Collapsible period header */}
-                    <AnimatedPressable
-                      style={styles.periodHeader}
-                      onPress={() => togglePeriod(periodGroup.period)}
-                      feedback="highlight"
-                      highlightColor={colors.highlight}
-                      accessibilityRole="button"
-                      accessibilityLabel={a11yLabel(
-                        periodName,
-                        t("a11y.history.entryCount", { count })
-                      )}
-                      accessibilityState={{ expanded: isExpanded }}
-                      testID={`history-period-${periodGroup.period}`}
-                    >
-                      <View style={styles.periodIconContainer}>
-                        <Icon
-                          name={config.icon}
-                          size={iconSize.sm}
-                          color={config.color}
-                        />
-                      </View>
-                      <Text
-                        variant="subheadline"
-                        tone="secondary"
-                        style={styles.periodLabel}
+                  return (
+                    <View key={periodGroup.period} style={styles.periodSection}>
+                      {/* Collapsible period header */}
+                      <AnimatedPressable
+                        style={styles.periodHeader}
+                        onPress={() => togglePeriod(periodGroup.period)}
+                        feedback="highlight"
+                        highlightColor={colors.highlight}
+                        accessibilityRole="button"
+                        accessibilityLabel={a11yLabel(
+                          periodName,
+                          t("a11y.history.entryCount", { count })
+                        )}
+                        accessibilityState={{ expanded: isExpanded }}
+                        testID={`history-period-${periodGroup.period}`}
                       >
-                        {periodName}
-                      </Text>
-                      <View style={styles.periodBadge}>
-                        <Text
-                          variant="caption1"
-                          tone="secondary"
-                          style={styles.periodBadgeText}
-                        >
-                          {numberFormatters.decimal.format(count)}
-                        </Text>
-                      </View>
-                      <View style={styles.periodLine} />
-                      <Icon
-                        name={isExpanded ? "chevron-up" : "chevron-down"}
-                        size={iconSize.md}
-                        color={colors.textSecondary}
-                      />
-                    </AnimatedPressable>
-
-                    {/* Entries in this period (collapsible) */}
-                    {isExpanded ? (
-                      <View style={styles.entriesList}>
-                        {periodGroup.entries.map((entry, entryIndex) => (
-                          <TimelineEntry
-                            key={entry.id}
-                            entry={entry}
-                            isFirst={entryIndex === 0}
-                            isLast={entryIndex === periodGroup.entries.length - 1}
-                            onPress={() => handleEntryPress(entry.id)}
-                            testID={`entry-${entry.id}`}
+                        <View style={styles.periodIconContainer}>
+                          <Icon
+                            name={config.icon}
+                            size={iconSize.sm}
+                            color={config.color}
                           />
-                        ))}
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })}
-            </ScrollView>
-          ) : (
-            /* Empty State - Full height centered */
-            <View
-              style={[styles.emptyState, { paddingBottom: bottomSpace - spacing.xl }]}
-            >
-              <View style={styles.emptyContent}>
-                <Icon
-                  name="calendar-blank-outline"
-                  size={64}
-                  color={colors.textTertiary}
-                />
-                <Text
-                  variant="title3"
-                  tone="secondary"
-                  style={styles.emptyTitle}
-                  accessibilityRole="header"
-                >
-                  {t("history.noDataForDay")}
-                </Text>
-                <Text variant="subheadline" tone="secondary" style={styles.emptySubtitle}>
-                  {isToday(selectedDate)
-                    ? t("history.startTracking")
-                    : t("history.noEntriesForDate")}
-                </Text>
-              </View>
+                        </View>
+                        <Text
+                          variant="subheadline"
+                          tone="secondary"
+                          style={styles.periodLabel}
+                        >
+                          {periodName}
+                        </Text>
+                        <View style={styles.periodBadge}>
+                          <Text
+                            variant="caption1"
+                            tone="secondary"
+                            style={styles.periodBadgeText}
+                          >
+                            {numberFormatters.decimal.format(count)}
+                          </Text>
+                        </View>
+                        <View style={styles.periodLine} />
+                        <Icon
+                          name={isExpanded ? "chevron-up" : "chevron-down"}
+                          size={iconSize.md}
+                          color={colors.textSecondary}
+                        />
+                      </AnimatedPressable>
 
-              {/* Handwriting arrow pointing to the add button (visual only:
-                  the add button has its own name) */}
-              <View style={styles.arrowHint} {...hiddenA11y}>
-                <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
-                  {t("history.tapToAdd")}
-                </Text>
-                <Icon
-                  name="chevron-double-down"
-                  size={iconSize.xl}
-                  color={colors.textSecondary}
-                />
+                      {/* Entries in this period (collapsible) */}
+                      {isExpanded ? (
+                        <View style={styles.entriesList}>
+                          {periodGroup.entries.map((entry, entryIndex) => (
+                            <TimelineEntry
+                              key={entry.id}
+                              entry={entry}
+                              isFirst={entryIndex === 0}
+                              isLast={entryIndex === periodGroup.entries.length - 1}
+                              onPress={() => handleEntryPress(entry.id)}
+                              selected={twoPane ? entry.id === selectedEntry?.id : false}
+                              testID={`entry-${entry.id}`}
+                            />
+                          ))}
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              /* Empty State - Full height centered */
+              <View
+                style={[styles.emptyState, { paddingBottom: bottomSpace - spacing.xl }]}
+              >
+                <View style={styles.emptyContent}>
+                  <Icon
+                    name="calendar-blank-outline"
+                    size={64}
+                    color={colors.textTertiary}
+                  />
+                  <Text
+                    variant="title3"
+                    tone="secondary"
+                    style={styles.emptyTitle}
+                    accessibilityRole="header"
+                  >
+                    {t("history.noDataForDay")}
+                  </Text>
+                  <Text variant="subheadline" tone="secondary" style={styles.emptySubtitle}>
+                    {isToday(selectedDate)
+                      ? t("history.startTracking")
+                      : t("history.noEntriesForDate")}
+                  </Text>
+                </View>
+
+                {/* Handwriting arrow pointing to the add button (visual only:
+                    the add button has its own name) */}
+                <View style={styles.arrowHint} {...hiddenA11y}>
+                  <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
+                    {t("history.tapToAdd")}
+                  </Text>
+                  <Icon
+                    name="chevron-double-down"
+                    size={iconSize.xl}
+                    color={colors.textSecondary}
+                  />
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </View>
+        {twoPane ? (
+          <View style={styles.detailPane}>
+            <EntryDetailPane entry={selectedEntry} bottomSpace={bottomSpace} />
+          </View>
+        ) : null}
       </ContentColumn>
       {/* At the screen's edge, where it is on Today */}
       <AddEntryFab />
@@ -460,6 +524,19 @@ const styles = StyleSheet.create({
   },
   column: {
     flex: 1,
+  },
+  // Wide windows: list (left) and detail (right)
+  columnRow: {
+    flexDirection: "row",
+  },
+  listPane: {
+    flex: 1,
+    maxWidth: 520,
+  },
+  detailPane: {
+    flex: 1,
+    borderStartWidth: StyleSheet.hairlineWidth,
+    borderStartColor: colors.separator,
   },
   dayHeader: {
     flexDirection: "row",

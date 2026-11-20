@@ -49,7 +49,7 @@ export default function FluidScreen() {
     return true;
   }, [addFluidEntry, drinkType, amount, notes, timestamp, t]);
 
-  useEntryFormHeader({
+  const { dialog } = useEntryFormHeader({
     title: t("fluid.title"),
     saveLabel: t("common.save"),
     onSave: handleSave,
@@ -57,7 +57,7 @@ export default function FluidScreen() {
   });
 
   return (
-    <FormScrollView>
+    <FormScrollView dialog={dialog}>
       {/* Date & Time */}
       <TimePicker value={timestamp} onChange={setTimestamp} />
 

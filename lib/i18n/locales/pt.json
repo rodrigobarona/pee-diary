@@ -165,7 +165,10 @@
     "startTracking": "Comece a registar para ver o seu histórico",
     "noDataForDay": "Sem registos para este dia",
     "noEntriesForDate": "Não há registos nesta data",
-    "tapToAdd": "Toque aqui para adicionar"
+    "tapToAdd": "Toque aqui para adicionar",
+    "noEntrySelected": "Escolha um registo",
+    "noEntrySelectedHint": "Os detalhes aparecem aqui, com um botão para o editar.",
+    "activity": "Atividade"
   },
   "settings": {
     "title": "Definições",

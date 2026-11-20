@@ -31,6 +31,7 @@ import {
   spacing,
 } from '@/lib/theme/styles';
 import { formatDate, formatTime } from '@/lib/utils/date';
+import { SheetPresentation, sheetDialogStyles, useSheetIsDialog } from "@/components/ui/sheet-presentation";
 
 const IS_IOS = Platform.OS === 'ios';
 const STEP = 250;
@@ -84,6 +85,7 @@ function startingTarget(): number {
 }
 
 export default function GoalsScreen() {
+  const isDialog = useSheetIsDialog();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const savedTarget = useDiaryStore((state) => state.goals.fluidTarget);
@@ -154,223 +156,228 @@ export default function GoalsScreen() {
   );
 
   return (
-    <ScrollView 
-      style={styles.scrollView}
-      contentContainerStyle={[
-        styles.container,
-        columnStyle(MAX_CONTENT_WIDTH.reading),
-        Platform.OS === 'android' ? styles.containerAndroid : undefined,
-        { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg },
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
-      <SheetHandle />
-      {/* Title */}
-      <Text
-        variant={IS_IOS ? 'title3' : 'title2'}
-        style={styles.title}
-        accessibilityRole="header"
+    <SheetPresentation>
+      <ScrollView 
+        style={[styles.scrollView, isDialog ? sheetDialogStyles.fit : undefined]}
+        contentContainerStyle={[
+          styles.container,
+          columnStyle(MAX_CONTENT_WIDTH.reading),
+          Platform.OS === 'android' ? styles.containerAndroid : undefined,
+          {
+            // A dialog sits clear of the navigation bar
+            paddingBottom: isDialog ? spacing.xl : Math.max(insets.bottom, spacing.lg) + spacing.lg,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
       >
-        {t('goals.title')}
-      </Text>
-      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
-        {t('goals.description')}
-      </Text>
+        <SheetHandle />
+        {/* Title */}
+        <Text
+          variant={IS_IOS ? 'title3' : 'title2'}
+          style={styles.title}
+          accessibilityRole="header"
+        >
+          {t('goals.title')}
+        </Text>
+        <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+          {t('goals.description')}
+        </Text>
 
-      {/* Fluid Goal Card */}
-      <View style={styles.goalCard}>
-        <View style={styles.goalHeader}>
-          <View style={styles.iconContainer}>
-            <Icon
-              name="cup-water"
-              size={iconSize.lg}
-              color={colors.category.fluid.accent}
-            />
-          </View>
-          <View style={styles.labelContainer}>
-            <Text variant="headline">{t('goals.fluidTarget')}</Text>
-            <Text variant="footnote" tone="secondary" style={styles.goalDesc}>
-              {t('goals.fluidDescription')}
-            </Text>
-          </View>
-        </View>
-        {target === null ? (
-          <View style={styles.noTarget}>
-            <Text variant="subheadline" tone="secondary" style={styles.noTargetText}>
-              {t('goals.noTargetDescription')}
-            </Text>
-            <Pressable
-              onPress={setOwnTarget}
-              accessibilityRole="button"
-              android_ripple={ripple}
-              style={({ pressed }) => [
-                styles.textButton,
-                IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
-              ]}
-              testID="goals-set-target"
-            >
-              <Text variant="headline" tone="accent">
-                {t('goals.setTarget')}
-              </Text>
-            </Pressable>
-          </View>
-        ) : (
-          <>
-            <View style={styles.stepperRow}>
-              <StepButton
-                icon="minus"
-                label={t('a11y.settings.decreaseBy', { amount: STEP })}
-                disabled={isFluidMin}
-                onPress={() => adjustFluidGoal(-STEP)}
-              />
-              {/* One adjustable element: swipe up/down (VoiceOver) or the
-                  adjust actions (TalkBack) change the goal by 250 ml */}
-              <View
-                style={styles.valueContainer}
-                {...adjustableA11y({
-                  label: t('goals.fluidDescription'),
-                  valueText,
-                  min: MIN_GOAL,
-                  max: MAX_GOAL,
-                  now: target,
-                  onIncrement: () => adjustFluidGoal(STEP),
-                  onDecrement: () => adjustFluidGoal(-STEP),
-                })}
-              >
-                <Text variant="largeTitle" style={styles.valueText}>
-                  {numberFormatters.decimal.format(target)}
-                </Text>
-                <Text variant="subheadline" tone="secondary">
-                  ml
-                </Text>
-              </View>
-              <StepButton
-                icon="plus"
-                label={t('a11y.settings.increaseBy', { amount: STEP })}
-                disabled={isFluidMax}
-                onPress={() => adjustFluidGoal(STEP)}
+        {/* Fluid Goal Card */}
+        <View style={styles.goalCard}>
+          <View style={styles.goalHeader}>
+            <View style={styles.iconContainer}>
+              <Icon
+                name="cup-water"
+                size={iconSize.lg}
+                color={colors.category.fluid.accent}
               />
             </View>
-            <Pressable
-              onPress={removeTarget}
-              accessibilityRole="button"
-              android_ripple={ripple}
-              style={({ pressed }) => [
-                styles.textButton,
-                IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
-              ]}
-            >
-              <Text variant="subheadline" tone="secondary">
-                {t('goals.removeTarget')}
+            <View style={styles.labelContainer}>
+              <Text variant="headline">{t('goals.fluidTarget')}</Text>
+              <Text variant="footnote" tone="secondary" style={styles.goalDesc}>
+                {t('goals.fluidDescription')}
               </Text>
-            </Pressable>
-          </>
-        )}
-      </View>
-
-      {/* About these targets */}
-      <View style={styles.infoBox}>
-        <Icon
-          name="information-outline"
-          size={iconSize.sm}
-          color={colors.textSecondary}
-          style={styles.infoIcon}
-        />
-        <Text variant="footnote" tone="secondary" style={styles.infoText}>
-          {t('goals.targetsInfo')}
-        </Text>
-      </View>
-
-      {/* Goal History Section */}
-      <View style={styles.historySection}>
-        <Pressable
-          onPress={toggleHistory}
-          style={({ pressed }) => [
-            styles.historyHeader,
-            IS_IOS && pressed ? styles.historyHeaderPressedIOS : undefined,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t('goals.history')}
-          accessibilityState={{ expanded: historyExpanded }}
-          android_ripple={ripple}
-        >
-          <View style={styles.historyTitleRow}>
-            <Icon name="history" size={iconSize.md} color={colors.textSecondary} />
-            <Text variant="headline" tone="secondary">
-              {t('goals.history')}
-            </Text>
+            </View>
           </View>
-          <Icon
-            name={historyExpanded ? 'chevron-up' : 'chevron-down'}
-            size={iconSize.md}
-            color={colors.textSecondary}
-          />
-        </Pressable>
-
-        {historyExpanded ? (
-          <View style={styles.historyContent}>
-            {sortedHistory.length === 0 ? (
-              <Text
-                variant="subheadline"
-                tone="secondary"
-                style={styles.historyEmpty}
+          {target === null ? (
+            <View style={styles.noTarget}>
+              <Text variant="subheadline" tone="secondary" style={styles.noTargetText}>
+                {t('goals.noTargetDescription')}
+              </Text>
+              <Pressable
+                onPress={setOwnTarget}
+                accessibilityRole="button"
+                android_ripple={ripple}
+                style={({ pressed }) => [
+                  styles.textButton,
+                  IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
+                ]}
+                testID="goals-set-target"
               >
-                {t('goals.historyEmpty')}
+                <Text variant="headline" tone="accent">
+                  {t('goals.setTarget')}
+                </Text>
+              </Pressable>
+            </View>
+          ) : (
+            <>
+              <View style={styles.stepperRow}>
+                <StepButton
+                  icon="minus"
+                  label={t('a11y.settings.decreaseBy', { amount: STEP })}
+                  disabled={isFluidMin}
+                  onPress={() => adjustFluidGoal(-STEP)}
+                />
+                {/* One adjustable element: swipe up/down (VoiceOver) or the
+                    adjust actions (TalkBack) change the goal by 250 ml */}
+                <View
+                  style={styles.valueContainer}
+                  {...adjustableA11y({
+                    label: t('goals.fluidDescription'),
+                    valueText,
+                    min: MIN_GOAL,
+                    max: MAX_GOAL,
+                    now: target,
+                    onIncrement: () => adjustFluidGoal(STEP),
+                    onDecrement: () => adjustFluidGoal(-STEP),
+                  })}
+                >
+                  <Text variant="largeTitle" style={styles.valueText}>
+                    {numberFormatters.decimal.format(target)}
+                  </Text>
+                  <Text variant="subheadline" tone="secondary">
+                    ml
+                  </Text>
+                </View>
+                <StepButton
+                  icon="plus"
+                  label={t('a11y.settings.increaseBy', { amount: STEP })}
+                  disabled={isFluidMax}
+                  onPress={() => adjustFluidGoal(STEP)}
+                />
+              </View>
+              <Pressable
+                onPress={removeTarget}
+                accessibilityRole="button"
+                android_ripple={ripple}
+                style={({ pressed }) => [
+                  styles.textButton,
+                  IS_IOS && pressed ? styles.stepButtonPressedIOS : undefined,
+                ]}
+              >
+                <Text variant="subheadline" tone="secondary">
+                  {t('goals.removeTarget')}
+                </Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+
+        {/* About these targets */}
+        <View style={styles.infoBox}>
+          <Icon
+            name="information-outline"
+            size={iconSize.sm}
+            color={colors.textSecondary}
+            style={styles.infoIcon}
+          />
+          <Text variant="footnote" tone="secondary" style={styles.infoText}>
+            {t('goals.targetsInfo')}
+          </Text>
+        </View>
+
+        {/* Goal History Section */}
+        <View style={styles.historySection}>
+          <Pressable
+            onPress={toggleHistory}
+            style={({ pressed }) => [
+              styles.historyHeader,
+              IS_IOS && pressed ? styles.historyHeaderPressedIOS : undefined,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t('goals.history')}
+            accessibilityState={{ expanded: historyExpanded }}
+            android_ripple={ripple}
+          >
+            <View style={styles.historyTitleRow}>
+              <Icon name="history" size={iconSize.md} color={colors.textSecondary} />
+              <Text variant="headline" tone="secondary" style={styles.historyTitle}>
+                {t('goals.history')}
               </Text>
-            ) : (
-              sortedHistory.map((record, index) => {
-                const change = record.changes.fluidTarget;
-                const when = `${formatDate(record.changedAt, 'medium')}, ${formatTime(
-                  record.changedAt
-                )}`;
-                return (
-                  <View
-                    key={record.changedAt}
-                    style={[
-                      styles.historyItem,
-                      index < sortedHistory.length - 1
-                        ? styles.historyItemBorder
-                        : undefined,
-                    ]}
-                    accessible
-                    accessibilityLabel={
-                      change
-                        ? t('a11y.settings.goalChange', {
-                            date: when,
-                            from: formatTarget(change.from),
-                            to: formatTarget(change.to),
-                          })
-                        : when
-                    }
-                  >
-                    <Text
-                      variant="footnote"
-                      tone="secondary"
-                      style={styles.historyDate}
+            </View>
+            <Icon
+              name={historyExpanded ? 'chevron-up' : 'chevron-down'}
+              size={iconSize.md}
+              color={colors.textSecondary}
+            />
+          </Pressable>
+
+          {historyExpanded ? (
+            <View style={styles.historyContent}>
+              {sortedHistory.length === 0 ? (
+                <Text
+                  variant="subheadline"
+                  tone="secondary"
+                  style={styles.historyEmpty}
+                >
+                  {t('goals.historyEmpty')}
+                </Text>
+              ) : (
+                sortedHistory.map((record, index) => {
+                  const change = record.changes.fluidTarget;
+                  const when = `${formatDate(record.changedAt, 'medium')}, ${formatTime(
+                    record.changedAt
+                  )}`;
+                  return (
+                    <View
+                      key={record.changedAt}
+                      style={[
+                        styles.historyItem,
+                        index < sortedHistory.length - 1
+                          ? styles.historyItemBorder
+                          : undefined,
+                      ]}
+                      accessible
+                      accessibilityLabel={
+                        change
+                          ? t('a11y.settings.goalChange', {
+                              date: when,
+                              from: formatTarget(change.from),
+                              to: formatTarget(change.to),
+                            })
+                          : when
+                      }
                     >
-                      {when}
-                    </Text>
-                    {change ? (
-                      <View style={styles.historyChange} {...hiddenA11y}>
-                        <Icon
-                          name="cup-water"
-                          size={iconSize.sm}
-                          color={colors.category.fluid.accent}
-                        />
-                        <Text variant="subheadline">
-                          {t('goals.fluids')}: {formatTarget(change.from)} →{' '}
-                          {formatTarget(change.to)}
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })
-            )}
-          </View>
-        ) : null}
-      </View>
-    </ScrollView>
+                      <Text
+                        variant="footnote"
+                        tone="secondary"
+                        style={styles.historyDate}
+                      >
+                        {when}
+                      </Text>
+                      {change ? (
+                        <View style={styles.historyChange} {...hiddenA11y}>
+                          <Icon
+                            name="cup-water"
+                            size={iconSize.sm}
+                            color={colors.category.fluid.accent}
+                          />
+                          <Text variant="subheadline">
+                            {t('goals.fluids')}: {formatTarget(change.from)} →{' '}
+                            {formatTarget(change.to)}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })
+              )}
+            </View>
+          ) : null}
+        </View>
+      </ScrollView>
+    </SheetPresentation>
   );
 }
 
@@ -501,9 +508,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.highlight,
   },
   historyTitleRow: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  // Takes the row's free width: measured on its own, Android sized the
+  // label too narrow inside the dialog and cut off its second word
+  historyTitle: {
+    flex: 1,
   },
   historyContent: {
     ...cardStyle,

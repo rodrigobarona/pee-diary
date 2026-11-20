@@ -11,8 +11,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AddTabButton } from '@/components/add-tab-button';
+import { NavigationRail, RAIL_SIDE } from '@/components/navigation-rail';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { useWindowClass } from '@/hooks/use-window-class';
 import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
 import { iconSize } from '@/lib/theme/styles';
@@ -36,8 +38,15 @@ const INDICATOR_COLOR = colors.primary.container;
  * Android: a Material 3 navigation bar (80dp plus the system navigation bar
  * inset, active indicator pill); adding an entry is the floating action
  * button on each screen (AddEntryFab).
+ *
+ * Windows 600 wide or more (unfolded foldables, tablets), both platforms: a
+ * navigation rail with the "+" at its top (NavigationRail).
  */
-function AppTabBar(props: BottomTabBarProps) {
+function AppTabBar(props: BottomTabBarProps & { rail: boolean }) {
+  // Unfolded foldables and tablets: a navigation rail on the leading edge
+  if (props.rail) {
+    return <NavigationRail {...props} />;
+  }
   if (Platform.OS !== 'ios') {
     return <BottomTabBar {...props} />;
   }
@@ -108,6 +117,7 @@ export default function TabLayout() {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const { isCompact } = useWindowClass();
 
   // iOS: the two tabs take the outer thirds of the bar, the "+" the middle
   const iosCentreGap = width / 6;
@@ -115,8 +125,9 @@ export default function TabLayout() {
   return (
     <Tabs
       key={locale} // Force re-mount on locale change to update tab titles
-      tabBar={(props) => <AppTabBar {...props} />}
+      tabBar={(props) => <AppTabBar {...props} rail={!isCompact} />}
       screenOptions={{
+        tabBarPosition: isCompact ? 'bottom' : RAIL_SIDE,
         // Each tab is a native stack with its own header
         headerShown: false,
         // Labels and icons of the unselected tab: 7.56:1 on the bar (text
@@ -169,7 +180,9 @@ export default function TabLayout() {
           tabBarButtonTestID: 'tab-today',
           tabBarIcon: renderTabIcon('calendar-today-outline', 'calendar-today'),
           tabBarItemStyle:
-            Platform.OS === 'ios' ? { marginEnd: iosCentreGap } : undefined,
+            Platform.OS === 'ios' && isCompact
+              ? { marginEnd: iosCentreGap }
+              : undefined,
         }}
       />
       <Tabs.Screen
@@ -179,7 +192,9 @@ export default function TabLayout() {
           tabBarButtonTestID: 'tab-history',
           tabBarIcon: renderTabIcon('calendar-month-outline', 'calendar-month'),
           tabBarItemStyle:
-            Platform.OS === 'ios' ? { marginStart: iosCentreGap } : undefined,
+            Platform.OS === 'ios' && isCompact
+              ? { marginStart: iosCentreGap }
+              : undefined,
         }}
       />
     </Tabs>

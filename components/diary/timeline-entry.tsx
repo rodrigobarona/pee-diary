@@ -19,6 +19,8 @@ interface TimelineEntryProps {
   showTime?: boolean;
   onPress?: () => void;
   testID?: string;
+  /** Wide windows: the entry shown in the detail pane beside the list */
+  selected?: boolean;
 }
 
 const entryConfig = {
@@ -71,6 +73,7 @@ export function TimelineEntry({
   showTime = true,
   onPress,
   testID,
+  selected = false,
 }: TimelineEntryProps) {
   const { t } = useI18n();
   const { fontScale } = useWindowDimensions();
@@ -172,10 +175,15 @@ export function TimelineEntry({
       {/* The entry card */}
       <AnimatedPressable
         onPress={onPress}
-        style={[styles.content, stacked ? styles.contentStacked : null]}
+        style={[
+          styles.content,
+          stacked ? styles.contentStacked : null,
+          selected ? styles.contentSelected : null,
+        ]}
         testID={testID}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
+        accessibilityState={selected ? { selected: true } : undefined}
       >
         <View style={styles.contentInner}>
           <View style={[styles.iconBadge, { backgroundColor: config.container }]}>
@@ -328,6 +336,12 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     padding: spacing.md,
     overflow: "hidden",
+  },
+  // The entry open in the detail pane (wide windows)
+  contentSelected: {
+    backgroundColor: colors.primary.subtle,
+    borderColor: colors.primary.DEFAULT,
+    borderWidth: 2,
   },
   contentStacked: {
     marginLeft: spacing.sm,

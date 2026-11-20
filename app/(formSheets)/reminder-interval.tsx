@@ -14,6 +14,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { REMINDER_INTERVAL_OPTIONS, useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import { cardStyle, iconSize, spacing } from "@/lib/theme/styles";
+import { SheetPresentation, useSheetIsDialog } from "@/components/ui/sheet-presentation";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -22,6 +23,7 @@ const IS_IOS = Platform.OS === "ios";
  * (an alert cannot hold four options plus Cancel on Android).
  */
 export default function ReminderIntervalScreen() {
+  const isDialog = useSheetIsDialog();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const intervalHours = useDiaryStore(
@@ -39,75 +41,78 @@ export default function ReminderIntervalScreen() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg,
-          paddingTop: IS_IOS ? spacing.xl : 0,
-        },
-      ]}
-    >
-      {/* A centred column on large windows (unfolded foldables) */}
-      <ContentColumn>
-        <SheetHandle />
-        <Text
-          variant={IS_IOS ? "title3" : "title2"}
-          style={styles.title}
-          accessibilityRole="header"
-        >
-          {t("settings.reminderInterval")}
-        </Text>
+    <SheetPresentation>
+      <View
+        style={[
+          styles.container,
+          {
+            // A dialog sits clear of the navigation bar
+            paddingBottom: isDialog ? spacing.xl : Math.max(insets.bottom, spacing.lg) + spacing.lg,
+            paddingTop: IS_IOS ? spacing.xl : 0,
+          },
+        ]}
+      >
+        {/* A centred column on large windows (unfolded foldables) */}
+        <ContentColumn>
+          <SheetHandle />
+          <Text
+            variant={IS_IOS ? "title3" : "title2"}
+            style={styles.title}
+            accessibilityRole="header"
+          >
+            {t("settings.reminderInterval")}
+          </Text>
 
-        <View
-          style={styles.optionsContainer}
-          {...choiceGroupA11y(t("settings.reminderInterval"))}
-        >
-          {REMINDER_INTERVAL_OPTIONS.map((hours, index) => {
-            const isSelected = hours === intervalHours;
-            const label = t("settings.everyXHours", { count: hours });
-            return (
-              <React.Fragment key={hours}>
-                {index > 0 ? <View style={styles.separator} /> : null}
-                <AnimatedPressable
-                  onPress={() => handleSelect(hours)}
-                  testID={`reminder-interval-${hours}`}
-                  feedback="highlight"
-                  highlightColor={colors.highlight}
-                  {...choiceA11y(isSelected)}
-                  accessibilityLabel={label}
-                  style={styles.option}
-                >
-                  <View style={styles.labelContainer}>
-                    <Text
-                      variant="body"
-                      style={isSelected ? styles.labelSelected : undefined}
-                    >
-                      {label}
-                    </Text>
-                  </View>
-                  {IS_IOS ? (
-                    <View style={styles.checkmarkSlot}>
-                      {isSelected ? (
-                        <Icon
-                          name="check"
-                          size={iconSize.lg}
-                          color={colors.primary.DEFAULT}
-                        />
-                      ) : null}
+          <View
+            style={styles.optionsContainer}
+            {...choiceGroupA11y(t("settings.reminderInterval"))}
+          >
+            {REMINDER_INTERVAL_OPTIONS.map((hours, index) => {
+              const isSelected = hours === intervalHours;
+              const label = t("settings.everyXHours", { count: hours });
+              return (
+                <React.Fragment key={hours}>
+                  {index > 0 ? <View style={styles.separator} /> : null}
+                  <AnimatedPressable
+                    onPress={() => handleSelect(hours)}
+                    testID={`reminder-interval-${hours}`}
+                    feedback="highlight"
+                    highlightColor={colors.highlight}
+                    {...choiceA11y(isSelected)}
+                    accessibilityLabel={label}
+                    style={styles.option}
+                  >
+                    <View style={styles.labelContainer}>
+                      <Text
+                        variant="body"
+                        style={isSelected ? styles.labelSelected : undefined}
+                      >
+                        {label}
+                      </Text>
                     </View>
-                  ) : (
-                    <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                      {isSelected ? <View style={styles.radioInner} /> : null}
-                    </View>
-                  )}
-                </AnimatedPressable>
-              </React.Fragment>
-            );
-          })}
-        </View>
-      </ContentColumn>
-    </View>
+                    {IS_IOS ? (
+                      <View style={styles.checkmarkSlot}>
+                        {isSelected ? (
+                          <Icon
+                            name="check"
+                            size={iconSize.lg}
+                            color={colors.primary.DEFAULT}
+                          />
+                        ) : null}
+                      </View>
+                    ) : (
+                      <View style={[styles.radio, isSelected && styles.radioSelected]}>
+                        {isSelected ? <View style={styles.radioInner} /> : null}
+                      </View>
+                    )}
+                  </AnimatedPressable>
+                </React.Fragment>
+              );
+            })}
+          </View>
+        </ContentColumn>
+      </View>
+    </SheetPresentation>
   );
 }
 

@@ -165,7 +165,10 @@
     "startTracking": "Empieza a registrar para ver tu historial",
     "noDataForDay": "Sin registros para este día",
     "noEntriesForDate": "No hay nada registrado en esta fecha",
-    "tapToAdd": "Pulsa aquí para añadir"
+    "tapToAdd": "Pulsa aquí para añadir",
+    "noEntrySelected": "Elige un registro",
+    "noEntrySelectedHint": "Sus detalles aparecen aquí, con un botón para editarlo.",
+    "activity": "Actividad"
   },
   "settings": {
     "title": "Ajustes",

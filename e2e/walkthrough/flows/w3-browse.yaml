@@ -59,6 +59,17 @@ appId: care.eleva.peediary
 - takeScreenshot: 32-history-day-entries
 - tapOn:
     id: "entry-5a9a4b54-727a-4aa2-9c15-b854019f5d5a"
+- waitForAnimationToEnd
+# Wide windows: the entry shows in the detail pane beside the list; its
+# Edit button opens the form
+- runFlow:
+    when:
+      visible:
+        id: "history-detail-edit"
+    commands:
+      - takeScreenshot: 32b-history-detail
+      - tapOn:
+          id: "history-detail-edit"
 - extendedWaitUntil:
     visible:
       id: "form-save"

@@ -39,10 +39,12 @@ export const BREAKPOINTS = {
  * readable (about 45-75 characters) and controls are not stretched.
  * - reading: forms, sheets, Settings, legal text
  * - page: the Today and History screens in one column
+ * - wide: screens in two panes (Today with its side pane, History)
  */
 export const MAX_CONTENT_WIDTH = {
   reading: 600,
   page: 680,
+  wide: 1040,
 } as const;
 
 /**

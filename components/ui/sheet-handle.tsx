@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { InDialogContext } from '@/lib/layout/presentation';
+
 /**
  * Material 3 bottom sheet drag handle (32x4dp, 22dp above it), drawn at the
  * top of the Android sheets. iOS shows the system grabber instead
- * (sheetGrabberVisible), so this renders nothing there.
+ * (sheetGrabberVisible), so this renders nothing there, nor does a sheet
+ * shown as a dialog on a wide window (DialogFrame).
  */
 export function SheetHandle() {
-  if (Platform.OS !== 'android') {
+  const inDialog = React.useContext(InDialogContext);
+  if (Platform.OS !== 'android' || inDialog) {
     return null;
   }
 

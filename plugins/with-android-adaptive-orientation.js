@@ -1,4 +1,5 @@
-// Expo config plugin: portrait on phones only, on Android.
+// Expo config plugin: portrait on phones only, on Android (and Esc as back,
+// for hardware keyboards on the same large screens).
 //
 // app.json keeps "orientation": "portrait", which iOS needs (the iPhone app
 // is portrait). On Android that becomes android:screenOrientation="portrait"
@@ -45,6 +46,7 @@ const IMPORTS = [
   "import android.content.pm.ActivityInfo",
   "import android.content.res.Configuration",
   "import android.os.Build",
+  "import android.view.KeyEvent",
 ];
 
 const METHODS = `
@@ -71,6 +73,21 @@ const METHODS = `
     if (requestedOrientation != wanted) {
       requestedOrientation = wanted
     }
+  }
+
+  // Esc on a hardware keyboard (tablets, foldables with a keyboard case,
+  // desktop windows) does what back does: closes the dialog, sheet or form,
+  // or goes back a screen (Google Play large-screen quality, Tier 2)
+  // ReactActivity.onBackPressed hands back to JavaScript (navigation) on
+  // every Android version; the back dispatcher would not below Android 16,
+  // where React Native registers no callback, and would close the app
+  @Suppress("DEPRECATION")
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+      onBackPressed()
+      return true
+    }
+    return super.onKeyUp(keyCode, event)
   }
   // @generated end ${MARKER}
 `;

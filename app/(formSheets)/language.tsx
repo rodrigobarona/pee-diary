@@ -13,6 +13,7 @@ import { haptics } from "@/lib/haptics";
 import { useI18n, type SupportedLocale } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
 import { cardStyle, iconSize, spacing } from "@/lib/theme/styles";
+import { SheetPresentation, useSheetIsDialog } from "@/components/ui/sheet-presentation";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -79,6 +80,7 @@ function LanguageOption({ option, isSelected, onPress }: LanguageOptionProps) {
 }
 
 export default function LanguageScreen() {
+  const isDialog = useSheetIsDialog();
   const { t, locale, setLocale } = useI18n();
   const insets = useSafeAreaInsets();
 
@@ -97,50 +99,53 @@ export default function LanguageScreen() {
   );
 
   return (
-    // Fits its content (sheetAllowedDetents "fitToContents") and ends above
-    // the home indicator or the Android navigation bar
-    <View
-      style={[
-        styles.container,
-        {
-          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg,
-          paddingTop: IS_IOS ? spacing.xl : 0,
-        },
-      ]}
-    >
-      {/* A centred column on large windows (unfolded foldables) */}
-      <ContentColumn>
-        <SheetHandle />
-        {/* Title */}
-        <Text
-          variant={IS_IOS ? "title3" : "title2"}
-          style={styles.title}
-          accessibilityRole="header"
-        >
-          {t("settings.language")}
-        </Text>
-        <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
-          {t("settings.languageSubtitle")}
-        </Text>
+    <SheetPresentation>
+      {/* Fits its content (sheetAllowedDetents "fitToContents") and ends above
+         the home indicator or the Android navigation bar */}
+      <View
+        style={[
+          styles.container,
+          {
+            // A dialog sits clear of the navigation bar
+            paddingBottom: isDialog ? spacing.xl : Math.max(insets.bottom, spacing.lg) + spacing.lg,
+            paddingTop: IS_IOS ? spacing.xl : 0,
+          },
+        ]}
+      >
+        {/* A centred column on large windows (unfolded foldables) */}
+        <ContentColumn>
+          <SheetHandle />
+          {/* Title */}
+          <Text
+            variant={IS_IOS ? "title3" : "title2"}
+            style={styles.title}
+            accessibilityRole="header"
+          >
+            {t("settings.language")}
+          </Text>
+          <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+            {t("settings.languageSubtitle")}
+          </Text>
 
-        {/* Language Options: one choice */}
-        <View
-          style={styles.optionsContainer}
-          {...choiceGroupA11y(t("settings.language"))}
-        >
-          {languageOptions.map((option, index) => (
-            <React.Fragment key={option.value}>
-              {index > 0 ? <View style={styles.separator} /> : null}
-              <LanguageOption
-                option={option}
-                isSelected={locale === option.value}
-                onPress={() => handleLanguageSelect(option.value)}
-              />
-            </React.Fragment>
-          ))}
-        </View>
-      </ContentColumn>
-    </View>
+          {/* Language Options: one choice */}
+          <View
+            style={styles.optionsContainer}
+            {...choiceGroupA11y(t("settings.language"))}
+          >
+            {languageOptions.map((option, index) => (
+              <React.Fragment key={option.value}>
+                {index > 0 ? <View style={styles.separator} /> : null}
+                <LanguageOption
+                  option={option}
+                  isSelected={locale === option.value}
+                  onPress={() => handleLanguageSelect(option.value)}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+        </ContentColumn>
+      </View>
+    </SheetPresentation>
   );
 }
 

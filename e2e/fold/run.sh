@@ -83,6 +83,10 @@ check() { # flow step-name
 if [ "$MODE" != window ]; then
   change folded
   "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/back-from-settings.yaml"
+  # Esc on a hardware keyboard does the same (plugins/with-android-adaptive-orientation.js)
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/open-settings.yaml"
+  "$ADB" shell input keyevent KEYCODE_ESCAPE
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/expect-today.yaml"
 fi
 
 [ "$MODE" = window ] && start_window

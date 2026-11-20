@@ -1,0 +1,12 @@
+# Opens Settings from Today (for the keyboard Esc check in run.sh)
+appId: care.eleva.peediary
+---
+- launchApp
+- runFlow: finish-onboarding.yaml
+- runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
+- tapOn:
+    id: "settings-button"
+- extendedWaitUntil:
+    visible:
+      id: "settings-row-goals"
+    timeout: 10000

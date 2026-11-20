@@ -33,6 +33,7 @@ import {
 import { deleteExportFiles } from "@/lib/utils/export";
 import { navigationTheme, stackHeaderOptions } from "@/lib/theme/navigation";
 import { getLaunchAction } from "@/lib/utils/launch";
+import { presentsAsDialog } from "@/lib/layout/presentation";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
@@ -61,6 +62,23 @@ const sheetOptions: NativeStackNavigationOptions = {
   sheetGrabberVisible: Platform.OS === "ios",
   sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
 };
+
+// Android, wide windows (unfolded foldables, tablets): forms and sheets open
+// as a centred dialog over the screen (presentsAsDialog, DialogFrame)
+const dialogOptions: NativeStackNavigationOptions = {
+  presentation: "transparentModal",
+  headerShown: false,
+  animation: "fade",
+};
+
+type ScreenOptionsArgs = { route: { key: string } };
+
+function adaptive(options: NativeStackNavigationOptions) {
+  return ({ route }: ScreenOptionsArgs): NativeStackNavigationOptions =>
+    presentsAsDialog(route.key) ? dialogOptions : options;
+}
+
+const adaptiveFormOptions = adaptive(formOptions);
 
 function InnerLayout() {
   const { locale, t } = useI18n();
@@ -177,12 +195,13 @@ function InnerLayout() {
             back button and swipe back on iOS, arrow back on Android */}
         <Stack.Screen name="settings" options={{ title: t("tabs.settings") }} />
         {/* Add and edit forms: a page sheet with a navigation bar on iOS, a
-            full-screen dialog with a top app bar on Android. The title and
-            the bar buttons come from useEntryFormHeader. */}
-        <Stack.Screen name="(modals)/add/urination" options={formOptions} />
-        <Stack.Screen name="(modals)/add/fluid" options={formOptions} />
-        <Stack.Screen name="(modals)/add/leak" options={formOptions} />
-        <Stack.Screen name="(modals)/entry/[id]" options={formOptions} />
+            full-screen dialog with a top app bar on Android (a centred
+            dialog on wide windows). The title and the bar buttons come from
+            useEntryFormHeader. */}
+        <Stack.Screen name="(modals)/add/urination" options={adaptiveFormOptions} />
+        <Stack.Screen name="(modals)/add/fluid" options={adaptiveFormOptions} />
+        <Stack.Screen name="(modals)/add/leak" options={adaptiveFormOptions} />
+        <Stack.Screen name="(modals)/entry/[id]" options={adaptiveFormOptions} />
         <Stack.Screen
           name="(modals)/terms-update"
           options={{
@@ -192,32 +211,32 @@ function InnerLayout() {
         />
         <Stack.Screen
           name="(formSheets)/add-menu"
-          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
+          options={adaptive({ ...sheetOptions, sheetAllowedDetents: "fitToContents" })}
         />
         <Stack.Screen
           name="(formSheets)/goals"
-          options={{
+          options={adaptive({
             ...sheetOptions,
             sheetAllowedDetents:
               Platform.OS === "ios" ? [0.85, 1.0] : undefined,
-          }}
+          })}
         />
         <Stack.Screen
           name="(formSheets)/export"
-          options={{
+          options={adaptive({
             ...sheetOptions,
             // Large detent only: the range, the format and the button do
             // not fit a shorter sheet
             sheetAllowedDetents: Platform.OS === "ios" ? [1.0] : undefined,
-          }}
+          })}
         />
         <Stack.Screen
           name="(formSheets)/language"
-          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
+          options={adaptive({ ...sheetOptions, sheetAllowedDetents: "fitToContents" })}
         />
         <Stack.Screen
           name="(formSheets)/reminder-interval"
-          options={{ ...sheetOptions, sheetAllowedDetents: "fitToContents" }}
+          options={adaptive({ ...sheetOptions, sheetAllowedDetents: "fitToContents" })}
         />
       </Stack>
       <StatusBar style="dark" />

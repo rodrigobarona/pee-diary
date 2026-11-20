@@ -75,7 +75,7 @@ export default function UrinationScreen() {
     t,
   ]);
 
-  useEntryFormHeader({
+  const { dialog } = useEntryFormHeader({
     title: t("urination.title"),
     saveLabel: t("common.save"),
     onSave: handleSave,
@@ -90,7 +90,7 @@ export default function UrinationScreen() {
   }, [showPreciseVolume]);
 
   return (
-    <FormScrollView>
+    <FormScrollView dialog={dialog}>
       {/* Time */}
       <TimePicker value={timestamp} onChange={setTimestamp} />
 

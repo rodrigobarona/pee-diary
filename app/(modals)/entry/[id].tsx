@@ -40,6 +40,7 @@ import {
   MIN_TOUCH_TARGET,
   spacing,
 } from "@/lib/theme/styles";
+import { DialogFrame } from "@/components/ui/dialog-frame";
 
 // Names of the fields in the edit history
 const FIELD_LABEL_KEYS: Record<string, string> = {
@@ -116,14 +117,14 @@ export default function EntryDetailScreen() {
 function EntryLoading() {
   const { t } = useI18n();
 
-  useEntryFormHeader({
+  const { dialog } = useEntryFormHeader({
     title: t("detail.editEntry"),
     saveLabel: t("detail.update"),
     onSave: () => false,
     isDirty: false,
   });
 
-  return (
+  const content = (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
       <Text variant="body" tone="secondary">
@@ -131,25 +132,39 @@ function EntryLoading() {
       </Text>
     </View>
   );
+  return dialog ? (
+    <DialogFrame header={dialog.header} onDismiss={dialog.onDismiss} fill>
+      {content}
+    </DialogFrame>
+  ) : (
+    content
+  );
 }
 
 function EntryNotFound() {
   const { t } = useI18n();
 
-  useEntryFormHeader({
+  const { dialog } = useEntryFormHeader({
     title: t("detail.editEntry"),
     saveLabel: t("detail.update"),
     onSave: () => false,
     isDirty: false,
   });
 
-  return (
+  const content = (
     <View style={styles.loadingContainer}>
       <Icon name="file-question-outline" size={48} color={colors.textSecondary} />
       <Text variant="body" tone="secondary" style={styles.notFoundText}>
         {t("detail.notFound")}
       </Text>
     </View>
+  );
+  return dialog ? (
+    <DialogFrame header={dialog.header} onDismiss={dialog.onDismiss} fill>
+      {content}
+    </DialogFrame>
+  ) : (
+    content
   );
 }
 
@@ -257,7 +272,7 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
     ]);
   };
 
-  const { deleteEntry: requestDelete } = useEntryFormHeader({
+  const { deleteEntry: requestDelete, dialog } = useEntryFormHeader({
     title: t(TITLE_KEYS[entry.type]),
     saveLabel: t("detail.update"),
     onSave: handleUpdate,
@@ -304,7 +319,7 @@ function EntryForm({ entry }: { entry: DiaryEntry }) {
   const editCount = entry.editHistory?.length ?? 0;
 
   return (
-    <FormScrollView>
+    <FormScrollView dialog={dialog}>
       {/* Time */}
       <TimePicker value={timestamp} onChange={setTimestamp} />
 

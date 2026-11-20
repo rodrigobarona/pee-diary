@@ -1,0 +1,7 @@
+# Today is showing, in the app
+appId: care.eleva.peediary
+---
+- extendedWaitUntil:
+    visible:
+      id: "today-scroll"
+    timeout: 10000

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Platform, Pressable, StyleSheet } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
+import { useWindowClass } from '@/hooks/use-window-class';
 import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
 import { iconSize, radius, spacing } from '@/lib/theme/styles';
@@ -25,8 +26,11 @@ const FAB_RIPPLE = { color: 'rgba(255, 255, 255, 0.24)', foreground: true };
 export function AddEntryFab() {
   const router = useRouter();
   const { t } = useI18n();
+  const { isCompact } = useWindowClass();
 
-  if (Platform.OS !== 'android') {
+  // iOS: the "+" in the tab bar. Wide windows: the "+" at the top of the
+  // navigation rail.
+  if (Platform.OS !== 'android' || !isCompact) {
     return null;
   }
 

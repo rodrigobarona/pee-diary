@@ -57,7 +57,7 @@ export default function LeakScreen() {
     return true;
   }, [addLeakEntry, severity, urgency, activity, notes, timestamp, t]);
 
-  useEntryFormHeader({
+  const { dialog } = useEntryFormHeader({
     title: t("leak.title"),
     saveLabel: t("common.save"),
     onSave: handleSave,
@@ -65,7 +65,7 @@ export default function LeakScreen() {
   });
 
   return (
-    <FormScrollView>
+    <FormScrollView dialog={dialog}>
       {/* Time */}
       <TimePicker value={timestamp} onChange={setTimestamp} />
 

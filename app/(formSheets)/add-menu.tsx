@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { useI18n } from "@/lib/i18n/context";
 import { colors } from "@/lib/theme/colors";
 import { radius, ripple, spacing } from "@/lib/theme/styles";
+import { SheetPresentation, useSheetIsDialog } from "@/components/ui/sheet-presentation";
 
 interface AddOptionProps {
   icon: IconName;
@@ -65,6 +66,7 @@ function AddOption({
 }
 
 export default function AddMenuScreen() {
+  const isDialog = useSheetIsDialog();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
 
@@ -109,54 +111,59 @@ export default function AddMenuScreen() {
   ];
 
   return (
-    // The sheet fits its content (sheetAllowedDetents "fitToContents"), so
-    // the container has no flex and ends above the home indicator or the
-    // Android navigation bar.
-    <View
-      style={[
-        styles.container,
-        { paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.sm },
-      ]}
-    >
-      {/* A centred column on large windows (unfolded foldables) */}
-      <ContentColumn>
-        <SheetHandle />
+    <SheetPresentation>
+      {/* The sheet fits its content (sheetAllowedDetents "fitToContents"), so
+         the container has no flex and ends above the home indicator or the
+         Android navigation bar. */}
+      <View
+        style={[
+          styles.container,
+          {
+            // A dialog sits clear of the navigation bar
+            paddingBottom: isDialog ? spacing.xl : Math.max(insets.bottom, spacing.lg) + spacing.sm,
+          },
+        ]}
+      >
+        {/* A centred column on large windows (unfolded foldables) */}
+        <ContentColumn>
+          <SheetHandle />
 
-        <Text
-          variant={Platform.OS === "ios" ? "title3" : "title2"}
-          style={styles.title}
-          accessibilityRole="header"
-        >
-          {t("add.title")}
-        </Text>
-        <Text
-          variant="subheadline"
-          tone="secondary"
-          style={styles.subtitle}
-        >
-          {t("add.subtitle")}
-        </Text>
+          <Text
+            variant={Platform.OS === "ios" ? "title3" : "title2"}
+            style={styles.title}
+            accessibilityRole="header"
+          >
+            {t("add.title")}
+          </Text>
+          <Text
+            variant="subheadline"
+            tone="secondary"
+            style={styles.subtitle}
+          >
+            {t("add.subtitle")}
+          </Text>
 
-        <View style={styles.options}>
-          {options.map((option, index) => (
-            <React.Fragment key={option.route}>
-              {index > 0 && Platform.OS === "ios" ? (
-                <View style={styles.separator} />
-              ) : null}
-              <AddOption
-                icon={option.icon}
-                label={option.label}
-                description={option.description}
-                color={option.color}
-                tileColor={option.tileColor}
-                onPress={() => handleOptionPress(option.route)}
-                testID={option.testID}
-              />
-            </React.Fragment>
-          ))}
-        </View>
-      </ContentColumn>
-    </View>
+          <View style={styles.options}>
+            {options.map((option, index) => (
+              <React.Fragment key={option.route}>
+                {index > 0 && Platform.OS === "ios" ? (
+                  <View style={styles.separator} />
+                ) : null}
+                <AddOption
+                  icon={option.icon}
+                  label={option.label}
+                  description={option.description}
+                  color={option.color}
+                  tileColor={option.tileColor}
+                  onPress={() => handleOptionPress(option.route)}
+                  testID={option.testID}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+        </ContentColumn>
+      </View>
+    </SheetPresentation>
   );
 }
 

@@ -10,12 +10,18 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { DialogFrame } from "@/components/ui/dialog-frame";
 import { colors } from "@/lib/theme/colors";
 import { columnStyle, MAX_CONTENT_WIDTH, spacing } from "@/lib/theme/styles";
 
 interface FormScrollViewProps {
   children: React.ReactNode;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /**
+   * Android, wide windows: the form is a centred dialog with this header
+   * (from useEntryFormHeader)
+   */
+  dialog?: { header: React.ReactNode; onDismiss: () => void };
 }
 
 /**
@@ -32,6 +38,7 @@ interface FormScrollViewProps {
 export function FormScrollView({
   children,
   contentContainerStyle,
+  dialog,
 }: FormScrollViewProps) {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -57,6 +64,15 @@ export function FormScrollView({
       {children}
     </ScrollView>
   );
+
+  if (dialog) {
+    // The dialog keeps clear of the keyboard itself
+    return (
+      <DialogFrame header={dialog.header} onDismiss={dialog.onDismiss} fill>
+        {scrollView}
+      </DialogFrame>
+    );
+  }
 
   if (Platform.OS !== "android") {
     return scrollView;

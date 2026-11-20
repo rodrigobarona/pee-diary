@@ -41,6 +41,7 @@ import {
   type CSVLabels,
   type PDFTranslations,
 } from "@/lib/utils/export";
+import { SheetPresentation, sheetDialogStyles, useSheetIsDialog } from "@/components/ui/sheet-presentation";
 
 type PresetKey =
   | "last7days"
@@ -52,6 +53,7 @@ type PresetKey =
 const IS_IOS = Platform.OS === "ios";
 
 export default function ExportScreen() {
+  const isDialog = useSheetIsDialog();
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const isHydrated = useStoreHydrated();
@@ -265,145 +267,148 @@ export default function ExportScreen() {
   const isExportDisabled = filteredEntries.length === 0 || isExporting;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.scrollContent,
-        columnStyle(MAX_CONTENT_WIDTH.reading),
-        {
-          // Keeps Export & Share above the home indicator or the Android
-          // gesture / 3-button navigation bar
-          paddingBottom: Math.max(insets.bottom, spacing.lg) + spacing.lg,
-          paddingTop: IS_IOS ? 48 : 0,
-        },
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
-      <SheetHandle />
-      {/* Header */}
-      <Text
-        variant={IS_IOS ? "title3" : "title2"}
-        style={styles.title}
-        accessibilityRole="header"
-      >
-        {t("export.title")}
-      </Text>
-      <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
-        {t("settings.exportDescription")}
-      </Text>
-
-      {/* Date Range Section: one choice */}
-      <SectionTitle>{t("export.dateRange")}</SectionTitle>
-      <View style={styles.card} {...choiceGroupA11y(t("export.dateRange"))}>
-        {presets.map((preset, index) => (
-          <React.Fragment key={preset.key}>
-            <OptionRow
-              icon={preset.icon}
-              label={preset.label}
-              isSelected={activePreset === preset.key}
-              onPress={() => handlePresetSelect(preset.key)}
-            />
-            {index < presets.length - 1 ? (
-              <View style={styles.separator} />
-            ) : null}
-          </React.Fragment>
-        ))}
-
-        {/* Custom date range: shown when chosen; it grows with the font
-            size instead of sitting in a fixed-height box */}
-        {activePreset === "custom" ? (
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(150)}
-            style={styles.customRangePicker}
-          >
-            <DateRangePicker
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={(date) => {
-                setStartDate(date);
-                if (date > endDate) setEndDate(date);
-              }}
-              onEndDateChange={(date) => {
-                setEndDate(date);
-                if (date < startDate) setStartDate(date);
-              }}
-              minDate={minDate}
-              maxDate={new Date()}
-            />
-          </Animated.View>
-        ) : null}
-      </View>
-
-      {/* Selected Range */}
-      <View
-        style={styles.selectedRange}
-        accessible
-        accessibilityLabel={a11yLabel(dateRangeText, entryCountText)}
-        accessibilityLiveRegion="polite"
-      >
-        <Icon
-          name="calendar-range"
-          size={iconSize.sm}
-          color={colors.primary.DEFAULT}
-        />
-        <Text variant="subheadline" tone="accent" style={styles.selectedRangeText}>
-          {dateRangeText}
-        </Text>
-        <Text variant="footnote" tone="secondary">
-          {entryCountText}
-        </Text>
-      </View>
-
-      {/* Format Section: one choice */}
-      <SectionTitle>{t("export.format")}</SectionTitle>
-      <View style={styles.card} {...choiceGroupA11y(t("export.format"))}>
-        {formats.map((fmt, index) => (
-          <React.Fragment key={fmt.key}>
-            <OptionRow
-              icon={fmt.icon}
-              label={fmt.label}
-              isSelected={selectedFormat === fmt.key}
-              onPress={() => handleFormatSelect(fmt.key)}
-              color={fmt.color}
-            />
-            {index < formats.length - 1 ? (
-              <View style={styles.separator} />
-            ) : null}
-          </React.Fragment>
-        ))}
-      </View>
-
-      {/* Export Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.exportButton,
-          isExportDisabled ? styles.exportButtonDisabled : undefined,
-          IS_IOS && pressed ? styles.exportButtonPressedIOS : undefined,
+    <SheetPresentation>
+      <ScrollView
+        style={[styles.container, isDialog ? sheetDialogStyles.fit : undefined]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          columnStyle(MAX_CONTENT_WIDTH.reading),
+          {
+            // Keeps Export & Share above the home indicator or the Android
+            // gesture / 3-button navigation bar
+            // A dialog sits clear of the navigation bar
+            paddingBottom: isDialog ? spacing.xl : Math.max(insets.bottom, spacing.lg) + spacing.lg,
+            paddingTop: IS_IOS ? 48 : 0,
+          },
         ]}
-        onPress={handleExport}
-        disabled={isExportDisabled}
-        accessibilityRole="button"
-        accessibilityLabel={
-          isExporting ? t("export.exporting") : t("export.exportAndShare")
-        }
-        accessibilityState={{
-          disabled: isExportDisabled,
-          busy: isExporting,
-        }}
-        android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
-        testID="export-button"
+        showsVerticalScrollIndicator={false}
       >
-        {isExporting ? (
-          <ActivityIndicator size="small" color={colors.onPrimary} />
-        ) : (
-          <Icon name="share-variant" size={iconSize.md} color={colors.onPrimary} />
-        )}
-        <Text variant="button" tone="onAccent">
-          {isExporting ? t("export.exporting") : t("export.exportAndShare")}
+        <SheetHandle />
+        {/* Header */}
+        <Text
+          variant={IS_IOS ? "title3" : "title2"}
+          style={styles.title}
+          accessibilityRole="header"
+        >
+          {t("export.title")}
         </Text>
-      </Pressable>
-    </ScrollView>
+        <Text variant="subheadline" tone="secondary" style={styles.subtitle}>
+          {t("settings.exportDescription")}
+        </Text>
+
+        {/* Date Range Section: one choice */}
+        <SectionTitle>{t("export.dateRange")}</SectionTitle>
+        <View style={styles.card} {...choiceGroupA11y(t("export.dateRange"))}>
+          {presets.map((preset, index) => (
+            <React.Fragment key={preset.key}>
+              <OptionRow
+                icon={preset.icon}
+                label={preset.label}
+                isSelected={activePreset === preset.key}
+                onPress={() => handlePresetSelect(preset.key)}
+              />
+              {index < presets.length - 1 ? (
+                <View style={styles.separator} />
+              ) : null}
+            </React.Fragment>
+          ))}
+
+          {/* Custom date range: shown when chosen; it grows with the font
+              size instead of sitting in a fixed-height box */}
+          {activePreset === "custom" ? (
+            <Animated.View
+              entering={FadeIn.duration(200)}
+              exiting={FadeOut.duration(150)}
+              style={styles.customRangePicker}
+            >
+              <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={(date) => {
+                  setStartDate(date);
+                  if (date > endDate) setEndDate(date);
+                }}
+                onEndDateChange={(date) => {
+                  setEndDate(date);
+                  if (date < startDate) setStartDate(date);
+                }}
+                minDate={minDate}
+                maxDate={new Date()}
+              />
+            </Animated.View>
+          ) : null}
+        </View>
+
+        {/* Selected Range */}
+        <View
+          style={styles.selectedRange}
+          accessible
+          accessibilityLabel={a11yLabel(dateRangeText, entryCountText)}
+          accessibilityLiveRegion="polite"
+        >
+          <Icon
+            name="calendar-range"
+            size={iconSize.sm}
+            color={colors.primary.DEFAULT}
+          />
+          <Text variant="subheadline" tone="accent" style={styles.selectedRangeText}>
+            {dateRangeText}
+          </Text>
+          <Text variant="footnote" tone="secondary">
+            {entryCountText}
+          </Text>
+        </View>
+
+        {/* Format Section: one choice */}
+        <SectionTitle>{t("export.format")}</SectionTitle>
+        <View style={styles.card} {...choiceGroupA11y(t("export.format"))}>
+          {formats.map((fmt, index) => (
+            <React.Fragment key={fmt.key}>
+              <OptionRow
+                icon={fmt.icon}
+                label={fmt.label}
+                isSelected={selectedFormat === fmt.key}
+                onPress={() => handleFormatSelect(fmt.key)}
+                color={fmt.color}
+              />
+              {index < formats.length - 1 ? (
+                <View style={styles.separator} />
+              ) : null}
+            </React.Fragment>
+          ))}
+        </View>
+
+        {/* Export Button */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.exportButton,
+            isExportDisabled ? styles.exportButtonDisabled : undefined,
+            IS_IOS && pressed ? styles.exportButtonPressedIOS : undefined,
+          ]}
+          onPress={handleExport}
+          disabled={isExportDisabled}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isExporting ? t("export.exporting") : t("export.exportAndShare")
+          }
+          accessibilityState={{
+            disabled: isExportDisabled,
+            busy: isExporting,
+          }}
+          android_ripple={{ color: "rgba(255, 255, 255, 0.24)", foreground: true }}
+          testID="export-button"
+        >
+          {isExporting ? (
+            <ActivityIndicator size="small" color={colors.onPrimary} />
+          ) : (
+            <Icon name="share-variant" size={iconSize.md} color={colors.onPrimary} />
+          )}
+          <Text variant="button" tone="onAccent">
+            {isExporting ? t("export.exporting") : t("export.exportAndShare")}
+          </Text>
+        </Pressable>
+      </ScrollView>
+    </SheetPresentation>
   );
 }
 

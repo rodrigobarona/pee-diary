@@ -45,6 +45,16 @@ describe("addOrientationPolicy (Android: portrait on phones only)", () => {
     expect((out.match(/{/g) ?? []).length).toBe((out.match(/}/g) ?? []).length);
   });
 
+  it("makes Esc on a hardware keyboard act as back", () => {
+    expect(out).toContain("override fun onKeyUp(keyCode: Int, event: KeyEvent)");
+    expect(out).toContain("KeyEvent.KEYCODE_ESCAPE");
+    // Through ReactActivity (JS navigation), not the dispatcher, which has no
+    // React Native callback below Android 16 and would close the app
+    expect(out).toMatch(/KEYCODE_ESCAPE\) \{\n\s+onBackPressed\(\)/);
+    expect(out).not.toContain("onBackPressedDispatcher");
+    expect(out.match(/import android\.view\.KeyEvent/g)).toHaveLength(1);
+  });
+
   it("is idempotent (prebuild may run more than once)", () => {
     expect(addOrientationPolicy(out)).toBe(out);
   });

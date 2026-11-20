@@ -49,6 +49,9 @@ import {
 } from "@/lib/theme/styles";
 import { formatDateHeader } from "@/lib/utils/date";
 import { groupByDay, parseDayKey, toDayKey } from "@/lib/utils/day";
+import { useWindowClass } from "@/hooks/use-window-class";
+import { fitsTwoPanes } from "@/lib/layout/window-class";
+import { NAVIGATION_RAIL_WIDTH } from "@/components/navigation-rail";
 
 const NO_ENTRIES: DiaryEntry[] = [];
 
@@ -81,15 +84,31 @@ const getGreeting = (t: (key: string) => string, locale: string): string => {
   return t("greeting.evening");
 };
 
+// Narrowest the side pane (the day's timeline) may be
+const TODAY_SIDE_PANE_MIN_WIDTH = 300;
+
 export default function HomeScreen() {
   const { t, locale } = useI18n();
   const router = useRouter();
   const { fontScale } = useWindowDimensions();
+  // Wide windows (a foldable in landscape, a tablet): two panes, if each
+  // keeps a usable width at this text size (the rail takes 80, the
+  // margins 32)
+  const windowClass = useWindowClass();
+  const twoPane =
+    windowClass.widthClass === "expanded" &&
+    fitsTwoPanes(
+      windowClass.width - NAVIGATION_RAIL_WIDTH - SCREEN_MARGIN * 2,
+      fontScale,
+      { minPaneWidth: TODAY_SIDE_PANE_MIN_WIDTH }
+    );
   const bottomSpace = useTabScreenBottomSpace();
 
   // Refs for scroll handling
   const scrollViewRef = React.useRef<ScrollView>(null);
   const insightsSectionY = React.useRef<number>(0);
+  // Wide windows: where the two panes start (the insights are in the first)
+  const panesY = React.useRef<number>(0);
 
   // Insights period toggle
   const [insightsPeriod, setInsightsPeriod] = React.useState<"week" | "month">(
@@ -519,10 +538,10 @@ export default function HomeScreen() {
   // Handle streak badge press - scroll to insights section
   const handleStreakPress = React.useCallback(() => {
     scrollViewRef.current?.scrollTo({
-      y: insightsSectionY.current - 20,
+      y: (twoPane ? panesY.current : 0) + insightsSectionY.current - 20,
       animated: true,
     });
-  }, []);
+  }, [twoPane]);
 
   // Handle day press in weekly chart
   const handleDayPress = React.useCallback(
@@ -546,6 +565,265 @@ export default function HomeScreen() {
   // At large text sizes the three summary cards stack instead of squeezing
   const stackCards = fontScale > 1.3;
 
+  // Progress Section
+  const progressBlock = (
+    <View style={styles.progressSection}>
+      {/* Fluids, against the user's own target */}
+      <ProgressBar
+        progress={fluidProgress}
+        value={summary.fluids}
+        target={fluidTarget ?? 0}
+        unit="ml"
+        label={t("home.summary.fluids")}
+        icon="cup-water"
+        color={colors.category.fluid.accent}
+        iconBackground={colors.category.fluid.container}
+        fillColor={colors.category.fluid.fill}
+        onPress={() => handleStatPress("fluid")}
+        accessibilityLabel={
+          fluidTarget !== null
+            ? t("a11y.today.statWithTarget", {
+                label: t("home.summary.fluids"),
+                value: summary.fluids,
+                target: fluidTarget,
+              })
+            : t("a11y.today.statFluids", {
+                label: t("home.summary.fluids"),
+                value: summary.fluids,
+              })
+        }
+        accessibilityHint={t("a11y.today.statHint")}
+      />
+
+      {/* Voids - no target and no bar, only the count */}
+      <ProgressBar
+        progress={0}
+        value={summary.voids}
+        target={0}
+        label={t("home.summary.voids")}
+        icon="toilet"
+        color={colors.category.urination.accent}
+        iconBackground={colors.category.urination.container}
+        onPress={() => handleStatPress("urination")}
+        accessibilityHint={t("a11y.today.statHint")}
+      />
+
+      {/* Leaks - no target and no bar, only the count; the category
+          colour marks the icon, the count stays neutral */}
+      <ProgressBar
+        progress={0}
+        value={summary.leaks}
+        target={0}
+        label={t("home.summary.leaks")}
+        icon="water-alert"
+        color={colors.category.leak.accent}
+        valueColor={colors.text}
+        iconBackground={colors.category.leak.container}
+        onPress={() => handleStatPress("leak")}
+        successLabel={t("home.noLeaks")}
+        accessibilityHint={t("a11y.today.statHint")}
+      />
+
+      {/* Edit Goals Link */}
+      <AnimatedPressable
+        onPress={handleEditGoals}
+        style={styles.link}
+        accessibilityRole="button"
+        accessibilityLabel={
+          fluidTarget === null ? t("home.setTarget") : t("home.editGoals")
+        }
+      >
+        <Icon
+          name="target"
+          size={iconSize.sm}
+          color={colors.primary.DEFAULT}
+        />
+        <Text variant="subheadline" tone="accent">
+          {fluidTarget === null ? t("home.setTarget") : t("home.editGoals")}
+        </Text>
+      </AnimatedPressable>
+    </View>
+  );
+
+  // Time Period Summary
+  const activityBlock = (
+    <View style={[styles.section, twoPane ? styles.firstSection : undefined]}>
+      <Text
+        variant="headline"
+        accessibilityRole="header"
+        style={styles.sectionTitle}
+      >
+        {t("home.todayActivity")}
+      </Text>
+      <TimeGroupSummary
+        entries={todayEntries}
+        onPeriodPress={handlePeriodPress}
+      />
+    </View>
+  );
+
+  // Insights Section
+  const insightsBlock = (
+    <View
+      style={styles.section}
+      onLayout={(e) => {
+        insightsSectionY.current = e.nativeEvent.layout.y;
+      }}
+    >
+      {/* Header with period toggle */}
+      <View style={styles.insightsHeader}>
+        <Text variant="headline" accessibilityRole="header">
+          {t("insights.title")}
+        </Text>
+        <View
+          style={styles.periodToggle}
+          {...tabListA11y}
+          accessibilityLabel={t("a11y.today.periodPicker")}
+        >
+          {(["week", "month"] as const).map((period) => {
+            const selected = insightsPeriod === period;
+            return (
+              <AnimatedPressable
+                key={period}
+                onPress={() => handlePeriodChange(period)}
+                style={[
+                  styles.periodButton,
+                  selected ? styles.periodButtonActive : undefined,
+                ]}
+                hitSlop={hitSlopFor(MIN_TOUCH_TARGET, PERIOD_BUTTON_HEIGHT)}
+                {...tabA11y(selected)}
+                accessibilityLabel={t(`insights.${period}`)}
+              >
+                <Text
+                  variant="subheadline"
+                  tone={selected ? "primary" : "secondary"}
+                  style={selected ? styles.periodTextActive : undefined}
+                >
+                  {t(`insights.${period}`)}
+                </Text>
+              </AnimatedPressable>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Chart */}
+      {insightsPeriod === "week" ? (
+        <WeeklyChart
+          data={weeklyData}
+          onDayPress={handleDayPress}
+          fluidTarget={fluidTarget ?? undefined}
+        />
+      ) : (
+        <MonthlyChart
+          data={monthlyData}
+          onWeekPress={handleDayPress}
+          fluidTarget={fluidTarget ?? undefined}
+        />
+      )}
+
+      {/* Insight Cards - Row 1 */}
+      <View
+        testID="today-insight-cards"
+        style={[
+          styles.insightCardsRow,
+          stackCards ? styles.insightCardsStacked : undefined,
+        ]}
+      >
+        <InsightCard
+          title={t("insights.avgFluids")}
+          value={`${numberFormatters.decimal.format(currentStats.avgFluids)} ml`}
+          trend={currentStats.fluidTrend}
+          trendValue={currentStats.fluidDiff}
+          icon="cup-water"
+          color={colors.category.fluid.accent}
+          iconBackground={colors.category.fluid.container}
+        />
+        <InsightCard
+          title={t("insights.avgVoids")}
+          value={numberFormatters.decimal.format(currentStats.avgVoids)}
+          trend={currentStats.voidTrend}
+          trendValue={currentStats.voidDiff}
+          icon="toilet"
+          color={colors.category.urination.accent}
+          iconBackground={colors.category.urination.container}
+        />
+        {fluidTarget !== null ? (
+        <InsightCard
+          title={t("insights.fluidGoalReached")}
+          value={`${currentStats.fluidGoalDays}/${currentStats.totalDays}`}
+          valueAccessibilityText={t("a11y.today.daysOf", {
+            count: currentStats.fluidGoalDays,
+            total: currentStats.totalDays,
+          })}
+          icon="trophy-outline"
+          color={colors.amber.accent}
+          iconBackground={colors.amber.container}
+        />
+        ) : null}
+      </View>
+
+      {/* Insight Cards - Row 2: visits logged 21:00-05:00 */}
+      <View style={styles.insightCardsRow}>
+        <InsightCard
+          title={t("insights.nightVoidsBetween", {
+            range: formatHourRange(21, 5),
+          })}
+          value={numberFormatters.decimal.format(currentStats.nightVoidsTotal)}
+          subtitle={t("insights.nightVoidsAvg", {
+            value: numberFormatters.decimal.format(currentStats.avgNightVoids),
+          })}
+          icon="weather-night"
+          color={colors.indigo.accent}
+          iconBackground={colors.indigo.container}
+        />
+      </View>
+
+      {/* Fluid Balance Chart - only show in week view for clarity */}
+      {insightsPeriod === "week" ? (
+        <View style={styles.fluidBalanceSection}>
+          <Text
+            variant="headline"
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
+            {t("insights.fluidBalance")}
+          </Text>
+          <FluidBalanceChart
+            data={fluidBalanceData}
+            onDayPress={handleDayPress}
+          />
+        </View>
+      ) : null}
+
+      {/* Medical disclaimer under the charts (wording fixed by legal) */}
+      <Text
+        variant={Platform.OS === "ios" ? "footnote" : "subheadline"}
+        tone="secondary"
+        style={styles.disclaimerText}
+      >
+        {t("disclaimer.text")}
+      </Text>
+
+      {/* Export Data Link */}
+      <AnimatedPressable
+        onPress={handleExportData}
+        style={styles.link}
+        accessibilityRole="button"
+        accessibilityLabel={t("home.exportData")}
+      >
+        <Icon
+          name="download"
+          size={iconSize.sm}
+          color={colors.primary.DEFAULT}
+        />
+        <Text variant="subheadline" tone="accent">
+          {t("home.exportData")}
+        </Text>
+      </AnimatedPressable>
+    </View>
+  );
+
   return (
     <>
       <ScrollView
@@ -553,8 +831,8 @@ export default function HomeScreen() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          // One centred column on large windows (unfolded foldables)
-          columnStyle(MAX_CONTENT_WIDTH.page),
+          // Large windows: one centred column, or two panes when wide
+          columnStyle(twoPane ? MAX_CONTENT_WIDTH.wide : MAX_CONTENT_WIDTH.page),
           { paddingBottom: bottomSpace },
         ]}
         contentInsetAdjustmentBehavior="automatic"
@@ -592,258 +870,28 @@ export default function HomeScreen() {
           </View>
         ) : null}
 
-        {/* Progress Section */}
-        <View style={styles.progressSection}>
-          {/* Fluids, against the user's own target */}
-          <ProgressBar
-            progress={fluidProgress}
-            value={summary.fluids}
-            target={fluidTarget ?? 0}
-            unit="ml"
-            label={t("home.summary.fluids")}
-            icon="cup-water"
-            color={colors.category.fluid.accent}
-            iconBackground={colors.category.fluid.container}
-            fillColor={colors.category.fluid.fill}
-            onPress={() => handleStatPress("fluid")}
-            accessibilityLabel={
-              fluidTarget !== null
-                ? t("a11y.today.statWithTarget", {
-                    label: t("home.summary.fluids"),
-                    value: summary.fluids,
-                    target: fluidTarget,
-                  })
-                : t("a11y.today.statFluids", {
-                    label: t("home.summary.fluids"),
-                    value: summary.fluids,
-                  })
-            }
-            accessibilityHint={t("a11y.today.statHint")}
-          />
-
-          {/* Voids - no target and no bar, only the count */}
-          <ProgressBar
-            progress={0}
-            value={summary.voids}
-            target={0}
-            label={t("home.summary.voids")}
-            icon="toilet"
-            color={colors.category.urination.accent}
-            iconBackground={colors.category.urination.container}
-            onPress={() => handleStatPress("urination")}
-            accessibilityHint={t("a11y.today.statHint")}
-          />
-
-          {/* Leaks - no target and no bar, only the count; the category
-              colour marks the icon, the count stays neutral */}
-          <ProgressBar
-            progress={0}
-            value={summary.leaks}
-            target={0}
-            label={t("home.summary.leaks")}
-            icon="water-alert"
-            color={colors.category.leak.accent}
-            valueColor={colors.text}
-            iconBackground={colors.category.leak.container}
-            onPress={() => handleStatPress("leak")}
-            successLabel={t("home.noLeaks")}
-            accessibilityHint={t("a11y.today.statHint")}
-          />
-
-          {/* Edit Goals Link */}
-          <AnimatedPressable
-            onPress={handleEditGoals}
-            style={styles.link}
-            accessibilityRole="button"
-            accessibilityLabel={
-              fluidTarget === null ? t("home.setTarget") : t("home.editGoals")
-            }
-          >
-            <Icon
-              name="target"
-              size={iconSize.sm}
-              color={colors.primary.DEFAULT}
-            />
-            <Text variant="subheadline" tone="accent">
-              {fluidTarget === null ? t("home.setTarget") : t("home.editGoals")}
-            </Text>
-          </AnimatedPressable>
-        </View>
-
-        {/* Time Period Summary */}
-        <View style={styles.section}>
-          <Text
-            variant="headline"
-            accessibilityRole="header"
-            style={styles.sectionTitle}
-          >
-            {t("home.todayActivity")}
-          </Text>
-          <TimeGroupSummary
-            entries={todayEntries}
-            onPeriodPress={handlePeriodPress}
-          />
-        </View>
-
-        {/* Insights Section */}
-        <View
-          style={styles.section}
-          onLayout={(e) => {
-            insightsSectionY.current = e.nativeEvent.layout.y;
-          }}
-        >
-          {/* Header with period toggle */}
-          <View style={styles.insightsHeader}>
-            <Text variant="headline" accessibilityRole="header">
-              {t("insights.title")}
-            </Text>
-            <View
-              style={styles.periodToggle}
-              {...tabListA11y}
-              accessibilityLabel={t("a11y.today.periodPicker")}
-            >
-              {(["week", "month"] as const).map((period) => {
-                const selected = insightsPeriod === period;
-                return (
-                  <AnimatedPressable
-                    key={period}
-                    onPress={() => handlePeriodChange(period)}
-                    style={[
-                      styles.periodButton,
-                      selected ? styles.periodButtonActive : undefined,
-                    ]}
-                    hitSlop={hitSlopFor(MIN_TOUCH_TARGET, PERIOD_BUTTON_HEIGHT)}
-                    {...tabA11y(selected)}
-                    accessibilityLabel={t(`insights.${period}`)}
-                  >
-                    <Text
-                      variant="subheadline"
-                      tone={selected ? "primary" : "secondary"}
-                      style={selected ? styles.periodTextActive : undefined}
-                    >
-                      {t(`insights.${period}`)}
-                    </Text>
-                  </AnimatedPressable>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Chart */}
-          {insightsPeriod === "week" ? (
-            <WeeklyChart
-              data={weeklyData}
-              onDayPress={handleDayPress}
-              fluidTarget={fluidTarget ?? undefined}
-            />
-          ) : (
-            <MonthlyChart
-              data={monthlyData}
-              onWeekPress={handleDayPress}
-              fluidTarget={fluidTarget ?? undefined}
-            />
-          )}
-
-          {/* Insight Cards - Row 1 */}
+        {twoPane ? (
+          // Wide windows: the totals and charts, with the day's timeline in
+          // a side pane (Material supporting pane)
           <View
-            testID="today-insight-cards"
-            style={[
-              styles.insightCardsRow,
-              stackCards ? styles.insightCardsStacked : undefined,
-            ]}
+            style={styles.panes}
+            onLayout={(e) => {
+              panesY.current = e.nativeEvent.layout.y;
+            }}
           >
-            <InsightCard
-              title={t("insights.avgFluids")}
-              value={`${numberFormatters.decimal.format(currentStats.avgFluids)} ml`}
-              trend={currentStats.fluidTrend}
-              trendValue={currentStats.fluidDiff}
-              icon="cup-water"
-              color={colors.category.fluid.accent}
-              iconBackground={colors.category.fluid.container}
-            />
-            <InsightCard
-              title={t("insights.avgVoids")}
-              value={numberFormatters.decimal.format(currentStats.avgVoids)}
-              trend={currentStats.voidTrend}
-              trendValue={currentStats.voidDiff}
-              icon="toilet"
-              color={colors.category.urination.accent}
-              iconBackground={colors.category.urination.container}
-            />
-            {fluidTarget !== null ? (
-            <InsightCard
-              title={t("insights.fluidGoalReached")}
-              value={`${currentStats.fluidGoalDays}/${currentStats.totalDays}`}
-              valueAccessibilityText={t("a11y.today.daysOf", {
-                count: currentStats.fluidGoalDays,
-                total: currentStats.totalDays,
-              })}
-              icon="trophy-outline"
-              color={colors.amber.accent}
-              iconBackground={colors.amber.container}
-            />
-            ) : null}
-          </View>
-
-          {/* Insight Cards - Row 2: visits logged 21:00-05:00 */}
-          <View style={styles.insightCardsRow}>
-            <InsightCard
-              title={t("insights.nightVoidsBetween", {
-                range: formatHourRange(21, 5),
-              })}
-              value={numberFormatters.decimal.format(currentStats.nightVoidsTotal)}
-              subtitle={t("insights.nightVoidsAvg", {
-                value: numberFormatters.decimal.format(currentStats.avgNightVoids),
-              })}
-              icon="weather-night"
-              color={colors.indigo.accent}
-              iconBackground={colors.indigo.container}
-            />
-          </View>
-
-          {/* Fluid Balance Chart - only show in week view for clarity */}
-          {insightsPeriod === "week" ? (
-            <View style={styles.fluidBalanceSection}>
-              <Text
-                variant="headline"
-                accessibilityRole="header"
-                style={styles.sectionTitle}
-              >
-                {t("insights.fluidBalance")}
-              </Text>
-              <FluidBalanceChart
-                data={fluidBalanceData}
-                onDayPress={handleDayPress}
-              />
+            <View style={styles.mainPane}>
+              {progressBlock}
+              {insightsBlock}
             </View>
-          ) : null}
-
-          {/* Medical disclaimer under the charts (wording fixed by legal) */}
-          <Text
-            variant={Platform.OS === "ios" ? "footnote" : "subheadline"}
-            tone="secondary"
-            style={styles.disclaimerText}
-          >
-            {t("disclaimer.text")}
-          </Text>
-
-          {/* Export Data Link */}
-          <AnimatedPressable
-            onPress={handleExportData}
-            style={styles.link}
-            accessibilityRole="button"
-            accessibilityLabel={t("home.exportData")}
-          >
-            <Icon
-              name="download"
-              size={iconSize.sm}
-              color={colors.primary.DEFAULT}
-            />
-            <Text variant="subheadline" tone="accent">
-              {t("home.exportData")}
-            </Text>
-          </AnimatedPressable>
-        </View>
+            <View style={styles.sidePane}>{activityBlock}</View>
+          </View>
+        ) : (
+          <>
+            {progressBlock}
+            {activityBlock}
+            {insightsBlock}
+          </>
+        )}
       </ScrollView>
       <AddEntryFab />
     </>
@@ -895,6 +943,23 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: spacing.xl,
+  },
+  // Wide windows: totals and charts beside the day's timeline
+  panes: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.xl,
+  },
+  mainPane: {
+    flex: 1,
+  },
+  sidePane: {
+    width: "38%",
+    minWidth: TODAY_SIDE_PANE_MIN_WIDTH,
+    maxWidth: 400,
+  },
+  firstSection: {
+    marginTop: 0,
   },
   sectionTitle: {
     marginBottom: spacing.md,

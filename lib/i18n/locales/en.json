@@ -165,7 +165,10 @@
     "startTracking": "Start logging to see your history",
     "noDataForDay": "No entries for this day",
     "noEntriesForDate": "Nothing was logged on this date",
-    "tapToAdd": "Tap here to add"
+    "tapToAdd": "Tap here to add",
+    "noEntrySelected": "Choose an entry",
+    "noEntrySelectedHint": "Its details appear here, with a button to edit it.",
+    "activity": "Activity"
   },
   "settings": {
     "title": "Settings",
