@@ -42,12 +42,16 @@ fi
 # change folded | unfolded | rotated (window mode: narrow | medium | wide)
 change() {
   if [ "$MODE" = window ]; then
-    # Widths at 420 dpi: 1050 px = 400 dp, 1700 px = 647 dp, the display
+    # Widths at 420 dpi: 1050 px = 400 dp, 1700 px = 647 dp, the display.
+    # The window is centred: Maestro scrolls by swiping at the screen's
+    # centre, which must land inside the app
+    local w
     case $1 in
-      folded) "$ADB" shell am task resize "$TASK" 0 0 1050 $((DH * 9 / 10)) ;;
-      unfolded) "$ADB" shell am task resize "$TASK" 0 0 $((DW < 1700 ? DW : 1700)) $((DH * 9 / 10)) ;;
-      rotated) "$ADB" shell am task resize "$TASK" 0 0 "$DW" $((DH * 9 / 10)) ;;
+      folded) w=1050 ;;
+      unfolded) w=$((DW < 1700 ? DW : 1700)) ;;
+      rotated) w=$DW ;;
     esac
+    "$ADB" shell am task resize "$TASK" $(((DW - w) / 2)) 0 $(((DW + w) / 2)) $((DH * 9 / 10))
   elif [ "$MODE" = hinge ]; then
     case $1 in
       folded) "$ADB" emu fold >/dev/null ;;
@@ -64,7 +68,7 @@ change() {
   sleep 1
 }
 if [ "$MODE" = window ]; then
-  trap '"$ADB" shell am force-stop '$APP'' EXIT
+  trap '"$ADB" shell am force-stop '$APP'; "$ADB" shell settings put global enable_freeform_support 0; "$ADB" shell settings put global force_resizable_activities 0' EXIT
 elif [ "$MODE" = hinge ]; then
   trap '"$ADB" emu unfold >/dev/null' EXIT
 else
@@ -74,6 +78,12 @@ fi
 check() { # flow step-name
   "$MAESTRO" test --test-output-dir "$OUT" -e STEP="$2" "$HERE/flows/$1"
 }
+
+# System back stays in the app (Android 13-15 regression check)
+if [ "$MODE" != window ]; then
+  change folded
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/back-from-settings.yaml"
+fi
 
 [ "$MODE" = window ] && start_window
 change folded
@@ -90,5 +100,7 @@ change folded
 for step in unfolded rotated folded; do
   change $step
   check check-tutorial.yaml "tutorial-$step"
+  # Page 2 wholly on screen, not left between two pages
+  "$MAESTRO" hierarchy 2>/dev/null | python3 "$HERE/assert-on-screen.py" onboarding-title-1
 done
 echo "Fold continuity ($MODE): passed ($OUT)"

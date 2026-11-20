@@ -1,0 +1,18 @@
+# System back returns from Settings to Today and stays in the app (it closed
+# the app on Android 13-15 while predictive back was on; see app.json)
+appId: care.eleva.peediary
+---
+- launchApp
+- runFlow: finish-onboarding.yaml
+- runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
+- tapOn:
+    id: "settings-button"
+- extendedWaitUntil:
+    visible:
+      id: "settings-row-goals"
+    timeout: 10000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-scroll"
+    timeout: 10000

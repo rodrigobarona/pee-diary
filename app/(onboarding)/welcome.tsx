@@ -357,6 +357,7 @@ function OnboardingPageContent({
             variant="title1"
             style={styles.title}
             accessibilityRole="header"
+            testID={`onboarding-title-${index}`}
           >
             {t(page.titleKey)}
           </Text>
@@ -453,7 +454,8 @@ export default function OnboardingScreen() {
   const scrollX = useSharedValue(0);
 
   // When the page width changes the scroll offset stays in pixels: once the
-  // pages have their new width, snap back to the page that was showing
+  // pages have their new width (onContentSizeChange below), snap back to the
+  // page that was showing
   const currentIndexRef = useRef(currentIndex);
   useEffect(() => {
     currentIndexRef.current = currentIndex;
@@ -467,9 +469,6 @@ export default function OnboardingScreen() {
     },
     [scrollX]
   );
-  useEffect(() => {
-    jumpToPage(currentIndexRef.current * pageWidth);
-  }, [pageWidth, jumpToPage]);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -611,6 +610,14 @@ export default function OnboardingScreen() {
         onLayout={(event) => {
           const { width } = event.nativeEvent.layout;
           if (width > 0 && width !== pageWidth) setPageWidth(width);
+        }}
+        // Snap only once the content has its new width: jumping earlier (as
+        // soon as the width changes) lands against the old content and is
+        // clamped, which a real unfold showed
+        onContentSizeChange={(contentWidth) => {
+          if (Math.abs(contentWidth - PAGES.length * pageWidth) < 1) {
+            jumpToPage(currentIndexRef.current * pageWidth);
+          }
         }}
         horizontal
         pagingEnabled

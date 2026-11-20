@@ -28,6 +28,8 @@ appId: care.eleva.peediary
     visible:
       id: "form-save"
     timeout: 10000
+- scrollUntilVisible:
+    element: "330 ml"
 - tapOn: "330 ml"
 - scrollUntilVisible:
     element:

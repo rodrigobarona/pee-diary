@@ -23,7 +23,9 @@ const {
 } = require("expo/config-plugins");
 
 const MARKER = "eleva-adaptive-orientation";
-// Material's medium breakpoint (lib/theme/styles.ts BREAKPOINTS.medium)
+// Material's medium breakpoint (lib/theme/styles.ts BREAKPOINTS.medium).
+// The generated code rounds the display's width down (toInt), so a display
+// 599.9dp wide still counts as a phone, as it does for the app's layouts.
 const PHONE_MAX_SMALLEST_WIDTH_DP = 600;
 
 function withUnlockedManifest(config) {
