@@ -49,7 +49,7 @@ change() {
     case $1 in
       folded) w=1050 ;;
       unfolded) w=$((DW < 1700 ? DW : 1700)) ;;
-      rotated) w=$DW ;;
+      rotated) w=$((DW - 2)) ;; # not the full width, which maximises the window
     esac
     "$ADB" shell am task resize "$TASK" $(((DW - w) / 2)) 0 $(((DW + w) / 2)) $((DH * 9 / 10))
   elif [ "$MODE" = hinge ]; then

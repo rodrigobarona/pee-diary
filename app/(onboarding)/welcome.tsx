@@ -448,6 +448,8 @@ export default function OnboardingScreen() {
   // guess; on some Android 15 foldables it can lag behind after a fold)
   const { width: windowWidth } = useWindowClass();
   const [pageWidth, setPageWidth] = useState(windowWidth);
+  // Where a pager mounted at a new width starts: the page that was showing
+  const [startOffset, setStartOffset] = useState(0);
   const { completeOnboarding } = useDiaryStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<Animated.ScrollView>(null);
@@ -606,14 +608,24 @@ export default function OnboardingScreen() {
 
       {/* Scrollable content */}
       <Animated.ScrollView
+        // A new page width (fold, unfold, rotation, window resize) mounts a
+        // fresh pager that starts on the page that was showing. Moving the
+        // old one raced its own relayout and could stop between two pages.
+        key={pageWidth}
+        contentOffset={{ x: startOffset, y: 0 }}
         ref={scrollViewRef}
         onLayout={(event) => {
           const { width } = event.nativeEvent.layout;
-          if (width > 0 && width !== pageWidth) setPageWidth(width);
+          if (width > 0 && width !== pageWidth) {
+            const x = currentIndexRef.current * width;
+            setStartOffset(x);
+            scrollX.set(x);
+            setPageWidth(width);
+          }
         }}
-        // Snap only once the content has its new width: jumping earlier (as
-        // soon as the width changes) lands against the old content and is
-        // clamped, which a real unfold showed
+        // Backstop, once the pages have their width (also on first mount,
+        // where it jumps to where the pager already is): put the page that
+        // was showing in place
         onContentSizeChange={(contentWidth) => {
           if (Math.abs(contentWidth - PAGES.length * pageWidth) < 1) {
             jumpToPage(currentIndexRef.current * pageWidth);

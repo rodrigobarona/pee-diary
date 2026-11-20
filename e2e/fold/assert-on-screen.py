@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Fails unless an element lies wholly inside the app's window.
+"""Fails unless a centred element lies wholly inside the app's window, at
+its centre.
 
     maestro hierarchy | python3 e2e/fold/assert-on-screen.py onboarding-title-1
 
@@ -40,4 +41,9 @@ wl, wt, wr, wb = bounds(window)
 el, et, er, eb = bounds(element)
 if el < wl or er > wr:
     sys.exit(f"{target}: [{el},{er}] is outside the window [{wl},{wr}]")
-print(f"{target}: on screen ([{el},{er}] inside [{wl},{wr}])")
+# The page titles are centred: a pager stopped between two pages moves them
+# off the window's centre even while they stay inside it
+offset = (el + er) / 2 - (wl + wr) / 2
+if abs(offset) > 4:
+    sys.exit(f"{target}: centre is {offset:+.0f} px off the window's centre")
+print(f"{target}: on screen and centred ([{el},{er}] in [{wl},{wr}], {offset:+.0f} px)")
