@@ -227,14 +227,24 @@ export default function HistoryScreen() {
   }, [twoPane, selectedEntry, router, navigation]);
 
   // Back on a narrow History after the form: nothing stays chosen, so
-  // rotating or unfolding again does not reopen it
+  // rotating or unfolding again does not reopen it. Only on a real return
+  // (History was left), not when a fold re-runs this while still focused.
+  const leftHistoryRef = React.useRef(false);
+  const twoPaneRef = React.useRef(twoPane);
+  React.useEffect(() => {
+    twoPaneRef.current = twoPane;
+  }, [twoPane]);
   useFocusEffect(
     React.useCallback(() => {
-      if (!twoPane && handedOffRef.current) {
+      if (leftHistoryRef.current && !twoPaneRef.current && handedOffRef.current) {
         handedOffRef.current = false;
         setSelectedEntryId(null);
       }
-    }, [twoPane])
+      leftHistoryRef.current = false;
+      return () => {
+        leftHistoryRef.current = true;
+      };
+    }, [])
   );
 
   // Handle date selection from calendar

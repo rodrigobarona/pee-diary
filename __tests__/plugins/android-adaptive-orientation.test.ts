@@ -65,6 +65,11 @@ describe("addOrientationPolicy (Android: portrait on phones only)", () => {
     expect(out).toContain("SystemClock.uptimeMillis() - lastEscapeAt < 500");
   });
 
+  it("fails the build if it cannot guard the back fallback", () => {
+    const withoutFallback = MAIN_ACTIVITY.replace(/\n  override fun invokeDefaultOnBackPressed[\s\S]*?\n  }\n/, "\n");
+    expect(() => addOrientationPolicy(withoutFallback)).toThrow(/invokeDefaultOnBackPressed/);
+  });
+
   it("is idempotent (prebuild may run more than once)", () => {
     expect(addOrientationPolicy(out)).toBe(out);
   });

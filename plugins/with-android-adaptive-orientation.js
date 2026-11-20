@@ -50,7 +50,9 @@ const IMPORTS = [
   "import android.view.KeyEvent",
 ];
 
-// Esc handed back by JavaScript within this time leaves the app alone
+// Esc handed back by JavaScript within this time leaves the app alone. (A
+// system back pressed within the same half second on Today does nothing
+// either; it is rare and harmless.)
 const ESCAPE_FALLBACK_MS = 500;
 
 const METHODS = `
@@ -119,11 +121,14 @@ function addOrientationPolicy(src) {
     /(\n(\s*)super\.onCreate\([^)]*\)\n)/,
     `$1$2applyOrientationPolicy()\n`
   );
-  // Esc with nothing left to close: stay in the app
-  src = src.replace(
-    /(override fun invokeDefaultOnBackPressed\(\) \{\n)/,
-    `$1      if (isEscapeFallback()) return\n`
-  );
+  // Esc with nothing left to close: stay in the app. The Expo template
+  // overrides invokeDefaultOnBackPressed; if a new template stops doing so,
+  // fail the build rather than let Esc leave the app again
+  const fallback = /(override fun invokeDefaultOnBackPressed\(\) \{\n)/;
+  if (!fallback.test(src)) {
+    throw new Error(`${MARKER}: MainActivity has no invokeDefaultOnBackPressed to guard`);
+  }
+  src = src.replace(fallback, `$1      if (isEscapeFallback()) return\n`);
   // The methods go at the end of the class body
   return src.replace(/\n}\s*$/, `\n${METHODS}}\n`);
 }
