@@ -167,7 +167,7 @@
     "noEntriesForDate": "Nothing was logged on this date",
     "tapToAdd": "Tap here to add",
     "noEntrySelected": "Choose an entry",
-    "noEntrySelectedHint": "Its details appear here, with a button to edit it.",
+    "noEntrySelectedHint": "Pick one in the list to see everything you logged and edit it.",
     "activity": "Activity"
   },
   "settings": {
@@ -264,7 +264,9 @@
     "deleteConfirm": "Are you sure you want to delete this entry?",
     "update": "Update",
     "notFound": "This entry is no longer in your diary.",
-    "deleteEntry": "Delete Entry"
+    "deleteEntry": "Delete Entry",
+    "leakage": "Leakage",
+    "pain": "Pain or discomfort"
   },
   "export": {
     "title": "Export Data",

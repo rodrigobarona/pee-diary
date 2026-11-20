@@ -1,0 +1,8 @@
+# A form open as a dialog on a wide window, with the keyboard up: the
+# dialog has made room and its Save is still on screen
+appId: care.eleva.peediary
+---
+- assertVisible:
+    id: "form-save"
+- assertVisible: "Fold test note"
+- takeScreenshot: dialog-keyboard

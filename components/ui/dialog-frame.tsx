@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { InDialogContext } from "@/lib/layout/presentation";
 import { colors } from "@/lib/theme/colors";
 import { MAX_CONTENT_WIDTH, spacing } from "@/lib/theme/styles";
+import { HeaderIconButton } from "@/components/ui/header-button";
 
 // Material 3 dialog: 28dp corners on a surface over a 32% scrim
 const DIALOG_RADIUS = 28;
@@ -51,12 +52,27 @@ export function DialogFrame({
   const { isCompact, height } = useWindowClass();
 
   if (isCompact) {
+    // Folded with the dialog open: the same content fills the screen, with
+    // its header (a sheet has none: a bar with a close button) and clear of
+    // the keyboard
     return (
       <InDialogContext.Provider value>
-        <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
-          {header}
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={[styles.fullScreen, { paddingTop: insets.top }]}
+        >
+          {header ?? (
+            <View style={styles.closeBar}>
+              <HeaderIconButton
+                icon="close"
+                label={t("common.close")}
+                onPress={onDismiss}
+                testID="dialog-close"
+              />
+            </View>
+          )}
           <View style={styles.body}>{children}</View>
-        </View>
+        </KeyboardAvoidingView>
       </InDialogContext.Provider>
     );
   }
@@ -112,6 +128,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  closeBar: {
+    flexDirection: "row",
+    paddingHorizontal: spacing.xs,
+    minHeight: 56,
+    alignItems: "center",
+  },
   body: {
     flex: 1,
   },
@@ -135,6 +157,10 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
+    // Shrinks when the keyboard takes room, so the header and Save stay on
+    // screen (the scrolling content gives way)
+    flexShrink: 1,
+    minHeight: 0,
     borderRadius: DIALOG_RADIUS,
     overflow: "hidden",
     backgroundColor: colors.background,

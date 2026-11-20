@@ -8,7 +8,7 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useI18n } from '@/lib/i18n/context';
 import { colors } from '@/lib/theme/colors';
-import { iconSize, radius, spacing } from '@/lib/theme/styles';
+import { iconSize, radius, rippleBorderless, spacing } from '@/lib/theme/styles';
 
 // Material 3 navigation rail: 80dp wide, a 56dp FAB at the top, then the
 // destinations (icon in a 56 x 32 indicator, label underneath)
@@ -93,6 +93,8 @@ export function NavigationRail({
                 navigation.emit({ type: 'tabLongPress', target: route.key })
               }
               style={styles.item}
+              // Material pressed state; it also marks keyboard focus
+              android_ripple={rippleBorderless(NAVIGATION_RAIL_WIDTH)}
               accessibilityRole="tab"
               accessibilityState={{ selected: focused }}
               accessibilityLabel={label}

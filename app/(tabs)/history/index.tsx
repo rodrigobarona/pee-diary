@@ -81,7 +81,7 @@ const periodConfig: Record<TimePeriod, { icon: IconName; color: string }> = {
 };
 
 // Narrowest each pane may be before History shows one pane
-const HISTORY_PANE_MIN_WIDTH = 340;
+const HISTORY_PANE_MIN_WIDTH = 320;
 
 export default function HistoryScreen() {
   const { t } = useI18n();
@@ -110,12 +110,17 @@ export default function HistoryScreen() {
     windowClass.widthClass === "expanded" &&
     fitsTwoPanes(
       windowClass.width - NAVIGATION_RAIL_WIDTH,
-      windowClass.fontScale,
+      // Panes need more room for larger text, but less than in proportion:
+      // the cards wrap their text
+      1 + (windowClass.fontScale - 1) * 0.5,
       { minPaneWidth: HISTORY_PANE_MIN_WIDTH }
     );
   const [selectedEntryId, setSelectedEntryId] = React.useState<string | null>(
     null
   );
+  // The chosen entry's form was opened for it on a narrow window (by a tap,
+  // or by folding): back on a narrow History, the choice is done
+  const handedOffRef = React.useRef(false);
 
   // Toggle period expansion with animation (a disclosure: no haptic)
   const togglePeriod = React.useCallback((period: TimePeriod) => {
@@ -174,38 +179,63 @@ export default function HistoryScreen() {
     }, [params.date, params.filter, params.period])
   );
 
-  // Tapping an entry: on wide windows it shows in the detail pane; on
-  // phones it opens the edit form
+  // Tapping an entry chooses it: on wide windows it shows in the detail
+  // pane; on phones its edit form opens (and it is highlighted if the
+  // device is then unfolded)
   const handleEntryPress = React.useCallback(
     (id: string) => {
-      if (twoPane) {
-        setSelectedEntryId(id);
-      } else {
+      setSelectedEntryId(id);
+      handedOffRef.current = !twoPane;
+      if (!twoPane) {
         router.push(`/(modals)/entry/${id}`);
       }
     },
     [router, twoPane]
   );
 
-  // The chosen entry, while it is still in the diary on the chosen day
+  // The chosen entry, while it is still in the diary, on the chosen day and
+  // in the list's filter
   const selectedEntry = React.useMemo(() => {
     if (!selectedEntryId) return null;
     const entry = entries.find((e) => e.id === selectedEntryId);
-    if (!entry || !isSameDay(parseISO(entry.timestamp), selectedDate)) {
+    if (
+      !entry ||
+      !isSameDay(parseISO(entry.timestamp), selectedDate) ||
+      (filter !== "all" && entry.type !== filter)
+    ) {
       return null;
     }
     return entry;
-  }, [entries, selectedEntryId, selectedDate]);
+  }, [entries, selectedEntryId, selectedDate, filter]);
 
   // Folding (or narrowing the window) with an entry open in the pane: the
-  // entry stays in view, as its edit form, the phone's detail view
+  // entry stays in view, as its edit form, the phone's detail view. Once.
   const wasTwoPane = React.useRef(twoPane);
   React.useEffect(() => {
-    if (wasTwoPane.current && !twoPane && selectedEntry && navigation.isFocused()) {
+    if (
+      wasTwoPane.current &&
+      !twoPane &&
+      selectedEntry &&
+      !handedOffRef.current &&
+      navigation.isFocused()
+    ) {
+      handedOffRef.current = true;
       router.push(`/(modals)/entry/${selectedEntry.id}`);
     }
+    if (twoPane) handedOffRef.current = false;
     wasTwoPane.current = twoPane;
   }, [twoPane, selectedEntry, router, navigation]);
+
+  // Back on a narrow History after the form: nothing stays chosen, so
+  // rotating or unfolding again does not reopen it
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!twoPane && handedOffRef.current) {
+        handedOffRef.current = false;
+        setSelectedEntryId(null);
+      }
+    }, [twoPane])
+  );
 
   // Handle date selection from calendar
   const handleDateSelect = React.useCallback((date: Date) => {
@@ -490,17 +520,20 @@ export default function HistoryScreen() {
                 </View>
 
                 {/* Handwriting arrow pointing to the add button (visual only:
-                    the add button has its own name) */}
-                <View style={styles.arrowHint} {...hiddenA11y}>
-                  <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
-                    {t("history.tapToAdd")}
-                  </Text>
-                  <Icon
-                    name="chevron-double-down"
-                    size={iconSize.xl}
-                    color={colors.textSecondary}
-                  />
-                </View>
+                    the add button has its own name). Phones only: on wide
+                    windows the "+" is at the top of the rail */}
+                {windowClass.isCompact ? (
+                  <View style={styles.arrowHint} {...hiddenA11y}>
+                    <Text variant="subheadline" tone="secondary" style={styles.arrowText}>
+                      {t("history.tapToAdd")}
+                    </Text>
+                    <Icon
+                      name="chevron-double-down"
+                      size={iconSize.xl}
+                      color={colors.textSecondary}
+                    />
+                  </View>
+                ) : null}
               </View>
             )}
           </View>

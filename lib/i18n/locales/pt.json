@@ -167,7 +167,7 @@
     "noEntriesForDate": "Não há registos nesta data",
     "tapToAdd": "Toque aqui para adicionar",
     "noEntrySelected": "Escolha um registo",
-    "noEntrySelectedHint": "Os detalhes aparecem aqui, com um botão para o editar.",
+    "noEntrySelectedHint": "Toque num registo da lista para ver tudo o que registou e editá-lo.",
     "activity": "Atividade"
   },
   "settings": {
@@ -264,7 +264,9 @@
     "deleteConfirm": "Tem a certeza de que pretende eliminar este registo?",
     "update": "Atualizar",
     "notFound": "Este registo já não está no seu diário.",
-    "deleteEntry": "Eliminar registo"
+    "deleteEntry": "Eliminar registo",
+    "leakage": "Perda",
+    "pain": "Dor ou desconforto"
   },
   "export": {
     "title": "Exportar dados",

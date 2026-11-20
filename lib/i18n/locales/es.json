@@ -167,7 +167,7 @@
     "noEntriesForDate": "No hay nada registrado en esta fecha",
     "tapToAdd": "Pulsa aquí para añadir",
     "noEntrySelected": "Elige un registro",
-    "noEntrySelectedHint": "Sus detalles aparecen aquí, con un botón para editarlo.",
+    "noEntrySelectedHint": "Toca un registro de la lista para ver todo lo que apuntaste y editarlo.",
     "activity": "Actividad"
   },
   "settings": {
@@ -264,7 +264,9 @@
     "deleteConfirm": "¿Seguro que quieres eliminar este registro?",
     "update": "Actualizar",
     "notFound": "Este registro ya no está en tu diario.",
-    "deleteEntry": "Eliminar registro"
+    "deleteEntry": "Eliminar registro",
+    "leakage": "Pérdida",
+    "pain": "Dolor o molestias"
   },
   "export": {
     "title": "Exportar datos",

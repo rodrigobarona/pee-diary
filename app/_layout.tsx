@@ -34,6 +34,7 @@ import { deleteExportFiles } from "@/lib/utils/export";
 import { navigationTheme, stackHeaderOptions } from "@/lib/theme/navigation";
 import { getLaunchAction } from "@/lib/utils/launch";
 import { presentsAsDialog } from "@/lib/layout/presentation";
+import { useWindowClass } from "@/hooks/use-window-class";
 
 // Suppress a deprecation warning raised by dependencies that still use SafeAreaView
 LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
@@ -73,14 +74,18 @@ const dialogOptions: NativeStackNavigationOptions = {
 
 type ScreenOptionsArgs = { route: { key: string } };
 
-function adaptive(options: NativeStackNavigationOptions) {
-  return ({ route }: ScreenOptionsArgs): NativeStackNavigationOptions =>
-    presentsAsDialog(route.key) ? dialogOptions : options;
+// `wide` comes from useWindowClass in InnerLayout, the same width the
+// layouts use
+function adaptiveFor(wide: boolean) {
+  return (options: NativeStackNavigationOptions) =>
+    ({ route }: ScreenOptionsArgs): NativeStackNavigationOptions =>
+      presentsAsDialog(route.key, wide) ? dialogOptions : options;
 }
 
-const adaptiveFormOptions = adaptive(formOptions);
-
 function InnerLayout() {
+  const { isCompact } = useWindowClass();
+  const adaptive = adaptiveFor(!isCompact);
+  const adaptiveFormOptions = adaptive(formOptions);
   const { locale, t } = useI18n();
   const router = useRouter();
   const isHydrated = useStoreHydrated();

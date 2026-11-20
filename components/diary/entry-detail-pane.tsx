@@ -175,8 +175,8 @@ function detailRows(
           value: entry.volumeMl ? `${volume} · ${ml(entry.volumeMl)}` : volume,
         },
         { label: t("urination.urgency"), value: urgency(entry.urgency) },
-        { label: t("urination.hadLeak"), value: yesNo(entry.hadLeak) },
-        { label: t("urination.hadPain"), value: yesNo(entry.hadPain) },
+        { label: t("detail.leakage"), value: yesNo(entry.hadLeak) },
+        { label: t("detail.pain"), value: yesNo(entry.hadPain) },
       ];
     }
     case "fluid":

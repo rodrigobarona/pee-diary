@@ -47,14 +47,14 @@ Visual references come from Mobbin: iPhone screens for the phone layout, and web
 
 ### 3.2 Today
 - **Compact:** unchanged ([Withings](https://mobbin.com/screens/57e69e10-f0a7-4651-a187-c06b6f52f949) and [Noom](https://mobbin.com/screens/446f528a-16b4-4961-9a83-617bed75679f) show the same stacked-card pattern).
-- **Medium:** a two-column grid. Put the three stat cards (fluids, bathroom visits, leaks) in one row, as Fitbit did with its rings in 2024. The week/month chart sits beside the intake-and-output chart, and the summary cards fill a 2-column grid ([Bevel stat grid](https://mobbin.com/screens/5addacbb-f7a4-4548-aac5-25863dae8bd9)).
+- **Medium (as built):** one column beside the rail, capped at 680. With the rail, a 673dp unfolded portrait screen leaves about 560dp for content: the phone layout at a comfortable width, which is Android's canonical layout below expanded (one pane at a time). The summary cards are already three across. A 2-column grid was tried on paper and rejected: at about 270dp a column, the fluids card's "400/1,750 ml" and the weekly chart's seven bar pairs get cramped, and Portuguese and Spanish labels wrap. (Fitbit's 2024 redesign likewise switches to two columns in landscape only.)
 - **Expanded:** a 70/30 supporting pane. Cards and charts go in the main area, and the **timeline (Early hours … Night) moves into a side pane** ([Perplexity Health dashboard](https://mobbin.com/screens/5e42f20d-0ce8-4423-bda5-a4235d18c5e6), [Copilot Money](https://mobbin.com/screens/1bfa784d-99eb-4850-88e2-4064d4d06452)).
 - Charts go in grid cells with a maximum width (about 560), so a 900dp chart never shows giant bars. Each chart's fluid scale already adapts to its data.
 - Code: `app/(tabs)/(today)/index.tsx`, `components/diary/{weekly,monthly,fluid-balance}-chart.tsx`, `insight-card.tsx`, `time-group-summary.tsx`.
 
 ### 3.3 History: list-detail
 - **Compact:** unchanged (calendar strip, filters, list, entry detail modal).
-- **Expanded**, and medium when both panes keep ≥ 320dp at the current font scale:
+- **Expanded**, when both panes keep ≥ 320dp, scaled by half the extra text size (`1 + (fontScale − 1) × 0.5`, as the cards wrap their text). Medium windows show one pane:
   - The left pane holds the month calendar, filter chips and the day's list.
   - The right pane shows the **entry detail/edit inline** instead of the `(modals)/entry/[id]` modal.
   - Tapping a day updates the list in place.

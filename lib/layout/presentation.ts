@@ -4,6 +4,8 @@ import { Dimensions, Platform } from "react-native";
 import { widthClassFor } from "@/lib/layout/window-class";
 
 const dialogByRoute = new Map<string, boolean>();
+// Screens remembered at most; older ones are long closed (keys are unique)
+const MAX_REMEMBERED = 50;
 
 /**
  * Whether this screen (its route key) is presented as a centred dialog
@@ -16,14 +18,21 @@ const dialogByRoute = new Map<string, boolean>();
  * Decided once, when the screen is first presented, and kept for its
  * lifetime: folding or unfolding with a form open must not change how the
  * screen under the user's fingers is presented (DialogFrame then adapts).
+ *
+ * `wide`: whether the window is wide (useWindowClass), passed by the root
+ * layout, which decides first; the window size is the fallback.
  */
-export function presentsAsDialog(routeKey: string): boolean {
+export function presentsAsDialog(routeKey: string, wide?: boolean): boolean {
   let dialog = dialogByRoute.get(routeKey);
   if (dialog === undefined) {
     dialog =
       Platform.OS === "android" &&
-      widthClassFor(Dimensions.get("window").width) !== "compact";
+      (wide ?? widthClassFor(Dimensions.get("window").width) !== "compact");
     dialogByRoute.set(routeKey, dialog);
+    if (dialogByRoute.size > MAX_REMEMBERED) {
+      // Maps keep insertion order: forget the oldest screen
+      dialogByRoute.delete(dialogByRoute.keys().next().value as string);
+    }
   }
   return dialog;
 }

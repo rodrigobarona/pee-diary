@@ -16,6 +16,10 @@ class MainActivity : ReactActivity() {
   }
 
   override fun getMainComponentName(): String = "main"
+
+  override fun invokeDefaultOnBackPressed() {
+      super.invokeDefaultOnBackPressed()
+  }
 }
 `;
 
@@ -50,9 +54,15 @@ describe("addOrientationPolicy (Android: portrait on phones only)", () => {
     expect(out).toContain("KeyEvent.KEYCODE_ESCAPE");
     // Through ReactActivity (JS navigation), not the dispatcher, which has no
     // React Native callback below Android 16 and would close the app
-    expect(out).toMatch(/KEYCODE_ESCAPE\) \{\n\s+onBackPressed\(\)/);
+    expect(out).toMatch(/KEYCODE_ESCAPE\) \{\n(\s+.*\n)?\s+onBackPressed\(\)/);
     expect(out).not.toContain("onBackPressedDispatcher");
     expect(out.match(/import android\.view\.KeyEvent/g)).toHaveLength(1);
+  });
+
+  it("never leaves the app on Esc (only back does)", () => {
+    expect(out).toMatch(/invokeDefaultOnBackPressed\(\) \{\n\s+if \(isEscapeFallback\(\)\) return\n/);
+    expect(out).toContain("lastEscapeAt = SystemClock.uptimeMillis()");
+    expect(out).toContain("SystemClock.uptimeMillis() - lastEscapeAt < 500");
   });
 
   it("is idempotent (prebuild may run more than once)", () => {

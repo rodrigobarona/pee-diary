@@ -107,6 +107,14 @@ for step in unfolded rotated folded; do
   # Page 2 wholly on screen, not left between two pages
   "$MAESTRO" hierarchy 2>/dev/null | python3 "$HERE/assert-on-screen.py" onboarding-title-1
 done
+# A form opened as a dialog on a wide window keeps Save on screen with the
+# keyboard up
+if [ "$MODE" != window ]; then
+  change "$([ "$MODE" = hinge ] && echo unfolded || echo rotated)"
+  "$MAESTRO" test --test-output-dir "$OUT" -e RELAUNCH=true "$HERE/flows/open-form.yaml"
+  "$MAESTRO" test --test-output-dir "$OUT" "$HERE/flows/expect-save.yaml"
+fi
+
 # History list-detail: an entry open in the detail pane stays in view when
 # the window narrows (its edit form opens)
 if [ "$MODE" != window ]; then

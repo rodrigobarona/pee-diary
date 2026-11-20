@@ -84,8 +84,10 @@ const getGreeting = (t: (key: string) => string, locale: string): string => {
   return t("greeting.evening");
 };
 
-// Narrowest the side pane (the day's timeline) may be
+// The side pane (the day's timeline): narrowest at the default text size,
+// and widest
 const TODAY_SIDE_PANE_MIN_WIDTH = 300;
+const TODAY_SIDE_PANE_MAX_WIDTH = 400;
 
 export default function HomeScreen() {
   const { t, locale } = useI18n();
@@ -883,7 +885,15 @@ export default function HomeScreen() {
               {progressBlock}
               {insightsBlock}
             </View>
-            <View style={styles.sidePane}>{activityBlock}</View>
+            <View
+              style={[
+                styles.sidePane,
+                // As wide as the two-pane check assumed at this text size
+                { minWidth: TODAY_SIDE_PANE_MIN_WIDTH * Math.max(1, fontScale) },
+              ]}
+            >
+              {activityBlock}
+            </View>
           </View>
         ) : (
           <>
@@ -955,8 +965,7 @@ const styles = StyleSheet.create({
   },
   sidePane: {
     width: "38%",
-    minWidth: TODAY_SIDE_PANE_MIN_WIDTH,
-    maxWidth: 400,
+    maxWidth: TODAY_SIDE_PANE_MAX_WIDTH,
   },
   firstSection: {
     marginTop: 0,

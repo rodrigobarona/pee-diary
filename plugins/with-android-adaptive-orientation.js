@@ -46,8 +46,12 @@ const IMPORTS = [
   "import android.content.pm.ActivityInfo",
   "import android.content.res.Configuration",
   "import android.os.Build",
+  "import android.os.SystemClock",
   "import android.view.KeyEvent",
 ];
+
+// Esc handed back by JavaScript within this time leaves the app alone
+const ESCAPE_FALLBACK_MS = 500;
 
 const METHODS = `
   // @generated begin ${MARKER}
@@ -84,11 +88,19 @@ const METHODS = `
   @Suppress("DEPRECATION")
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+      lastEscapeAt = SystemClock.uptimeMillis()
       onBackPressed()
       return true
     }
     return super.onKeyUp(keyCode, event)
   }
+
+  // When Esc reaches a screen with nothing to close (Today, History),
+  // JavaScript hands it back here to leave the app: Esc never leaves it,
+  // only back does
+  private var lastEscapeAt = 0L
+  private fun isEscapeFallback(): Boolean =
+    SystemClock.uptimeMillis() - lastEscapeAt < ${ESCAPE_FALLBACK_MS}
   // @generated end ${MARKER}
 `;
 
@@ -106,6 +118,11 @@ function addOrientationPolicy(src) {
   src = src.replace(
     /(\n(\s*)super\.onCreate\([^)]*\)\n)/,
     `$1$2applyOrientationPolicy()\n`
+  );
+  // Esc with nothing left to close: stay in the app
+  src = src.replace(
+    /(override fun invokeDefaultOnBackPressed\(\) \{\n)/,
+    `$1      if (isEscapeFallback()) return\n`
   );
   // The methods go at the end of the class body
   return src.replace(/\n}\s*$/, `\n${METHODS}}\n`);
