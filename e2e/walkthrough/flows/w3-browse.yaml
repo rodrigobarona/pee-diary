@@ -34,18 +34,8 @@ appId: care.eleva.peediary
 - scroll
 - takeScreenshot: 23-today-bottom
 # The tab's label is a custom view on Android: tap the tab by position
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          point: "75%,93%"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "tab-history"
+- tapOn:
+    id: "tab-history"
 - waitForAnimationToEnd
 - takeScreenshot: 30-history
 - runFlow:

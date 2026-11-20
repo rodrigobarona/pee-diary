@@ -1,5 +1,9 @@
+# Closes the Add Entry menu if the app opened it at launch ("Open add menu
+# on launch"). Waits for the sheet to finish appearing first: a back press
+# while it is still animating in would reach the app and close it.
 appId: care.eleva.peediary
 ---
+- waitForAnimationToEnd
 - runFlow:
     when:
       visible:

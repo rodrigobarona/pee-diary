@@ -2,7 +2,19 @@
 # the amount and type a note with the keyboard up
 appId: care.eleva.peediary
 ---
-- launchApp
+# Window mode keeps the app in the freeform window it was started in
+- runFlow:
+    when:
+      true: ${RELAUNCH == 'true'}
+    commands:
+      - launchApp
+- runFlow:
+    when:
+      true: ${RELAUNCH != 'true'}
+    commands:
+      - launchApp:
+          stopApp: false
+- runFlow: finish-onboarding.yaml
 - runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
 - tapOn:
     id: "add-entry-button"
@@ -23,4 +35,4 @@ appId: care.eleva.peediary
 - tapOn:
     id: "form-notes"
 - inputText: "Fold test note"
-- takeScreenshot: 1-folded
+- takeScreenshot: form-start

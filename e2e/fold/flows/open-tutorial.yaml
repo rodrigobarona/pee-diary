@@ -1,7 +1,19 @@
 # Fold continuity, onboarding pager: open the tutorial on page 2 at phone width
 appId: care.eleva.peediary
 ---
-- launchApp
+# Window mode keeps the app in the freeform window it was started in
+- runFlow:
+    when:
+      true: ${RELAUNCH == 'true'}
+    commands:
+      - launchApp
+- runFlow:
+    when:
+      true: ${RELAUNCH != 'true'}
+    commands:
+      - launchApp:
+          stopApp: false
+- runFlow: finish-onboarding.yaml
 - runFlow: ../../walkthrough/flows/dismiss-launch-menu.yaml
 - tapOn:
     id: "settings-button"
@@ -13,4 +25,4 @@ appId: care.eleva.peediary
 - tapOn:
     id: "onboarding-next"
 - waitForAnimationToEnd
-- takeScreenshot: 5-tutorial-folded
+- takeScreenshot: tutorial-start

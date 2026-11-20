@@ -1,7 +1,9 @@
 # After the window changed size the pager still shows page 2, whole
 appId: care.eleva.peediary
 ---
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-back"
+    timeout: 10000
 - waitForAnimationToEnd
-- assertVisible:
-    id: "onboarding-back"
 - takeScreenshot: ${STEP}

@@ -446,8 +446,9 @@ export default function HistoryScreen() {
             </View>
           )}
         </View>
-        <AddEntryFab />
       </ContentColumn>
+      {/* At the screen's edge, where it is on Today */}
+      <AddEntryFab />
     </View>
   );
 }

@@ -30,18 +30,8 @@ appId: care.eleva.peediary
     text: "${WEEK}"
 - waitForAnimationToEnd
 # History
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          point: "75%,93%"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "tab-history"
+- tapOn:
+    id: "tab-history"
 - waitForAnimationToEnd
 - runFlow:
     when:
@@ -71,18 +61,8 @@ appId: care.eleva.peediary
 - takeScreenshot: 33-entry-detail
 - runFlow: close-form.yaml
 # The three forms, closed without saving
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          point: "25%,93%"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "tab-today"
+- tapOn:
+    id: "tab-today"
 - waitForAnimationToEnd
 - tapOn:
     id: "add-entry-button"

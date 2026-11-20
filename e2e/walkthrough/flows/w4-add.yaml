@@ -2,18 +2,8 @@
 appId: care.eleva.peediary
 ---
 - startRecording: 04-add-entries
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          point: "25%,93%"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "tab-today"
+- tapOn:
+    id: "tab-today"
 - waitForAnimationToEnd
 - tapOn:
     id: "add-entry-button"

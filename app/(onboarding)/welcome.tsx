@@ -31,6 +31,7 @@ import { useDiaryStore } from "@/lib/store";
 import { colors } from "@/lib/theme/colors";
 import { iconSize, radius, ripple, spacing, columnStyle } from "@/lib/theme/styles";
 import { CONTROL_MAX_FONT_SCALE, typography } from "@/lib/theme/typography";
+import { useWindowClass } from "@/hooks/use-window-class";
 
 const IS_IOS = Platform.OS === "ios";
 
@@ -441,15 +442,18 @@ export default function OnboardingScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  // Follows rotation and window resizes (iPad, split screen)
-  const { width: pageWidth } = useWindowDimensions();
+  // A page is as wide as the pager, measured: it follows folding,
+  // unfolding, rotation and split screen (the window's width is the first
+  // guess; on some Android 15 foldables it can lag behind after a fold)
+  const { width: windowWidth } = useWindowClass();
+  const [pageWidth, setPageWidth] = useState(windowWidth);
   const { completeOnboarding } = useDiaryStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const scrollX = useSharedValue(0);
 
-  // Folding, unfolding or rotating changes the page width while the scroll
-  // offset stays in pixels: snap back to the page that was showing
+  // When the page width changes the scroll offset stays in pixels: once the
+  // pages have their new width, snap back to the page that was showing
   const currentIndexRef = useRef(currentIndex);
   useEffect(() => {
     currentIndexRef.current = currentIndex;
@@ -604,6 +608,10 @@ export default function OnboardingScreen() {
       {/* Scrollable content */}
       <Animated.ScrollView
         ref={scrollViewRef}
+        onLayout={(event) => {
+          const { width } = event.nativeEvent.layout;
+          if (width > 0 && width !== pageWidth) setPageWidth(width);
+        }}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}

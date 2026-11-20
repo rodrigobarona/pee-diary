@@ -90,9 +90,19 @@ Visual references come from Mobbin: iPhone screens for the phone layout, and web
    - Cross-check with `useSafeAreaFrame()` to guard against the open Android 15 stale-dimensions bug (react-native#52952).
 2. **`<ContentWidth max={600}>`**, a centring wrapper used by forms, sheets, Settings and onboarding.
 3. **`<AdaptiveColumns>`**, a 1/2-column grid for Today (even counts, 16/24dp gaps).
-4. Keep `orientation: "portrait"` for phones and cover screens (Android honours it below 600dp, and iOS on the Duo's outer screen), but design every medium and expanded layout for **both orientations**.
+4. **Orientation, Android:** `plugins/with-android-adaptive-orientation.js` removes the manifest's portrait lock, and `MainActivity` locks portrait only while the display's smallest width is under 600dp. Testing showed why this is needed: Android 15 still honours a manifest lock and letterboxes the app on an unfolded Fold. The display is measured with `maximumWindowMetrics`, because a letterboxed window itself looks narrow and would keep the lock. **iOS:** `orientation: "portrait"` stays for the iPhone; iOS ignores it on the Duo's inner screen from the 27.1 SDK. Every medium and expanded layout is designed for **both orientations**.
 5. Do **not** add the Android restricted-resizability opt-out (it brings back letterboxing, fails Tier 3 and ends at API 37). Do not use `expo-router/unstable-split-view` (alpha, iOS only, falls back to a `Slot` on Android), posture or hinge APIs, or a NativeTabs migration. None is needed for a diary.
 6. NativeWind `medium:`/`expanded:` variants only if they are verified on 5.0.0-rc.1; otherwise the hook carries the logic (most styles are StyleSheet anyway).
+
+### 4.1 Lessons from apps already on the iPhone Duo (November 2026)
+
+These come from screenshots of Fantastical, Things 3, Apple Mail, Notes, Slack and MLB on the Duo (Apple Newsroom, Apple's Duo guidelines, Cultured Code):
+
+- **Controls on the trailing edge.** The Duo's status bar is a column on the right of the inner screen, and apps put their toolbar, search and **+** in a vertical rail down that edge (Fantastical, Mail's "trailing pane controls", MLB's tab rail). **On iOS the navigation rail goes on the trailing edge**; Android keeps Material's leading rail.
+- **List-detail is the norm on the inner screen.** Fantastical shows a month grid and agenda on the left with the day on the right; Mail and Notes show a narrow list with a wide detail. That backs History's list-detail, and a full month grid in History's left pane (Fantastical) is a later upgrade.
+- **Forms are centred cards over the dimmed screen** (Things' new to-do), as in our dialog design.
+- **Half-folded, the two halves split at the hinge** (Notes, Things): a later option, not needed for a diary.
+- **The outer screen gives apps a right-edge inset** (the camera column). Phase 3 must apply horizontal safe-area insets on every screen.
 
 ## 5. Phases
 
